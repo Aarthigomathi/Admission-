@@ -1,0 +1,9 @@
+# dependencies (none right now - the server uses only Node built-ins)
+node_modules/
+
+# runtime database (auto-created)
+data/
+
+# environment / OS junk
+.env
+.DS_Store

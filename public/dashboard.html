@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard &mdash; AdmissionPortal</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%8E%93%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a class="brand" href="/">
+        <span class="brand-logo">&#127891;</span>
+        <span>Admission<span class="accent">Portal</span></span>
+      </a>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#courses">Courses</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <div class="nav-actions" id="navAuth">
+        <a href="/login.html" class="btn btn-ghost">Login</a>
+        <a href="/signup.html" class="btn btn-primary">Sign Up</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="dash">
+    <div class="container">
+      <section class="dash-hero">
+        <div>
+          <h1>Welcome back, <span id="userName">Student</span> &#128075;</h1>
+          <p>Your admission journey continues from here.</p>
+        </div>
+        <span class="dash-chip">2026&ndash;27 Applicant</span>
+      </section>
+
+      <div class="dash-grid">
+        <aside class="card profile-card">
+          <div class="avatar" id="avatar">?</div>
+          <h2 id="profileName">&mdash;</h2>
+          <div class="profile-rows">
+            <div class="profile-row">
+              <span>Email</span>
+              <strong id="profileEmail">&mdash;</strong>
+            </div>
+            <div class="profile-row">
+              <span>Phone</span>
+              <strong id="profilePhone">&mdash;</strong>
+            </div>
+            <div class="profile-row">
+              <span>Member since</span>
+              <strong id="profileJoined">&mdash;</strong>
+            </div>
+          </div>
+        </aside>
+
+        <section class="card steps-card">
+          <h2>Your admission steps</h2>
+
+          <div class="step done">
+            <div class="step-icon">&#10003;</div>
+            <div class="step-body">
+              <div class="step-title">Create your account <span class="badge badge-done">Done</span></div>
+              <p class="step-desc">Your account is ready and your details are stored securely.</p>
+            </div>
+          </div>
+
+          <div class="step locked">
+            <div class="step-icon">2</div>
+            <div class="step-body">
+              <div class="step-title">Fill the application form <span class="badge badge-soon">Coming soon</span></div>
+              <p class="step-desc">Choose your program and enter your academic details.</p>
+            </div>
+          </div>
+
+          <div class="step locked">
+            <div class="step-icon">3</div>
+            <div class="step-body">
+              <div class="step-title">Upload documents <span class="badge badge-soon">Coming soon</span></div>
+              <p class="step-desc">Marksheets, ID proof and passport photo.</p>
+            </div>
+          </div>
+
+          <div class="step locked">
+            <div class="step-icon">4</div>
+            <div class="step-body">
+              <div class="step-title">Pay the application fee <span class="badge badge-soon">Coming soon</span></div>
+              <p class="step-desc">Secure online payment &mdash; UPI, cards and net banking.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

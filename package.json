@@ -1,0 +1,14 @@
+{
+  "name": "admission-portal",
+  "version": "1.0.0",
+  "description": "College admission portal - home page with login and signup (zero dependencies)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --no-warnings server.js",
+    "dev": "node --watch --no-warnings server.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT"
+}

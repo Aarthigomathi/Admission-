@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up &mdash; AdmissionPortal</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%8E%93%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a class="brand" href="/">
+        <span class="brand-logo">&#127891;</span>
+        <span>Admission<span class="accent">Portal</span></span>
+      </a>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#courses">Courses</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <div class="nav-actions" id="navAuth">
+        <a href="/login.html" class="btn btn-ghost">Login</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="auth-page">
+    <div class="auth-card">
+      <div class="auth-head">
+        <span class="auth-logo">&#127891;</span>
+        <h1>Create your account</h1>
+        <p>Start your admission application in 2 minutes</p>
+      </div>
+
+      <form id="signupForm" novalidate>
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="e.g. Priya Sharma"
+                 autocomplete="name" autofocus />
+          <p class="field-error" id="err-name"></p>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com"
+                 autocomplete="email" />
+          <p class="field-error" id="err-email"></p>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="e.g. 9876543210"
+                 autocomplete="tel" />
+          <p class="field-error" id="err-phone"></p>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input type="password" id="password" name="password" placeholder="At least 6 characters"
+                   autocomplete="new-password" />
+            <button type="button" class="toggle-password">Show</button>
+          </div>
+          <p class="field-error" id="err-password"></p>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <div class="password-wrap">
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password"
+                   autocomplete="new-password" />
+            <button type="button" class="toggle-password">Show</button>
+          </div>
+          <p class="field-error" id="err-confirmPassword"></p>
+        </div>
+
+        <div class="form-error" id="formError" hidden></div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="submitBtn">Create Account</button>
+      </form>
+
+      <p class="auth-alt">Already have an account? <a href="/login.html">Log in</a></p>
+    </div>
+  </main>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/signup.js"></script>
+</body>
+</html>
