@@ -49,7 +49,9 @@ body {
 }
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
-button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+button, input, select, textarea { font-family: inherit; font-size: inherit; color: var(--ink); }
+::placeholder { color: #98A0B0; opacity: 1; }
+select option { color: var(--ink); background: #fff; }
 button { cursor: pointer; border: none; background: none; }
 ul { list-style: none; }
 :focus-visible { outline: 3px solid var(--c1); outline-offset: 2px; border-radius: 6px; }
@@ -101,8 +103,9 @@ p { color: var(--ink-2); }
   background: rgba(255,255,255,.92); backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--line);
 }
-.nav-in { height: 100%; display: flex; align-items: center; gap: 18px; }
+.nav-in { height: 100%; display: flex; align-items: center; gap: 16px; min-width: 0; }
 .brand { display: flex; align-items: center; gap: 11px; font-weight: 800; font-size: 1.12rem; letter-spacing: -.03em; }
+.only-mobile { display: none !important; }
 .brand-mark {
   width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
   background: var(--grad); color: #fff; font-weight: 800; font-size: 1.05rem;
@@ -195,8 +198,12 @@ p { color: var(--ink-2); }
 .field label span { color: var(--bad); }
 .input, .select, .textarea {
   width: 100%; padding: 13px 15px; border-radius: 12px; border: 1.5px solid var(--line);
-  background: #fff; transition: .18s; font-size: .94rem;
+  background: #fff; transition: .18s; font-size: .94rem; color: var(--ink);
 }
+.select { appearance: none; -webkit-appearance: none; padding-right: 38px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-3) 50%), linear-gradient(135deg, var(--ink-3) 50%, transparent 50%);
+  background-position: calc(100% - 19px) 22px, calc(100% - 14px) 22px;
+  background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
 .input:focus, .select:focus, .textarea:focus { border-color: var(--c1); box-shadow: 0 0 0 4px var(--soft); outline: none; }
 .textarea { min-height: 96px; resize: vertical; }
 .input-icon { position: relative; }
@@ -413,7 +420,20 @@ input[type="range"] { width: 100%; accent-color: var(--c1); }
 .gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .gallery img { height: 168px; width: 100%; object-fit: cover; border-radius: 14px; box-shadow: var(--shadow-sm); transition: .35s; }
 .gallery img:hover { transform: scale(1.03); }
-.map-shell { border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-sm); background: #fff; }
+.map-shell {
+  border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-sm);
+  position: relative; background-color: #EEF3F9;
+  background-image: repeating-linear-gradient(0deg, #DEE7F0 0 1px, transparent 1px 36px),
+                    repeating-linear-gradient(90deg, #DEE7F0 0 1px, transparent 1px 36px),
+                    radial-gradient(circle at 30% 20%, #FFFFFF, transparent 60%);
+}
+/* Internet illainaa map blank-a theriyaama irukka intha hint (map load aanaa adhu mela varum) */
+.map-shell::before {
+  content: "🗺️  Map block aagirundhaa (internet illaama) — kizhe 🧭 Direction button-a click pannunga, Google Maps-la route varum";
+  position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+  padding: 22px; color: #7E8EA3; font-size: .84rem; font-weight: 600; line-height: 1.6; z-index: 0;
+}
+.map-shell iframe, .map-shell > img { position: relative; z-index: 1; }
 .map-shell iframe { width: 100%; height: 380px; border: 0; display: block; }
 .map-info { padding: 16px 18px; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 .callout {
@@ -596,8 +616,18 @@ body[data-layout="tech"] .stat-box b { font-variant-numeric: tabular-nums; }
     transform: translateY(-130%); transition: .3s; border-bottom: 1px solid var(--line); z-index: 59;
   }
   .nav-links.open { transform: none; }
+  .nav-links .only-mobile {
+    display: block !important; background: var(--grad); color: #fff; text-align: center; margin-top: 6px;
+  }
   .burger { display: block; }
   .nav-user span.uname { display: none; }
+  .nav-cta { display: none; }
+  .nav-in { gap: 10px; }
+  .brand { font-size: 1.02rem; }
+}
+@media (max-width: 420px) {
+  .brand small { display: none; }
+  .nav-user { padding: 4px; }
 }
 @media (max-width: 620px) {
   .g2, .g3, .g4 { grid-template-columns: 1fr; }

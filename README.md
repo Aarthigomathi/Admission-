@@ -203,5 +203,24 @@ Idhu oru **student project / demo**. College names, fees, rating, placement, rev
 
 ---
 
+## 🖼️ UI Screenshots (real browser-la eduthathu)
+
+| Home (red/orange/yellow featured) | Signup step 3 — match result |
+|---|---|
+| ![Home](docs/screenshots/01-home.jpg) | ![Signup match](docs/screenshots/02b-signup-match.jpg) |
+
+| Colleges list + filter | College page (Anna University — red theme) |
+|---|---|
+| ![Colleges](docs/screenshots/03-colleges.jpg) | ![College](docs/screenshots/05-college-anna-red.jpg) |
+
+| Map — nearest college | Dashboard |
+|---|---|
+| ![Map](docs/screenshots/08-map.jpg) | ![Dashboard](docs/screenshots/09-dashboard.jpg) |
+
+**Mobile view** (mobile-sheet.jpg-la full) — burger menu work aagum:
+![Mobile](docs/screenshots/mobile-sheet.jpg)
+
+---
+
 ### Made with ❤️ for Tamil Nadu students
 html · css · javascript · localStorage · Google Maps embed

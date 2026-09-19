@@ -287,10 +287,11 @@ function placementFor(college) {
     law: ["Law Firms", "Legal Process Outsourcing", "Advocate Chambers", "Banks Legal Cell"],
     research: ["CSIR Labs", "DRDO", "ISRO Units", "Universities", "Pharma R&D"]
   };
+  const rate = Math.min(98, Math.max(45, Math.round(62 + (college.rating - 4) * 35 + (seed % 7))));
   return {
     avgPackage: (t.avg + bump).toFixed(1) + " LPA",
     highPackage: (t.high + bump * 4).toFixed(0) + " LPA",
-    placementRate: 62 + (college.rating - 4) * 35 + (seed % 7),
+    placementRate: rate,
     topRecruiters: recruiters[key] || recruiters.arts
   };
 }

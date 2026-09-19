@@ -93,6 +93,7 @@
         <nav class="nav-links" id="navLinks">
           ${NAV.map(([h, t]) => `<a href="${h}" class="${page === h ? "on" : ""}">${t}</a>`).join("")}
           ${u ? `<a href="dashboard.html" class="${page === "dashboard.html" ? "on" : ""}">Dashboard</a>` : ""}
+          ${u ? `<a href="#" class="only-mobile" id="logoutM">Logout</a>` : `<a href="signup.html" class="only-mobile">Sign up free 🎓</a>`}
         </nav>
         <div class="nav-right">
           ${u ? `<a class="nav-user" href="dashboard.html" title="My dashboard">
@@ -100,15 +101,16 @@
                   <span class="uname">${esc(u.name.split(" ")[0])}</span></a>
                  <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>`
                : `<a class="btn btn-ghost btn-sm" href="login.html">Sign in</a>
-                  <a class="btn btn-primary btn-sm" href="signup.html">Sign up free</a>`}
+                  <a class="btn btn-primary btn-sm nav-cta" href="signup.html">Sign up free</a>`}
           <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
         </div>
       </div>
     </header>`;
     const b = $("#burger"), links = $("#navLinks");
     if (b) b.onclick = () => links.classList.toggle("open");
-    const lo = $("#logoutBtn");
-    if (lo) lo.onclick = () => { DB.del("session"); toast("Logout aagiduchu. Meendum varunga!", "ok"); setTimeout(() => location.href = "index.html", 600); };
+    const goOut = () => { DB.del("session"); toast("Logout aagiduchu. Meendum varunga!", "ok"); setTimeout(() => location.href = "index.html", 600); };
+    const lo = $("#logoutBtn"); if (lo) lo.onclick = goOut;
+    const lm = $("#logoutM"); if (lm) lm.onclick = (e) => { e.preventDefault(); goOut(); };
   }
 
   function renderFooter() {
@@ -176,7 +178,7 @@
     return `<article class="card reveal" data-college="${esc(c.id)}">
       <a class="card-img" href="college.html?id=${esc(c.id)}">
         <img src="${esc(c.img)}" alt="${esc(c.name)} campus" loading="lazy">
-        ${c.featured ? `<span class="badge-pick">${c.featured.toUpperCase()} CAMPUS · Featured</span>` : ""}
+        ${c.featured ? `<span class="badge-pick">★ ${c.featured.toUpperCase()} CAMPUS</span>` : ""}
         <span class="badge-type">${esc(c.type)}</span>
         ${dist != null ? `<span class="dist-pill" style="position:absolute;bottom:12px;left:12px">${dist} km away</span>` : ""}
       </a>
@@ -1047,7 +1049,7 @@
       </div>
 
       <div class="stat-grid" style="margin-bottom:26px">
-        <div class="stat-box"><b>${final.length}</b><span>UNGAKku MATCH AAGUM COLLEGES</span></div>
+        <div class="stat-box"><b>${final.length}</b><span>UNGAKKU MATCH AAGUM COLLEGES</span></div>
         <div class="stat-box"><b>${saved.length}</b><span>SAVED COLLEGES</span></div>
         <div class="stat-box"><b>${coursesForLevelCount(u)}</b><span>COURSES UNGA LEVEL-ல</span></div>
         <div class="stat-box"><b>${myRevCount}</b><span>UNGA REVIEWS</span></div>
