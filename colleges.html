@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ta-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Colleges — Tamil Nadu 38 District | Admission+</title>
+<meta name="description" content="Tamil Nadu ella district-lum irukkira 58 college — engineering, arts, medical, polytechnic, agriculture, law. Filter panni ungal ooru pakkathula irukkira college-a kandupidinga.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body data-page="colleges">
+
+<div class="loader"><span class="brand-mark">Aa</span></div>
+<div id="nav-root"></div>
+
+<!-- ============================== PAGE HEAD ============================== -->
+<section style="background:linear-gradient(120deg,var(--c2),var(--c1) 70%,#F97316);color:#fff;padding:44px 0">
+  <div class="wrap">
+    <div class="crumb" style="color:rgba(255,255,255,.85);font-size:.82rem">
+      <a href="index.html">Home</a> › <span>Colleges</span>
+    </div>
+    <h1 style="color:#fff;margin-top:12px">Tamil Nadu ellaa college-um — oru idathula 🏫</h1>
+    <p style="color:rgba(255,255,255,.94);max-width:760px;margin-top:10px">
+      38 district · 58 college · engineering, arts & science, medical, polytechnic, agriculture, law.
+      Left side-la filter use pannunga — ungal ooru, level, hostel, fees-a vechu kandupidinga.
+    </p>
+  </div>
+</section>
+
+<div class="wrap section" style="padding-top:26px">
+  <div class="split">
+
+    <!-- ============================= FILTERS ============================= -->
+    <aside class="filters">
+      <div class="filter-card">
+        <h4>🔍 Filter pannunga <button class="btn btn-ghost btn-sm" id="fReset">Reset</button></h4>
+
+        <div class="f-group">
+          <b>College / Course peru</b>
+          <div class="input-icon">
+            <span class="ico">🔎</span>
+            <input class="input" id="fQuery" placeholder="eg: nursing, PSG, CSE">
+          </div>
+        </div>
+
+        <div class="f-group">
+          <b>Ooru / District</b>
+          <select class="select" id="fDistrict"></select>
+        </div>
+
+        <div class="f-group">
+          <b>Enthe level padikka?</b>
+          <select class="select" id="fLevel">
+            <option value="">Ellaa level-um</option>
+            <option value="10th">10th mudicha pinnadi (Diploma/ITI)</option>
+            <option value="12th">12th mudicha pinnadi (Degree)</option>
+            <option value="PG">UG mudicha pinnadi (PG)</option>
+          </select>
+        </div>
+
+        <div class="f-group">
+          <b>College type</b>
+          <div id="fKinds"></div>
+        </div>
+
+        <div class="f-group">
+          <b>Rating</b>
+          <input type="range" id="fRating" min="0" max="5" step="0.5" value="0">
+          <div class="range-out"><span>0★</span><span id="fRatingOut">Ellathaiyum</span><span>5★</span></div>
+        </div>
+
+        <div class="f-group">
+          <b>Fees</b>
+          <input type="range" id="fFee" min="0" max="3" step="1" value="0">
+          <div class="range-out"><span>Low</span><span id="fFeeOut">Ellathaiyum</span><span>High</span></div>
+          <div class="hint">Government & aided college fees romba kammi (₹0 – ₹40K/yr).</div>
+        </div>
+
+        <div class="f-group">
+          <b>Veru options</b>
+          <label class="check"><input type="checkbox" id="fHostel"> 🏠 Hostel irukkira college mattum</label>
+        </div>
+      </div>
+
+      <div class="card card-pad" style="margin-top:16px;background:var(--soft);border:none">
+        <b>💡 Tip</b>
+        <p class="small" style="margin-top:6px">Ungal ooru pakkathula irukkira college venumna — District select panni
+        <b>Sort by: Nearest first</b> pannunga. Illainaa <a href="map.html" style="color:var(--c1);font-weight:700">Map page</a>-la
+        paarunga!</p>
+      </div>
+    </aside>
+
+    <!-- ============================= RESULTS ============================= -->
+    <main>
+      <div class="result-bar">
+        <div>
+          <b><span id="resultCount">0</span> college kidaithuchu</b>
+          <div class="mini" id="sortNote"></div>
+        </div>
+        <div class="row">
+          <span class="mini">Sort by</span>
+          <select class="select" id="fSort" style="width:auto">
+            <option value="rating">Rating (best first)</option>
+            <option value="nearby">Nearest first</option>
+            <option value="fee">Fees (kammi first)</option>
+            <option value="estd">Established (old first)</option>
+            <option value="name">Peru (A-Z)</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid g2" id="results"></div>
+    </main>
+  </div>
+</div>
+
+<footer id="foot-root"></footer>
+<button class="to-top" aria-label="Top">↑</button>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ta-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in — Admission+ | Tamil Nadu College Guide</title>
+<meta name="description" content="Login pannunga — ungal saved college, recommendation, review ellathaiyum dashboard-la paarunga.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body data-page="login">
+
+<div class="auth">
+  <aside class="auth-aside">
+    <div class="auth-aside-in">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">Aa</span>
+        <span>Admission+<small>Tamil Nadu College Guide</small></span>
+      </a>
+      <h1>Meendum vanakkam! 👋<br>Ungal college list inge irukku</h1>
+      <p>Login pannunga — saved college, ungal ooru pakkathula irukkira recommendation,
+        neenga ezhuthina review ellathaiyum dashboard-la paarunga.</p>
+      <ul class="auth-points">
+        <li><span class="tick">✓</span><span><b>Dashboard</b> — ungal match aagura college, check-list ellame</span></li>
+        <li><span class="tick">✓</span><span><b>Saved list</b> — pidicha college-a save panni vaingaa</span></li>
+        <li><span class="tick">✓</span><span><b>Compare</b> — 3 college-a side-by-side compare</span></li>
+        <li><span class="tick">✓</span><span><b>Reviews</b> — ungal experience ezhuthi juniors-ku help pannunga</span></li>
+      </ul>
+      <div class="auth-college-strip">
+        <img src="images/colleges/campus-yellow.jpg" alt="Yellow campus">
+        <img src="images/colleges/campus-red.jpg" alt="Red campus">
+        <img src="images/colleges/campus-orange.jpg" alt="Orange campus">
+      </div>
+    </div>
+  </aside>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <a href="signup.html">Sign up</a>
+        <a href="login.html" class="on">Sign in</a>
+      </div>
+
+      <h2>Sign in pannunga 🔐</h2>
+      <p class="small muted" style="margin:6px 0 22px">Ungal email & password podunga.</p>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label>Email <span>*</span></label>
+          <div class="input-icon">
+            <span class="ico">✉️</span>
+            <input class="input" id="liEmail" type="email" placeholder="karthik@gmail.com" autocomplete="email">
+          </div>
+        </div>
+        <div class="field">
+          <label>Password <span>*</span></label>
+          <div class="input-icon">
+            <span class="ico">🔑</span>
+            <input class="input" id="liPass" type="password" placeholder="••••••" autocomplete="current-password" style="padding-left:40px">
+            <button type="button" class="pw-toggle" data-pw="liPass">Show</button>
+          </div>
+        </div>
+        <div class="row-between" style="margin-bottom:18px">
+          <label class="check"><input type="checkbox" checked> Remember me</label>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="ADM.toast('Demo project-la password reset illa. Pudhu account sign up pannunga.')">Password marandhuten?</button>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Sign in →</button>
+        <div class="auth-sep">ILLAINAA</div>
+        <button class="btn btn-ghost btn-block" type="button" id="googleBtn">🔵 Google-a vechu sign in (demo)</button>
+        <button class="btn btn-soft btn-block" type="button" id="demoFill" style="margin-top:10px">⚡ Demo account details fill pannu</button>
+      </form>
+
+      <p class="small center" style="margin-top:22px">
+        Account illaiyaa? <a href="signup.html" style="color:var(--c1);font-weight:700">Free Sign up pannunga →</a>
+      </p>
+      <div class="disclaimer" style="margin-top:18px">
+        ℹ️ Idhu front-end demo. Ungal data browser-la mattum save aagum — vera yaarukkum theriyadhu.
+      </div>
+    </div>
+  </main>
+</div>
+
+<button class="to-top" aria-label="Top">↑</button>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
