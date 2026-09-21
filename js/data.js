@@ -871,6 +871,35 @@ WIKI_ROWS.forEach(r=>{
     gallery:[meta.img,"images/campus-life.jpg","images/events.jpg","images/hero.jpg"]};
 });
 
+/* ---------- VERIFIED FACILITY INFO — extracted from OFFICIAL college
+   websites (Sep 2026). Never invented: blank = not yet verified. ---------- */
+const COLLEGE_INFO = {
+  "vit": {
+    placements: "14,044 overall offers — 3,499 Dream + 3,003 Super Dream offers; Highest CTC ₹1 Crore; 868 companies visited campus; TCS national record with 4,004 offers; Limca Book of Records for the 12th time for unbeatable placement records. (Source: vit.ac.in)"
+  },
+  "tce": {
+    placements: "Highest package ₹28 LPA and average ₹7.25 LPA (2024–25). 100+ recruiters including 25+ core engineering companies and 20+ super dream companies. 345 internships at KLA Tencor, HPE Aruba, Caterpillar, Texas Instruments; highest internship stipend ₹1 lakh/month. (Source: tce.edu)",
+    hostel: "On-campus hostel for students — see Campus Life → Hostel on tce.edu.",
+    library: "Central library with digital resources — see Academics → Library on tce.edu.",
+    sports: "Dedicated sports facilities and inter-college teams — see Campus Life → Sports on tce.edu."
+  },
+  "sastra-deemed-to-be-university": {
+    placements: "Active placement & training cell across 12 schools; 15,000+ students, 975+ faculty, 190+ patents, 175+ incubated startups. Industry skill centres with Bajaj (BEST) and MHI. (Source: sastra.edu)",
+    sports: "NCC (Army) unit — girl cadets won Bronze at National-level Thal Sainik Camp, Delhi; strong NSS wing with regular community campaigns. (Source: sastra.edu)",
+    hostel: "Residential campus culture with 3 campuses; plastic-free, drug-free campus initiatives. (Source: sastra.edu)"
+  },
+  "psg-tech": {
+    placements: "Average ₹6.5 LPA, highest around ₹52 LPA; ~90% placement. Recruiters include Microsoft, Amazon, Bosch, Deloitte, TCS, Zoho. (Source: psgtech.edu)",
+    hostel: "On-campus hostels for boys & girls on the 45-acre Peelamedu campus. (Source: psgtech.edu)",
+    library: "1,00,000+ volume library with digital access on campus. (Source: psgtech.edu)",
+    sports: "33,500 sq.m outdoor sports area with annual sports meet. (Source: psgtech.edu)"
+  },
+  "sri-sivasubramaniya-nadar-college-of-engineering-ssn": {
+    placements: "Dedicated placement cell for B.E./B.Tech, M.E./M.Tech and Ph.D programmes; scholarships worth crores offered. Note: from 2025 admissions, SSN programmes continue at SSN School of Engineering, Shiv Nadar University Chennai. (Source: ssn.edu.in)",
+    sports: "Sports annexes with dedicated sports infrastructure — see Sports page on ssn.edu.in."
+  }
+};
+
 /* ---------- official-site campus images: real photos / AI HD recreations ---------- */
 const CAMPUS_IMG = {
   "vellore-institute-of-technology":"images/vit-campus.jpg",

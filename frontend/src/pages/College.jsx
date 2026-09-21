@@ -81,6 +81,37 @@ export default function College() {
               </section>
             )}
           </div>
+          {(c.hostel || c.library || c.sports || c.placements) && (
+            <section className="fac">
+              <h2><i className="fa-solid fa-school-flag"></i> {t('facilities')}</h2>
+              <div className="fac-grid">
+                {c.placements && (
+                  <div className="fac-card">
+                    <h3><i className="fa-solid fa-briefcase"></i> {t('placements')}</h3>
+                    <p>{c.placements}</p>
+                  </div>
+                )}
+                {c.hostel && (
+                  <div className="fac-card">
+                    <h3><i className="fa-solid fa-bed"></i> {t('hostel')}</h3>
+                    <p>{c.hostel}</p>
+                  </div>
+                )}
+                {c.library && (
+                  <div className="fac-card">
+                    <h3><i className="fa-solid fa-book"></i> {t('library')}</h3>
+                    <p>{c.library}</p>
+                  </div>
+                )}
+                {c.sports && (
+                  <div className="fac-card">
+                    <h3><i className="fa-solid fa-futbol"></i> {t('sports')}</h3>
+                    <p>{c.sports}</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
         </div>
       )}
 

@@ -47,4 +47,17 @@ public class College {
 
     @Column(length = 600)
     public String events;        /* '|' separated annual events */
+
+    /* verified facility info (from official websites; empty = not yet verified) */
+    @Column(length = 500)
+    public String hostel;
+
+    @Column(length = 500)
+    public String library;
+
+    @Column(length = 500)
+    public String sports;
+
+    @Column(length = 500)
+    public String placements;
 }

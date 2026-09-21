@@ -120,3 +120,9 @@ section h2 i{color:var(--gold)}
 .evlist li{background:#fff8ec;border:1px solid #f0e2c4;border-radius:11px;padding:10px 14px;font-size:.9rem;font-weight:600;color:#3a3320}
 .gold-ic{color:#d4a017;margin-right:8px}
 @media(max-width:640px){.aishe-row{grid-template-columns:1fr;gap:5px}.aishe-num{text-align:left}}
+.fac{margin-top:30px}
+.fac-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px}
+.fac-card{background:#fff;border:1px solid #e7e0d2;border-radius:14px;padding:16px 18px;box-shadow:0 3px 12px rgba(14,27,58,.05)}
+.fac-card h3{margin:0 0 8px;font-size:1rem;color:#0e1b3a;display:flex;align-items:center;gap:8px}
+.fac-card h3 i{color:#d4a017}
+.fac-card p{margin:0;font-size:.88rem;line-height:1.5;color:#43506b}
