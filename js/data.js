@@ -196,6 +196,9 @@ const COLLEGES = [
 ];
 
 /* ---------- FEATURED COLLEGE DETAILS ---------- */
+/* unique ids: append city slug on collision */
+(function(){ const seen={}; COLLEGES.forEach(c=>{ if(seen[c.id]){ c.id=c.id+"-"+c.city.toLowerCase().replace(/[^a-z0-9]+/g,"-"); } seen[c.id]=1; }); })();
+
 const COLLEGE_DETAILS = {
   "anna-university":{
     about:"Anna University (est. 1978) is one of India's largest technical universities. 500+ engineering colleges are affiliated from Chennai. The CEG campus (College of Engineering, Guindy) is 230+ years old — India's oldest engineering school. Research labs, international tie-ups, and a massive alumni network make this the #1 choice for Tamil Nadu engineering aspirants.",
@@ -721,7 +724,9 @@ const __slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,
 const __hash = s => { let h=0; for(const ch of s) h=(h*31+ch.charCodeAt(0))>>>0; return h; };
 DIR_ROWS.forEach(r=>{
   const [name,city,category,founded,official] = r;
-  const id = __slug(name);
+  if(COLLEGES.some(x=>x.name===name && x.city===city)) return;  /* skip true duplicates */
+  let id = __slug(name);
+  if(COLLEGES.some(x=>x.id===id)) id = id+"-"+__slug(city);
   const meta = CAT_META[category];
   const h = __hash(id);
   const rating = (40 + h%7)/10;                 /* 4.0–4.6 */
