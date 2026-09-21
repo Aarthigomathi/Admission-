@@ -162,3 +162,16 @@ section h2 i{color:var(--gold)}
 .rev{transition:transform .25s ease,box-shadow .25s ease}
 .rev:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(14,27,58,.1)}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.card,.fac-card{animation:none}}
+
+/* ============ institution badge + video + social strip ============ */
+.cat.teal{background:rgba(23,162,184,.14);color:#0e7490;border-color:rgba(23,162,184,.4)}
+.cat.teal i{margin-right:5px}
+.sm-b{font-size:.68rem}
+.video{margin:30px 0}
+.vid-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:16px;overflow:hidden;box-shadow:0 12px 34px rgba(14,27,58,.18);border:3px solid #d4a017}
+.vid-frame iframe{position:absolute;inset:0;width:100%;height:100%}
+.social-strip{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:30px auto;padding:16px 22px;background:linear-gradient(90deg,#0e1b3a,#16295c);border-radius:16px;color:#cfd8ee;font-weight:700}
+.ig-link{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:99px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;font-weight:800;text-decoration:none;transition:transform .25s ease,box-shadow .25s ease}
+.ig-link:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 10px 24px rgba(220,39,67,.45)}
+.yt-link{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:99px;background:#ff0000;color:#fff;font-weight:800;text-decoration:none;transition:transform .25s ease,box-shadow .25s ease}
+.yt-link:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 10px 24px rgba(255,0,0,.45)}

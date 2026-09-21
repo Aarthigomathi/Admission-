@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api, user, imgSrc } from '../api.js';
 import { useLang } from '../App.jsx';
-import { CITY_TA } from '../i18n.js';
+import { CITY_TA, INST_TA } from '../i18n.js';
 import { useReveal } from '../reveal.js';
 
 export default function College() {
@@ -37,11 +37,32 @@ export default function College() {
     ? c.official
     : `https://www.google.com/search?q=${encodeURIComponent(c.name + ' ' + c.city + ' official website')}`;
 
+  /* per-facility representative real photos + verified per-college overrides */
+  const FAC_IMG = {
+    placements: 'images/graduate.jpg',
+    library: 'images/campus-life.jpg',
+    sports: 'images/psg-ground.jpg',
+    hostel: 'images/psg-exterior.jpg'
+  };
+  const FAC_OVERRIDES = {
+    'anna-university': { library: 'https://upload.wikimedia.org/wikipedia/commons/a/a8/Anna_University_Library.JPG' },
+    'psg-tech': { sports: 'images/psg-sports.webp', placements: 'images/psg-auditorium.webp' },
+    'vit': { hostel: 'https://upload.wikimedia.org/wikipedia/commons/1/13/VIT_university%2C_vellore.jpg' }
+  };
+  const facImg = (key) => imgSrc((FAC_OVERRIDES[c.slug] || {})[key] || FAC_IMG[key]);
+
+  /* official YouTube video embed (watch/short links only) */
+  const yt = c.youtube || '';
+  const ytId = (yt.match(/[?&]v=([\w-]{6,})/) || yt.match(/youtu\.be\/([\w-]{6,})/) || [])[1];
+
+  const igHandle = (c.instagram || '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '');
+
   return (
     <div ref={rootRef}>
       <div className="c-hero" style={{ backgroundImage: `linear-gradient(180deg, rgba(13,27,63,.25), rgba(10,20,46,.92)), url('${imgSrc(c.img)}')` }}>
         <div className="wrap rv rv-u">
           <span className="cat gold">{c.category}</span>
+          {c.instType && <span className="cat teal"><i className="fa-solid fa-certificate"></i> {lang === 'ta' ? (INST_TA[c.instType] || c.instType) : c.instType}</span>}
           <h1>{c.name}</h1>
           <p>{lang === 'ta' && c.oneLinerTa ? c.oneLinerTa : c.oneLiner}</p>
           <div className="facts">
@@ -102,7 +123,7 @@ export default function College() {
                   ['sports', 'fa-futbol', c.sports]
                 ].filter(f => f[2]).map((f, i) => (
                   <div key={f[0]} className={`fac-card rv ${i % 2 === 0 ? 'rv-l' : 'rv-r'}`}>
-                    <div className="fac-img"><img src={imgSrc(c.img)} alt={c.name} loading="lazy" onError={e => { e.target.src = '/images/hero.jpg'; }} /></div>
+                    <div className="fac-img"><img src={facImg(f[0])} alt={t(f[0])} loading="lazy" onError={e => { e.target.src = '/images/hero.jpg'; }} /></div>
                     <h3><i className={`fa-solid ${f[1]}`}></i> {t(f[0])}</h3>
                     <p>{f[2]}</p>
                   </div>
@@ -110,6 +131,17 @@ export default function College() {
               </div>
             </section>
           )}
+        </div>
+      )}
+
+      {ytId && (
+        <div className="wrap">
+          <section className="video rv rv-u">
+            <h2><i className="fa-brands fa-youtube"></i> {t('video_t')}</h2>
+            <div className="vid-frame">
+              <iframe title={c.name + ' official video'} src={`https://www.youtube-nocookie.com/embed/${ytId}`} allow="accelerometer; encrypted-media; picture-in-picture" allowFullScreen loading="lazy"></iframe>
+            </div>
+          </section>
         </div>
       )}
 
@@ -134,7 +166,7 @@ export default function College() {
           </form>
         </section>
 
-        <section>
+        <section className="rv rv-r">
           <h2>{t('map_t')}</h2>
           <div className="map">
             <iframe title="map" src={`https://www.google.com/maps?q=${encodeURIComponent(c.mapUrl)}&output=embed`} loading="lazy"></iframe>
@@ -146,6 +178,24 @@ export default function College() {
           </div>
         </section>
       </div>
+
+      {(c.instagram || c.youtube) && (
+        <div className="wrap">
+          <div className="social-strip rv rv-u">
+            <span><i className="fa-solid fa-hashtag"></i> {t('follow_t')}</span>
+            {c.instagram && (
+              <a className="ig-link" href={c.instagram} target="_blank" rel="noreferrer">
+                <i className="fa-brands fa-instagram"></i> @{igHandle}
+              </a>
+            )}
+            {c.youtube && (
+              <a className="yt-link" href={c.youtube} target="_blank" rel="noreferrer">
+                <i className="fa-brands fa-youtube"></i> {t('yt_ch')}
+              </a>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

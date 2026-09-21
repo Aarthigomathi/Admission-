@@ -7,6 +7,17 @@ const src = fs.readFileSync(path.join(root, 'js/data.js'), 'utf8');
 const tail = `
 ;function esc(s){ s = String(s==null?'':s); return s.split("'").join("''"); }
 
+
+/* ---- institution type: Autonomous / Government / University-Deemed / Affiliated ---- */
+function instType(c){
+  const n = c.name.toLowerCase();
+  if (AUTONOMOUS_IDS.has(c.id)) return 'Autonomous';
+  if (/^government|^govt\.?/.test(n)) return 'Government';
+  if (c.id === 'vit' || /university|vidyapeetham|academy of|institute of science and technology|institute of technology and sciences|institute of higher education|research foundation|viswa mahavidyalaya|centre for higher education|educational and research institute|rural institute/.test(n)) return 'University / Deemed';
+  return 'Affiliated';
+}
+const AUTONOMOUS_IDS = new Set(["psg-tech","tce","cit","kct","sri-krishna-college-of-technology","mepco-schlenk-engineering-college","kongu-engineering-college","sona","bitsathy","sri-sivasubramaniya-nadar-college-of-engineering-ssn","sri-ramakrishna-engineering-college","loyola-college","madras-christian-college","bishop-heber","st-josephs-trichy","american-college","xaviers-tvl","presidency-college","stella-maris-college","fatima-college","jamal-mohamed-college","holy-cross-college","scott","gac-salem","anna-university","iit-madras","nitt"]);
+
 /* ---- per-college departments: curated details first, then category template, then tags ---- */
 function deptsOf(c){
   const d = COLLEGE_DETAILS[c.id];
@@ -38,10 +49,10 @@ out += 'INSERT IGNORE INTO district_stats (district,total,eng,arts,med,poly) VAL
 out += Object.entries(DISTRICT_STATS).map(function(e){ var k=e[0], d=e[1];
   return "('" + esc(k) + "'," + d[0] + "," + d[1] + "," + d[2] + "," + d[3] + "," + d[4] + ")";
 }).join(",\\n") + ";\\n\\n";
-out += 'INSERT IGNORE INTO colleges (slug,name,city,category,founded,rating,reviews_count,seats,fee,img,map_url,official,tags,one_liner,one_liner_ta,departments,events,hostel,library,sports,placements,youtube,instagram) VALUES\\n';
+out += 'INSERT IGNORE INTO colleges (slug,name,city,category,founded,rating,reviews_count,seats,fee,img,map_url,official,tags,one_liner,one_liner_ta,departments,events,hostel,library,sports,placements,youtube,instagram,inst_type) VALUES\\n';
 out += COLLEGES.map(function(c){
   const info = (typeof COLLEGE_INFO !== "undefined" && COLLEGE_INFO[c.id]) || {};
-  return "('" + esc(c.id) + "','" + esc(c.name) + "','" + esc(c.city) + "','" + esc(c.category) + "'," + c.founded + "," + c.rating + "," + c.reviewsCount + ",'" + esc(c.seats) + "','" + esc(c.fee) + "','" + esc(c.img) + "','" + esc(c.map) + "','" + esc(c.official||'') + "','" + esc((c.tags||[]).join('|')) + "','" + esc(c.oneLiner) + "','" + esc(c.ta||'') + "','" + esc(deptsOf(c).join('|')) + "','" + esc(eventsOf(c).join('|')) + "','" + esc(info.hostel||'') + "','" + esc(info.library||'') + "','" + esc(info.sports||'') + "','" + esc(info.placements||'') + "','" + esc(c.youtube||'') + "','" + esc(c.instagram||'') + "')";
+  return "('" + esc(c.id) + "','" + esc(c.name) + "','" + esc(c.city) + "','" + esc(c.category) + "'," + c.founded + "," + c.rating + "," + c.reviewsCount + ",'" + esc(c.seats) + "','" + esc(c.fee) + "','" + esc(c.img) + "','" + esc(c.map) + "','" + esc(c.official||'') + "','" + esc((c.tags||[]).join('|')) + "','" + esc(c.oneLiner) + "','" + esc(c.ta||'') + "','" + esc(deptsOf(c).join('|')) + "','" + esc(eventsOf(c).join('|')) + "','" + esc(info.hostel||'') + "','" + esc(info.library||'') + "','" + esc(info.sports||'') + "','" + esc(info.placements||'') + "','" + esc(c.youtube||'') + "','" + esc(c.instagram||'') + "','" + esc(instType(c)) + "')";
 }).join(",\\n") + ";\\n";
 
 /* ---- AISHE 2023-24 statewide overview ---- */

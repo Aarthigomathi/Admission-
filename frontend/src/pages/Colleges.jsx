@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api, imgSrc } from '../api.js';
 import { useLang } from '../App.jsx';
-import { CITY_TA } from '../i18n.js';
+import { CITY_TA, INST_TA } from '../i18n.js';
 
 export default function Colleges() {
   const { lang, t } = useLang();
@@ -44,6 +44,7 @@ export default function Colleges() {
             </Link>
             <div className="card-body">
               <span className="cat">{c.category}</span>
+              {c.instType && <span className="cat teal sm-b">{lang === 'ta' ? (INST_TA[c.instType] || c.instType) : c.instType}</span>}
               <h3>{c.name}</h3>
               <p className="oner">{lang === 'ta' && c.oneLinerTa ? c.oneLinerTa : c.oneLiner}</p>
               <small>★ {c.rating} · {lang === 'ta' ? (CITY_TA[c.city] || c.city) : c.city} · {c.founded}</small>

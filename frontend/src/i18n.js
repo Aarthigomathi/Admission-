@@ -14,6 +14,7 @@ export const STR = {
     depts: 'Departments', events: 'Annual events', courses_l: 'Courses / Tags',
     facilities: 'Campus facilities (verified from official website)',
     placements: 'Placements', hostel: 'Hostel', library: 'Library', sports: 'Sports',
+    video_t: 'Official college video', follow_t: 'Follow this college', yt_ch: 'YouTube channel',
     aishe_t: 'Tamil Nadu — overall college map', aishe_sub: 'AISHE 2023–24 (Govt. of India) state-wide higher-education count.',
     aishe_total: 'colleges statewide', find_official: 'Find official site',
     name: 'Name', email: 'Email', password: 'Password', district: 'Your district',
@@ -32,6 +33,7 @@ export const STR = {
     depts: 'துறைகள்', events: 'ஆண்டு நிகழ்ச்சிகள்',
     facilities: 'வளாக வசதிகள் (அதிகாரப்பூர்வ தளத்தில் சரிபார்க்கப்பட்டது)',
     placements: 'வேலைவாய்ப்பு', hostel: 'விடுதி', library: 'நூலகம்', sports: 'விளையாட்டு',
+    video_t: 'அதிகாரப்பூர்வ கல்லூரி வீடியோ', follow_t: 'இந்த கல்லூரியை பின்தொடரவும்', yt_ch: 'யூடியூப் சேனல்',
     view: 'வளாகம் பார்க்க', official: 'அதிகாரப்பூர்வ தளம்', reviews: 'மாணவர் கருத்துகள்',
     rev_ph: 'உங்கள் அனுபவத்தைப் பகிருங்கள்…', submit: 'கருத்து அனுப்ப',
     established: 'நிறுவப்பட்டது', rating_l: 'மதிப்பீடு', seats_l: 'இடங்கள்', location_l: 'இடம்',
@@ -42,4 +44,5 @@ export const STR = {
     found: 'கல்லூரிகள் கிடைத்தன', approx: 'ஆய்வுக்கான தோராய பட்டியல் மதிப்பீடுகள்.'
   }
 };
+export const INST_TA = { 'Autonomous':'தன்னாட்சி', 'Government':'அரசு', 'University / Deemed':'பல்கலை / டீம்ட்', 'Affiliated':'இணைவு பெற்ற' };
 export const CITY_TA = { Chennai:'சென்னை', Coimbatore:'கோயம்புத்தூர்', Madurai:'மதுரை', Tiruchirappalli:'திருச்சி', Salem:'சேலம்', Vellore:'வேலூர்', Tirunelveli:'திருநெல்வேலி', Thanjavur:'தஞ்சாவூர்', Erode:'ஈரோடு', Tiruppur:'திருப்பூர்', Kanyakumari:'கன்னியாகுமரி', Thoothukudi:'தூத்துக்குடி', Virudhunagar:'விருதுநகர்', Dindigul:'திண்டுக்கல்', Namakkal:'நாமக்கல்', Karur:'கரூர்', Pudukkottai:'புதுக்கோட்டை', Cuddalore:'கடலூர்', Viluppuram:'விழுப்புரம்', Kanchipuram:'காஞ்சிபுரம்', Chengalpattu:'செங்கல்பட்டு', Tiruvallur:'திருவல்லூர்', Tiruvannamalai:'திருவண்ணாமலை', Krishnagiri:'கிருஷ்ணகிரி', Dharmapuri:'தர்மபுரி', Sivaganga:'சிவகங்கை', Ramanathapuram:'ராமநாதபுரம்', Theni:'தேனி', Nagapattinam:'நாகை', Tiruvarur:'திருவாரூர்', Mayiladuthurai:'மயிலாடுதுறை', Ariyalur:'அரியலூர்', Perambalur:'பெரம்பலூர்', Kallakurichi:'கள்ளக்குறிச்சி', Tenkasi:'தென்காசி', Ranipet:'ராணிப்பேட்டை', Nilgiris:'நீலகிரி', Tirupathur:'திருப்பத்தூர்' };

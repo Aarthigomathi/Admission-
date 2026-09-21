@@ -66,4 +66,7 @@ public class College {
 
     @Column(length = 200)
     public String instagram;     /* verified official account */
+
+    @Column(name = "inst_type", length = 40)
+    public String instType;      /* Autonomous / Government / University / Deemed / Affiliated */
 }
