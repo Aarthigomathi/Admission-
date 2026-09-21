@@ -736,3 +736,24 @@ DIR_ROWS.forEach(r=>{
     departments:meta.depts,
     gallery:[meta.img,"images/campus-life.jpg","images/events.jpg","images/hero.jpg"]};
 });
+
+/* ---------- official-site campus images: real photos / AI HD recreations ---------- */
+const CAMPUS_IMG = {
+  "vellore-institute-of-technology":"images/vit-campus.jpg",
+  "sastra-deemed-to-be-university":"images/sastra-campus.webp",
+  "madras-christian-college":"images/mcc-campus.jpg",
+  "amrita-vishwa-vidyapeetham":"images/amrita-campus.jpg",
+  "karunya-institute-of-technology-and-sciences":"images/karunya-campus.jpg",
+  "tamil-nadu-agricultural-university":"images/tnau-campus.jpg",
+  "stella-maris-college":"images/stella-campus.jpg",
+  "thiagarajar-college-of-engineering":"images/tce-campus.jpg",
+  "sathyabama-institute-of-science-and-technology":"images/sathyabama-campus.jpg",
+  "kongu-engineering-college":"images/kongu-campus.jpg"
+};
+for(const [k,v] of Object.entries(CAMPUS_IMG)){
+  const c = COLLEGES.find(x=>x.id===k);
+  if(c){ c.img = v;
+    const d = COLLEGE_DETAILS[k];
+    if(d && d.gallery) d.gallery = [v, ...d.gallery.slice(1)];
+  }
+}
