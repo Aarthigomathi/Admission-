@@ -61,7 +61,7 @@ public class CollegeController {
     @PostMapping("/colleges/{slug}/reviews")
     public ResponseEntity<?> addReview(@PathVariable String slug, @RequestBody Map<String, Object> body,
                                        Authentication auth) {
-        if (auth == null) return ResponseEntity.status(401).body(Map.of("error", "login required"));
+        if (uid(auth) == null) return ResponseEntity.status(401).body(Map.of("error", "login required"));
         Review r = new Review();
         r.collegeSlug = slug;
         r.name = String.valueOf(body.getOrDefault("name", "Student"));
@@ -72,14 +72,16 @@ public class CollegeController {
     }
 
     @GetMapping("/favs")
-    public List<Favorite> favs(Authentication auth) {
-        Long uid = (Long) auth.getDetails();
-        return favs.findByUserId(uid);
+    public ResponseEntity<?> favs(Authentication auth) {
+        Long uid = uid(auth);
+        if (uid == null) return ResponseEntity.status(401).body(Map.of("error", "login required"));
+        return ResponseEntity.ok(favs.findByUserId(uid));
     }
 
     @PostMapping("/favs/{slug}")
     public ResponseEntity<?> toggleFav(@PathVariable String slug, Authentication auth) {
-        Long uid = (Long) auth.getDetails();
+        Long uid = uid(auth);
+        if (uid == null) return ResponseEntity.status(401).body(Map.of("error", "login required"));
         return favs.findByUserIdAndCollegeSlug(uid, slug).map(f -> {
             favs.delete(f);
             return ResponseEntity.ok(Map.of("fav", false));
@@ -89,5 +91,10 @@ public class CollegeController {
             favs.save(f);
             return ResponseEntity.ok(Map.of("fav", true));
         });
+    }
+
+    private static Long uid(Authentication auth) {
+        if (auth == null) return null;
+        return auth.getDetails() instanceof Long l ? l : null;
     }
 }
