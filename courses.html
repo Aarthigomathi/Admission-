@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KalviPortal — Courses</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Baloo+Thambi+2:wght@500;600;700;800&family=Manrope:wght@500;600;700;800&family=Mukta+Malar:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=16">
+</head>
+<body>
+
+  <section class="block wrap">
+    <div id="levelTabs" style="margin-bottom:24px"></div>
+    <div class="sec-head">
+      <div>
+        <span class="kicker"><span class="dot bg-red"></span> <span data-i18n="kicker_course"></span></span>
+        <h2 id="pageTitle">Courses</h2>
+        <div class="color-strip"></div>
+        <p class="sub" id="pageSub" style="margin-top:9px"></p>
+      </div>
+    </div>
+
+    <div class="city-banner" id="recoNote" style="display:none" data-i18n="reco_note"></div>
+
+    <div class="grid c3" id="courseGrid"></div>
+  </section>
+
+  <!-- shared quick-view modal -->
+  <div class="overlay" id="quickOverlay">
+    <div class="modal">
+      <button class="close-x" onclick="closeModals()">✕</button>
+      <div id="quickBody"></div>
+    </div>
+  </div>
+
+  <script src="js/data.js?v=16"></script>
+  <script src="js/i18n.js?v=16"></script>
+  <script src="js/app.js?v=16"></script>
+  <script src="js/courses.js?v=16"></script>
+</body>
+</html>

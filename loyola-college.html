@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loyola College — KalviPortal</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🟨</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Baloo+Thambi+2:wght@500;600;700;800&family=Manrope:wght@500;600;700;800&family=Mukta+Malar:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=16">
+</head>
+<body class="theme-yellow" data-college="loyola-college" data-nav="colleges">
+
+  <!-- 🟨 UNIQUE UI #3 : CENTERED HERO (yellow theme) -->
+  <div class="hero hero-center">
+    <div class="wrap">
+      <span class="badge feat"><span data-i18n="featured_campus"></span> · EST. 1925</span>
+      <h1 class="big-title"><span data-fill="name">Loyola College</span></h1>
+      <p class="sub" style="margin:auto" data-fill="oneliner"></p>
+      <div class="pill-row">
+        <span class="pill">🏅 <span data-fill="rating">4.8</span></span>
+        <span class="pill">📜 <span data-i18n="since_word"></span> <span data-fill="founded">1925</span></span>
+        <span class="pill">🎓 <span data-fill="seats">4,000+</span></span>
+        <span class="pill">📍 <span data-fill="city">Chennai</span></span>
+        <span class="pill">💰 <span data-fill="fee"></span></span>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:26px;flex-wrap:wrap">
+        <button class="btn" data-favbtn></button>
+        <a class="btn ghost" data-fill="maplink" target="_blank" data-i18n="open_maps"></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="block wrap">
+    <div class="grid c2" style="align-items:center">
+      <img class="reveal" data-fill="img" alt="Loyola College" style="border-radius:26px;border:7px solid var(--yellow);box-shadow:var(--shadow-big);transform:rotate(-1deg)">
+      <div class="reveal">
+        <span class="kicker"><span class="dot bg-yellow"></span> <span data-i18n="loyola_kicker"></span></span>
+        <h2 style="font-size:1.8rem" data-i18n="about_h_loyola"></h2>
+        <div class="color-strip"></div>
+        <p class="sub" style="margin-top:13px" data-fill="about"></p>
+        <div class="tags" style="margin-top:15px" data-fill="tags"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HIGHLIGHTS -->
+  <section class="block" style="background:var(--cream-2)">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="kicker"><span class="dot bg-orange"></span> <span data-i18n="highlights_kicker"></span></span>
+          <h2 data-i18n="highlights_t"></h2>
+          <div class="color-strip"></div>
+        </div>
+      </div>
+      <div class="grid c3" data-fill="highlights"></div>
+    </div>
+  </section>
+
+  <!-- DEPARTMENTS as pills -->
+  <section class="block wrap">
+    <div class="sec-head">
+      <div>
+        <span class="kicker"><span class="dot bg-red"></span> <span data-i18n="dept_kicker"></span></span>
+        <h2 data-i18n="dept_t"></h2>
+        <div class="color-strip"></div>
+      </div>
+    </div>
+    <div style="text-align:center" data-fill="pills"></div>
+  </section>
+
+  <!-- EVENTS -->
+  <section class="block" style="background:var(--cream-2)">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="kicker"><span class="dot bg-yellow"></span> <span data-i18n="events_kicker"></span></span>
+          <h2 data-i18n="events_t3"></h2>
+          <div class="color-strip"></div>
+        </div>
+      </div>
+      <div class="grid c2" data-fill="events"></div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="block wrap">
+    <div class="sec-head">
+      <div>
+        <span class="kicker"><span class="dot bg-orange"></span> <span data-i18n="gallery_kicker"></span></span>
+        <h2 data-i18n="gallery_t2"></h2>
+      </div>
+    </div>
+    <div class="gallery" data-fill="gallery"></div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="block" style="background:var(--cream-2)">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="kicker"><span class="dot bg-red"></span> <span data-i18n="voice_kicker"></span></span>
+          <h2><span data-i18n="reviews_t"></span> (<span data-fill="reviewscount"></span>)</h2>
+          <div class="color-strip"></div>
+        </div>
+      </div>
+      <div class="grid c3" style="align-items:start">
+        <div class="grid" style="grid-column:span 2" id="revList"></div>
+        <div class="card reveal" style="padding:24px">
+          <h3 data-i18n="rev_form_t"></h3>
+          <form id="revForm" style="margin-top:13px">
+            <div class="star-pick" style="margin-bottom:11px">
+              <button type="button" class="on">★</button><button type="button" class="on">★</button><button type="button" class="on">★</button><button type="button" class="on">★</button><button type="button" class="on">★</button>
+            </div>
+            <div class="field"><textarea rows="4" data-i18n-ph="rev_ph2"></textarea></div>
+            <button class="btn"><i class="fa-solid fa-star"></i> <span data-i18n="submit_review"></span></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section class="block wrap">
+    <div class="sec-head">
+      <div>
+        <span class="kicker"><span class="dot bg-yellow"></span> <span data-i18n="map_kicker"></span></span>
+        <h2 data-i18n="map_t"></h2>
+        <p class="sub" data-fill="mapsub" data-mapsub-key="map_sub_loyola"></p>
+      </div>
+      <a class="btn sm" data-fill="maplink" target="_blank" data-i18n="open_maps2"></a>
+    </div>
+    <div class="map-frame" data-fill="mapframe"></div>
+  </section>
+
+  <div class="overlay" id="quickOverlay"><div class="modal"><button class="close-x" onclick="closeModals()">✕</button><div id="quickBody"></div></div></div>
+
+  <script src="js/data.js?v=16"></script>
+  <script src="js/i18n.js?v=16"></script>
+  <script src="js/app.js?v=16"></script>
+  <script src="js/college.js?v=16"></script>
+</body>
+</html>
