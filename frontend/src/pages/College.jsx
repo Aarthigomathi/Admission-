@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { api, user, imgSrc } from '../api.js';
 import { useLang } from '../App.jsx';
 import { CITY_TA } from '../i18n.js';
+import { useReveal } from '../reveal.js';
 
 export default function College() {
   const { slug } = useParams();
@@ -12,6 +13,7 @@ export default function College() {
   const [stars, setStars] = useState(5);
   const [text, setText] = useState('');
   const me = user();
+  const rootRef = useReveal([c]);
 
   useEffect(() => {
     api.college(slug).then(setC).catch(() => {});
@@ -36,9 +38,9 @@ export default function College() {
     : `https://www.google.com/search?q=${encodeURIComponent(c.name + ' ' + c.city + ' official website')}`;
 
   return (
-    <div>
+    <div ref={rootRef}>
       <div className="c-hero" style={{ backgroundImage: `linear-gradient(180deg, rgba(13,27,63,.25), rgba(10,20,46,.92)), url('${imgSrc(c.img)}')` }}>
-        <div className="wrap">
+        <div className="wrap rv rv-u">
           <span className="cat gold">{c.category}</span>
           <h1>{c.name}</h1>
           <p>{lang === 'ta' && c.oneLinerTa ? c.oneLinerTa : c.oneLiner}</p>
@@ -55,6 +57,14 @@ export default function College() {
             <a className="btn ghost" target="_blank" rel="noreferrer"
                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.mapUrl)}`}>
               <i className="fa-solid fa-map-location-dot"></i> {t('directions')}</a>
+            {c.youtube && (
+              <a className="btn ghost yt" href={c.youtube} target="_blank" rel="noreferrer">
+                <i className="fa-brands fa-youtube"></i> YouTube</a>
+            )}
+            {c.instagram && (
+              <a className="btn ghost ig" href={c.instagram} target="_blank" rel="noreferrer">
+                <i className="fa-brands fa-instagram"></i> Instagram</a>
+            )}
           </div>
         </div>
       </div>
@@ -63,7 +73,7 @@ export default function College() {
         <div className="wrap">
           <div className="two-col">
             {depts.length > 0 && (
-              <section>
+              <section className="rv rv-l">
                 <h2><i className="fa-solid fa-building-columns"></i> {t('depts')}</h2>
                 <div className="chips">
                   {depts.map((d, i) => <span key={i} className="chip">{d}</span>)}
@@ -71,7 +81,7 @@ export default function College() {
               </section>
             )}
             {events.length > 0 && (
-              <section>
+              <section className="rv rv-r">
                 <h2><i className="fa-solid fa-calendar-days"></i> {t('events')}</h2>
                 <ul className="evlist">
                   {events.map((ev, i) => (
@@ -82,33 +92,21 @@ export default function College() {
             )}
           </div>
           {(c.hostel || c.library || c.sports || c.placements) && (
-            <section className="fac">
+            <section className="fac rv rv-u">
               <h2><i className="fa-solid fa-school-flag"></i> {t('facilities')}</h2>
               <div className="fac-grid">
-                {c.placements && (
-                  <div className="fac-card">
-                    <h3><i className="fa-solid fa-briefcase"></i> {t('placements')}</h3>
-                    <p>{c.placements}</p>
+                {[
+                  ['placements', 'fa-briefcase', c.placements],
+                  ['hostel', 'fa-bed', c.hostel],
+                  ['library', 'fa-book', c.library],
+                  ['sports', 'fa-futbol', c.sports]
+                ].filter(f => f[2]).map((f, i) => (
+                  <div key={f[0]} className={`fac-card rv ${i % 2 === 0 ? 'rv-l' : 'rv-r'}`}>
+                    <div className="fac-img"><img src={imgSrc(c.img)} alt={c.name} loading="lazy" onError={e => { e.target.src = '/images/hero.jpg'; }} /></div>
+                    <h3><i className={`fa-solid ${f[1]}`}></i> {t(f[0])}</h3>
+                    <p>{f[2]}</p>
                   </div>
-                )}
-                {c.hostel && (
-                  <div className="fac-card">
-                    <h3><i className="fa-solid fa-bed"></i> {t('hostel')}</h3>
-                    <p>{c.hostel}</p>
-                  </div>
-                )}
-                {c.library && (
-                  <div className="fac-card">
-                    <h3><i className="fa-solid fa-book"></i> {t('library')}</h3>
-                    <p>{c.library}</p>
-                  </div>
-                )}
-                {c.sports && (
-                  <div className="fac-card">
-                    <h3><i className="fa-solid fa-futbol"></i> {t('sports')}</h3>
-                    <p>{c.sports}</p>
-                  </div>
-                )}
+                ))}
               </div>
             </section>
           )}
@@ -116,7 +114,7 @@ export default function College() {
       )}
 
       <div className="wrap two-col">
-        <section>
+        <section className="rv rv-l">
           <h2>{t('reviews')}</h2>
           {revs.length === 0 && <p className="muted">{lang === 'ta' ? 'இன்னும் கருத்துகள் இல்லை.' : 'No reviews yet.'}</p>}
           {revs.map(r => (

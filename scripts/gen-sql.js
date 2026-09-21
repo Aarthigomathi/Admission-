@@ -38,10 +38,10 @@ out += 'INSERT IGNORE INTO district_stats (district,total,eng,arts,med,poly) VAL
 out += Object.entries(DISTRICT_STATS).map(function(e){ var k=e[0], d=e[1];
   return "('" + esc(k) + "'," + d[0] + "," + d[1] + "," + d[2] + "," + d[3] + "," + d[4] + ")";
 }).join(",\\n") + ";\\n\\n";
-out += 'INSERT IGNORE INTO colleges (slug,name,city,category,founded,rating,reviews_count,seats,fee,img,map_url,official,tags,one_liner,one_liner_ta,departments,events,hostel,library,sports,placements) VALUES\\n';
+out += 'INSERT IGNORE INTO colleges (slug,name,city,category,founded,rating,reviews_count,seats,fee,img,map_url,official,tags,one_liner,one_liner_ta,departments,events,hostel,library,sports,placements,youtube,instagram) VALUES\\n';
 out += COLLEGES.map(function(c){
   const info = (typeof COLLEGE_INFO !== "undefined" && COLLEGE_INFO[c.id]) || {};
-  return "('" + esc(c.id) + "','" + esc(c.name) + "','" + esc(c.city) + "','" + esc(c.category) + "'," + c.founded + "," + c.rating + "," + c.reviewsCount + ",'" + esc(c.seats) + "','" + esc(c.fee) + "','" + esc(c.img) + "','" + esc(c.map) + "','" + esc(c.official||'') + "','" + esc((c.tags||[]).join('|')) + "','" + esc(c.oneLiner) + "','" + esc(c.ta||'') + "','" + esc(deptsOf(c).join('|')) + "','" + esc(eventsOf(c).join('|')) + "','" + esc(info.hostel||'') + "','" + esc(info.library||'') + "','" + esc(info.sports||'') + "','" + esc(info.placements||'') + "')";
+  return "('" + esc(c.id) + "','" + esc(c.name) + "','" + esc(c.city) + "','" + esc(c.category) + "'," + c.founded + "," + c.rating + "," + c.reviewsCount + ",'" + esc(c.seats) + "','" + esc(c.fee) + "','" + esc(c.img) + "','" + esc(c.map) + "','" + esc(c.official||'') + "','" + esc((c.tags||[]).join('|')) + "','" + esc(c.oneLiner) + "','" + esc(c.ta||'') + "','" + esc(deptsOf(c).join('|')) + "','" + esc(eventsOf(c).join('|')) + "','" + esc(info.hostel||'') + "','" + esc(info.library||'') + "','" + esc(info.sports||'') + "','" + esc(info.placements||'') + "','" + esc(c.youtube||'') + "','" + esc(c.instagram||'') + "')";
 }).join(",\\n") + ";\\n";
 
 /* ---- AISHE 2023-24 statewide overview ---- */

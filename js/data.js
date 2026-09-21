@@ -900,6 +900,19 @@ const COLLEGE_INFO = {
   }
 };
 
+/* ---------- VERIFIED SOCIAL LINKS (official channels, found via research) ---------- */
+const SOCIALS = {
+  "psg-tech": { yt: "https://www.youtube.com/watch?v=-ajudfIOTDI" }, /* official campus tour */
+  "psg-college-of-arts-and-science": { yt: "https://www.youtube.com/@psgcaslive", ig: "https://www.instagram.com/psgcas_cbe/" },
+  "vit": { ig: "https://www.instagram.com/sw_vit/" }, /* Office of Students' Welfare, VIT */
+  "anna-university": { yt: "https://www.youtube.com/channel/UCblHq3eEpz1BQoPwPGxIkgg" } /* Centre for Research, Anna University */
+};
+COLLEGES.forEach(c => {
+  const s = SOCIALS[c.id];
+  c.youtube = s && s.yt ? s.yt : "";
+  c.instagram = s && s.ig ? s.ig : "";
+});
+
 /* ---------- official-site campus images: real photos / AI HD recreations ---------- */
 const CAMPUS_IMG = {
   "vellore-institute-of-technology":"images/vit-campus.jpg",

@@ -60,4 +60,10 @@ public class College {
 
     @Column(length = 500)
     public String placements;
+
+    @Column(length = 200)
+    public String youtube;       /* verified official channel/video */
+
+    @Column(length = 200)
+    public String instagram;     /* verified official account */
 }
