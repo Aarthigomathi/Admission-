@@ -42,7 +42,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(a -> a
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                .requestMatchers("/images/**").permitAll()
+                .requestMatchers("/images/**", "/favicon.ico", "/error").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(new JwtFilter(jwt), UsernamePasswordAuthenticationFilter.class);
         return http.build();
