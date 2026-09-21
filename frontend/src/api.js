@@ -27,6 +27,10 @@ export const api = {
 export const user = () => {
   try { return JSON.parse(localStorage.getItem('kp_user')); } catch { return null; }
 };
+/* resolves a college image: absolute URLs (Wikimedia real photos) pass through,
+   relative paths get the dev-server root prefix */
+export const imgSrc = (p) => !p ? '/images/hero.jpg'
+  : (/^https?:\/\//.test(p) ? p : '/' + p);
 export const setUser = (u) => localStorage.setItem('kp_user', JSON.stringify(u));
 export const setToken = (t) => localStorage.setItem('kp_token', t);
 export const logout = () => { localStorage.removeItem('kp_token'); localStorage.removeItem('kp_user'); };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { api, user } from '../api.js';
+import { api, user, imgSrc } from '../api.js';
 import { useLang } from '../App.jsx';
 import { CITY_TA } from '../i18n.js';
 
@@ -37,7 +37,7 @@ export default function College() {
 
   return (
     <div>
-      <div className="c-hero" style={{ backgroundImage: `linear-gradient(180deg, rgba(13,27,63,.25), rgba(10,20,46,.92)), url('/${c.img}')` }}>
+      <div className="c-hero" style={{ backgroundImage: `linear-gradient(180deg, rgba(13,27,63,.25), rgba(10,20,46,.92)), url('${imgSrc(c.img)}')` }}>
         <div className="wrap">
           <span className="cat gold">{c.category}</span>
           <h1>{c.name}</h1>

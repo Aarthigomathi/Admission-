@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../api.js';
+import { api, imgSrc } from '../api.js';
 import { useLang } from '../App.jsx';
 import { CITY_TA } from '../i18n.js';
 
@@ -40,7 +40,7 @@ export default function Colleges() {
         {list.map(c => (
           <div key={c.id} className="card">
             <Link to={`/college/${c.slug}`}>
-              <img src={'/' + c.img} alt={c.name} loading="lazy" onError={e => { e.target.src = '/images/hero.jpg'; }} />
+              <img src={imgSrc(c.img)} alt={c.name} loading="lazy" onError={e => { e.target.src = '/images/hero.jpg'; }} />
             </Link>
             <div className="card-body">
               <span className="cat">{c.category}</span>

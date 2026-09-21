@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api, user } from '../api.js';
+import { api, user, imgSrc } from '../api.js';
 import { useLang } from '../App.jsx';
 import { CITY_TA } from '../i18n.js';
 
@@ -40,7 +40,7 @@ export default function Home() {
           <div className="cards">
             {near.map(c => (
               <Link key={c.id} className="card" to={`/college/${c.slug}`}>
-                <img src={'/' + c.img} alt={c.name} onError={e => { e.target.src = '/images/hero.jpg'; }} />
+                <img src={imgSrc(c.img)} alt={c.name} onError={e => { e.target.src = '/images/hero.jpg'; }} />
                 <div className="card-body">
                   <span className="cat">{c.category}</span>
                   <h3>{c.name}</h3>
