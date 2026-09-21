@@ -757,3 +757,10 @@ for(const [k,v] of Object.entries(CAMPUS_IMG)){
     if(d && d.gallery) d.gallery = [v, ...d.gallery.slice(1)];
   }
 }
+
+/* every college points to its own campus image; AI batches fill this
+   folder over time — missing files fall back to the category image */
+COLLEGES.forEach(c=>{ if(!c.img.startsWith("images/campus/")) c.img = "images/campus/"+c.id+".jpg"; });
+(function(){ const s = COLLEGES.find(c=>c.id==="sastra-deemed-to-be-university");
+  if(s) s.img = "images/campus/sastra-deemed-to-be-university.webp"; })();
+COLLEGES.forEach(c=>{ const d=COLLEGE_DETAILS[c.id]; if(d&&d.gallery) d.gallery[0]=c.img; });

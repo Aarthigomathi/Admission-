@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   $$("[data-fill=fee]").forEach(e=>e.textContent = c.fee);
   $$("[data-fill=rating]").forEach(e=>e.textContent = c.rating + " ★");
   $$("[data-fill=reviewscount]").forEach(e=>e.textContent = c.reviewsCount + " " + t("reviews_word"));
-  $$("[data-fill=img]").forEach(e=>{ e.src = c.img; e.onerror = ()=>{ e.src="images/hero.jpg"; }; });
+  $$("[data-fill=img]").forEach(e=>{ e.src = c.img; e.onerror = ()=>{ e.src=(CAT_META[c.category]||{}).img||"images/hero.jpg"; }; });
   $$("[data-fill=tags]").forEach(e=>e.innerHTML = c.tags.map(tg=>`<span class="tag">${tg}</span>`).join(""));
 
   /* highlights (language-aware) */

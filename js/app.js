@@ -91,7 +91,7 @@ function collegeCardHTML(c){
   <div class="card col-card reveal">
     <button class="heart ${isFav(c.id)?'on':''}" data-fav="${c.id}" title="Save"><i class="${isFav(c.id)?'fa-solid':'fa-regular'} fa-heart"></i></button>
     <label class="cmp-check"><input type="checkbox" data-cmp="${c.id}"> ${t("card_compare")}</label>
-    <img class="thumb" src="${c.img}" alt="${c.name}" loading="lazy" onerror="this.src='images/hero.jpg'">
+    <img class="thumb" src="${c.img}" alt="${c.name}" loading="lazy" onerror="this.onerror=null;var m=(COLLEGES.find(x=>x.name===this.alt)||{}).category;this.src=(CAT_META[m]||{}).img||'images/hero.jpg'">
     <div class="body">
       <div class="badges">
         <span class="badge city"><i class="fa-solid fa-location-dot"></i> ${cityName(c.city)}</span>
