@@ -19,6 +19,7 @@ export const api = {
   reviews: (slug) => call('/api/colleges/' + slug + '/reviews'),
   addReview: (slug, body) => call('/api/colleges/' + slug + '/reviews', { method: 'POST', body: JSON.stringify(body) }),
   districts: () => call('/api/stats/districts'),
+  aishe: () => call('/api/stats/aishe'),
   favs: () => call('/api/favs'),
   toggleFav: (slug) => call('/api/favs/' + slug, { method: 'POST' })
 };

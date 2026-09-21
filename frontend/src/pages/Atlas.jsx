@@ -7,12 +7,41 @@ import { CITY_TA } from '../i18n.js';
 export default function Atlas() {
   const { lang, t } = useLang();
   const [rows, setRows] = useState([]);
-  useEffect(() => { api.districts().then(setRows).catch(() => {}); }, []);
+  const [aishe, setAishe] = useState(null);
+  useEffect(() => {
+    api.districts().then(setRows).catch(() => {});
+    api.aishe().then(setAishe).catch(() => {});
+  }, []);
   const sorted = [...rows].sort((a, b) => b.total - a.total);
   const total = rows.reduce((s, d) => s + d.total, 0);
 
   return (
     <div className="wrap">
+      {aishe && (
+        <div className="aishe">
+          <div className="aishe-head">
+            <div>
+              <h2><i className="fa-solid fa-india"></i> {t('aishe_t')}</h2>
+              <p>{t('aishe_sub')}</p>
+            </div>
+            <div className="atlas-total"><b>{aishe.total.toLocaleString('en-IN')}</b><span>{t('aishe_total')}</span></div>
+          </div>
+          <div className="aishe-bars">
+            {aishe.cats.map(a => (
+              <div key={a.id || a.cat} className="aishe-row">
+                <div className="aishe-label">
+                  <i className={a.icon} style={{ color: a.color }}></i>
+                  <span>{lang === 'ta' ? (a.catTa || a.cat) : a.cat}</span>
+                </div>
+                <div className="aishe-track">
+                  <span style={{ width: (a.collegeCount / aishe.total) * 100 + '%', background: a.color }}></span>
+                </div>
+                <b className="aishe-num">{a.collegeCount.toLocaleString('en-IN')}</b>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="atlas-head">
         <div>
           <h2><i className="fa-solid fa-map"></i> {t('atlas')}</h2>

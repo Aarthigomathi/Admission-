@@ -29,6 +29,12 @@ export default function College() {
 
   if (!c) return <div className="wrap"><p>…</p></div>;
 
+  const depts = (c.departments || '').split('|').filter(Boolean);
+  const events = (c.events || '').split('|').filter(Boolean);
+  const officialHref = c.official
+    ? c.official
+    : `https://www.google.com/search?q=${encodeURIComponent(c.name + ' ' + c.city + ' official website')}`;
+
   return (
     <div>
       <div className="c-hero" style={{ backgroundImage: `linear-gradient(180deg, rgba(13,27,63,.25), rgba(10,20,46,.92)), url('/${c.img}')` }}>
@@ -43,13 +49,40 @@ export default function College() {
             <div><b>{lang === 'ta' ? (CITY_TA[c.city] || c.city) : c.city}</b><span>{t('location_l')}</span></div>
           </div>
           <div className="hero-btns">
-            {c.official && <a className="btn gold" href={c.official} target="_blank" rel="noreferrer"><i className="fa-solid fa-arrow-up-right-from-square"></i> {t('official')}</a>}
+            <a className="btn gold" href={officialHref} target="_blank" rel="noreferrer">
+              <i className="fa-solid fa-arrow-up-right-from-square"></i> {c.official ? t('official') : t('find_official')}
+            </a>
             <a className="btn ghost" target="_blank" rel="noreferrer"
                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.mapUrl)}`}>
               <i className="fa-solid fa-map-location-dot"></i> {t('directions')}</a>
           </div>
         </div>
       </div>
+
+      {(depts.length > 0 || events.length > 0) && (
+        <div className="wrap">
+          <div className="two-col">
+            {depts.length > 0 && (
+              <section>
+                <h2><i className="fa-solid fa-building-columns"></i> {t('depts')}</h2>
+                <div className="chips">
+                  {depts.map((d, i) => <span key={i} className="chip">{d}</span>)}
+                </div>
+              </section>
+            )}
+            {events.length > 0 && (
+              <section>
+                <h2><i className="fa-solid fa-calendar-days"></i> {t('events')}</h2>
+                <ul className="evlist">
+                  {events.map((ev, i) => (
+                    <li key={i}><i className="fa-solid fa-star gold-ic"></i> {ev}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="wrap two-col">
         <section>

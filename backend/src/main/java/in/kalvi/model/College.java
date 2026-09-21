@@ -41,4 +41,10 @@ public class College {
 
     @Column(length = 500)
     public String oneLinerTa;
+
+    @Column(length = 1200)
+    public String departments;   /* '|' separated department names */
+
+    @Column(length = 600)
+    public String events;        /* '|' separated annual events */
 }

@@ -552,6 +552,19 @@ const DISTRICT_STATS = {
 COLLEGES.push({id:"gac-tirupathur", name:"Govt. Arts & Science College, Tirupathur", city:"Tirupathur", category:"Arts & Science", founded:1979, rating:4.1, reviewsCount:150, seats:"1,200+", fee:"₹4,000 – ₹15,000 / year", img:"images/college-yellow.jpg", map:"Government Arts and Science College, Tirupathur", tags:["BA","BSc","BCom"], oneLiner:"Tirupathur hills' government college.", ta:"திருப்பத்தூர் மலைப்பகுதியின் அரசு கல்லூரி."});
 DISTRICT_STATS["Tirupathur"] = [45,11,21,2,5];
 
+/* ---------- AISHE 2023–24 — Tamil Nadu official higher-education count ---------- */
+const AISHE_STATS = {
+  year: "2023–24",
+  source: "AISHE — All India Survey on Higher Education (MoE, Govt. of India)",
+  total: 2983,
+  cats: [
+    { cat: "Arts & Science", ta: "கலை & அறிவியல் கல்லூரிகள்", count: 1626, color: "#2e9e4f", ic: "fa-solid fa-book-open" },
+    { cat: "Engineering", ta: "பொறியியல் கல்லூரிகள்", count: 506, color: "#2f6fed", ic: "fa-solid fa-gears" },
+    { cat: "Polytechnic / ITI", ta: "பாலிடெக்னிக் / ஐடிஐ", count: 492, color: "#ef8a17", ic: "fa-solid fa-screwdriver-wrench" },
+    { cat: "Medical · Nursing · Agriculture · Law · Education & others", ta: "மருத்துவம் · செவிலியம் · வேளாண்மை · சட்டம் · கல்வியியல் & மற்றவை", count: 359, color: "#d64550", ic: "fa-solid fa-stethoscope" }
+  ]
+};
+
 /* =====================================================
    STATEWIDE EDUCATION DIRECTORY — all categories
    (Engineering / Arts / Medical / Nursing / Teacher Training /
