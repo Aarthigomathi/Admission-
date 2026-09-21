@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api, imgSrc } from '../api.js';
+import { api, imgSrc, user } from '../api.js';
 import { useLang } from '../App.jsx';
 import { CITY_TA, INST_TA } from '../i18n.js';
 
@@ -10,6 +10,9 @@ export default function Colleges() {
   const [city, setCity] = useState('');
   const [cat, setCat] = useState('');
   const [q, setQ] = useState('');
+  const [favs, setFavs] = useState([]);      /* list of favourite slugs for logged-in user */
+  const [favOnly, setFavOnly] = useState(false);
+  const me = user();
 
   useEffect(() => {
     const params = {};
@@ -19,7 +22,20 @@ export default function Colleges() {
     api.colleges(params).then(setList).catch(() => setList([]));
   }, [city, cat, q]);
 
+  useEffect(() => {
+    if (me) api.favs().then(fs => setFavs(fs.map(f => f.collegeSlug))).catch(() => {});
+  }, []);
+
+  const toggleFav = async (slug) => {
+    if (!me) { alert(t('fav_login')); return; }
+    try {
+      const r = await api.toggleFav(slug);
+      setFavs(f => r.fav ? [...f, slug] : f.filter(s => s !== slug));
+    } catch (ex) { alert(ex.message); }
+  };
+
   const cats = ['Engineering', 'Arts & Science', 'Medical', 'Nursing', 'Teacher Training', 'Polytechnic / ITI', 'Law', 'Agriculture'];
+  const shown = favOnly ? list.filter(c => favs.includes(c.slug)) : list;
 
   return (
     <div className="wrap">
@@ -34,14 +50,21 @@ export default function Colleges() {
           <option value="">{t('all_cats')}</option>
           {cats.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
+        <button className={`fav-chip ${favOnly ? 'on' : ''}`} onClick={() => setFavOnly(v => !v)} title={t('fav_t')}>
+          <i className="fa-solid fa-heart"></i> {t('fav_t')} ({favs.length})
+        </button>
       </div>
-      <p className="count">{list.length} {t('found')}</p>
+      <p className="count">{shown.length} {t('found')}</p>
       <div className="cards">
-        {list.map(c => (
+        {shown.map(c => (
           <div key={c.id} className="card">
             <Link to={`/college/${c.slug}`}>
               <img src={imgSrc(c.img)} alt={c.name} loading="lazy" onError={e => { e.target.src = '/images/hero.jpg'; }} />
             </Link>
+            <button className={`fav-btn ${favs.includes(c.slug) ? 'on' : ''}`} title={t('fav_t')}
+                    onClick={() => toggleFav(c.slug)}>
+              <i className={`${favs.includes(c.slug) ? 'fa-solid' : 'fa-regular'} fa-heart`}></i>
+            </button>
             <div className="card-body">
               <span className="cat">{c.category}</span>
               {c.instType && <span className="cat teal sm-b">{lang === 'ta' ? (INST_TA[c.instType] || c.instType) : c.instType}</span>}

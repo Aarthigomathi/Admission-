@@ -12,13 +12,23 @@ export default function College() {
   const [revs, setRevs] = useState([]);
   const [stars, setStars] = useState(5);
   const [text, setText] = useState('');
+  const [fav, setFav] = useState(false);
   const me = user();
   const rootRef = useReveal([c]);
 
   useEffect(() => {
     api.college(slug).then(setC).catch(() => {});
     api.reviews(slug).then(setRevs).catch(() => {});
+    if (user()) api.favs().then(fs => setFav(fs.some(f => f.collegeSlug === slug))).catch(() => {});
   }, [slug]);
+
+  const toggleFav = async () => {
+    if (!me) { alert(t('fav_login')); return; }
+    try {
+      const r = await api.toggleFav(slug);
+      setFav(r.fav);
+    } catch (ex) { alert(ex.message); }
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -51,10 +61,6 @@ export default function College() {
   };
   const facImg = (key) => imgSrc((FAC_OVERRIDES[c.slug] || {})[key] || FAC_IMG[key]);
 
-  /* official YouTube video embed (watch/short links only) */
-  const yt = c.youtube || '';
-  const ytId = (yt.match(/[?&]v=([\w-]{6,})/) || yt.match(/youtu\.be\/([\w-]{6,})/) || [])[1];
-
   const igHandle = (c.instagram || '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '');
 
   return (
@@ -72,6 +78,9 @@ export default function College() {
             <div><b>{lang === 'ta' ? (CITY_TA[c.city] || c.city) : c.city}</b><span>{t('location_l')}</span></div>
           </div>
           <div className="hero-btns">
+            <button className={`btn fav ${fav ? 'on' : ''}`} onClick={toggleFav} title={t('fav_t')}>
+              <i className={`${fav ? 'fa-solid' : 'fa-regular'} fa-heart`}></i> {t('fav_t')}
+            </button>
             <a className="btn gold" href={officialHref} target="_blank" rel="noreferrer">
               <i className="fa-solid fa-arrow-up-right-from-square"></i> {c.official ? t('official') : t('find_official')}
             </a>
@@ -151,17 +160,6 @@ export default function College() {
               </div>
             </section>
           )}
-        </div>
-      )}
-
-      {ytId && (
-        <div className="wrap">
-          <section className="video rv rv-u">
-            <h2><i className="fa-brands fa-youtube"></i> {t('video_t')}</h2>
-            <div className="vid-frame">
-              <iframe title={c.name + ' official video'} src={`https://www.youtube-nocookie.com/embed/${ytId}`} allow="accelerometer; encrypted-media; picture-in-picture" allowFullScreen loading="lazy"></iframe>
-            </div>
-          </section>
         </div>
       )}
 
