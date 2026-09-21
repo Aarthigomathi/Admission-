@@ -875,28 +875,42 @@ WIKI_ROWS.forEach(r=>{
    websites (Sep 2026). Never invented: blank = not yet verified. ---------- */
 const COLLEGE_INFO = {
   "vit": {
-    placements: "14,044 overall offers — 3,499 Dream + 3,003 Super Dream offers; Highest CTC ₹1 Crore; 868 companies visited campus; TCS national record with 4,004 offers; Limca Book of Records for the 12th time for unbeatable placement records. (Source: vit.ac.in)"
+    placements: "14,044 overall offers — 3,499 Dream + 3,003 Super Dream offers; Highest CTC ₹1 Crore; 868 companies visited campus; TCS national record with 4,004 offers; Limca Book of Records for the 12th time for unbeatable placement records. (Source: vit.ac.in)",
+    achievements: "Limca Book of Records 12 times for placement records|NAAC A++ Grade|QS & Shanghai world rankings listed|500+ foreign university partnerships (Source: vit.ac.in)"
   },
   "tce": {
     placements: "Highest package ₹28 LPA and average ₹7.25 LPA (2024–25). 100+ recruiters including 25+ core engineering companies and 20+ super dream companies. 345 internships at KLA Tencor, HPE Aruba, Caterpillar, Texas Instruments; highest internship stipend ₹1 lakh/month. (Source: tce.edu)",
     hostel: "On-campus hostel for students — see Campus Life → Hostel on tce.edu.",
     library: "Central library with digital resources — see Academics → Library on tce.edu.",
-    sports: "Dedicated sports facilities and inter-college teams — see Campus Life → Sports on tce.edu."
+    sports: "Dedicated sports facilities and inter-college teams — see Campus Life → Sports on tce.edu.",
+    achievements: "NAAC A++ (CGPA 3.56/4.0)|NIRF 2025: Engineering 101–150 band, Architecture #33|589 PhDs awarded, 97 patents|TBI incubated 12 startups; ₹99.58 lakh consultancy revenue (Source: tce.edu)"
   },
   "sastra-deemed-to-be-university": {
     placements: "Active placement & training cell across 12 schools; 15,000+ students, 975+ faculty, 190+ patents, 175+ incubated startups. Industry skill centres with Bajaj (BEST) and MHI. (Source: sastra.edu)",
     sports: "NCC (Army) unit — girl cadets won Bronze at National-level Thal Sainik Camp, Delhi; strong NSS wing with regular community campaigns. (Source: sastra.edu)",
-    hostel: "Residential campus culture with 3 campuses; plastic-free, drug-free campus initiatives. (Source: sastra.edu)"
+    hostel: "Residential campus culture with 3 campuses; plastic-free, drug-free campus initiatives. (Source: sastra.edu)",
+    achievements: "190+ patents & 175+ incubated startups|13,491+ research publications|12 schools, 79 programmes, 23 research centres|NCC girl cadets — Bronze at National Thal Sainik Camp (Source: sastra.edu)"
   },
   "psg-tech": {
     placements: "Average ₹6.5 LPA, highest around ₹52 LPA; ~90% placement. Recruiters include Microsoft, Amazon, Bosch, Deloitte, TCS, Zoho. (Source: psgtech.edu)",
     hostel: "On-campus hostels for boys & girls on the 45-acre Peelamedu campus. (Source: psgtech.edu)",
     library: "1,00,000+ volume library with digital access on campus. (Source: psgtech.edu)",
-    sports: "33,500 sq.m outdoor sports area with annual sports meet. (Source: psgtech.edu)"
+    sports: "33,500 sq.m outdoor sports area with annual sports meet. (Source: psgtech.edu)",
+    achievements: "NIRF #67 in Engineering|NAAC 'A' Grade + NBA accreditations|ISO 9001:2015 certified|75 years of excellence since 1951 (Source: psgtech.edu)"
   },
   "sri-sivasubramaniya-nadar-college-of-engineering-ssn": {
     placements: "Dedicated placement cell for B.E./B.Tech, M.E./M.Tech and Ph.D programmes; scholarships worth crores offered. Note: from 2025 admissions, SSN programmes continue at SSN School of Engineering, Shiv Nadar University Chennai. (Source: ssn.edu.in)",
-    sports: "Sports annexes with dedicated sports infrastructure — see Sports page on ssn.edu.in."
+    sports: "Sports annexes with dedicated sports infrastructure — see Sports page on ssn.edu.in.",
+    achievements: "Among India's top-ranked private engineering institutions|Scholarships worth crores awarded to students (Source: ssn.edu.in)"
+  },
+  "anna-university": {
+    achievements: "CEG campus (1794) — India's oldest engineering institution|NAAC A++ Grade|500+ affiliated colleges across Tamil Nadu|Kurukshetra — South India's biggest tech fest"
+  },
+  "iit-madras": {
+    achievements: "NIRF #1 Engineering — multiple consecutive years|India's first 5G testbed & Research Park|620-acre campus with deer and blackbucks|Shaastra & Saarang — Asia's biggest student fests"
+  },
+  "nitt": {
+    achievements: "India's #1 NIT (NIRF)|800-acre residential campus|Strong PSU & IT placement record"
   }
 };
 
@@ -962,7 +976,21 @@ const REAL_IMG = {
   "st-josephs-trichy":"https://upload.wikimedia.org/wikipedia/commons/e/e2/St._Joseph%27s_College%2C_Tiruchirappalli%2C_Tamil_Nadu_%2C_India_%282011%29.jpg",
   "xaviers-tvl":"https://upload.wikimedia.org/wikipedia/commons/b/bf/St._Xavier%27s_College%2C_Palayankottai%2C_Tamil_Nadu%2C_India.jpg",
   "tamil-nadu-agricultural-university":"https://upload.wikimedia.org/wikipedia/commons/c/c0/Tnau_CBE.jpg",
-  "sri-sivasubramaniya-nadar-college-of-engineering-ssn":"https://upload.wikimedia.org/wikipedia/commons/b/be/Sri_Sivasubramaniya_Nadar_College_of_Engineering.svg"
+  "sri-sivasubramaniya-nadar-college-of-engineering-ssn":"https://upload.wikimedia.org/wikipedia/commons/b/be/Sri_Sivasubramaniya_Nadar_College_of_Engineering.svg",
+  "chengalpattu-medical-college":"https://upload.wikimedia.org/wikipedia/commons/f/f2/ChMC_Logo1.jpg",
+  "cmc-coimbatore":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Coimbatore_Medical_College_Hospital_India_201.jpg/960px-Coimbatore_Medical_College_Hospital_India_201.jpg",
+  "government-pudukkottai-medical-college":"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Mch-pdk.jpg/960px-Mch-pdk.jpg",
+  "government-sivagangai-medical-college":"https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Government_medical_college%2C_Sivaganga.jpg/960px-Government_medical_college%2C_Sivaganga.jpg",
+  "k-a-p-viswanatham-government-medical-college":"https://upload.wikimedia.org/wikipedia/commons/e/e0/KAPVGMC_Entrance.jpg",
+  "kanyakumari-government-medical-college":"https://upload.wikimedia.org/wikipedia/commons/e/e3/KGMC-kanyakumari_govt_medical_college.jpg",
+  "kilpauk-medical-college":"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Kilpauk_Medical_College.jpg/960px-Kilpauk_Medical_College.jpg",
+  "tanjore-medical":"https://upload.wikimedia.org/wikipedia/commons/7/73/Thanjavur_Medical_College.png",
+  "government-tirunelveli-medical-college":"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Tirunelveli_Medical_College2.JPG/960px-Tirunelveli_Medical_College2.JPG",
+  "cutn":"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Cutn_image_17.JPG/960px-Cutn_image_17.JPG",
+  "gandhigram":"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/A.P.J._Abdul_Kalam_presenting_a_citation_to_Padma_Vibhushan_Shri_Adoor_Gopalakrishnan%2C_an_alumnus_of_the_Gandhigram_Rural_Institute_at_a_function_held_at_Gandhigram_Rural_University_in_Tamil_Nadu_on_September_23%2C_2006.jpg/960px-thumbnail.jpg",
+  "lady-doak-college":"https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/Ladydoak_college%2C_Madurai.jpg/960px-Ladydoak_college%2C_Madurai.jpg",
+  "manonmaniam-sundaranar-university":"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Manonmanium_Sundarnar_university.jpg/960px-Manonmanium_Sundarnar_university.jpg",
+  "tamil-university":"https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Tamil_university_administrative_building.jpg/960px-Tamil_university_administrative_building.jpg"
 };
 for(const [k,v] of Object.entries(REAL_IMG)){
   const c = COLLEGES.find(x=>x.id===k);

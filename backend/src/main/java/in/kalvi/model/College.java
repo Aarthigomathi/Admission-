@@ -69,4 +69,10 @@ public class College {
 
     @Column(name = "inst_type", length = 40)
     public String instType;      /* Autonomous / Government / University / Deemed / Affiliated */
+
+    @Column(length = 900)
+    public String achievements;  /* '|' separated verified achievements */
+
+    @Column(length = 1400)
+    public String gallery;       /* '|' separated image paths/urls */
 }

@@ -175,3 +175,19 @@ section h2 i{color:var(--gold)}
 .ig-link:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 10px 24px rgba(220,39,67,.45)}
 .yt-link{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:99px;background:#ff0000;color:#fff;font-weight:800;text-decoration:none;transition:transform .25s ease,box-shadow .25s ease}
 .yt-link:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 10px 24px rgba(255,0,0,.45)}
+
+/* ============ gallery + achievements + extra hovers ============ */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px}
+.gal img{width:100%;height:140px;object-fit:cover;border-radius:12px;border:2px solid #eee4cf;transition:transform .5s ease,box-shadow .5s ease,border-color .5s ease;cursor:zoom-in}
+.gal img:hover{transform:scale(1.06) rotate(.4deg);box-shadow:0 14px 30px rgba(14,27,58,.2);border-color:#d4a017;z-index:2}
+.ach li{background:#f2fbf5;border-color:#bfe8cf}
+.facts div{transition:transform .3s ease}
+.facts div:hover{transform:translateY(-4px)}
+.fee-box{transition:transform .3s ease,box-shadow .3s ease}
+.fee-box:hover{transform:translateY(-4px);box-shadow:0 12px 26px rgba(14,27,58,.12)}
+.map{transition:transform .3s ease}
+.map:hover{transform:scale(1.015)}
+.aishe-row{transition:transform .25s ease}
+.aishe-row:hover{transform:translateX(6px)}
+.legend span{transition:transform .25s ease}
+.legend span:hover{transform:translateY(-2px) scale(1.05)}

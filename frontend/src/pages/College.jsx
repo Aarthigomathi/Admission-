@@ -131,6 +131,26 @@ export default function College() {
               </div>
             </section>
           )}
+          {c.achievements && (
+            <section className="fac rv rv-u">
+              <h2><i className="fa-solid fa-trophy"></i> {t('ach_t')}</h2>
+              <ul className="evlist ach">
+                {c.achievements.split('|').filter(Boolean).map((a, i) => (
+                  <li key={i} className={`rv ${i % 2 === 0 ? 'rv-l' : 'rv-r'}`}><i className="fa-solid fa-medal gold-ic"></i> {a}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {(c.gallery || '').split('|').filter(Boolean).length > 0 && (
+            <section className="fac rv rv-u">
+              <h2><i className="fa-solid fa-images"></i> {t('photos_t')}</h2>
+              <div className="gal">
+                {(c.gallery || '').split('|').filter(Boolean).map((g, i) => (
+                  <img key={i} src={imgSrc(g)} alt={c.name} loading="lazy" onError={e => { e.target.style.display = 'none'; }} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
 
