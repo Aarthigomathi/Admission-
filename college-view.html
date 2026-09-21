@@ -6,34 +6,35 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anna University — KalviPortal</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🟥</text></svg>">
+  <title>Campus Profile — KalviPortal</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Baloo+Thambi+2:wght@500;600;700;800&family=Manrope:wght@500;600;700;800&family=Mukta+Malar:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/style.css?v=17">
 </head>
-<body class="theme-red" data-college="anna-university" data-nav="colleges">
+<body data-college="" data-nav="colleges">
 
-  <!-- 🟥 UNIQUE UI #1 : SPLIT HERO (red theme) -->
+  <!-- SPLIT HERO -->
   <div class="hero hero-split">
     <div class="wrap">
       <div>
         <span class="badge feat"><span data-i18n="featured_campus"></span></span>
-        <h1 class="big-title"><span data-fill="name">Anna University</span></h1>
+        <h1 class="big-title"><span data-fill="name"></span></h1>
         <p class="sub" style="font-size:1rem" data-fill="oneliner"></p>
         <div class="fact-strip">
-          <div class="fact"><b data-fill="founded">1978</b><span data-i18n="established"></span></div>
-          <div class="fact"><b data-fill="rating">4.8</b><span data-i18n="rating_l"></span></div>
-          <div class="fact"><b data-fill="seats">13,000+</b><span data-i18n="seats_l"></span></div>
-          <div class="fact"><b data-fill="city">Chennai</b><span data-i18n="location_l"></span></div>
+          <div class="fact"><b data-fill="founded"></b><span data-i18n="established"></span></div>
+          <div class="fact"><b data-fill="rating"></b><span data-i18n="rating_l"></span></div>
+          <div class="fact"><b data-fill="seats"></b><span data-i18n="seats_l"></span></div>
+          <div class="fact"><b data-fill="city"></b><span data-i18n="location_l"></span></div>
         </div>
         <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
           <button class="btn" data-favbtn></button>
-          <a class="btn ghost" data-fill="maplink" target="_blank" data-i18n="open_maps"></a>
+          <a class="btn ghost" data-fill="maplink" target="_blank"><i class="fa-solid fa-map-location-dot"></i> <span data-i18n="open_maps"></span></a>
+          <a class="btn gold" data-fill="official" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="official_btn"></span></a>
         </div>
       </div>
-      <div><img data-fill="img" alt="Anna University campus"></div>
+      <div><img data-fill="img" alt="Campus"></div>
     </div>
   </div>
 
@@ -42,7 +43,7 @@
     <div class="grid c2" style="align-items:start">
       <div class="reveal">
         <span class="kicker"><span class="dot bg-red"></span> <span data-i18n="about_kicker"></span></span>
-        <h2 style="font-size:1.8rem" data-i18n="about_h_anna"></h2>
+        <h2 style="font-size:1.8rem" data-i18n="about_h_gen"></h2>
         <div class="color-strip"></div>
         <p class="sub" style="margin-top:13px" data-fill="about"></p>
         <div class="tags" style="margin-top:15px" data-fill="tags"></div>
@@ -121,11 +122,23 @@
         <div>
           <span class="kicker"><span class="dot bg-orange"></span> <span data-i18n="map_kicker"></span></span>
           <h2 data-i18n="map_t"></h2>
-          <p class="sub" data-fill="mapsub" data-mapsub-key="map_sub_anna"></p>
+          <p class="sub" data-fill="mapsub" data-mapsub-key="map_sub_gen"></p>
         </div>
         <a class="btn sm" data-fill="maplink" target="_blank" data-i18n="open_maps2"></a>
       </div>
       <div class="map-frame" data-fill="mapframe"></div>
+    </div>
+  </section>
+
+  <!-- OFFICIAL LINK -->
+  <section class="psg-official">
+    <div class="wrap psg-official-in">
+      <div>
+        <span class="psg-off-kicker"><i class="fa-solid fa-link"></i> <span data-i18n="official_kicker"></span></span>
+        <h3 data-i18n="official_t"></h3>
+        <p data-i18n="official_note"></p>
+      </div>
+      <a class="btn gold big" data-fill="official" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="official_btn"></span></a>
     </div>
   </section>
 

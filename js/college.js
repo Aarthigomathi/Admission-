@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   renderFooter();
   applyI18n();
 
-  const id = document.body.dataset.college;
+  const id = new URLSearchParams(location.search).get("id") || document.body.dataset.college;
   const c = COLLEGES.find(x=>x.id===id);
   const det = COLLEGE_DETAILS[id] || {};
   const evs = COLLEGE_EVENTS[id] || [];
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     pp.innerHTML = det.departments.map(d=>`<span class="pill"><i class="${d.ic}"></i> ${TA && d.nameTa ? d.nameTa : d.name}</span>`).join("");
   }
 
-  /* events */
+  /* events (hide section when none) */
   const ev = $("[data-fill=events]");
   if(ev){
     ev.innerHTML = evs.map(e=>`
@@ -63,6 +63,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
         <div class="event-date"><b>${e.d}</b><span>${TA && e.mTa ? e.mTa : e.m}</span></div>
         <div><h4>${TA && e.titleTa ? e.titleTa : e.title}</h4><p>${TA && e.descTa ? e.descTa : e.desc}</p></div>
       </div>`).join("");
+    if(!evs.length){ const sec = ev.closest("section"); if(sec) sec.style.display = "none"; }
   }
 
   /* gallery (strings OR {src,cap,capTa} objects) */
@@ -77,10 +78,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
   }
 
   /* official website link (footer of featured campus pages) */
+  const offUrl = c.official || det.official;
   $$( "[data-fill=official]" ).forEach(a=>{
-    const url = c.official || det.official;
-    if(url){ a.href = url; } else { a.style.display = "none"; }
+    if(offUrl){ a.href = offUrl; } else { a.style.display = "none"; }
   });
+  if(!offUrl){ $$(".psg-official").forEach(s=>s.style.display="none"); }
+
+  /* page title */
+  document.title = c.name + " — KalviPortal";
 
   /* map */
   const mf = $("[data-fill=mapframe]");

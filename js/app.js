@@ -103,8 +103,9 @@ function collegeCardHTML(c){
       <div class="tags">${c.tags.slice(0,3).map(tg=>`<span class="tag">${tg}</span>`).join("")}</div>
       <div class="rating-line"><span class="stars">${starHTML(Math.round(c.rating))}</span> ${c.rating} <small>(${c.reviewsCount} ${t("reviews_word")})</small></div>
       <div class="card-actions">
-        ${c.featured ? `<a class="btn sm" href="${c.page}">${t("card_campus")}</a>` : ''}
+        <a class="btn sm" href="${c.page || ('college-view.html?id='+c.id)}"><i class="fa-solid fa-building-columns"></i> ${t("card_campus")}</a>
         <button class="btn sm ghost" data-view="${c.id}"><i class="fa-regular fa-eye"></i> ${t("card_quick")}</button>
+        ${c.official ? `<a class="btn sm ghost" href="${c.official}" target="_blank" title="${t("card_official")}"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>` : ''}
       </div>
     </div>
   </div>`;
