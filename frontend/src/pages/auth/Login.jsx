@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Mail, Lock, ArrowRight, Building2, GraduationCap, Shield } from 'lucide-react'
-import { getAllCollegesMerged, getCollegeById } from '../../lib/collegeStorage'
+import { getPublicColleges, getRegisteredColleges } from '../../lib/collegeStorage'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -14,16 +14,27 @@ export default function Login() {
     
     if (role === 'STUDENT') {
       const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
-      const student = students.find(s => s.email === email) || { id: 1, email, fullName: 'Demo Student', district: 'Coimbatore', educationLevel: '12th', interestedCourse: 'B.E Computer Science', role: 'STUDENT' }
+      const student = students.find(s => s.email === email) || { id: 1, email, fullName: 'Demo Student', district: 'Coimbatore', educationLevel: '12th', interestedCourse: 'B.E Computer Science', role: 'STUDENT', percentage: '85', city: 'Coimbatore', preferredDistrict: 'Coimbatore', groupStream: 'Computer Science' }
       localStorage.setItem('tn_current_student', JSON.stringify(student))
       navigate('/student/dashboard')
     } else if (role === 'COLLEGE') {
-      const allColleges = getAllCollegesMerged()
-      // Find by email if exists, otherwise use selected or first custom or first static
-      const found = allColleges.find(c => c.email === email) || allColleges.find(c => c.id > 1000) || allColleges[0]
-      const college = found ? { ...found, email: found.email || email } : { id: 101, email, name: 'Your College - Own Website (Not PSG)', slug: 'your-college', role: 'COLLEGE_ADMIN', verificationStatus: 'PENDING' }
+      // Only colleges that signed up themselves - no default PSG - automatic default college name kattama
+      const publicColleges = getPublicColleges()
+      const registered = getRegisteredColleges()
+      let college = null
+      if (email) {
+        college = publicColleges.find(c => c.email === email) || registered.find(c => c.email === email)
+      }
+      if (!college && publicColleges.length>0) {
+        college = publicColleges[0]
+      }
+      if (!college) {
+        alert('No colleges registered yet! Please first sign up your college via College Sign Up - Add your college A-Z yourself. No default colleges - automatic default college name kattama.')
+        navigate('/college/signup')
+        return
+      }
       localStorage.setItem('tn_current_college', JSON.stringify(college))
-      alert(`Login as College Admin: ${college.name} - ID ${college.id} - ${college.district} - Status ${college.verificationStatus} - This is YOUR OWN college (Not PSG) - You add A to Z yourself: logo, campus images, environment, placement, facilities, exam details, departments with HOD, etc. UI frame ours, content yours.`)
+      alert(`Login as College Admin: ${college.name} - ID ${college.id} - ${college.district} - Status ${college.verificationStatus} - Your own college - Add A-Z yourself: logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses, etc.`)
       navigate('/admin')
     } else {
       localStorage.setItem('tn_platform_admin', JSON.stringify({ email, role: 'PLATFORM_ADMIN' }))

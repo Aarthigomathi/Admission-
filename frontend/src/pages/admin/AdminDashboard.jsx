@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { colleges as staticColleges } from '../../lib/colleges'
-import { getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, getProfileCompletion, getAllCollegesMerged } from '../../lib/collegeStorage'
+import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, getProfileCompletion } from '../../lib/collegeStorage'
 import CollegeAnalytics from '../../components/admin/CollegeAnalytics'
 import { 
   LayoutDashboard, Palette, Building2, GraduationCap, Users, Megaphone, Calendar, Image as ImageIcon,
@@ -188,21 +187,32 @@ export default function AdminDashboard() {
   }
 
   if (!isLoggedIn) {
-    const allColleges = getAllCollegesMerged()
+    const allColleges = getPublicColleges()
     return (
       <div className="min-h-screen bg-[#E8E2DB] grid place-items-center p-6">
         <div className="w-full max-w-[560px] rounded-[28px] bg-white border-2 border-[#E8E2DB] shadow-[0_16px_48px_rgba(0,0,0,0.08)] p-8">
           <div className="h-12 w-12 rounded-[14px] bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] grid place-items-center font-bold text-[20px] mx-auto">C</div>
-          <h1 className="font-display text-[24px] font-bold text-center mt-6 text-[#1A3263]">College Admin Login - Your Own College (Not PSG)</h1>
-          <p className="text-[12px] text-[#547792] text-center mt-2">After signup, you login and add your college A to Z yourself - logo, campus images, environment, placement, facilities, exam details, departments with HOD, etc. UI frame ours, content yours.</p>
+          <h1 className="font-display text-[24px] font-bold text-center mt-6 text-[#1A3263]">College Admin Login - Your Own College</h1>
+          <p className="text-[12px] text-[#547792] text-center mt-2">No default colleges - Only colleges that signed up via College Sign Up. After signup, you login and add your college A to Z yourself - logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses, etc.</p>
           
+          {allColleges.length===0 ? (
+            <div className="mt-8 rounded-[20px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-8 text-center">
+              <div className="text-3xl">🏛️</div>
+              <div className="font-bold text-[#1A3263] mt-4">No Colleges Registered Yet - No Default</div>
+              <div className="text-[12px] text-[#1A3263]/80 mt-2">Automatic default college name kattama - Platform la default PSG illa. First college signup pannanum.</div>
+              <div className="mt-6 flex gap-2 justify-center">
+                <Link to="/college/signup" className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] inline-flex items-center justify-center">College Sign Up - Add A-Z Yourself</Link>
+                <Link to="/" className="h-11 px-6 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px] inline-flex items-center justify-center">Home</Link>
+              </div>
+            </div>
+          ) : (
           <div className="mt-8 space-y-4">
             <div>
-              <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Select Your College (Your Own - Not PSG) - Real</label>
+              <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Select Your College - Only Registered - No Default</label>
               <select value={selectedCollegeId || ''} onChange={e=>setSelectedCollegeId(e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] font-medium">
-                <option value="">Select your college</option>
+                <option value="">Select your college - Only registered colleges</option>
                 {allColleges.map(c=>(
-                  <option key={c.id} value={c.id}>{c.name} - ID {c.id} - {c.district} - {c.verificationStatus || 'VERIFIED'}</option>
+                  <option key={c.id} value={c.id}>{c.name} - ID {c.id} - {c.district} - {c.verificationStatus || 'PENDING'} - Added by college itself</option>
                 ))}
               </select>
             </div>
@@ -219,8 +229,9 @@ export default function AdminDashboard() {
               setCustomData(getCollegeCustomData(college.id))
               setIsLoggedIn(true)
             }} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] font-bold text-[14px]">Login to Your College Admin - Add A to Z Yourself</button>
-            <div className="text-[11px] text-[#547792] text-center leading-[1.5]">If you just signed up, your college will be in list with ID like {Date.now()} and status PENDING. Select it and login - you will see empty website where you add everything yourself - logo, images, departments, courses, facilities, placements, exams, etc. Not PSG - Your own college!</div>
+            <div className="text-[11px] text-[#547792] text-center leading-[1.5]">If you just signed up, your college will be in list with ID {Date.now()} and status PENDING. Select it and login - you will see empty website where you add everything yourself - logo, images, departments, courses, facilities, placements, exams, etc. Your own college - no default!</div>
           </div>
+          )}
 
           <div className="mt-8 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4">
             <div className="text-[12px] font-bold text-[#1A3263]">After Login - You Add A to Z Yourself:</div>
@@ -297,7 +308,7 @@ export default function AdminDashboard() {
             )}
             <div className="min-w-0 flex-1">
               <div className="font-semibold text-[12px] truncate leading-tight">{college.name}</div>
-              <div className="text-[11px] text-[#FAB95B] flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> {college.verificationStatus} • {profileCompletion}% Complete • Your Own (Not PSG)</div>
+              <div className="text-[11px] text-[#FAB95B] flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> {college.verificationStatus} • {profileCompletion}% Complete • Your College - Official</div>
             </div>
           </div>
         </div>
@@ -322,14 +333,14 @@ export default function AdminDashboard() {
             <Eye size={14} /> Preview Your Website <ExternalLink size={12} />
           </Link>
           <button onClick={()=>{localStorage.removeItem('tn_current_college'); setIsLoggedIn(false)}} className="w-full h-9 rounded-full bg-white/10 border border-white/20 text-[11px] font-medium">Logout - Your College Secure</button>
-          <div className="text-[10px] text-white/40 text-center">College ID: {college.id} • Your Own (Not PSG) • A to Z You Add • UI Frame Ours • #E8E2DB #FAB95B #547792 #1A3263</div>
+          <div className="text-[10px] text-white/40 text-center">College ID: {college.id} • Your College - Official • A to Z You Add • UI Frame Ours • #E8E2DB #FAB95B #547792 #1A3263</div>
         </div>
       </aside>
 
       <div className="flex-1 min-w-0">
         <div className="sticky top-0 z-20 h-[72px] bg-white/90 backdrop-blur-xl border-b-2 border-[#FAB95B]/30 px-6 lg:px-8 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <h1 className="font-display text-[16px] font-bold capitalize text-[#1A3263]">{activeSection.replace(/-/g,' ')} - {college.name} - Your Own (Not PSG) - ID {college.id}</h1>
+            <h1 className="font-display text-[16px] font-bold capitalize text-[#1A3263]">{activeSection.replace(/-/g,' ')} - {college.name} - Your College - Official - ID {college.id}</h1>
             <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] border-2 border-[#FAB95B]/30 text-[11px] font-bold uppercase"><CheckCircle2 size={12} /> {profileCompletion}% Complete • Your Own A to Z • UI Frame Ours</span>
           </div>
           <div className="flex items-center gap-2">
@@ -345,13 +356,13 @@ export default function AdminDashboard() {
               <div className="rounded-[24px] bg-[#1A3263] text-white p-8 border-2 border-[#1A3263] relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[#FAB95B]/10 rounded-full blur-[30px]" />
                 <div className="relative">
-                  <h2 className="font-display text-[28px] font-bold text-[#FAB95B]">Welcome to Your College Admin - {college.name} - Your Own Website (Not PSG) - Add A to Z Yourself</h2>
+                  <h2 className="font-display text-[28px] font-bold text-[#FAB95B]">Welcome to Your College Admin - {college.name} - Your Own Website  - Add A to Z Yourself</h2>
                   <p className="text-[13px] text-[#E8E2DB]/80 mt-3 leading-[1.6] max-w-[800px]">Naa college signup panna apram direct ah PSG college varuthu enakku antha mathiri venam - Fixed! Inime college signup panna apram avunga login panna apram avunga colleges information college eh add pantra mathiri environment, placement, college logo, college image, facilities, placements, exam details, oru oru departmentkkum HOD antha mathiri college oda overall A to Z information college eh add pantra mathiri. Namma UI frame mattumtha nammatha irukkanum ennan add pannanumo athala avungaley add pannattum enna section venumoo ellamey - Done! This dashboard is your own college - NOT PSG. You add everything yourself - Logo, Campus Images, Environment, Placement, Facilities, Exam Details, Departments with HOD, Courses, etc. UI Frame Ours (header, sidebar, colors #E8E2DB #FAB95B #547792 #1A3263, layout), Content Yours (all data you add).</p>
                   
                   <div className="mt-8 grid md:grid-cols-4 gap-4">
                     {[
                       { label: "Profile Completion", value: `${profileCompletion}%`, sub: `${(allCustomData.departments||[]).length} Depts, ${(allCustomData.courses||[]).length} Courses - You Added`, color: "bg-white/10 border-white/20" },
-                      { label: "Your College ID", value: college.id, sub: `Your Own - Not PSG - ${college.district}`, color: "bg-[#FAB95B] text-[#1A3263] border-[#FAB95B]" },
+                      { label: "Your College ID", value: college.id, sub: `Your Own - ${college.district}`, color: "bg-[#FAB95B] text-[#1A3263] border-[#FAB95B]" },
                       { label: "Departments You Added", value: (allCustomData.departments||[]).length, sub: "With HOD - You add", color: "bg-white/5 border-white/10" },
                       { label: "Verification", value: college.verificationStatus, sub: "Pending → Verified badge", color: "bg-emerald-500/20 border-emerald-500/30 text-emerald-300" },
                     ].map((s,i)=>(
@@ -367,7 +378,7 @@ export default function AdminDashboard() {
 
               <div className="grid lg:grid-cols-2 gap-6">
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6">
-                  <h3 className="font-bold text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> Your College - Preview - Your Own (Not PSG)</h3>
+                  <h3 className="font-bold text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> Your College - Preview - Your College - Official</h3>
                   <div className="mt-4 flex gap-4">
                     {allCustomData.branding?.logo ? (
                       <img src={allCustomData.branding.logo} className="h-16 w-16 rounded-[12px] object-cover border-2 border-[#FAB95B] bg-white" alt="Your Logo" />
@@ -383,7 +394,7 @@ export default function AdminDashboard() {
                   {allCustomData.branding?.heroImage ? (
                     <img src={allCustomData.branding.heroImage} className="mt-4 h-[160px] w-full rounded-[16px] object-cover border-2 border-[#E8E2DB]" alt="Your Campus" />
                   ) : (
-                    <div className="mt-4 h-[160px] rounded-[16px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[12px] font-bold">Add Your Campus Image - Your College Image - Not PSG</div>
+                    <div className="mt-4 h-[160px] rounded-[16px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[12px] font-bold">Add Your Campus Image - Your College Image - </div>
                   )}
                   <div className="mt-4 flex gap-2">
                     <Link to={`/college/${college.slug}`} className="flex-1 h-9 rounded-full bg-[#1A3263] text-[#FAB95B] text-[12px] font-bold grid place-items-center">Preview Your Website →</Link>
@@ -424,13 +435,13 @@ export default function AdminDashboard() {
           {activeSection==='branding' && (
             <div className="space-y-6">
               <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-                <h3 className="font-display text-[22px] font-bold text-[#1A3263]">College Logo & Branding - Add Your Logo, Campus Image, Tagline, Colors - Your Own (Not PSG) - UI Frame Ours</h3>
+                <h3 className="font-display text-[22px] font-bold text-[#1A3263]">College Logo & Branding - Add Your Logo, Campus Image, Tagline, Colors - Your College - Official - UI Frame Ours</h3>
                 <p className="text-[12px] text-[#547792] mt-2">After signup, your college empty - you add logo, campus images yourself. UI frame ours (header, sidebar, colors palette, layout), content yours (logo, images, etc). Whatever you add appears on your website with our premium design.</p>
                 
                 <div className="mt-8 grid lg:grid-cols-2 gap-8">
                   <div className="space-y-5">
                     <div>
-                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">College Logo - Add Your Logo - Your College Logo (Not PSG)</label>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">College Logo - Add Your Logo - Your College Logo </label>
                       <input value={brandingForm.logo} onChange={e=>setBrandingForm({...brandingForm, logo: e.target.value})} placeholder="Paste logo image URL - e.g. https://yourcollege.edu/logo.png or upload" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
                       <div className="mt-3 rounded-[12px] border-2 border-dashed border-[#1A3263]/20 bg-[#E8E2DB]/30 p-6 text-center">
                         {brandingForm.logo ? (
@@ -438,7 +449,7 @@ export default function AdminDashboard() {
                         ) : (
                           <div className="h-20 w-20 rounded-[12px] bg-white border-2 border-[#E8E2DB] mx-auto grid place-items-center text-[#547792]">Logo</div>
                         )}
-                        <div className="text-[11px] text-[#547792] mt-3">Your college logo - Add your own - Not PSG logo - Will appear on your website header, cards, everywhere</div>
+                        <div className="text-[11px] text-[#547792] mt-3">Your college logo - Add your own -  logo - Will appear on your website header, cards, everywhere</div>
                       </div>
                     </div>
 
@@ -485,7 +496,7 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="rounded-[16px] bg-[#1A3263] text-white p-5">
-                      <div className="font-bold text-[#FAB95B] text-[13px]">Your College Branding Preview - Your Own (Not PSG)</div>
+                      <div className="font-bold text-[#FAB95B] text-[13px]">Your College Branding Preview - Your College - Official</div>
                       <div className="mt-4 flex gap-3 items-center">
                         {brandingForm.logo ? <img src={brandingForm.logo} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" alt="Logo" /> : <div className="h-12 w-12 rounded-[10px] bg-white/10 border border-white/20 grid place-items-center">Logo</div>}
                         <div>
@@ -511,7 +522,7 @@ export default function AdminDashboard() {
           {activeSection==='departments' && (
             <div className="space-y-6">
               <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-                <h3 className="font-display text-[22px] font-bold text-[#1A3263]">Departments with HOD - Add Each Department with HOD - Your Own Departments (Not PSG) - A to Z You Add</h3>
+                <h3 className="font-display text-[22px] font-bold text-[#1A3263]">Departments with HOD - Add Each Department with HOD - Your Own Departments  - A to Z You Add</h3>
                 <p className="text-[12px] text-[#547792] mt-2">Oru oru departmentkkum HOD antha mathiri college oda overall - You add each department yourself with HOD name, faculty count, labs, description, image. UI frame ours, content yours.</p>
 
                 <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
@@ -542,7 +553,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="mt-8">
-                  <h4 className="font-bold text-[#1A3263]">Your Departments - {(allCustomData.departments||[]).length} Departments You Added (Not PSG)</h4>
+                  <h4 className="font-bold text-[#1A3263]">Your Departments - {(allCustomData.departments||[]).length} Departments You Added </h4>
                   {(allCustomData.departments||[]).length===0 ? (
                     <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
                       <div className="text-3xl">🏛️</div>
@@ -572,7 +583,7 @@ export default function AdminDashboard() {
           {activeSection==='courses' && (
             <div className="space-y-6">
               <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-                <h3 className="font-display text-[22px] font-bold text-[#1A3263]">Courses - Add All Courses A to Z - Your Own Courses (Not PSG)</h3>
+                <h3 className="font-display text-[22px] font-bold text-[#1A3263]">Courses - Add All Courses A to Z - Your Own Courses </h3>
                 <p className="text-[12px] text-[#547792] mt-2">Add all your courses yourself - B.E, B.Tech, BCA, MBA, etc with degree, fees, intake, eligibility, duration. UI frame ours, content yours.</p>
 
                 <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
@@ -607,7 +618,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="mt-8">
-                  <h4 className="font-bold text-[#1A3263]">Your Courses - {(allCustomData.courses||[]).length} Courses You Added (Not PSG)</h4>
+                  <h4 className="font-bold text-[#1A3263]">Your Courses - {(allCustomData.courses||[]).length} Courses You Added </h4>
                   {(allCustomData.courses||[]).length===0 ? (
                     <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
                       <div className="text-3xl">🎓</div>
@@ -712,13 +723,13 @@ export default function AdminDashboard() {
 
           {activeSection==='gallery' && (
             <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-              <h3 className="font-bold text-[18px] text-[#1A3263]">Gallery - Add Campus Images - Your College Images (Not PSG) - Your Own Environment Images</h3>
+              <h3 className="font-bold text-[18px] text-[#1A3263]">Gallery - Add Campus Images - Your College Images  - Your Own Environment Images</h3>
               <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Image URL * - Your Campus Image</label><input value={galleryForm.url} onChange={e=>setGalleryForm({...galleryForm, url: e.target.value})} placeholder="Paste your campus image URL - Real image from your college" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
                   <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Caption</label><input value={galleryForm.caption} onChange={e=>setGalleryForm({...galleryForm, caption: e.target.value})} placeholder="e.g. Main Building, Library, Hostel" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
                 </div>
-                <button onClick={handleAddGallery} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">+ Add Campus Image - Your Own Image (Not PSG)</button>
+                <button onClick={handleAddGallery} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">+ Add Campus Image - Your Own Image </button>
               </div>
               <div className="mt-6 grid md:grid-cols-3 gap-4">
                 {(allCustomData.gallery||[]).map(img=>(
@@ -755,7 +766,7 @@ export default function AdminDashboard() {
 
           {activeSection==='about' && (
             <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-              <h3 className="font-bold text-[18px] text-[#1A3263]">About, Vision, Mission - Add Your College About - Your Own About (Not PSG)</h3>
+              <h3 className="font-bold text-[18px] text-[#1A3263]">About, Vision, Mission - Add Your College About - Your Own About </h3>
               <div className="mt-6 space-y-5">
                 <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">About Your College - Full Text</label><textarea value={aboutForm.fullText} onChange={e=>setAboutForm({...aboutForm, fullText: e.target.value})} placeholder="Write about your college - history, campus, achievements, environment - Your own about, not PSG" rows={6} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
                 <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Vision</label><textarea value={aboutForm.vision} onChange={e=>setAboutForm({...aboutForm, vision: e.target.value})} placeholder="Your college vision" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
@@ -772,19 +783,19 @@ export default function AdminDashboard() {
           {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics'].includes(activeSection) && (
             <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-12 text-center">
               <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center mx-auto text-2xl">🚧</div>
-              <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} - Add Your {activeSection} - Your Own {activeSection} (Not PSG) - A to Z You Add</h3>
+              <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} - Add Your {activeSection} - Your Own {activeSection}  - A to Z You Add</h3>
               <p className="text-[13px] text-[#547792] mt-3 max-w-[600px] mx-auto leading-[1.6]">
-                This section is for your college - {college.name} - ID {college.id} - Your own {activeSection}, not PSG. You add everything yourself - Whatever section you need - All sections! UI frame ours (header, sidebar, colors #E8E2DB #FAB95B #547792 #1A3263, layout, buttons, cards), content yours (all data you add). Add, Edit, Delete, Upload, Draft, Publish - Every record has college_id {college.id} - Secure isolation - Your own (Not PSG).
+                This section is for your college - {college.name} - ID {college.id} - Your own {activeSection}, not PSG. You add everything yourself - Whatever section you need - All sections! UI frame ours (header, sidebar, colors #E8E2DB #FAB95B #547792 #1A3263, layout, buttons, cards), content yours (all data you add). Add, Edit, Delete, Upload, Draft, Publish - Every record has college_id {college.id} - Secure isolation - Your own .
               </p>
               <div className="mt-6 flex justify-center gap-2">
-                <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[13px] font-bold">+ Add New {activeSection} - Your Own - Not PSG</button>
+                <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[13px] font-bold">+ Add New {activeSection} - Your Own - </button>
                 <button className="h-10 px-5 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-bold text-[#1A3263]">Your College ID {college.id} - Your Own Data</button>
               </div>
               <div className="mt-8 grid md:grid-cols-3 gap-3 text-left max-w-[800px] mx-auto">
                 {[
                   { title: "UI Frame Ours", desc: "Header, Sidebar, Colors, Layout, Buttons, Cards - Platform controls - Premium #E8E2DB #FAB95B #547792 #1A3263" },
                   { title: "Content Yours", desc: `Your ${activeSection} - You add yourself - Logo, Images, Departments, Courses, Facilities, Placements, Exams - Whatever you need - All sections!` },
-                  { title: "Your Own (Not PSG)", desc: `College ID ${college.id} - ${college.name} - Your own ${activeSection}, not PSG Tech - After signup your college empty, you add A to Z yourself` },
+                  { title: "Your College - Official", desc: `College ID ${college.id} - ${college.name} - Your own ${activeSection}, not PSG Tech - After signup your college empty, you add A to Z yourself` },
                 ].map(f=>(
                   <div key={f.title} className="rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4">
                     <div className="font-bold text-[12px] text-[#1A3263]">{f.title}</div>

@@ -26,7 +26,9 @@ export default function CollegeSignup() {
   const handleSubmit = (e) => {
     e.preventDefault()
     const college = createNewCollegeFromSignup(formData)
-    alert(`College registered! ID: ${college.id} - Status: PENDING VERIFICATION. Platform Admin will review in 24-48h. After login, you can add your full college information A to Z yourself - logo, campus images, environment, placement, facilities, exam details, departments with HOD, etc. UI frame is ours, content is yours.`)
+    // Notify platform that new college registered - no default colleges, only registered
+    window.dispatchEvent(new Event('collegeRegistered'))
+    alert(`College registered! ${college.name} - ID: ${college.id} - Status: PENDING. Automatic default college name kattama - Done! Ippa unga college mattum thaan irukkum. Login panni unga college details - logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - ellam neengale add pannalam.`)
     navigate('/admin')
   }
 

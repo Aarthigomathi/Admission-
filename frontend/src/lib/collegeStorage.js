@@ -1,7 +1,7 @@
 import { colleges as staticColleges } from './colleges'
 
-// Manage custom colleges registered via signup - their own data, not PSG
-// UI frame is platform's, content is college's own - A to Z they add themselves
+// Manage custom colleges registered via signup - their own data
+// Automatic default college name kattama - only colleges that signup themselves show in public
 
 const REGISTERED_KEY = 'tn_registered_colleges'
 const COLLEGE_DATA_PREFIX = 'tn_college_data_'
@@ -12,41 +12,49 @@ export function getRegisteredColleges() {
   } catch { return [] }
 }
 
-export function getAllCollegesMerged() {
+export function getPublicColleges() {
+  // ONLY colleges that signed up via CollegeSignup - no default PSG etc
   const registered = getRegisteredColleges()
-  // Merge static + registered, registered overrides if same id
+  return registered.map(c => enrichCollege(c))
+}
+
+export function getAllCollegesMerged() {
+  // For admin & backwards compatibility - includes static + registered
+  const registered = getRegisteredColleges()
   const map = new Map()
-  staticColleges.forEach(c => map.set(c.id, c))
+  staticColleges.forEach(c => map.set(c.id, enrichCollege(c)))
   registered.forEach(c => {
-    // Ensure registered college has full structure with empty sections
-    const existing = map.get(c.id)
-    if (existing) {
-      map.set(c.id, { ...existing, ...c })
-    } else {
-      map.set(c.id, enrichCollege(c))
-    }
+    map.set(c.id, enrichCollege(c))
   })
   return Array.from(map.values())
 }
 
+export function getAllCollegesForAdmin() {
+  return getAllCollegesMerged()
+}
+
 export function getCollegeById(id) {
+  // First check public (registered), then all
+  const pub = getPublicColleges().find(c => String(c.id) === String(id))
+  if (pub) return pub
   const all = getAllCollegesMerged()
   return all.find(c => String(c.id) === String(id))
 }
 
 export function getCollegeBySlug(slug) {
+  const pub = getPublicColleges().find(c => c.slug === slug)
+  if (pub) return pub
   const all = getAllCollegesMerged()
   return all.find(c => c.slug === slug)
 }
 
 export function enrichCollege(base) {
-  // Ensure every college has all A-Z sections empty ready for college to fill
-  // Platform UI frame only, content college adds
   const now = new Date().toISOString()
+  // base may already be enriched, keep its data
   return {
     id: base.id,
-    slug: base.slug || base.name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || `college-${base.id}`,
-    name: base.name,
+    slug: base.slug || base.name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0,50) || `college-${base.id}`,
+    name: base.name || 'Unnamed College',
     shortName: base.shortName || base.name?.split(' ').slice(0,3).join(' ') || 'College',
     tagline: base.tagline || '',
     type: base.type || base.collegeType || 'Engineering',
@@ -69,8 +77,7 @@ export function enrichCollege(base) {
     verified: base.verified || false,
     active: true,
     createdAt: base.createdAt || now,
-    updatedAt: now,
-    // Branding - college can add logo, hero image, colors
+    updatedAt: base.updatedAt || now,
     branding: base.branding || {
       logo: '',
       heroImage: '',
@@ -78,7 +85,6 @@ export function enrichCollege(base) {
       colors: { primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' },
       preset: 'engineering_blue'
     },
-    // A-Z sections - all empty initially, college adds themselves
     about: base.about || { fullText: '', vision: '', mission: [] },
     departments: base.departments || [],
     courses: base.courses || [],
@@ -99,24 +105,31 @@ export function enrichCollege(base) {
     campus: base.campus || null,
     admissions: base.admissions || null,
     examinations: base.examinations || null,
-    // For static colleges compatibility
-    ...base,
+    quickInfo: base.quickInfo || { courses: (base.courses||[]).length, departments: (base.departments||[]).length, placement: 'N/A', campus: `${base.district}` },
+    contact: base.contact || { phone: base.phone || '', email: base.email || '', address: `${base.address}, ${base.city}, ${base.district}` },
   }
 }
 
 export function saveCollegeData(collegeId, section, data) {
   const key = `${COLLEGE_DATA_PREFIX}${collegeId}`
-  const existing = JSON.parse(localStorage.getItem(key) || '{}')
+  let existing = {}
+  try { existing = JSON.parse(localStorage.getItem(key) || '{}') } catch {}
   existing[section] = data
   existing.updatedAt = new Date().toISOString()
   localStorage.setItem(key, JSON.stringify(existing))
   
-  // Also update registered colleges list if needed
+  // Also update registered colleges list
   const registered = getRegisteredColleges()
   const idx = registered.findIndex(c => String(c.id) === String(collegeId))
   if (idx >= 0) {
-    registered[idx] = { ...registered[idx], ...existing, id: collegeId }
+    registered[idx] = { ...registered[idx], ...existing, id: collegeId, updatedAt: existing.updatedAt }
+    // Ensure slug preserved
+    if (!registered[idx].slug) registered[idx].slug = registered[idx].name?.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')
     localStorage.setItem(REGISTERED_KEY, JSON.stringify(registered))
+  }
+  // Notify
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('collegeRegistered'))
   }
   return existing
 }
@@ -136,7 +149,7 @@ export function createNewCollegeFromSignup(formData) {
     slug,
     name: formData.collegeName,
     shortName: formData.collegeName.split(' ').slice(0,3).join(' '),
-    tagline: '',
+    tagline: `${formData.collegeName} - Excellence in Education`,
     email: formData.email,
     phone: formData.phone,
     website: formData.website,
@@ -148,12 +161,11 @@ export function createNewCollegeFromSignup(formData) {
     collegeType: formData.collegeType,
     affiliation: formData.university,
     university: formData.university,
-    established: Number(formData.establishedYear),
+    established: Number(formData.establishedYear) || new Date().getFullYear(),
     principalName: formData.principalName,
     verificationStatus: 'PENDING',
     verified: false,
     role: 'COLLEGE_ADMIN',
-    // Empty A-Z - college will add themselves
     branding: {
       logo: '',
       heroImage: '',
@@ -183,7 +195,6 @@ export function createNewCollegeFromSignup(formData) {
   colleges.push(college)
   localStorage.setItem(REGISTERED_KEY, JSON.stringify(colleges))
   localStorage.setItem('tn_current_college', JSON.stringify(college))
-  // Initialize empty custom data
   localStorage.setItem(`${COLLEGE_DATA_PREFIX}${id}`, JSON.stringify({
     branding: college.branding,
     about: college.about,
@@ -200,6 +211,9 @@ export function createNewCollegeFromSignup(formData) {
     accreditations: [],
     research: []
   }))
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('collegeRegistered'))
+  }
   return college
 }
 
@@ -208,13 +222,13 @@ export function getProfileCompletion(college) {
   const checks = [
     !!college.branding?.logo || !!custom.branding?.logo,
     !!college.branding?.heroImage || !!custom.branding?.heroImage,
-    !!college.about?.fullText || !!custom.about?.fullText || (custom.about && custom.about.fullText),
-    (college.departments?.length > 0) || (custom.departments?.length > 0),
-    (college.courses?.length > 0) || (custom.courses?.length > 0),
-    (college.customFacilities?.length > 0) || (custom.customFacilities?.length > 0),
-    (college.placements?.length > 0) || (custom.placements?.length > 0),
-    (college.events?.length > 0) || (custom.events?.length > 0),
-    (college.gallery?.length > 0) || (custom.gallery?.length > 0),
+    !!custom.about?.fullText || !!college.about?.fullText,
+    (custom.departments?.length > 0) || (college.departments?.length > 0),
+    (custom.courses?.length > 0) || (college.courses?.length > 0),
+    (custom.customFacilities?.length > 0),
+    (custom.placements?.length > 0),
+    (custom.events?.length > 0),
+    (custom.gallery?.length > 0),
     !!college.principalName,
   ]
   const filled = checks.filter(Boolean).length

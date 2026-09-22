@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, MapPin, Sparkles, GraduationCap, Users, Building2, ArrowUpRight, Star, SlidersHorizontal, Image as ImageIcon, Shield, FileText, BarChart3, Bookmark, GitCompare, MessageCircle } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { colleges as staticColleges } from '../../lib/colleges'
-import { getAllCollegesMerged } from '../../lib/collegeStorage'
+import { getPublicColleges } from '../../lib/collegeStorage'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
 
@@ -11,11 +10,19 @@ export default function PlatformHome() {
   const [search, setSearch] = useState('')
   const [district, setDistrict] = useState('All')
   const [type, setType] = useState('All')
-  const [colleges, setColleges] = useState(staticColleges)
+  const [colleges, setColleges] = useState([])
   const { t, language, isStudent } = useLanguage()
 
   useEffect(() => {
-    setColleges(getAllCollegesMerged())
+    // Automatic default college name kattama - only colleges that signed up and added details themselves
+    setColleges(getPublicColleges())
+    const handleStorage = () => setColleges(getPublicColleges())
+    window.addEventListener('storage', handleStorage)
+    window.addEventListener('collegeRegistered', handleStorage)
+    return () => {
+      window.removeEventListener('storage', handleStorage)
+      window.removeEventListener('collegeRegistered', handleStorage)
+    }
   }, [])
 
   const filtered = colleges.filter(c => {
@@ -95,10 +102,10 @@ export default function PlatformHome() {
 
           <div className="mt-14 grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-[900px]">
             {[
-              { label: "Colleges", value: "6,247", sub: "All districts", color: "bg-white border-[#FAB95B]/30" },
+              { label: "Colleges", value: colleges.length===0 ? "0" : String(colleges.length), sub: colleges.length===0 ? "No default - signup & add" : "Added by colleges themselves", color: "bg-white border-[#FAB95B]/30" },
               { label: "Students", value: "12.5k+", sub: "Secure tracking", color: "bg-white border-[#E8E2DB]" },
-              { label: "Verified", value: "380+", sub: "Verified badge", color: "bg-[#1A3263] text-white border-[#1A3263]" },
-              { label: "PDF Reports", value: "450+", sub: "College-wise", color: "bg-[#FAB95B] text-[#1A3263] border-[#FAB95B]" },
+              { label: "Verified", value: String(colleges.filter(c=>c.verificationStatus==='VERIFIED'||c.verified).length), sub: "Verified badge", color: "bg-[#1A3263] text-white border-[#1A3263]" },
+              { label: "PDF Reports", value: "Live", sub: "College-wise PDF", color: "bg-[#FAB95B] text-[#1A3263] border-[#FAB95B]" },
             ].map((s,i)=>(
               <div key={i} className={`rounded-[20px] border-2 p-5 flex gap-4 shadow-sm ${s.color}`}>
                 <div className="h-11 w-11 rounded-[12px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center text-[#1A3263]">
@@ -219,15 +226,42 @@ export default function PlatformHome() {
 
       <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-10">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="font-display text-[28px] font-bold tracking-tight text-[#1A3263]">Featured Colleges - Real Images - Premium Cards #E8E2DB #FAB95B #547792 #1A3263</h2>
-          <Link to="/search" className="hidden lg:inline-flex items-center gap-1.5 text-[13px] font-bold text-[#1A3263] hover:gap-2 transition-all">View all Real <ArrowUpRight size={16} /></Link>
+          <h2 className="font-display text-[28px] font-bold tracking-tight text-[#1A3263]">
+            {colleges.length===0 ? 'Colleges - No Default - Colleges Signup & Add Themselves' : `Colleges Added by Colleges Themselves - ${filtered.length} Colleges - Premium`}
+          </h2>
+          <Link to="/search" className="hidden lg:inline-flex items-center gap-1.5 text-[13px] font-bold text-[#1A3263] hover:gap-2 transition-all">View all <ArrowUpRight size={16} /></Link>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map(college=>(
-            <CollegeCard key={college.id} college={college} />
-          ))}
-        </div>
+        {colleges.length===0 ? (
+          <div className="rounded-[28px] bg-white border-2 border-[#FAB95B]/30 p-12 text-center shadow-sm">
+            <div className="h-20 w-20 rounded-[24px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center mx-auto text-3xl">🏛️</div>
+            <h3 className="font-display text-[24px] font-bold text-[#1A3263] mt-6">No Colleges Yet - Automatic Default College Name Kattama</h3>
+            <p className="text-[14px] text-[#547792] mt-3 max-w-[600px] mx-auto leading-[1.6]">
+              Ippa automatic ah default ah college name kattama - New ah avunga college details college sign up panni avunga details add patra mathiri kette - Done! 
+              Platform la default PSG or vera college name automatic ah kaatathu. College signup panni avunga login panni avunga college details - logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - ellam avangale add pannuvanga. Aprom thaan students ku theriyum.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link to="/college/signup" className="h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] inline-flex items-center gap-2 border-2 border-[#1A3263]"><Building2 size={16} /> College Sign Up - Add Your College A-Z Yourself</Link>
+              <Link to="/student/signup" className="h-12 px-8 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[13px] inline-flex items-center gap-2 border-2 border-[#FAB95B]"><GraduationCap size={16} /> Student Sign Up</Link>
+            </div>
+            <div className="mt-8 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5 text-left max-w-[700px] mx-auto">
+              <div className="font-bold text-[13px] text-[#1A3263]">How it works - Automatic Default College Name Kattama:</div>
+              <div className="text-[12px] text-[#547792] mt-2 leading-[1.6] space-y-1">
+                <div>1. <strong>College Sign Up:</strong> College name, email, phone, website, address, district, city, type, university, principal - Signup</div>
+                <div>2. <strong>Login:</strong> College login pannina avunga college empty website varum - PSG illa, vera default illa - Avunga college mattum</div>
+                <div>3. <strong>Add A-Z Yourself:</strong> Logo, Campus Hero Image, Tagline, Colors, About, Vision, Mission, Management, Principal, Departments with HOD (oru oru dept kum HOD), Courses (degree, fees, intake), Facilities, Hostel, Placements, Exams, Research, Accreditation, Events, Gallery, Announcements, Contact, Social - Full A-Z</div>
+                <div>4. <strong>Publish:</strong> Preview → Publish → Students can discover - Chennai filter: student Chennai nu sonna Chennai colleges first based on details</div>
+                <div>5. <strong>UI Frame Ours, Content Yours:</strong> Header, sidebar, colors #E8E2DB #FAB95B #547792 #1A3263, layout - Platform controls. Content full college adds.</div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.map(college=>(
+              <CollegeCard key={college.id} college={college} />
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="border-t-2 border-[#FAB95B]/20 bg-white">

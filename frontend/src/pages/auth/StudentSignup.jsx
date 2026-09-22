@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles } from 'lucide-react'
-import { colleges } from '../../lib/colleges'
+import { getPublicColleges } from '../../lib/collegeStorage'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
@@ -150,12 +150,13 @@ export default function StudentSignup() {
 
   const topCollegesByPercentage = useMemo(() => {
     const perc = parseFloat(formData.percentage) || 0
-    let filtered = [...colleges]
-    filtered.sort((a, b) => {
+    let filtered = getPublicColleges()
+    if (filtered.length===0) return []
+    filtered = [...filtered].sort((a, b) => {
       const placeA = parseInt(a.placements?.percentage || 0)
       const placeB = parseInt(b.placements?.percentage || 0)
       if (placeB !== placeA) return placeB - placeA
-      return b.established - a.established
+      return (b.established||0) - (a.established||0)
     })
     if (perc >= 90) {
       return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Excellent Match - 90%+ Eligible for Top Colleges', matchPercent: 95, reason: `Your ${perc}% is outstanding - You are eligible for ${c.shortName} top rated college with ${c.placements.percentage} placement` }))
@@ -661,15 +662,23 @@ export default function StudentSignup() {
                       <div className="flex items-center gap-2 font-bold text-[14px] text-[#1A3263]"><Star size={18} className="text-[#FAB95B]" /> {t('topRatedColleges')} {formData.percentage}% - {formData.interestedCourse}</div>
                       <div className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{formData.percentage}% - {topCollegesByPercentage.length} Matched</div>
                     </div>
+                    {topCollegesByPercentage.length===0 ? (
+                      <div className="mt-4 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-8 text-center">
+                        <div className="text-3xl">🏛️</div>
+                        <div className="font-bold text-[#1A3263] mt-3">No Colleges Registered Yet - No Default Colleges</div>
+                        <div className="text-[11px] text-[#1A3263]/80 mt-2">Automatic default college name kattama - Platform la ippa colleges illa. Colleges signup panni avunga details add panna apram ungalukku matched colleges kaattum. First college /college/signup la register pannanum.</div>
+                        <div className="text-[11px] text-[#547792] mt-2">Your {formData.percentage}% eligible - Once colleges register, top matches for {formData.interestedCourse} will appear here based on placement %.</div>
+                      </div>
+                    ) : (
                     <div className="grid md:grid-cols-2 gap-3 mt-4">
                       {topCollegesByPercentage.map(college=>(
                         <div key={college.id} className="rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4 hover:border-[#FAB95B] transition-colors">
                           <div className="flex gap-3">
-                            <img src={college.branding.logo} alt={college.shortName} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" />
+                            <img src={college.branding?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(college.name)}&background=1A3263&color=FAB95B`} alt={college.shortName} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" />
                             <div className="flex-1">
                               <div className="font-bold text-[#1A3263] text-[13px]">{college.name}</div>
                               <div className="text-[10px] text-[#547792]">{college.district} • {college.type}</div>
-                              <div className="text-[10px] font-bold text-[#1A3263] mt-1">{college.placements.percentage} {t('placement')}</div>
+                              <div className="text-[10px] font-bold text-[#1A3263] mt-1">{college.placements?.percentage || '—'} {t('placement')}</div>
                             </div>
                             <div className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{college.matchPercent}% Match</div>
                           </div>
@@ -680,6 +689,7 @@ export default function StudentSignup() {
                         </div>
                       ))}
                     </div>
+                    )}
                   </div>
                 </div>
 
