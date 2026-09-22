@@ -2,7 +2,8 @@ import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { Search, MapPin, Filter, GraduationCap, Bookmark, GitCompare, ArrowUpRight, Building2, Sparkles, Heart, Shield, Info } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { colleges } from '../../lib/colleges'
+import { colleges as staticColleges } from '../../lib/colleges'
+import { getAllCollegesMerged } from '../../lib/collegeStorage'
 import { activityTracker, ACTIVITY_TYPES } from '../../lib/activityTracker'
 
 export default function SearchPage() {
@@ -16,12 +17,14 @@ export default function SearchPage() {
   const [hostelFilter, setHostelFilter] = useState('All')
   const [savedIds, setSavedIds] = useState([])
   const [compareIds, setCompareIds] = useState([])
+  const [colleges, setColleges] = useState(staticColleges)
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('tn_saved_colleges') || '[]')
     setSavedIds(saved.map(c=>c.id))
     const compare = JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]')
     setCompareIds(compare.map(c=>c.id))
+    setColleges(getAllCollegesMerged())
   }, [])
 
   const filtered = useMemo(() => {

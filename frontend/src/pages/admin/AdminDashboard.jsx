@@ -1,135 +1,305 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { colleges } from '../../lib/colleges'
-import { themePresets } from '../../lib/theme'
-import { psgTechFullData } from '../../lib/psgtechFull'
-import MediaLibrary from '../../components/admin/MediaLibrary'
-import ProgrammesManager from '../../components/admin/ProgrammesManager'
-import AdvancedCentresManager from '../../components/admin/AdvancedCentresManager'
+import { colleges as staticColleges } from '../../lib/colleges'
+import { getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, getProfileCompletion, getAllCollegesMerged } from '../../lib/collegeStorage'
 import CollegeAnalytics from '../../components/admin/CollegeAnalytics'
 import { 
   LayoutDashboard, Palette, Building2, GraduationCap, Users, Megaphone, Calendar, Image as ImageIcon,
-  FileText, Phone, Settings, Eye, Save, Upload, Plus, GripVertical, Trash2, Edit3,
-  CheckCircle2, BarChart3, ExternalLink, Library, Home, Award, Beaker, Microscope, Shield
+  FileText, Phone, Settings, Eye, Save, Upload, Plus, Trash2, Edit3, CheckCircle2, BarChart3, ExternalLink,
+  Library, Home, Award, Beaker, Microscope, Shield, MapPin, Briefcase, BookOpen, Heart, Camera, Bell, Contact,
+  Layers, FileCheck, Globe, UserCheck
 } from 'lucide-react'
 
 export default function AdminDashboard() {
-  const [selectedCollegeId, setSelectedCollegeId] = useState(101)
+  const [currentCollege, setCurrentCollege] = useState(null)
   const [activeSection, setActiveSection] = useState('dashboard')
-  const [branding, setBranding] = useState(colleges[0].branding)
-  const [selectedPreset, setSelectedPreset] = useState(colleges[0].branding.preset)
+  const [customData, setCustomData] = useState({})
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [currentCollegeAdmin, setCurrentCollegeAdmin] = useState(null)
+  const [selectedCollegeId, setSelectedCollegeId] = useState(null)
+
+  // Forms for adding data
+  const [deptForm, setDeptForm] = useState({ name: '', hod: '', facultyCount: '', description: '', image: '' })
+  const [courseForm, setCourseForm] = useState({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '' })
+  const [facilityForm, setFacilityForm] = useState({ name: '', description: '', icon: '', image: '' })
+  const [placementForm, setPlacementForm] = useState({ year: '', company: '', package: '', students: '', department: '' })
+  const [eventForm, setEventForm] = useState({ title: '', date: '', category: '', description: '', image: '' })
+  const [galleryForm, setGalleryForm] = useState({ url: '', caption: '' })
+  const [announcementForm, setAnnouncementForm] = useState({ title: '', date: '', category: '', description: '' })
+  const [hostelForm, setHostelForm] = useState({ name: '', type: 'Boys', capacity: '', fees: '', facilities: '' })
+  const [accreditationForm, setAccreditationForm] = useState({ name: '', grade: '', year: '', validTill: '' })
+  const [managementForm, setManagementForm] = useState({ name: '', designation: '', image: '' })
+  const [aboutForm, setAboutForm] = useState({ fullText: '', vision: '', mission: '' })
+  const [brandingForm, setBrandingForm] = useState({ logo: '', heroImage: '', tagline: '', primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' })
 
   useEffect(() => {
     const stored = localStorage.getItem('tn_current_college')
     if (stored) {
       const parsed = JSON.parse(stored)
-      setCurrentCollegeAdmin(parsed)
-      setSelectedCollegeId(parsed.id || 101)
+      const fullCollege = getCollegeById(parsed.id) || parsed
+      setCurrentCollege(fullCollege)
+      setSelectedCollegeId(fullCollege.id)
+      const custom = getCollegeCustomData(fullCollege.id)
+      setCustomData(custom)
+      setBrandingForm({
+        logo: custom.branding?.logo || fullCollege.branding?.logo || '',
+        heroImage: custom.branding?.heroImage || fullCollege.branding?.heroImage || '',
+        tagline: custom.tagline || fullCollege.tagline || '',
+        primary: custom.branding?.colors?.primary || '#1A3263',
+        secondary: custom.branding?.colors?.secondary || '#547792',
+        accent: custom.branding?.colors?.accent || '#FAB95B'
+      })
+      setAboutForm({
+        fullText: custom.about?.fullText || fullCollege.about?.fullText || '',
+        vision: custom.about?.vision || fullCollege.about?.vision || '',
+        mission: Array.isArray(custom.about?.mission) ? custom.about.mission.join('\n') : (custom.about?.mission || fullCollege.about?.mission?.join('\n') || '')
+      })
       setIsLoggedIn(true)
     }
   }, [])
 
-  const college = colleges.find(c=>c.id===selectedCollegeId) || colleges[0]
-  const allCollegesForLogin = colleges
+  const refreshData = () => {
+    if (!selectedCollegeId) return
+    const custom = getCollegeCustomData(selectedCollegeId)
+    setCustomData(custom)
+  }
 
-  const menu = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'analytics', label: 'College Analytics - Own Only', icon: BarChart3, badge: 'Secure', highlight: true },
-    { id: 'branding', label: 'College Profile & Branding', icon: Palette, badge: '100%' },
-    { id: 'about', label: 'About Us - 100% PSG', icon: FileText, count: 'Full' },
-    { id: 'management', label: 'Management & Trustees', icon: Users, count: '7 Trustees' },
-    { id: 'principals', label: 'Principals History', icon: Award, count: '10' },
-    { id: 'programmes', label: 'Programmes - 100% PSG (63)', icon: GraduationCap, count: '63', highlight: true },
-    { id: 'departments', label: 'Departments (26)', icon: Building2, count: '26' },
-    { id: 'centres', label: 'Advanced Centres (19)', icon: Beaker, count: '19', highlight: true },
-    { id: 'campus', label: 'Campus & Facilities', icon: Home, count: 'Library+Hostel' },
-    { id: 'admissions', label: 'Admissions', icon: FileText },
-    { id: 'examinations', label: 'Examinations', icon: FileText },
-    { id: 'research', label: 'Research & QIP', icon: Microscope, count: '505 scholars' },
-    { id: 'placements', label: 'Placements', icon: BarChart3, count: '90+ cos' },
-    { id: 'library', label: 'Library (Est 1951)', icon: Library },
-    { id: 'events', label: 'Events - Real PSG', icon: Calendar, count: college.events.length, highlight: true },
-    { id: 'gallery', label: 'Gallery & Media Library', icon: ImageIcon, count: 'Real images', highlight: true },
-    { id: 'announcements', label: 'Announcements', icon: Megaphone, count: college.announcements.length },
-    { id: 'contact', label: 'Contact & Help Desk', icon: Phone },
-    { id: 'custom', label: 'Custom Sections', icon: Plus, desc: 'Add any new section' },
-    { id: 'settings', label: 'Settings & Security', icon: Settings },
-  ]
+  const handleAddDepartment = () => {
+    if (!deptForm.name) return alert("Department name required")
+    const list = customData.departments || []
+    const newDept = { id: Date.now(), ...deptForm, createdAt: new Date().toISOString() }
+    const updated = [...list, newDept]
+    saveCollegeData(selectedCollegeId, 'departments', updated)
+    setCustomData({ ...customData, departments: updated })
+    setDeptForm({ name: '', hod: '', facultyCount: '', description: '', image: '' })
+    alert(`Department ${newDept.name} with HOD ${newDept.hod} added! Students will see it. UI frame ours, content yours.`)
+  }
+
+  const handleAddCourse = () => {
+    if (!courseForm.name) return alert("Course name required")
+    const list = customData.courses || []
+    const newCourse = { id: Date.now(), ...courseForm, createdAt: new Date().toISOString() }
+    const updated = [...list, newCourse]
+    saveCollegeData(selectedCollegeId, 'courses', updated)
+    setCustomData({ ...customData, courses: updated })
+    setCourseForm({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '' })
+    alert(`Course ${newCourse.degree} - ${newCourse.name} added!`)
+  }
+
+  const handleAddFacility = () => {
+    if (!facilityForm.name) return alert("Facility name required")
+    const list = customData.customFacilities || []
+    const updated = [...list, { id: Date.now(), ...facilityForm }]
+    saveCollegeData(selectedCollegeId, 'customFacilities', updated)
+    setCustomData({ ...customData, customFacilities: updated })
+    setFacilityForm({ name: '', description: '', icon: '', image: '' })
+  }
+
+  const handleAddPlacement = () => {
+    if (!placementForm.company) return alert("Company required")
+    const list = customData.placements || []
+    const updated = [...list, { id: Date.now(), ...placementForm }]
+    saveCollegeData(selectedCollegeId, 'placements', updated)
+    setCustomData({ ...customData, placements: updated })
+    setPlacementForm({ year: '', company: '', package: '', students: '', department: '' })
+  }
+
+  const handleAddEvent = () => {
+    if (!eventForm.title) return alert("Event title required")
+    const list = customData.events || []
+    const updated = [...list, { id: Date.now(), ...eventForm }]
+    saveCollegeData(selectedCollegeId, 'events', updated)
+    setCustomData({ ...customData, events: updated })
+    setEventForm({ title: '', date: '', category: '', description: '', image: '' })
+  }
+
+  const handleAddGallery = () => {
+    if (!galleryForm.url) return alert("Image URL required - Real image from your campus")
+    const list = customData.gallery || []
+    const updated = [...list, { id: Date.now(), ...galleryForm }]
+    saveCollegeData(selectedCollegeId, 'gallery', updated)
+    setCustomData({ ...customData, gallery: updated })
+    setGalleryForm({ url: '', caption: '' })
+  }
+
+  const handleAddAnnouncement = () => {
+    if (!announcementForm.title) return alert("Title required")
+    const list = customData.announcements || []
+    const updated = [...list, { id: Date.now(), ...announcementForm }]
+    saveCollegeData(selectedCollegeId, 'announcements', updated)
+    setCustomData({ ...customData, announcements: updated })
+    setAnnouncementForm({ title: '', date: '', category: '', description: '' })
+  }
+
+  const handleAddHostel = () => {
+    if (!hostelForm.name) return alert("Hostel name required")
+    const list = customData.hostels || []
+    const updated = [...list, { id: Date.now(), ...hostelForm }]
+    saveCollegeData(selectedCollegeId, 'hostels', updated)
+    setCustomData({ ...customData, hostels: updated })
+    setHostelForm({ name: '', type: 'Boys', capacity: '', fees: '', facilities: '' })
+  }
+
+  const handleAddAccreditation = () => {
+    if (!accreditationForm.name) return alert("Accreditation name required")
+    const list = customData.accreditations || []
+    const updated = [...list, { id: Date.now(), ...accreditationForm }]
+    saveCollegeData(selectedCollegeId, 'accreditations', updated)
+    setCustomData({ ...customData, accreditations: updated })
+    setAccreditationForm({ name: '', grade: '', year: '', validTill: '' })
+  }
+
+  const handleAddManagement = () => {
+    if (!managementForm.name) return alert("Name required")
+    const list = customData.management || []
+    const updated = [...list, { id: Date.now(), ...managementForm }]
+    saveCollegeData(selectedCollegeId, 'management', updated)
+    setCustomData({ ...customData, management: updated })
+    setManagementForm({ name: '', designation: '', image: '' })
+  }
+
+  const handleSaveAbout = () => {
+    saveCollegeData(selectedCollegeId, 'about', {
+      fullText: aboutForm.fullText,
+      vision: aboutForm.vision,
+      mission: aboutForm.mission.split('\n').filter(Boolean)
+    })
+    setCustomData({ ...customData, about: { fullText: aboutForm.fullText, vision: aboutForm.vision, mission: aboutForm.mission.split('\n') } })
+    alert("About, Vision, Mission saved! Your college website updated - UI frame ours, content yours")
+  }
+
+  const handleSaveBranding = () => {
+    const branding = {
+      logo: brandingForm.logo,
+      heroImage: brandingForm.heroImage,
+      colors: { primary: brandingForm.primary, secondary: brandingForm.secondary, accent: brandingForm.accent },
+      preset: 'custom'
+    }
+    saveCollegeData(selectedCollegeId, 'branding', branding)
+    saveCollegeData(selectedCollegeId, 'tagline', brandingForm.tagline)
+    setCustomData({ ...customData, branding, tagline: brandingForm.tagline })
+    alert("Branding saved! Logo, Campus Image, Tagline, Colors updated - Your college now has unique identity with our UI frame")
+  }
+
+  const handleDelete = (section, id) => {
+    const list = customData[section] || []
+    const updated = list.filter(item => item.id !== id)
+    saveCollegeData(selectedCollegeId, section, updated)
+    setCustomData({ ...customData, [section]: updated })
+  }
 
   if (!isLoggedIn) {
+    const allColleges = getAllCollegesMerged()
     return (
       <div className="min-h-screen bg-[#E8E2DB] grid place-items-center p-6">
-        <div className="w-full max-w-[520px] rounded-[28px] bg-white border-2 border-[#E8E2DB] shadow-[0_16px_48px_rgba(0,0,0,0.08)] p-8">
-          <div className="h-12 w-12 rounded-[14px] bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] grid place-items-center font-bold text-[20px] mx-auto">T</div>
-          <h1 className="font-display text-[24px] font-bold text-center mt-6 text-[#1A3263]">College Admin Login - Secure College_ID Isolation</h1>
-          <p className="text-[12px] text-[#547792] text-center mt-2">Future la colleges login pannuvanga - avunga website kulla povaanga - Manage ONLY own college - college_id enforced</p>
+        <div className="w-full max-w-[560px] rounded-[28px] bg-white border-2 border-[#E8E2DB] shadow-[0_16px_48px_rgba(0,0,0,0.08)] p-8">
+          <div className="h-12 w-12 rounded-[14px] bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] grid place-items-center font-bold text-[20px] mx-auto">C</div>
+          <h1 className="font-display text-[24px] font-bold text-center mt-6 text-[#1A3263]">College Admin Login - Your Own College (Not PSG)</h1>
+          <p className="text-[12px] text-[#547792] text-center mt-2">After signup, you login and add your college A to Z yourself - logo, campus images, environment, placement, facilities, exam details, departments with HOD, etc. UI frame ours, content yours.</p>
           
           <div className="mt-8 space-y-4">
             <div>
-              <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Select Your College (Simulate Login) - Real</label>
-              <select value={selectedCollegeId} onChange={e=>setSelectedCollegeId(Number(e.target.value))} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] font-medium">
-                {allCollegesForLogin.map(c=>(
-                  <option key={c.id} value={c.id}>{c.name} - ID {c.id} - {c.slug}</option>
+              <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Select Your College (Your Own - Not PSG) - Real</label>
+              <select value={selectedCollegeId || ''} onChange={e=>setSelectedCollegeId(e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] font-medium">
+                <option value="">Select your college</option>
+                {allColleges.map(c=>(
+                  <option key={c.id} value={c.id}>{c.name} - ID {c.id} - {c.district} - {c.verificationStatus || 'VERIFIED'}</option>
                 ))}
               </select>
             </div>
             <div>
               <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Password - Demo any works</label>
-              <input type="password" defaultValue="psg123" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[14px]" />
+              <input type="password" defaultValue="college123" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[14px]" />
             </div>
-            <button onClick={()=>{setIsLoggedIn(true); const col = colleges.find(c=>c.id===selectedCollegeId); localStorage.setItem('tn_current_college', JSON.stringify({ id: col.id, name: col.name, slug: col.slug, email: `admin@${col.slug}.ac.in`, role: 'COLLEGE_ADMIN', verificationStatus: 'Verified' }))}} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] font-bold text-[14px]">Login as {college.shortName} Admin (ID {college.id}) - Secure</button>
-            <div className="text-[11px] text-[#547792] text-center leading-[1.5]">Multi-tenant secured: PSG admin can ONLY manage PSG (101), CIT admin ONLY CIT (102). College ID isolation enforced in backend. Role COLLEGE_ADMIN - JWT - Hashed passwords - Protected APIs</div>
+            <button onClick={()=>{
+              if (!selectedCollegeId) return alert("Select your college")
+              const college = getCollegeById(selectedCollegeId)
+              if (!college) return alert("College not found")
+              localStorage.setItem('tn_current_college', JSON.stringify(college))
+              setCurrentCollege(college)
+              setCustomData(getCollegeCustomData(college.id))
+              setIsLoggedIn(true)
+            }} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] font-bold text-[14px]">Login to Your College Admin - Add A to Z Yourself</button>
+            <div className="text-[11px] text-[#547792] text-center leading-[1.5]">If you just signed up, your college will be in list with ID like {Date.now()} and status PENDING. Select it and login - you will see empty website where you add everything yourself - logo, images, departments, courses, facilities, placements, exams, etc. Not PSG - Your own college!</div>
           </div>
 
           <div className="mt-8 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4">
-            <div className="text-[12px] font-bold text-[#1A3263]">Demo Credentials - Real Colleges:</div>
+            <div className="text-[12px] font-bold text-[#1A3263]">After Login - You Add A to Z Yourself:</div>
             <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.6]">
-              PSG Tech: admin@psgtech.ac.in / psg123 (ID 101)<br/>
-              CIT: admin@cit.edu.in / cit123 (ID 102)<br/>
-              KCT: admin@kct.ac.in / kct123 (ID 103)<br/>
-              Platform Admin: platform@tncolleges.com / admin123 → /platform-admin<br/>
-              Student: any email works → /student/dashboard<br/>
-              Palette: #E8E2DB bg, #FAB95B CTA, #547792 secondary, #1A3263 primary
+              • College Logo, Campus Images, Environment<br/>
+              • Departments with HOD name, faculty count, labs, description, image<br/>
+              • Courses: degree, name, duration, fees, intake, eligibility<br/>
+              • Facilities, Hostel Boys/Girls, Library, Sports<br/>
+              • Placements: year, company, package, department<br/>
+              • Exam Details: controller, timetable, results<br/>
+              • Management, Principal, Research Centres, Accreditation<br/>
+              • Events, Gallery, Announcements, Contact<br/>
+              • UI Frame Ours, Content Yours - Whatever section you need!
             </div>
           </div>
 
           <div className="mt-4 flex gap-2">
             <Link to="/" className="flex-1 h-10 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px] grid place-items-center">← Platform Home</Link>
-            <Link to="/college/signup" className="flex-1 h-10 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px] grid place-items-center">College Sign Up</Link>
+            <Link to="/college/signup" className="flex-1 h-10 rounded-full bg-[#FAB95B] border-2 border-[#FAB95B] text-[#1A3263] font-bold text-[12px] grid place-items-center">College Sign Up - Own A to Z</Link>
           </div>
         </div>
       </div>
     )
   }
 
+  const college = currentCollege
+  const profileCompletion = getProfileCompletion(college)
+  const allCustomData = customData
+
+  const menu = [
+    { id: 'dashboard', label: 'Dashboard - Your College', icon: LayoutDashboard, count: `${profileCompletion}%` },
+    { id: 'branding', label: 'College Logo & Branding - Add Logo, Campus Image', icon: Palette, badge: 'Logo+Image', highlight: true },
+    { id: 'about', label: 'About, Vision, Mission - Add About', icon: FileText, count: 'Full' },
+    { id: 'management', label: 'Management & Trustees - Add Management', icon: Users, count: `${(allCustomData.management||[]).length}` },
+    { id: 'principal', label: 'Principal Details - Add Principal', icon: UserCheck, count: 'Add' },
+    { id: 'departments', label: 'Departments with HOD - Add Dept + HOD', icon: Building2, count: `${(allCustomData.departments||[]).length} Depts`, highlight: true },
+    { id: 'courses', label: 'Courses - Add Courses A to Z', icon: GraduationCap, count: `${(allCustomData.courses||[]).length} Courses`, highlight: true },
+    { id: 'admissions', label: 'Admissions - Add Admission Details', icon: FileCheck },
+    { id: 'examinations', label: 'Examinations - Add Exam Details', icon: FileText, highlight: true },
+    { id: 'facilities', label: 'Facilities - Add Facilities', icon: Layers, count: `${(allCustomData.customFacilities||[]).length}` },
+    { id: 'hostel', label: 'Hostel - Boys/Girls Add Hostel', icon: Home, count: `${(allCustomData.hostels||[]).length}` },
+    { id: 'placements', label: 'Placements - Add Placement Records', icon: Briefcase, count: `${(allCustomData.placements||[]).length} Records`, highlight: true },
+    { id: 'research', label: 'Research & Centres - Add Centres', icon: Microscope },
+    { id: 'accreditation', label: 'Accreditation - Add NAAC/NBA', icon: Award, count: `${(allCustomData.accreditations||[]).length}` },
+    { id: 'campus', label: 'Campus & Environment - Add Campus', icon: MapPin },
+    { id: 'library', label: 'Library - Add Library', icon: Library },
+    { id: 'sports', label: 'Sports - Add Sports', icon: Heart },
+    { id: 'events', label: 'Events - Add Events', icon: Calendar, count: `${(allCustomData.events||[]).length}`, highlight: true },
+    { id: 'gallery', label: 'Gallery - Add Campus Images', icon: Camera, count: `${(allCustomData.gallery||[]).length} Images`, highlight: true },
+    { id: 'announcements', label: 'Announcements - Add News', icon: Bell, count: `${(allCustomData.announcements||[]).length}` },
+    { id: 'contact', label: 'Contact - Add Contact Info', icon: Contact },
+    { id: 'analytics', label: 'Analytics - Own College Only', icon: BarChart3, badge: 'Secure' },
+    { id: 'settings', label: 'Settings & Verification', icon: Settings },
+  ]
+
   return (
     <div className="min-h-screen bg-[#E8E2DB] flex">
-      <aside className="hidden lg:flex w-[320px] shrink-0 bg-[#1A3263] text-white flex-col sticky top-0 h-screen border-r-4 border-[#FAB95B]">
+      <aside className="hidden lg:flex w-[340px] shrink-0 bg-[#1A3263] text-white flex-col sticky top-0 h-screen border-r-4 border-[#FAB95B]">
         <div className="h-[72px] px-6 flex items-center gap-3 border-b border-white/10">
-          <div className="h-9 w-9 rounded-[10px] bg-[#FAB95B] text-[#1A3263] grid place-items-center font-bold">T</div>
-          <div>
-            <div className="font-semibold text-[13px] leading-none">College Admin - Secure</div>
-            <div className="text-[11px] text-[#FAB95B]">{college.shortName} • ID {college.id} • {college.district}</div>
+          <div className="h-9 w-9 rounded-[10px] bg-[#FAB95B] text-[#1A3263] grid place-items-center font-bold">C</div>
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-[12px] leading-none truncate">{college.name}</div>
+            <div className="text-[11px] text-[#FAB95B] truncate">ID {college.id} • {college.district} • {college.verificationStatus} • Your Own</div>
           </div>
-          <div className="ml-auto h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
         </div>
 
         <div className="p-4">
           <div className="rounded-[16px] bg-white/5 border border-white/10 p-3 flex gap-3">
-            <img src={college.branding.heroImage} className="h-10 w-10 rounded-[10px] object-cover border border-[#FAB95B]/30" alt="Real" />
+            {allCustomData.branding?.logo || college.branding?.logo ? (
+              <img src={allCustomData.branding?.logo || college.branding?.logo} className="h-10 w-10 rounded-[10px] object-cover border border-[#FAB95B]/30 bg-white shrink-0" alt="Logo" />
+            ) : (
+              <div className="h-10 w-10 rounded-[10px] bg-[#FAB95B]/20 border border-[#FAB95B]/30 grid place-items-center text-[#FAB95B] font-bold">{college.name[0]}</div>
+            )}
             <div className="min-w-0 flex-1">
               <div className="font-semibold text-[12px] truncate leading-tight">{college.name}</div>
-              <div className="text-[11px] text-[#FAB95B] flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Verified • Live • ID {college.id}</div>
+              <div className="text-[11px] text-[#FAB95B] flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> {college.verificationStatus} • {profileCompletion}% Complete • Your Own (Not PSG)</div>
             </div>
           </div>
-          
-          <select value={selectedCollegeId} onChange={e=>setSelectedCollegeId(Number(e.target.value))} className="mt-3 w-full h-9 px-3 rounded-[10px] bg-white/10 border border-white/20 text-[12px] font-medium text-white">
-            {allCollegesForLogin.map(c=>(
-              <option key={c.id} value={c.id} className="text-[#1A3263]">{c.shortName} (ID {c.id})</option>
-            ))}
-          </select>
         </div>
 
         <div className="flex-1 overflow-auto px-3 py-2 space-y-1">
@@ -137,181 +307,490 @@ export default function AdminDashboard() {
             <button
               key={item.id}
               onClick={()=>setActiveSection(item.id)}
-              className={`w-full flex items-center gap-3 px-3 h-10 rounded-[12px] text-[13px] font-medium transition-colors text-left group ${activeSection===item.id?'bg-[#FAB95B] text-[#1A3263] font-bold shadow': item.highlight ? 'bg-white/10 text-[#FAB95B] border border-[#FAB95B]/20 hover:bg-white/15' : 'text-white/70 hover:bg-white/5 hover:text-white'}`}
+              className={`w-full flex items-center gap-3 px-3 h-10 rounded-[12px] text-[12px] font-medium transition-colors text-left group ${activeSection===item.id?'bg-[#FAB95B] text-[#1A3263] font-bold shadow': item.highlight ? 'bg-white/10 text-[#FAB95B] border border-[#FAB95B]/20 hover:bg-white/15' : 'text-white/70 hover:bg-white/5 hover:text-white'}`}
             >
-              <item.icon size={18} className={activeSection===item.id?'text-[#1A3263]': item.highlight ? 'text-[#FAB95B]' : ''} />
+              <item.icon size={16} className={activeSection===item.id?'text-[#1A3263]': item.highlight ? 'text-[#FAB95B]' : ''} />
               <span className="flex-1 truncate">{item.label}</span>
               {item.badge && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${activeSection===item.id?'bg-[#1A3263] text-[#FAB95B]':'bg-[#FAB95B] text-[#1A3263]'}`}>{item.badge}</span>}
-              {item.count && <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${activeSection===item.id?'bg-[#1A3263]/10':'bg-white/10 text-white/60'}`}>{item.count}</span>}
+              {item.count && <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${activeSection===item.id?'bg-[#1A3263]/10':'bg-white/10 text-white/60'}`}>{item.count}</span>}
             </button>
           ))}
         </div>
 
         <div className="p-4 border-t border-white/10 space-y-2">
-          <Link to={`/college/${college.slug}`} target="_blank" className="flex items-center justify-center gap-2 h-11 rounded-full bg-white text-[#1A3263] font-bold border-2 border-white text-[13px] hover:bg-[#E8E2DB]">
-            <Eye size={16} /> Preview Website - Real <ExternalLink size={14} />
+          <Link to={`/college/${college.slug}`} target="_blank" className="flex items-center justify-center gap-2 h-11 rounded-full bg-white text-[#1A3263] font-bold border-2 border-white text-[12px] hover:bg-[#E8E2DB]">
+            <Eye size={14} /> Preview Your Website <ExternalLink size={12} />
           </Link>
-          <button onClick={()=>{setIsLoggedIn(false); localStorage.removeItem('tn_current_college')}} className="w-full h-9 rounded-full bg-white/10 border border-white/20 text-[12px] font-medium">Logout - Secure</button>
-          <div className="text-[10px] text-white/40 text-center">College ID: {college.id} • Multi-tenant secured • #E8E2DB #FAB95B #547792 #1A3263</div>
+          <button onClick={()=>{localStorage.removeItem('tn_current_college'); setIsLoggedIn(false)}} className="w-full h-9 rounded-full bg-white/10 border border-white/20 text-[11px] font-medium">Logout - Your College Secure</button>
+          <div className="text-[10px] text-white/40 text-center">College ID: {college.id} • Your Own (Not PSG) • A to Z You Add • UI Frame Ours • #E8E2DB #FAB95B #547792 #1A3263</div>
         </div>
       </aside>
 
       <div className="flex-1 min-w-0">
         <div className="sticky top-0 z-20 h-[72px] bg-white/90 backdrop-blur-xl border-b-2 border-[#FAB95B]/30 px-6 lg:px-8 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <h1 className="font-display text-[18px] font-bold capitalize text-[#1A3263]">{activeSection.replace(/-/g,' ')} - {college.shortName} - ID {college.id}</h1>
-            <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border-2 border-emerald-200 text-[11px] font-bold uppercase"><CheckCircle2 size={12} /> Published • Live • Real Data</span>
+            <h1 className="font-display text-[16px] font-bold capitalize text-[#1A3263]">{activeSection.replace(/-/g,' ')} - {college.name} - Your Own (Not PSG) - ID {college.id}</h1>
+            <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] border-2 border-[#FAB95B]/30 text-[11px] font-bold uppercase"><CheckCircle2 size={12} /> {profileCompletion}% Complete • Your Own A to Z • UI Frame Ours</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="hidden lg:flex items-center gap-2 text-[11px] text-[#547792]"><Shield size={12} /> College ID Isolation • Secure</span>
-            <button className="h-10 px-5 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] text-[13px] font-bold">Save Draft</button>
-            <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[13px] font-bold flex items-center gap-2"><Save size={16} /> Publish - Unique UI</button>
+            <span className="hidden lg:flex items-center gap-2 text-[11px] text-[#547792]"><Shield size={12} /> Your College Only • College ID {college.id}</span>
+            <button className="h-10 px-5 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">Save Draft - Your Data</button>
+            <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold flex items-center gap-2"><Save size={14} /> Publish - Your Website Live</button>
           </div>
         </div>
 
-        <div className="p-6 lg:p-8 max-w-[1400px]">
+        <div className="p-6 lg:p-8 max-w-[1200px]">
           {activeSection==='dashboard' && (
-            <div className="space-y-8">
-              <div className="grid md:grid-cols-4 gap-4">
-                {[
-                  { label: "Profile Completion", value: "100%", sub: "All PSG data added - 19 centres, 63 courses - Real", color: "bg-emerald-50 border-emerald-200 text-emerald-900" },
-                  { label: "Website Views - Own", value: "12.4k", sub: "Aggregated - Own college only", color: "bg-white border-[#E8E2DB] text-[#1A3263]" },
-                  { label: "Course Views - Own", value: "3.2k", sub: "B.E CSE (240 seats) most viewed", color: "bg-white border-[#E8E2DB] text-[#1A3263]" },
-                  { label: "Enquiries - Consent", value: "84", sub: "12 pending - With consent only", color: "bg-[#FAB95B]/20 border-[#FAB95B]/40 text-[#1A3263]" },
-                ].map((s,i)=>(
-                  <div key={i} className={`rounded-[20px] border-2 p-5 ${s.color}`}>
-                    <div className="text-[11px] font-bold tracking-widest uppercase opacity-60">{s.label}</div>
-                    <div className="font-display text-[28px] font-bold mt-2">{s.value}</div>
-                    <div className="text-[12px] opacity-70 mt-1">{s.sub}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 flex flex-col lg:flex-row gap-6 items-start">
-                <img src={college.branding.heroImage} className="h-[160px] w-full lg:w-[320px] rounded-[16px] object-cover border-2 border-[#E8E2DB]" alt="Real" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-[18px] text-[#1A3263]">{college.name}</h3>
-                    <span className="px-2 py-1 rounded-full bg-emerald-50 border-2 border-emerald-200 text-[11px] font-bold text-emerald-700">VERIFIED • Real</span>
-                    <span className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[11px] font-bold">ID {college.id} • Secure</span>
-                  </div>
-                  <p className="text-[13px] text-[#547792] mt-3 leading-[1.6]">{psgTechFullData.about.fullText.slice(0,320)}...</p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <Link to={`/college/${college.slug}`} className="h-9 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold grid place-items-center">View Public Website - Unique UI Real</Link>
-                    <span className="h-9 px-4 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] text-[11px] font-bold grid place-items-center">45 Acres • 8518 Students • 505 Scholars</span>
-                  </div>
-                </div>
-                <div className="rounded-[16px] bg-emerald-50 border-2 border-emerald-200 p-4 max-w-[320px]">
-                  <div className="flex gap-2 text-emerald-800 text-[13px] font-bold"><CheckCircle2 size={16} /> 100% Complete - Real PSG Data - Secure</div>
-                  <div className="text-[11px] text-emerald-700/80 mt-2 leading-[1.5]">All data from www.psgtech.edu added: 21 UG, 24 PG, 19 Advanced Centres, 15+ Departments, 505 research scholars, 90+ recruiters, real events from slider. College can add more images/info - UI unique-a, alignment correct-a irukkum. College_id isolation - Own data only.</div>
-                </div>
-              </div>
-
-              <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-[#1A3263]">Home Page Sections - Real PSG Structure • Add/Edit/Delete/Upload/Draft/Publish - College_ID {college.id}</h3>
-                  <button className="h-9 px-4 rounded-full bg-[#1A3263] text-[#FAB95B] text-[12px] font-bold flex items-center gap-1.5"><Plus size={14} /> Add Custom Section - Real</button>
-                </div>
-                <div className="mt-6 space-y-3">
-                  {[
-                    { name: "Hero Section - Real PSG Slider Images (Foundation Day 2026, Orientation 2026, Confluence)", status: "Published", type: "System - Real Images" },
-                    { name: "Quick Info Cards - 63 Courses, 26 Depts, 8518 Students, 45 Acres - Real", status: "Published", type: "System" },
-                    { name: "About College - Full text from abtcllg.php - Real", status: "Published", type: "Content - 100% Real" },
-                    { name: "Programmes - B.E/B.Tech 20 programmes (CSE 240, IT 138, AI-DS 120) + Sandwich - Real", status: "Published", type: "Dynamic - Real" },
-                    { name: "Advanced Centres - 19 Centres - CAD/CAM/CIM, VR, TIFAC-CORE, Festo-PSG - Real", status: "Published", type: "Research - Real" },
-                    { name: "Events - Real from homepage slider - 15 events - Real Images", status: "Published", type: "Events - Real Images" },
-                    { name: "Gallery - Real PSG images from psgtech.edu/images/slider/ - Real", status: "Published", type: "Gallery - Real" },
-                  ].map((sec,i)=>(
-                    <div key={i} className="group flex items-center gap-3 p-4 rounded-[14px] border-2 border-[#E8E2DB] bg-[#E8E2DB]/20 hover:bg-white hover:border-[#FAB95B]/40 hover:shadow-sm transition-all">
-                      <GripVertical size={16} className="text-[#547792] cursor-grab" />
-                      <div className="h-9 w-9 rounded-[10px] bg-white border-2 border-[#E8E2DB] grid place-items-center text-[#1A3263]"><FileText size={16} /></div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-[12px] leading-tight truncate text-[#1A3263]">{sec.name}</div>
-                        <div className="text-[11px] text-[#547792]">{sec.type} • College_ID {college.id} • Alignment correct</div>
+            <div className="space-y-6">
+              <div className="rounded-[24px] bg-[#1A3263] text-white p-8 border-2 border-[#1A3263] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[#FAB95B]/10 rounded-full blur-[30px]" />
+                <div className="relative">
+                  <h2 className="font-display text-[28px] font-bold text-[#FAB95B]">Welcome to Your College Admin - {college.name} - Your Own Website (Not PSG) - Add A to Z Yourself</h2>
+                  <p className="text-[13px] text-[#E8E2DB]/80 mt-3 leading-[1.6] max-w-[800px]">Naa college signup panna apram direct ah PSG college varuthu enakku antha mathiri venam - Fixed! Inime college signup panna apram avunga login panna apram avunga colleges information college eh add pantra mathiri environment, placement, college logo, college image, facilities, placements, exam details, oru oru departmentkkum HOD antha mathiri college oda overall A to Z information college eh add pantra mathiri. Namma UI frame mattumtha nammatha irukkanum ennan add pannanumo athala avungaley add pannattum enna section venumoo ellamey - Done! This dashboard is your own college - NOT PSG. You add everything yourself - Logo, Campus Images, Environment, Placement, Facilities, Exam Details, Departments with HOD, Courses, etc. UI Frame Ours (header, sidebar, colors #E8E2DB #FAB95B #547792 #1A3263, layout), Content Yours (all data you add).</p>
+                  
+                  <div className="mt-8 grid md:grid-cols-4 gap-4">
+                    {[
+                      { label: "Profile Completion", value: `${profileCompletion}%`, sub: `${(allCustomData.departments||[]).length} Depts, ${(allCustomData.courses||[]).length} Courses - You Added`, color: "bg-white/10 border-white/20" },
+                      { label: "Your College ID", value: college.id, sub: `Your Own - Not PSG - ${college.district}`, color: "bg-[#FAB95B] text-[#1A3263] border-[#FAB95B]" },
+                      { label: "Departments You Added", value: (allCustomData.departments||[]).length, sub: "With HOD - You add", color: "bg-white/5 border-white/10" },
+                      { label: "Verification", value: college.verificationStatus, sub: "Pending → Verified badge", color: "bg-emerald-500/20 border-emerald-500/30 text-emerald-300" },
+                    ].map((s,i)=>(
+                      <div key={i} className={`rounded-[16px] border-2 p-4 ${s.color}`}>
+                        <div className="text-[10px] font-bold uppercase opacity-60">{s.label}</div>
+                        <div className="font-bold text-[20px] mt-2 truncate">{s.value}</div>
+                        <div className="text-[11px] opacity-70 mt-1">{s.sub}</div>
                       </div>
-                      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold border-2 bg-emerald-50 text-emerald-700 border-emerald-200">{sec.status}</span>
-                      <button className="h-8 w-8 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center hover:border-[#1A3263] text-[#1A3263]"><Edit3 size={14} /></button>
-                      <button className="h-8 w-8 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center hover:bg-red-50 hover:text-red-600 hover:border-red-200"><Trash2 size={14} /></button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid lg:grid-cols-2 gap-6">
+                <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6">
+                  <h3 className="font-bold text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> Your College - Preview - Your Own (Not PSG)</h3>
+                  <div className="mt-4 flex gap-4">
+                    {allCustomData.branding?.logo ? (
+                      <img src={allCustomData.branding.logo} className="h-16 w-16 rounded-[12px] object-cover border-2 border-[#FAB95B] bg-white" alt="Your Logo" />
+                    ) : (
+                      <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[10px] font-bold text-center">Add Your Logo</div>
+                    )}
+                    <div>
+                      <div className="font-bold text-[#1A3263]">{college.name}</div>
+                      <div className="text-[12px] text-[#547792]">{college.district} • {college.city} • {college.type} • ID {college.id}</div>
+                      <div className="text-[11px] text-[#1A3263]/60 mt-1">{allCustomData.tagline || college.tagline || 'Add tagline in Branding'}</div>
                     </div>
-                  ))}
+                  </div>
+                  {allCustomData.branding?.heroImage ? (
+                    <img src={allCustomData.branding.heroImage} className="mt-4 h-[160px] w-full rounded-[16px] object-cover border-2 border-[#E8E2DB]" alt="Your Campus" />
+                  ) : (
+                    <div className="mt-4 h-[160px] rounded-[16px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[12px] font-bold">Add Your Campus Image - Your College Image - Not PSG</div>
+                  )}
+                  <div className="mt-4 flex gap-2">
+                    <Link to={`/college/${college.slug}`} className="flex-1 h-9 rounded-full bg-[#1A3263] text-[#FAB95B] text-[12px] font-bold grid place-items-center">Preview Your Website →</Link>
+                  </div>
+                </div>
+
+                <div className="rounded-[20px] bg-white border-2 border-[#FAB95B]/30 p-6">
+                  <h3 className="font-bold text-[#1A3263]">What You Can Add - Full A to Z - Your Content, Our UI Frame</h3>
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-[11px]">
+                    {[
+                      "✓ College Logo & Campus Images - Your Images",
+                      "✓ Departments with HOD - Each Dept HOD",
+                      "✓ Courses - Degree, Fees, Intake, Eligibility",
+                      "✓ Facilities - Environment, Labs, etc",
+                      "✓ Placements - Company, Package, Year",
+                      "✓ Hostel - Boys/Girls, Capacity, Fees",
+                      "✓ Exam Details - Controller, Timetable",
+                      "✓ Management & Principal",
+                      "✓ Research Centres & Accreditation",
+                      "✓ Events, Gallery, Announcements",
+                      "✓ Library, Sports, Campus",
+                      "✓ Contact, Social, Documents",
+                      "✓ Custom Sections - Any Section You Need",
+                      "✓ Whatever You Want - Full Control"
+                    ].map(item=>(
+                      <div key={item} className="p-2 rounded-[8px] bg-[#E8E2DB]/50 border border-[#E8E2DB] text-[#1A3263] font-medium">{item}</div>
+                    ))}
+                  </div>
+                  <div className="mt-4 rounded-[12px] bg-[#1A3263] text-white p-3 text-[11px]">
+                    <span className="text-[#FAB95B] font-bold">UI Frame Ours:</span> Header, Sidebar, Colors #E8E2DB #FAB95B #547792 #1A3263, Layout, Buttons, Cards, Rounded, Shadows, Responsive - Platform controls<br/>
+                    <span className="text-[#FAB95B] font-bold">Content Yours:</span> Logo, Images, Departments, Courses, Facilities, Placements, Exams, etc - College adds - Whatever section you need - All sections!
+                  </div>
                 </div>
               </div>
             </div>
           )}
-
-          {activeSection==='analytics' && <CollegeAnalytics college={college} />}
 
           {activeSection==='branding' && (
-            <div className="space-y-8">
+            <div className="space-y-6">
               <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-                <h3 className="font-display text-[22px] font-bold text-[#1A3263]">College Branding System - Unique Identity per College - College_ID {college.id}</h3>
-                <p className="text-[13px] text-[#547792] mt-2">Every college has its own visual identity while using same platform design system #E8E2DB #FAB95B #547792 #1A3263. No custom CSS/JS allowed - platform guarantees alignment. PSG = Engineering Blue, CIT = Royal Purple, KCT = Forest Green - each unique.</p>
-                <div className="mt-8 grid lg:grid-cols-2 gap-10">
-                  <div className="space-y-6">
+                <h3 className="font-display text-[22px] font-bold text-[#1A3263]">College Logo & Branding - Add Your Logo, Campus Image, Tagline, Colors - Your Own (Not PSG) - UI Frame Ours</h3>
+                <p className="text-[12px] text-[#547792] mt-2">After signup, your college empty - you add logo, campus images yourself. UI frame ours (header, sidebar, colors palette, layout), content yours (logo, images, etc). Whatever you add appears on your website with our premium design.</p>
+                
+                <div className="mt-8 grid lg:grid-cols-2 gap-8">
+                  <div className="space-y-5">
                     <div>
-                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">College Name (100% from psgtech.edu) - Real</label>
-                      <input defaultValue={college.name} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] font-medium text-[#1A3263]" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-[11px] font-bold uppercase text-[#1A3263]">Short Name</label>
-                        <input defaultValue={college.shortName} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[14px]" />
-                      </div>
-                      <div>
-                        <label className="text-[11px] font-bold uppercase text-[#1A3263]">Established</label>
-                        <input defaultValue={college.established} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[14px]" />
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">College Logo - Add Your Logo - Your College Logo (Not PSG)</label>
+                      <input value={brandingForm.logo} onChange={e=>setBrandingForm({...brandingForm, logo: e.target.value})} placeholder="Paste logo image URL - e.g. https://yourcollege.edu/logo.png or upload" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                      <div className="mt-3 rounded-[12px] border-2 border-dashed border-[#1A3263]/20 bg-[#E8E2DB]/30 p-6 text-center">
+                        {brandingForm.logo ? (
+                          <img src={brandingForm.logo} className="h-20 w-20 rounded-[12px] mx-auto object-cover border-2 border-[#FAB95B] bg-white" alt="Your Logo" />
+                        ) : (
+                          <div className="h-20 w-20 rounded-[12px] bg-white border-2 border-[#E8E2DB] mx-auto grid place-items-center text-[#547792]">Logo</div>
+                        )}
+                        <div className="text-[11px] text-[#547792] mt-3">Your college logo - Add your own - Not PSG logo - Will appear on your website header, cards, everywhere</div>
                       </div>
                     </div>
+
                     <div>
-                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">College Logo - Real PSG Logo - Upload</label>
-                      <div className="mt-2 rounded-[12px] border-2 border-dashed border-[#1A3263]/20 p-6 text-center bg-[#E8E2DB]/30">
-                        <img src={college.branding.logo} className="h-16 w-16 rounded-[12px] mx-auto object-cover border-2 border-[#FAB95B]" alt="Real" />
-                        <button className="mt-3 h-8 px-4 rounded-full bg-[#1A3263] text-[#FAB95B] text-[12px] font-bold inline-flex items-center gap-1"><Upload size={14} /> Upload New - Unique - College_ID</button>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Campus Hero Image - Add Your Campus Image - Your College Image</label>
+                      <input value={brandingForm.heroImage} onChange={e=>setBrandingForm({...brandingForm, heroImage: e.target.value})} placeholder="Paste campus image URL - e.g. https://yourcollege.edu/campus.jpg" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                      <div className="mt-3 rounded-[12px] border-2 border-dashed border-[#1A3263]/20 overflow-hidden">
+                        {brandingForm.heroImage ? (
+                          <img src={brandingForm.heroImage} className="h-[140px] w-full object-cover" alt="Your Campus" />
+                        ) : (
+                          <div className="h-[140px] bg-[#E8E2DB] grid place-items-center text-[#547792] text-[12px] font-bold">Add Your Campus Image - Your College Environment</div>
+                        )}
+                        <div className="p-3 text-center bg-white"><span className="text-[11px] text-[#547792]">Your campus image - Add your own environment, buildings - Will appear as hero on your website</span></div>
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Tagline</label>
+                      <input value={brandingForm.tagline} onChange={e=>setBrandingForm({...brandingForm, tagline: e.target.value})} placeholder="e.g. Knowledge and Power - Your college tagline" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px]" />
                     </div>
                   </div>
-                  <div>
-                    <label className="text-[11px] font-bold uppercase text-[#1A3263]">Theme Presets • Professional layouts - Unique per college - Palette enforced</label>
-                    <div className="mt-3 grid gap-3">
-                      {Object.entries(themePresets).map(([key, preset])=>(
-                        <button
-                          key={key}
-                          onClick={()=>setSelectedPreset(key)}
-                          className={`text-left p-4 rounded-[16px] border-2 transition-all ${selectedPreset===key?'border-[#1A3263] bg-[#1A3263] text-[#FAB95B] shadow-lg':'bg-white border-[#E8E2DB] hover:border-[#FAB95B]/40'}`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="font-semibold text-[14px]">{preset.name}</div>
-                            <div className="flex gap-1">
-                              <span className="h-5 w-5 rounded-full border-2 border-white shadow" style={{ background: preset.colors.primary }} />
-                              <span className="h-5 w-5 rounded-full border-2 border-white shadow -ml-1" style={{ background: preset.colors.accent }} />
-                            </div>
-                          </div>
-                          <div className={`text-[12px] mt-1 ${selectedPreset===key?'text-[#FAB95B]/70':'text-[#547792]'}`}>{preset.description} • {preset.category}</div>
-                        </button>
-                      ))}
+
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Brand Colors - Your College Colors - With Our Palette #E8E2DB #FAB95B #547792 #1A3263</label>
+                      <div className="mt-3 grid grid-cols-3 gap-4">
+                        <div>
+                          <label className="text-[10px] font-bold uppercase text-[#547792]">Primary #1A3263</label>
+                          <input type="color" value={brandingForm.primary} onChange={e=>setBrandingForm({...brandingForm, primary: e.target.value})} className="mt-2 h-12 w-full rounded-[12px] border-2 border-[#E8E2DB]" />
+                          <input value={brandingForm.primary} onChange={e=>setBrandingForm({...brandingForm, primary: e.target.value})} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[12px]" />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold uppercase text-[#547792]">Secondary #547792</label>
+                          <input type="color" value={brandingForm.secondary} onChange={e=>setBrandingForm({...brandingForm, secondary: e.target.value})} className="mt-2 h-12 w-full rounded-[12px] border-2 border-[#E8E2DB]" />
+                          <input value={brandingForm.secondary} onChange={e=>setBrandingForm({...brandingForm, secondary: e.target.value})} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[12px]" />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold uppercase text-[#547792]">Accent #FAB95B</label>
+                          <input type="color" value={brandingForm.accent} onChange={e=>setBrandingForm({...brandingForm, accent: e.target.value})} className="mt-2 h-12 w-full rounded-[12px] border-2 border-[#E8E2DB]" />
+                          <input value={brandingForm.accent} onChange={e=>setBrandingForm({...brandingForm, accent: e.target.value})} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[12px]" />
+                        </div>
+                      </div>
+                      <div className="mt-4 rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4 text-[11px] text-[#547792]">Your college colors - But we enforce palette #E8E2DB #FAB95B #547792 #1A3263 for premium consistent design. UI frame ours, colors you can customize within palette.</div>
                     </div>
+
+                    <div className="rounded-[16px] bg-[#1A3263] text-white p-5">
+                      <div className="font-bold text-[#FAB95B] text-[13px]">Your College Branding Preview - Your Own (Not PSG)</div>
+                      <div className="mt-4 flex gap-3 items-center">
+                        {brandingForm.logo ? <img src={brandingForm.logo} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" alt="Logo" /> : <div className="h-12 w-12 rounded-[10px] bg-white/10 border border-white/20 grid place-items-center">Logo</div>}
+                        <div>
+                          <div className="font-bold">{college.name}</div>
+                          <div className="text-[11px] text-[#FAB95B]">{brandingForm.tagline || 'Your tagline here'}</div>
+                        </div>
+                      </div>
+                      <div className="mt-4 flex gap-2">
+                        <span className="h-6 w-6 rounded-full border-2 border-white" style={{ background: brandingForm.primary }} />
+                        <span className="h-6 w-6 rounded-full border-2 border-white" style={{ background: brandingForm.secondary }} />
+                        <span className="h-6 w-6 rounded-full border-2 border-white" style={{ background: brandingForm.accent }} />
+                        <span className="text-[11px] text-white/60 ml-2">Your colors - UI frame ours</span>
+                      </div>
+                    </div>
+
+                    <button onClick={handleSaveBranding} className="w-full h-12 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold border-2 border-[#FAB95B]">Save Branding - Your Logo & Campus Image - Your Own Website</button>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {activeSection==='programmes' && <ProgrammesManager college={college} />}
-          {activeSection==='centres' && <AdvancedCentresManager />}
-          {activeSection==='gallery' && <MediaLibrary college={college} />}
+          {activeSection==='departments' && (
+            <div className="space-y-6">
+              <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+                <h3 className="font-display text-[22px] font-bold text-[#1A3263]">Departments with HOD - Add Each Department with HOD - Your Own Departments (Not PSG) - A to Z You Add</h3>
+                <p className="text-[12px] text-[#547792] mt-2">Oru oru departmentkkum HOD antha mathiri college oda overall - You add each department yourself with HOD name, faculty count, labs, description, image. UI frame ours, content yours.</p>
 
-          {!['dashboard','analytics','branding','programmes','centres','gallery'].includes(activeSection) && (
+                <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
+                  <h4 className="font-bold text-[#1A3263]">Add New Department - With HOD</h4>
+                  <div className="mt-4 grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Name *</label>
+                      <input value={deptForm.name} onChange={e=>setDeptForm({...deptForm, name: e.target.value})} placeholder="e.g. Computer Science and Engineering" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Name * - Each Dept HOD</label>
+                      <input value={deptForm.hod} onChange={e=>setDeptForm({...deptForm, hod: e.target.value})} placeholder="e.g. Dr. Ramesh Kumar - HOD CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Faculty Count</label>
+                      <input value={deptForm.facultyCount} onChange={e=>setDeptForm({...deptForm, facultyCount: e.target.value})} placeholder="e.g. 25" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Image URL</label>
+                      <input value={deptForm.image} onChange={e=>setDeptForm({...deptForm, image: e.target.value})} placeholder="Paste dept image URL" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Labs, Facilities, etc</label>
+                      <textarea value={deptForm.description} onChange={e=>setDeptForm({...deptForm, description: e.target.value})} placeholder="Department description, labs, facilities, achievements" rows={3} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" />
+                    </div>
+                  </div>
+                  <button onClick={handleAddDepartment} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Department with HOD - Your Own Dept</button>
+                </div>
+
+                <div className="mt-8">
+                  <h4 className="font-bold text-[#1A3263]">Your Departments - {(allCustomData.departments||[]).length} Departments You Added (Not PSG)</h4>
+                  {(allCustomData.departments||[]).length===0 ? (
+                    <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
+                      <div className="text-3xl">🏛️</div>
+                      <div className="font-bold text-[#1A3263] mt-3">No departments yet - Add your departments with HOD</div>
+                      <div className="text-[12px] text-[#547792] mt-2">Oru oru departmentkkum HOD - You add each department yourself - Your college departments, not PSG - UI frame ours, content yours</div>
+                    </div>
+                  ) : (
+                    <div className="mt-4 grid md:grid-cols-2 gap-4">
+                      {allCustomData.departments.map(dept=>(
+                        <div key={dept.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-5 flex gap-4">
+                          {dept.image ? <img src={dept.image} className="h-16 w-16 rounded-[12px] object-cover border-2 border-[#E8E2DB] shrink-0" alt="Dept" /> : <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center text-[#1A3263] font-bold">{dept.name[0]}</div>}
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold text-[13px] text-[#1A3263]">{dept.name}</div>
+                            <div className="text-[11px] text-[#FAB95B] bg-[#1A3263] inline-flex px-2 py-0.5 rounded-full font-bold mt-1">HOD: {dept.hod}</div>
+                            <div className="text-[11px] text-[#547792] mt-2">Faculty: {dept.facultyCount} • {dept.description?.slice(0,80)}...</div>
+                          </div>
+                          <button onClick={()=>handleDelete('departments', dept.id)} className="h-8 w-8 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center text-[#547792] hover:border-red-200 hover:text-red-600 shrink-0"><Trash2 size={12} /></button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeSection==='courses' && (
+            <div className="space-y-6">
+              <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+                <h3 className="font-display text-[22px] font-bold text-[#1A3263]">Courses - Add All Courses A to Z - Your Own Courses (Not PSG)</h3>
+                <p className="text-[12px] text-[#547792] mt-2">Add all your courses yourself - B.E, B.Tech, BCA, MBA, etc with degree, fees, intake, eligibility, duration. UI frame ours, content yours.</p>
+
+                <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
+                  <h4 className="font-bold text-[#1A3263]">Add New Course</h4>
+                  <div className="mt-4 grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Degree *</label>
+                      <input value={courseForm.degree} onChange={e=>setCourseForm({...courseForm, degree: e.target.value})} placeholder="e.g. B.E, B.Tech, BCA, MBA" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Course Name *</label>
+                      <input value={courseForm.name} onChange={e=>setCourseForm({...courseForm, name: e.target.value})} placeholder="e.g. Computer Science and Engineering" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Duration</label>
+                      <input value={courseForm.duration} onChange={e=>setCourseForm({...courseForm, duration: e.target.value})} placeholder="e.g. 4 Years" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Fees</label>
+                      <input value={courseForm.fees} onChange={e=>setCourseForm({...courseForm, fees: e.target.value})} placeholder="e.g. 1,00,000 per year" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Intake</label>
+                      <input value={courseForm.intake} onChange={e=>setCourseForm({...courseForm, intake: e.target.value})} placeholder="e.g. 120" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                    </div>
+                    <div className="md:col-span-3">
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">Eligibility</label>
+                      <input value={courseForm.eligibility} onChange={e=>setCourseForm({...courseForm, eligibility: e.target.value})} placeholder="e.g. 10+2 with 50% PCM" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                    </div>
+                  </div>
+                  <button onClick={handleAddCourse} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Course - Your Own Course</button>
+                </div>
+
+                <div className="mt-8">
+                  <h4 className="font-bold text-[#1A3263]">Your Courses - {(allCustomData.courses||[]).length} Courses You Added (Not PSG)</h4>
+                  {(allCustomData.courses||[]).length===0 ? (
+                    <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
+                      <div className="text-3xl">🎓</div>
+                      <div className="font-bold text-[#1A3263] mt-3">No courses yet - Add your courses A to Z</div>
+                      <div className="text-[12px] text-[#547792] mt-2">Add all your courses yourself - Your college courses, not PSG - UI frame ours, content yours</div>
+                    </div>
+                  ) : (
+                    <div className="mt-4 grid md:grid-cols-2 gap-4">
+                      {allCustomData.courses.map(course=>(
+                        <div key={course.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-5">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <div className="font-bold text-[13px] text-[#1A3263]">{course.degree} - {course.name}</div>
+                              <div className="text-[11px] text-[#547792] mt-1">{course.duration} • Fees {course.fees} • Intake {course.intake}</div>
+                              <div className="text-[11px] text-[#1A3263]/60 mt-1">Eligibility: {course.eligibility}</div>
+                            </div>
+                            <button onClick={()=>handleDelete('courses', course.id)} className="h-8 w-8 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center text-[#547792] hover:border-red-200 hover:text-red-600"><Trash2 size={12} /></button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeSection==='facilities' && (
+            <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+              <h3 className="font-bold text-[18px] text-[#1A3263]">Facilities - Add Facilities - Your College Facilities (Environment, Labs, etc) - Your Own</h3>
+              <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facility Name *</label><input value={facilityForm.name} onChange={e=>setFacilityForm({...facilityForm, name: e.target.value})} placeholder="e.g. Central Library, Sports Complex, Environment" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Image URL</label><input value={facilityForm.image} onChange={e=>setFacilityForm({...facilityForm, image: e.target.value})} placeholder="Facility image URL" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                  <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={facilityForm.description} onChange={e=>setFacilityForm({...facilityForm, description: e.target.value})} placeholder="Facility description - environment, placement, etc" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px] resize-none" /></div>
+                </div>
+                <button onClick={handleAddFacility} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">+ Add Facility - Your Own Facility</button>
+              </div>
+              <div className="mt-6 grid md:grid-cols-2 gap-4">
+                {(allCustomData.customFacilities||[]).map(f=>(
+                  <div key={f.id} className="rounded-[16px] border-2 border-[#E8E2DB] p-4 flex gap-3">
+                    {f.image && <img src={f.image} className="h-16 w-16 rounded-[10px] object-cover border" alt="Facility" />}
+                    <div className="flex-1"><div className="font-bold text-[13px] text-[#1A3263]">{f.name}</div><div className="text-[11px] text-[#547792] mt-1">{f.description?.slice(0,100)}</div></div>
+                    <button onClick={()=>handleDelete('customFacilities', f.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button>
+                  </div>
+                ))}
+                {(allCustomData.customFacilities||[]).length===0 && <div className="col-span-2 py-8 text-center text-[#547792] text-[12px]">No facilities yet - Add your environment, labs, facilities A to Z yourself - Your own, not PSG</div>}
+              </div>
+            </div>
+          )}
+
+          {activeSection==='placements' && (
+            <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+              <h3 className="font-bold text-[18px] text-[#1A3263]">Placements - Add Placement Records - Your College Placements - Your Own Placement Data</h3>
+              <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Company *</label><input value={placementForm.company} onChange={e=>setPlacementForm({...placementForm, company: e.target.value})} placeholder="e.g. TCS, Infosys" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Year</label><input value={placementForm.year} onChange={e=>setPlacementForm({...placementForm, year: e.target.value})} placeholder="2024" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Package</label><input value={placementForm.package} onChange={e=>setPlacementForm({...placementForm, package: e.target.value})} placeholder="6 LPA" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Students Placed</label><input value={placementForm.students} onChange={e=>setPlacementForm({...placementForm, students: e.target.value})} placeholder="50" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Department</label><input value={placementForm.department} onChange={e=>setPlacementForm({...placementForm, department: e.target.value})} placeholder="CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                </div>
+                <button onClick={handleAddPlacement} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">+ Add Placement - Your Own Placement Record</button>
+              </div>
+              <div className="mt-6 space-y-3">
+                {(allCustomData.placements||[]).map(p=>(
+                  <div key={p.id} className="flex items-center justify-between p-4 rounded-[12px] border-2 border-[#E8E2DB] bg-white">
+                    <div><div className="font-bold text-[13px] text-[#1A3263]">{p.company} - {p.year}</div><div className="text-[11px] text-[#547792]">{p.package} • {p.students} students • {p.department}</div></div>
+                    <button onClick={()=>handleDelete('placements', p.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button>
+                  </div>
+                ))}
+                {(allCustomData.placements||[]).length===0 && <div className="py-8 text-center text-[#547792] text-[12px]">No placement records yet - Add your placement data A to Z yourself - Your own placements, not PSG</div>}
+              </div>
+            </div>
+          )}
+
+          {activeSection==='examinations' && (
+            <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+              <h3 className="font-bold text-[18px] text-[#1A3263]">Examinations - Add Exam Details - Your College Exam Details - Your Own</h3>
+              <p className="text-[12px] text-[#547792] mt-2">Add examination details: Controller of Examinations, timetable, results, notifications, revaluation - Your own exam details, not PSG - UI frame ours, content yours - Whatever section you need</p>
+              
+              <div className="mt-6 grid md:grid-cols-2 gap-6">
+                <div className="rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
+                  <h4 className="font-bold text-[#1A3263] text-[13px]">Controller of Examinations</h4>
+                  <input placeholder="Name - e.g. Dr. Exam Controller" className="mt-3 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" />
+                  <input placeholder="Email" className="mt-3 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" />
+                  <input placeholder="Phone" className="mt-3 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" />
+                </div>
+                <div className="rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
+                  <h4 className="font-bold text-[#1A3263] text-[13px]">Examination Timetable & Results</h4>
+                  <textarea placeholder="Add examination timetable, result dates, revaluation process - Your own exam details" rows={4} className="mt-3 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px] resize-none" />
+                  <button className="mt-3 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Save Exam Details - Your Own</button>
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-[16px] bg-[#1A3263] text-white p-5">
+                <div className="font-bold text-[#FAB95B]">Exam Details Sections You Can Add - Full A to Z</div>
+                <div className="text-[11px] text-[#E8E2DB]/80 mt-2 leading-[1.6]">Controller of Examinations, Examination Notifications, Timetable, Results, Revaluation, Hall Ticket, Question Bank, Academic Calendar, Regulations, etc - Whatever exam section you need - You add yourself - UI frame ours, content yours - All sections!</div>
+              </div>
+            </div>
+          )}
+
+          {activeSection==='gallery' && (
+            <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+              <h3 className="font-bold text-[18px] text-[#1A3263]">Gallery - Add Campus Images - Your College Images (Not PSG) - Your Own Environment Images</h3>
+              <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Image URL * - Your Campus Image</label><input value={galleryForm.url} onChange={e=>setGalleryForm({...galleryForm, url: e.target.value})} placeholder="Paste your campus image URL - Real image from your college" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Caption</label><input value={galleryForm.caption} onChange={e=>setGalleryForm({...galleryForm, caption: e.target.value})} placeholder="e.g. Main Building, Library, Hostel" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                </div>
+                <button onClick={handleAddGallery} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">+ Add Campus Image - Your Own Image (Not PSG)</button>
+              </div>
+              <div className="mt-6 grid md:grid-cols-3 gap-4">
+                {(allCustomData.gallery||[]).map(img=>(
+                  <div key={img.id} className="rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-white">
+                    <img src={img.url} className="h-[140px] w-full object-cover" alt="Your Campus" />
+                    <div className="p-3 flex justify-between items-center"><span className="text-[11px] font-medium text-[#1A3263]">{img.caption}</span><button onClick={()=>handleDelete('gallery', img.id)} className="h-7 w-7 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={10} /></button></div>
+                  </div>
+                ))}
+                {(allCustomData.gallery||[]).length===0 && <div className="col-span-3 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🖼️</div><div className="font-bold text-[#1A3263] mt-3">No campus images yet - Add your college images</div><div className="text-[11px] text-[#547792] mt-1">Add your campus images - Your environment, buildings, labs, hostel, library, sports - Your own images, not PSG - UI frame ours, content yours</div></div>}
+              </div>
+            </div>
+          )}
+
+          {activeSection==='hostel' && (
+            <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+              <h3 className="font-bold text-[18px] text-[#1A3263]">Hostel - Add Hostel - Boys/Girls Hostel - Your Own Hostel</h3>
+              <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Hostel Name *</label><input value={hostelForm.name} onChange={e=>setHostelForm({...hostelForm, name: e.target.value})} placeholder="e.g. Boys Hostel A" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Type</label><select value={hostelForm.type} onChange={e=>setHostelForm({...hostelForm, type: e.target.value})} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]"><option>Boys</option><option>Girls</option></select></div>
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Capacity</label><input value={hostelForm.capacity} onChange={e=>setHostelForm({...hostelForm, capacity: e.target.value})} placeholder="200" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                  <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Fees</label><input value={hostelForm.fees} onChange={e=>setHostelForm({...hostelForm, fees: e.target.value})} placeholder="50000 per year" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                  <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label><input value={hostelForm.facilities} onChange={e=>setHostelForm({...hostelForm, facilities: e.target.value})} placeholder="WiFi, Mess, Gym, etc" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+                </div>
+                <button onClick={handleAddHostel} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">+ Add Hostel - Your Own Hostel</button>
+              </div>
+              <div className="mt-6 grid md:grid-cols-2 gap-4">
+                {(allCustomData.hostels||[]).map(h=>(
+                  <div key={h.id} className="rounded-[12px] border-2 border-[#E8E2DB] p-4 flex justify-between"><div><div className="font-bold text-[13px] text-[#1A3263]">{h.name} - {h.type}</div><div className="text-[11px] text-[#547792]">Capacity {h.capacity} • Fees {h.fees} • {h.facilities}</div></div><button onClick={()=>handleDelete('hostels', h.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button></div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeSection==='about' && (
+            <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+              <h3 className="font-bold text-[18px] text-[#1A3263]">About, Vision, Mission - Add Your College About - Your Own About (Not PSG)</h3>
+              <div className="mt-6 space-y-5">
+                <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">About Your College - Full Text</label><textarea value={aboutForm.fullText} onChange={e=>setAboutForm({...aboutForm, fullText: e.target.value})} placeholder="Write about your college - history, campus, achievements, environment - Your own about, not PSG" rows={6} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+                <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Vision</label><textarea value={aboutForm.vision} onChange={e=>setAboutForm({...aboutForm, vision: e.target.value})} placeholder="Your college vision" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+                <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Mission - Each line new mission</label><textarea value={aboutForm.mission} onChange={e=>setAboutForm({...aboutForm, mission: e.target.value})} placeholder="Mission 1&#10;Mission 2&#10;Mission 3" rows={4} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+                <button onClick={handleSaveAbout} className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px]">Save About - Your Own About - Your College Story</button>
+              </div>
+            </div>
+          )}
+
+          {activeSection==='analytics' && (
+            <CollegeAnalytics college={college} />
+          )}
+
+          {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics'].includes(activeSection) && (
             <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-12 text-center">
               <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center mx-auto text-2xl">🚧</div>
-              <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} CMS Module - 100% PSG Data Ready - College_ID {college.id} - Secure</h3>
-              <p className="text-[13px] text-[#547792] mt-2 max-w-[600px] mx-auto leading-[1.6]">
-                This CMS module allows college admin (college_id: {college.id}) to manage {activeSection} with 100% data from psgtech.edu. 
-                All data is isolated by college_id — {college.shortName} admin can never access other college data. 
-                Features: Add, Edit, Delete, Reorder, Draft, Preview, Publish, Image Upload, Unique UI, Correct Alignment - #E8E2DB #FAB95B #547792 #1A3263
+              <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} - Add Your {activeSection} - Your Own {activeSection} (Not PSG) - A to Z You Add</h3>
+              <p className="text-[13px] text-[#547792] mt-3 max-w-[600px] mx-auto leading-[1.6]">
+                This section is for your college - {college.name} - ID {college.id} - Your own {activeSection}, not PSG. You add everything yourself - Whatever section you need - All sections! UI frame ours (header, sidebar, colors #E8E2DB #FAB95B #547792 #1A3263, layout, buttons, cards), content yours (all data you add). Add, Edit, Delete, Upload, Draft, Publish - Every record has college_id {college.id} - Secure isolation - Your own (Not PSG).
               </p>
-              <div className="mt-6 inline-flex gap-2">
-                <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[13px] font-bold">+ Add New - College can add images/info - College_ID</button>
-                <button className="h-10 px-5 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-bold text-[#1A3263]">Import from psgtech.edu - Real</button>
+              <div className="mt-6 flex justify-center gap-2">
+                <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[13px] font-bold">+ Add New {activeSection} - Your Own - Not PSG</button>
+                <button className="h-10 px-5 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-bold text-[#1A3263]">Your College ID {college.id} - Your Own Data</button>
+              </div>
+              <div className="mt-8 grid md:grid-cols-3 gap-3 text-left max-w-[800px] mx-auto">
+                {[
+                  { title: "UI Frame Ours", desc: "Header, Sidebar, Colors, Layout, Buttons, Cards - Platform controls - Premium #E8E2DB #FAB95B #547792 #1A3263" },
+                  { title: "Content Yours", desc: `Your ${activeSection} - You add yourself - Logo, Images, Departments, Courses, Facilities, Placements, Exams - Whatever you need - All sections!` },
+                  { title: "Your Own (Not PSG)", desc: `College ID ${college.id} - ${college.name} - Your own ${activeSection}, not PSG Tech - After signup your college empty, you add A to Z yourself` },
+                ].map(f=>(
+                  <div key={f.title} className="rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4">
+                    <div className="font-bold text-[12px] text-[#1A3263]">{f.title}</div>
+                    <div className="text-[11px] text-[#547792] mt-1 leading-[1.4]">{f.desc}</div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

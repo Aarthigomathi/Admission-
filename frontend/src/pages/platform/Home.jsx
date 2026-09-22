@@ -1,13 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, MapPin, Sparkles, GraduationCap, Users, Building2, ArrowUpRight, Star, SlidersHorizontal, Image as ImageIcon, Shield, FileText, BarChart3, Bookmark, GitCompare, MessageCircle } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { colleges } from '../../lib/colleges'
+import { colleges as staticColleges } from '../../lib/colleges'
+import { getAllCollegesMerged } from '../../lib/collegeStorage'
 
 export default function PlatformHome() {
   const [search, setSearch] = useState('')
   const [district, setDistrict] = useState('All')
   const [type, setType] = useState('All')
+  const [colleges, setColleges] = useState(staticColleges)
+
+  useEffect(() => {
+    setColleges(getAllCollegesMerged())
+  }, [])
 
   const filtered = colleges.filter(c => {
     const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.courses.some(co=>co.name.toLowerCase().includes(search.toLowerCase()))
