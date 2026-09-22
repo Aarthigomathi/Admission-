@@ -32,10 +32,11 @@ public class User {
     private LocalDateTime lastLogin;
 
     public enum Role {
-        SUPER_ADMIN,
+        STUDENT,
         COLLEGE_ADMIN,
         COLLEGE_EDITOR,
-        STUDENT,
+        PLATFORM_ADMIN,
+        SUPER_ADMIN, // legacy alias for PLATFORM_ADMIN
         PARENT,
         PUBLIC_USER
     }

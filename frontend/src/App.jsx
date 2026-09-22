@@ -1,45 +1,79 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import PlatformHeader from './components/platform/PlatformHeader'
 import PlatformHome from './pages/platform/Home'
 import SearchPage from './pages/platform/SearchPage'
 import CollegePage from './pages/college/CollegePage'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import StudentSignup from './pages/auth/StudentSignup'
+import CollegeSignup from './pages/auth/CollegeSignup'
+import Login from './pages/auth/Login'
+import StudentDashboard from './pages/student/Dashboard'
+import StudentSaved from './pages/student/Saved'
+import StudentCompare from './pages/student/Compare'
+import StudentEnquiries from './pages/student/Enquiries'
+import PlatformAdminDashboard from './pages/platformAdmin/PlatformAdminDashboard'
+import { activityTracker, ACTIVITY_TYPES } from './lib/activityTracker'
 
-function ComparePage() {
-  return (
-    <div className="min-h-screen bg-[#fbfaf8] p-8">
-      <div className="mx-auto max-w-[1200px]">
-        <h1 className="font-display text-[32px] font-bold">Compare Colleges</h1>
-        <p className="text-zinc-500 mt-2">Select colleges to compare side-by-side — courses, fees, placements, facilities.</p>
-        <div className="mt-8 grid lg:grid-cols-3 gap-6">
-          {[1,2,3].map(i=>(
-            <div key={i} className="rounded-[24px] bg-white border-2 border-dashed p-12 text-center">
-              <div className="text-3xl">➕</div>
-              <div className="font-medium mt-4">Add College {i}</div>
-              <div className="text-[12px] text-zinc-400 mt-1">Search and select</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
+function ActivityTrackerWrapper({ children }) {
+  const location = useLocation()
+  useEffect(() => {
+    const match = location.pathname.match(/\/college\/([^/]+)/)
+    if (match) {
+      const slug = match[1]
+      import('./lib/colleges').then(({ colleges }) => {
+        const college = colleges.find(c => c.slug === slug)
+        if (college) {
+          activityTracker.recordActivity({
+            collegeId: college.id,
+            activityType: ACTIVITY_TYPES.COLLEGE_VIEW,
+            metadata: { collegeName: college.name, slug, url: location.pathname }
+          })
+        }
+      })
+    }
+  }, [location.pathname])
+  return children
+}
+
+function LegacyCompareRedirect() {
+  return <Navigate to="/student/compare" replace />
+}
+function LegacySavedRedirect() {
+  return <Navigate to="/student/saved" replace />
 }
 
 export default function App() {
   return (
     <BrowserRouter>
-      <PlatformHeader />
-      <Routes>
-        <Route path="/" element={<PlatformHome />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/compare" element={<ComparePage />} />
-        <Route path="/saved" element={<SearchPage />} />
-        <Route path="/college/:slug" element={<CollegePage />} />
-        <Route path="/college/:slug/:section" element={<CollegePage />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/:section" element={<AdminDashboard />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <ActivityTrackerWrapper>
+        <PlatformHeader />
+        <Routes>
+          <Route path="/" element={<PlatformHome />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/compare" element={<LegacyCompareRedirect />} />
+          <Route path="/saved" element={<LegacySavedRedirect />} />
+          
+          <Route path="/student/signup" element={<StudentSignup />} />
+          <Route path="/college/signup" element={<CollegeSignup />} />
+          <Route path="/login" element={<Login />} />
+          
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/student/saved" element={<StudentSaved />} />
+          <Route path="/student/compare" element={<StudentCompare />} />
+          <Route path="/student/enquiries" element={<StudentEnquiries />} />
+          
+          <Route path="/college/:slug" element={<CollegePage />} />
+          <Route path="/college/:slug/:section" element={<CollegePage />} />
+          
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/:section" element={<AdminDashboard />} />
+          
+          <Route path="/platform-admin" element={<PlatformAdminDashboard />} />
+          
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </ActivityTrackerWrapper>
     </BrowserRouter>
   )
 }

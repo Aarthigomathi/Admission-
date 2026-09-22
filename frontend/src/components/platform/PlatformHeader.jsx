@@ -1,56 +1,66 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Search, MapPin, Bookmark, GitCompare, Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { Search, MapPin, Bookmark, GitCompare, Menu, X, GraduationCap, Building2, Shield } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 export default function PlatformHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [currentStudent, setCurrentStudent] = useState(null)
   const loc = useLocation()
   const isCollegePage = loc.pathname.startsWith('/college/')
+  const isAdminPage = loc.pathname.startsWith('/admin') || loc.pathname.startsWith('/platform-admin') || loc.pathname.startsWith('/student')
 
-  if (isCollegePage) return null
+  useEffect(() => {
+    const student = localStorage.getItem('tn_current_student')
+    if (student) setCurrentStudent(JSON.parse(student))
+  }, [loc.pathname])
+
+  if (isCollegePage || isAdminPage) return null
 
   return (
-    <header className="sticky top-0 z-50 border-b-2 border-[#fab95b]/30 bg-[#e8e2db]/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b-2 border-[#FAB95B]/30 bg-[#E8E2DB]/90 backdrop-blur-xl">
       <div className="mx-auto max-w-[1400px] px-6 lg:px-8">
         <div className="flex h-[72px] items-center justify-between gap-6">
           <Link to="/" className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-[12px] bg-[#1a3263] text-[#fab95b] grid place-items-center font-display text-[20px] font-bold tracking-tight border-2 border-[#fab95b]">T</div>
+            <div className="h-10 w-10 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-display text-[20px] font-bold tracking-tight border-2 border-[#FAB95B]">T</div>
             <div className="leading-[0.9]">
-              <div className="font-display text-[18px] font-semibold tracking-tight text-[#1a3263]">Tamil Nadu</div>
-              <div className="text-[11px] font-semibold tracking-[0.14em] uppercase text-[#547792]">Colleges • Real Images • #e8e2db #fab95b #547792 #1a3263</div>
+              <div className="font-display text-[18px] font-semibold tracking-tight text-[#1A3263]">Tamil Nadu</div>
+              <div className="text-[11px] font-semibold tracking-[0.14em] uppercase text-[#547792]">Colleges • Premium • Secure</div>
             </div>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-1 rounded-full bg-white p-1 border-2 border-[#e8e2db] shadow-sm">
-            <Link to="/" className="px-5 h-9 grid place-items-center rounded-full text-[14px] font-medium bg-[#1a3263] text-[#fab95b]">Discover Real</Link>
-            <Link to="/search" className="px-5 h-9 grid place-items-center rounded-full text-[14px] font-medium text-[#547792] hover:text-[#1a3263]">Colleges</Link>
-            <Link to="/search?type=course" className="px-5 h-9 grid place-items-center rounded-full text-[14px] font-medium text-[#547792] hover:text-[#1a3263]">Courses</Link>
-            <Link to="/compare" className="px-5 h-9 grid place-items-center rounded-full text-[14px] font-medium text-[#547792] hover:text-[#1a3263]">Compare</Link>
+          <nav className="hidden lg:flex items-center gap-1 rounded-full bg-white p-1 border-2 border-[#E8E2DB] shadow-sm">
+            <Link to="/" className="px-5 h-9 grid place-items-center rounded-full text-[13px] font-bold bg-[#1A3263] text-[#FAB95B]">Home</Link>
+            <Link to="/search" className="px-5 h-9 grid place-items-center rounded-full text-[13px] font-medium text-[#547792] hover:text-[#1A3263]">Explore</Link>
+            <Link to="/search" className="px-5 h-9 grid place-items-center rounded-full text-[13px] font-medium text-[#547792] hover:text-[#1A3263]">Courses</Link>
+            <Link to="/student/compare" className="px-5 h-9 grid place-items-center rounded-full text-[13px] font-medium text-[#547792] hover:text-[#1A3263]">Compare</Link>
+            <Link to="/student/saved" className="px-5 h-9 grid place-items-center rounded-full text-[13px] font-medium text-[#547792] hover:text-[#1A3263]">Saved</Link>
           </nav>
 
           <div className="flex items-center gap-2">
-            <div className="hidden md:flex items-center gap-2 mr-2">
-              <div className="flex items-center gap-1.5 rounded-full bg-white border-2 border-[#e8e2db] px-3 h-10">
-                <MapPin size={14} className="text-[#547792]" />
-                <select className="bg-transparent text-[13px] font-medium outline-none text-[#1a3263]">
-                  <option>Coimbatore - Real</option>
-                  <option>Chennai</option>
-                  <option>Madurai</option>
-                </select>
-              </div>
+            <div className="hidden md:flex items-center gap-1.5 rounded-full bg-white border-2 border-[#E8E2DB] px-3 h-10 mr-1">
+              <MapPin size={14} className="text-[#547792]" />
+              <select className="bg-transparent text-[12px] font-medium outline-none text-[#1A3263]">
+                <option>All Districts - TN</option>
+                <option>Coimbatore</option>
+                <option>Chennai</option>
+                <option>Madurai</option>
+              </select>
             </div>
-            <Link to="/search" className="hidden md:grid h-10 w-10 place-items-center rounded-full bg-white border-2 border-[#e8e2db] text-[#1a3263] hover:bg-[#e8e2db]">
+            <Link to="/search" className="hidden md:grid h-10 w-10 place-items-center rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] hover:border-[#FAB95B]">
               <Search size={18} />
             </Link>
-            <Link to="/saved" className="hidden md:grid h-10 w-10 place-items-center rounded-full bg-white border-2 border-[#e8e2db] text-[#1a3263]">
-              <Bookmark size={18} />
-            </Link>
-            <Link to="/compare" className="hidden md:grid h-10 w-10 place-items-center rounded-full bg-white border-2 border-[#e8e2db] text-[#1a3263]">
-              <GitCompare size={18} />
-            </Link>
-            <Link to="/admin" className="hidden md:inline-flex h-10 px-6 items-center justify-center rounded-full bg-[#1a3263] text-[#fab95b] border-2 border-[#fab95b] text-[13px] font-bold tracking-wide hover:bg-[#1a3263]/90">College Login - Real Images</Link>
+            {currentStudent ? (
+              <Link to="/student/dashboard" className="hidden md:inline-flex h-10 px-5 items-center justify-center rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold gap-1.5"><GraduationCap size={14} /> {currentStudent.fullName?.split(' ')[0] || 'Dashboard'}</Link>
+            ) : (
+              <>
+                <Link to="/login" className="hidden md:inline-flex h-10 px-5 items-center justify-center rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">Login</Link>
+                <Link to="/student/signup" className="hidden md:inline-flex h-10 px-5 items-center justify-center rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] text-[12px] font-bold">Student Sign Up</Link>
+              </>
+            )}
+            <Link to="/college/signup" className="hidden lg:inline-flex h-10 px-5 items-center justify-center rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] text-[12px] font-bold gap-1.5"><Building2 size={14} /> College Sign Up</Link>
+            <Link to="/platform-admin" className="hidden lg:grid h-10 w-10 place-items-center rounded-full bg-[#547792] text-white border-2 border-[#547792]"><Shield size={16} /></Link>
 
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden h-10 w-10 grid place-items-center rounded-full bg-white border-2 border-[#e8e2db] text-[#1a3263]">
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden h-10 w-10 grid place-items-center rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263]">
               {mobileOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
@@ -58,12 +68,21 @@ export default function PlatformHeader() {
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden border-t-2 border-[#e8e2db] bg-[#e8e2db] p-6 space-y-4">
-          <Link to="/" className="block py-2 font-medium text-[#1a3263]">Discover Real</Link>
-          <Link to="/search" className="block py-2 font-medium text-[#1a3263]">Colleges - Real Images</Link>
-          <Link to="/search?type=course" className="block py-2 font-medium text-[#1a3263]">Courses</Link>
-          <Link to="/compare" className="block py-2 font-medium text-[#1a3263]">Compare</Link>
-          <Link to="/admin" className="mt-4 inline-flex h-11 px-6 rounded-full bg-[#1a3263] text-[#fab95b] border-2 border-[#fab95b] font-bold">College Login - Real Images</Link>
+        <div className="lg:hidden border-t-2 border-[#E8E2DB] bg-[#E8E2DB] p-6 space-y-4">
+          <Link to="/" className="block py-2 font-bold text-[#1A3263]">Home - Premium</Link>
+          <Link to="/search" className="block py-2 font-medium text-[#1A3263]">Explore Colleges - Real</Link>
+          <Link to="/student/dashboard" className="block py-2 font-medium text-[#1A3263]">Student Dashboard</Link>
+          <Link to="/student/saved" className="block py-2 font-medium text-[#1A3263]">Saved Colleges</Link>
+          <Link to="/student/compare" className="block py-2 font-medium text-[#1A3263]">Compare 2-4 Colleges</Link>
+          <Link to="/student/enquiries" className="block py-2 font-medium text-[#1A3263]">My Enquiries - Consent Only</Link>
+          <div className="pt-4 flex flex-col gap-2">
+            <Link to="/student/signup" className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] font-bold grid place-items-center">Student Sign Up - Multi Step</Link>
+            <Link to="/college/signup" className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] font-bold grid place-items-center">College Sign Up - Verification</Link>
+            <Link to="/login" className="h-11 px-6 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold grid place-items-center">Login - 3 Roles</Link>
+            <Link to="/platform-admin" className="h-11 px-6 rounded-full bg-[#547792] text-white font-bold grid place-items-center">Platform Admin - Analytics & PDF</Link>
+            <Link to="/admin" className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] font-bold grid place-items-center">College Admin - Manage Own</Link>
+          </div>
+          <div className="pt-4 text-[11px] text-[#547792] leading-[1.5]">Three roles: STUDENT/COLLEGE/PLATFORM_ADMIN • Role-based auth • Student activity tracking secure • Privacy: viewing does NOT auto-send personal info • Only ENQUIRE NOW with consent shares • PDF Reports with #E8E2DB #FAB95B #547792 #1A3263</div>
         </div>
       )}
     </header>
