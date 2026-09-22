@@ -5,10 +5,13 @@ import CollegeCard from '../../components/platform/CollegeCard'
 import { colleges as staticColleges } from '../../lib/colleges'
 import { getAllCollegesMerged } from '../../lib/collegeStorage'
 import { activityTracker, ACTIVITY_TYPES } from '../../lib/activityTracker'
+import LanguageToggle from '../../components/student/LanguageToggle'
+import { useLanguage } from '../../lib/languageContext'
 
 export default function SearchPage() {
   const [params] = useSearchParams()
   const initialQ = params.get('q') || ''
+  const { t, language, isStudent } = useLanguage()
   const [q, setQ] = useState(initialQ)
   const [district, setDistrict] = useState('All')
   const [courseFilter, setCourseFilter] = useState('All')
@@ -146,10 +149,11 @@ export default function SearchPage() {
               </select>
             </div>
             <div className="flex items-center gap-2 text-[12px] flex-wrap">
-              <span className="px-3 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold">{filtered.length} colleges</span>
-              <span className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold">{coursesSearch.length} courses</span>
-              <Link to="/compare" className="h-9 px-4 rounded-full bg-[#1A3263] text-white font-semibold inline-flex items-center gap-1.5 border-2 border-[#1A3263]"><GitCompare size={14} /> Compare ({compareIds.length}/4)</Link>
-              <Link to="/saved" className="h-9 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-semibold inline-flex items-center gap-1.5"><Bookmark size={14} /> Saved ({savedIds.length})</Link>
+              {isStudent && <LanguageToggle variant="pill" />}
+              <span className="px-3 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold">{filtered.length} {language==='ta' ? 'கல்லூரிகள்' : 'colleges'}</span>
+              <span className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold">{coursesSearch.length} {language==='ta' ? 'பாடங்கள்' : 'courses'}</span>
+              <Link to="/student/compare" className="h-9 px-4 rounded-full bg-[#1A3263] text-white font-semibold inline-flex items-center gap-1.5 border-2 border-[#1A3263]"><GitCompare size={14} /> {t('compare')} ({compareIds.length}/4)</Link>
+              <Link to="/student/saved" className="h-9 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-semibold inline-flex items-center gap-1.5"><Bookmark size={14} /> {t('saved')} ({savedIds.length})</Link>
             </div>
           </div>
 

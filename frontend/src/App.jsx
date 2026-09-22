@@ -14,6 +14,7 @@ import StudentCompare from './pages/student/Compare'
 import StudentEnquiries from './pages/student/Enquiries'
 import PlatformAdminDashboard from './pages/platformAdmin/PlatformAdminDashboard'
 import { activityTracker, ACTIVITY_TYPES } from './lib/activityTracker'
+import { LanguageProvider } from './lib/languageContext'
 
 function ActivityTrackerWrapper({ children }) {
   const location = useLocation()
@@ -46,8 +47,9 @@ function LegacySavedRedirect() {
 export default function App() {
   return (
     <BrowserRouter>
-      <ActivityTrackerWrapper>
-        <PlatformHeader />
+      <LanguageProvider>
+        <ActivityTrackerWrapper>
+          <PlatformHeader />
         <Routes>
           <Route path="/" element={<PlatformHome />} />
           <Route path="/search" element={<SearchPage />} />
@@ -72,8 +74,9 @@ export default function App() {
           <Route path="/platform-admin" element={<PlatformAdminDashboard />} />
           
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </ActivityTrackerWrapper>
+          </Routes>
+        </ActivityTrackerWrapper>
+      </LanguageProvider>
     </BrowserRouter>
   )
 }

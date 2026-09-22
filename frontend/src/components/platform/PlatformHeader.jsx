@@ -1,11 +1,14 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Search, MapPin, Bookmark, GitCompare, Menu, X, GraduationCap, Building2, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import LanguageToggle from '../student/LanguageToggle'
+import { useLanguage } from '../../lib/languageContext'
 
 export default function PlatformHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [currentStudent, setCurrentStudent] = useState(null)
   const loc = useLocation()
+  const { t } = useLanguage()
   const isCollegePage = loc.pathname.startsWith('/college/')
   const isAdminPage = loc.pathname.startsWith('/admin') || loc.pathname.startsWith('/platform-admin') || loc.pathname.startsWith('/student')
 
@@ -37,10 +40,11 @@ export default function PlatformHeader() {
           </nav>
 
           <div className="flex items-center gap-2">
+            {currentStudent && <div className="hidden md:flex"><LanguageToggle variant="pill" /></div>}
             <div className="hidden md:flex items-center gap-1.5 rounded-full bg-white border-2 border-[#E8E2DB] px-3 h-10 mr-1">
               <MapPin size={14} className="text-[#547792]" />
               <select className="bg-transparent text-[12px] font-medium outline-none text-[#1A3263]">
-                <option>All Districts - TN</option>
+                <option>{t('allDistricts')}</option>
                 <option>Coimbatore</option>
                 <option>Chennai</option>
                 <option>Madurai</option>
@@ -50,10 +54,10 @@ export default function PlatformHeader() {
               <Search size={18} />
             </Link>
             {currentStudent ? (
-              <Link to="/student/dashboard" className="hidden md:inline-flex h-10 px-5 items-center justify-center rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold gap-1.5"><GraduationCap size={14} /> {currentStudent.fullName?.split(' ')[0] || 'Dashboard'}</Link>
+              <Link to="/student/dashboard" className="hidden md:inline-flex h-10 px-5 items-center justify-center rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold gap-1.5"><GraduationCap size={14} /> {currentStudent.fullName?.split(' ')[0] || t('dashboard')}</Link>
             ) : (
               <>
-                <Link to="/login" className="hidden md:inline-flex h-10 px-5 items-center justify-center rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">Login</Link>
+                <Link to="/login" className="hidden md:inline-flex h-10 px-5 items-center justify-center rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">{t('login')}</Link>
                 <Link to="/student/signup" className="hidden md:inline-flex h-10 px-5 items-center justify-center rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] text-[12px] font-bold">Student Sign Up</Link>
               </>
             )}
@@ -69,12 +73,13 @@ export default function PlatformHeader() {
 
       {mobileOpen && (
         <div className="lg:hidden border-t-2 border-[#E8E2DB] bg-[#E8E2DB] p-6 space-y-4">
-          <Link to="/" className="block py-2 font-bold text-[#1A3263]">Home - Premium</Link>
-          <Link to="/search" className="block py-2 font-medium text-[#1A3263]">Explore Colleges - Real</Link>
-          <Link to="/student/dashboard" className="block py-2 font-medium text-[#1A3263]">Student Dashboard</Link>
-          <Link to="/student/saved" className="block py-2 font-medium text-[#1A3263]">Saved Colleges</Link>
-          <Link to="/student/compare" className="block py-2 font-medium text-[#1A3263]">Compare 2-4 Colleges</Link>
-          <Link to="/student/enquiries" className="block py-2 font-medium text-[#1A3263]">My Enquiries - Consent Only</Link>
+          {currentStudent && <div className="flex justify-center"><LanguageToggle variant="pill" /></div>}
+          <Link to="/" className="block py-2 font-bold text-[#1A3263]">{t('home')} - Premium</Link>
+          <Link to="/search" className="block py-2 font-medium text-[#1A3263]">{t('explore')} - Real</Link>
+          <Link to="/student/dashboard" className="block py-2 font-medium text-[#1A3263]">{t('dashboard')}</Link>
+          <Link to="/student/saved" className="block py-2 font-medium text-[#1A3263]">{t('saved')}</Link>
+          <Link to="/student/compare" className="block py-2 font-medium text-[#1A3263]">{t('compare')} 2-4 Colleges</Link>
+          <Link to="/student/enquiries" className="block py-2 font-medium text-[#1A3263]">{t('enquiries')} - Consent Only</Link>
           <div className="pt-4 flex flex-col gap-2">
             <Link to="/student/signup" className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] font-bold grid place-items-center">Student Sign Up - Multi Step</Link>
             <Link to="/college/signup" className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] font-bold grid place-items-center">College Sign Up - Verification</Link>

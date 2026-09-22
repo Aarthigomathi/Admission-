@@ -3,9 +3,12 @@ import { Link } from 'react-router-dom'
 import { colleges } from '../../lib/colleges'
 import { Bookmark, MapPin, Trash2, Eye, GitCompare, GraduationCap } from 'lucide-react'
 import { activityTracker } from '../../lib/activityTracker'
+import StudentHeader from '../../components/student/StudentHeader'
+import { useLanguage } from '../../lib/languageContext'
 
 export default function Saved() {
   const [saved, setSaved] = useState([])
+  const { t, language } = useLanguage()
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('tn_saved_colleges') || '[]')
@@ -24,10 +27,11 @@ export default function Saved() {
 
   return (
     <div className="min-h-screen bg-[#E8E2DB]">
+      <StudentHeader />
       <div className="mx-auto max-w-[1100px] px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between">
-          <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><Bookmark className="text-[#FAB95B]" /> My Saved Colleges - {saved.length} Real</h1>
-          <Link to="/search" className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] grid place-items-center">Explore More →</Link>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><Bookmark className="text-[#FAB95B]" /> {language==='ta' ? `எனது சேமித்த கல்லூரிகள் - ${saved.length}` : `My Saved Colleges - ${saved.length} Real`} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 {language==='ta' ? 'தமிழ் / English - மாணவருக்கு மட்டும்' : 'Tamil / English - Only Student'}</span></h1>
+          <Link to="/search" className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] grid place-items-center">{language==='ta' ? 'மேலும் ஆராயுங்கள் →' : 'Explore More →'}</Link>
         </div>
 
         {saved.length===0 ? (

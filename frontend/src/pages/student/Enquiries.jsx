@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react'
 import { colleges } from '../../lib/colleges'
 import { MessageCircle, Shield, Send, CheckCircle2, Clock, Building2 } from 'lucide-react'
 import { activityTracker, ACTIVITY_TYPES } from '../../lib/activityTracker'
+import StudentHeader from '../../components/student/StudentHeader'
+import { useLanguage } from '../../lib/languageContext'
 
 export default function Enquiries() {
   const [enquiries, setEnquiries] = useState([])
   const [form, setForm] = useState({ collegeId: colleges[0]?.id || 101, courseId: '', question: '', contactMethod: 'Email', consent: false })
   const [success, setSuccess] = useState(false)
+  const { t, language } = useLanguage()
 
   useEffect(() => {
     setEnquiries(JSON.parse(localStorage.getItem('tn_enquiries') || '[]'))
@@ -57,8 +60,9 @@ export default function Enquiries() {
 
   return (
     <div className="min-h-screen bg-[#E8E2DB]">
+      <StudentHeader />
       <div className="mx-auto max-w-[1100px] px-6 lg:px-8 py-8">
-        <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><MessageCircle className="text-[#FAB95B]" /> My Enquiries - Consent-Based Only Real</h1>
+        <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><MessageCircle className="text-[#FAB95B]" /> {language==='ta' ? `எனது விசாரணைகள் - ${enquiries.length}` : `My Enquiries - Consent-Based Only Real`} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 {language==='ta' ? 'தமிழ் / English - மாணவருக்கு மட்டும்' : 'Tamil / English - Only Student'}</span></h1>
         <p className="text-[13px] text-[#547792] mt-2">Enquiry system: Student selects College, Course, Question, Preferred Contact Method, Submit. College receives via dashboard with status New, Contacted, Follow-up, Interested, Closed. Only enquiry-related info shared with consent - Privacy protected.</p>
 
         <div className="mt-8 grid lg:grid-cols-[1fr_1.2fr] gap-8">

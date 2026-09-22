@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { colleges } from '../../lib/colleges'
 import { GitCompare, X, MapPin, Award, Building2, Users, BookOpen } from 'lucide-react'
+import StudentHeader from '../../components/student/StudentHeader'
+import { useLanguage } from '../../lib/languageContext'
 
 export default function Compare() {
   const [compareList, setCompareList] = useState([])
+  const { t, language } = useLanguage()
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]')
@@ -25,9 +28,10 @@ export default function Compare() {
 
   return (
     <div className="min-h-screen bg-[#E8E2DB]">
+      <StudentHeader />
       <div className="mx-auto max-w-[1300px] px-6 lg:px-8 py-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><GitCompare className="text-[#FAB95B]" /> Compare Colleges - {compareList.length}/4 Real Table</h1>
+          <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><GitCompare className="text-[#FAB95B]" /> {language==='ta' ? `கல்லூரிகளை ஒப்பிடுக - ${compareList.length}/4` : `Compare Colleges - ${compareList.length}/4 Real Table`} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 {language==='ta' ? 'தமிழ் / English' : 'Tamil / English'} - {language==='ta' ? 'மாணவருக்கு மட்டும்' : 'Only Student'}</span></h1>
           <div className="flex gap-2">
             {compareList.length>0 && <button onClick={clearAll} className="h-10 px-5 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px]">Clear All</button>}
             <Link to="/search" className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] grid place-items-center">Add More Colleges →</Link>

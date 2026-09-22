@@ -4,12 +4,15 @@ import { Search, MapPin, Sparkles, GraduationCap, Users, Building2, ArrowUpRight
 import CollegeCard from '../../components/platform/CollegeCard'
 import { colleges as staticColleges } from '../../lib/colleges'
 import { getAllCollegesMerged } from '../../lib/collegeStorage'
+import LanguageToggle from '../../components/student/LanguageToggle'
+import { useLanguage } from '../../lib/languageContext'
 
 export default function PlatformHome() {
   const [search, setSearch] = useState('')
   const [district, setDistrict] = useState('All')
   const [type, setType] = useState('All')
   const [colleges, setColleges] = useState(staticColleges)
+  const { t, language, isStudent } = useLanguage()
 
   useEffect(() => {
     setColleges(getAllCollegesMerged())
@@ -34,8 +37,9 @@ export default function PlatformHome() {
           <div className="max-w-[900px]">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1A3263] border-2 border-[#FAB95B] shadow-sm text-[11px] font-bold tracking-wide text-[#FAB95B]">
               <span className="h-2 w-2 rounded-full bg-[#FAB95B] animate-pulse" />
-              Premium • Secure • Three Roles STUDENT/COLLEGE/PLATFORM_ADMIN • Activity Tracking • PDF Reports • #E8E2DB #FAB95B #547792 #1A3263
+              Premium • Secure • {isStudent ? (language==='ta' ? 'மாணவருக்கு மட்டும் தமிழ் / English Toggle' : 'Only Student Tamil / English Toggle') : 'Three Roles STUDENT/COLLEGE/PLATFORM_ADMIN'} • Activity Tracking • PDF Reports • #E8E2DB #FAB95B #547792 #1A3263
             </div>
+            {isStudent && <div className="mt-4"><LanguageToggle variant="default" /></div>}
 
             <h1 className="font-display text-[48px] lg:text-[84px] font-[700] leading-[0.9] tracking-[-0.03em] mt-8 text-[#1A3263] text-balance">
               Tamil Nadu's
