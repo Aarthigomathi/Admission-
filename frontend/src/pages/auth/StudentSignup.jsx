@@ -227,7 +227,7 @@ export default function StudentSignup() {
 
           <div className="mt-10">
             <h1 className="font-display text-[28px] font-bold leading-[0.95]">{language==='ta' ? 'City க்கு கீழே உங்கள் கனவு பாடம்' : 'Your Dream Course Below City'}</h1>
-            <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">{language==='ta' ? 'என்ன படிக்க ஆசைப்படுகிறாய் என்பதை City க்கு கீழே உடனே கேட்கிறோம் - Dream course signup போதே போடணும் - City க்கு கீழே - Tamil / English toggle' : 'We ask what you want to study immediately below City - Dream course at signup itself - Below City - Tamil / English toggle - #E8E2DB #FAB95B #547792 #1A3263'}</p>
+            <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">{language==='ta' ? 'என்ன படிக்க ஆசைப்படுகிறாய் என்பதை City க்கு கீழே உடனே கேட்கிறோம் - Dream course signup போதே போடணும் - City க்கு கீழே - Tamil / English toggle' : 'We ask what you want to study immediately below City - Dream course at signup itself - Below City - Tamil / English toggle'}</p>
           </div>
 
           <div className="mt-8 space-y-3">
@@ -257,7 +257,7 @@ export default function StudentSignup() {
             </div>
           )}
         </div>
-        <div className="text-[10px] text-white/40">City → Dream Course Below • Tamil / English • #E8E2DB #FAB95B #547792 #1A3263</div>
+        <div className="text-[10px] text-white/40">City → Dream Course Below • Tamil / English</div>
       </div>
 
       <div className="flex-1 flex flex-col">
@@ -363,7 +363,7 @@ export default function StudentSignup() {
                 <button onClick={()=>setStep(2)} disabled={!formData.fullName || !formData.email || !formData.mobile || !formData.city || !formData.interestedCourse} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center justify-center gap-2 hover:bg-[#1A3263]/90 disabled:opacity-50">
                   {language==='ta' ? `தொடர்க - ${formData.city} → ${formData.interestedCourse}` : `Continue - ${formData.city || 'City'} → ${formData.interestedCourse}`} <ArrowRight size={18} />
                 </button>
-                <div className="text-[11px] text-center text-[#547792]">📍 {language==='ta' ? 'Flow: பெயர் → மின்னஞ்சல் → கைபேசி → கடவுச்சொல் → மாவட்டம் → நகரம் → அதற்கு கீழே கனவு பாடம்' : 'Flow: Name → Email → Mobile → Password → District → City → Immediately Below City Dream Course'} • #E8E2DB #FAB95B #547792 #1A3263</div>
+                <div className="text-[11px] text-center text-[#547792]">📍 {language==='ta' ? 'Flow: பெயர் → மின்னஞ்சல் → கைபேசி → கடவுச்சொல் → மாவட்டம் → நகரம் → அதற்கு கீழே கனவு பாடம்' : 'Flow: Name → Email → Mobile → Password → District → City → Immediately Below City Dream Course'}</div>
               </div>
             )}
 

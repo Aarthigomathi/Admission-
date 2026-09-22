@@ -235,7 +235,7 @@ export default function SearchPage() {
               </div>
               <div className="mt-6 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4">
                 <div className="text-[11px] font-bold text-[#1A3263] flex items-center gap-1"><Shield size={12} /> No Default Colleges</div>
-                <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.5]">Automatic default college name kattama - Only colleges that signup via /college/signup and add details A-Z themselves will appear here. College adds logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - Full A-Z. UI frame ours, content theirs.</div>
+                <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.5]">Automatic default college name kattama - Only colleges that signup via /college/signup and add details A-Z themselves will appear here. College adds logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - Full A-Z. College content is fully managed by the college.</div>
               </div>
             </div>
           </div>

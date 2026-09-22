@@ -228,7 +228,7 @@ export default function PlatformAdminDashboard() {
                   <button onClick={handleGeneratePDF} className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5"><Download size={14} /> PDF Report</button>
                 </div>
               </div>
-              <div className="mt-6 text-[12px] text-[#547792]">College added by college itself via signup - ID {selectedCollege.id} - Departments {(getPublicColleges().find(c=>c.id===selectedCollege.id)?.departments||[]).length}, Courses {(getPublicColleges().find(c=>c.id===selectedCollege.id)?.courses||[]).length} - Added A-Z themselves - UI frame ours, content theirs</div>
+              <div className="mt-6 text-[12px] text-[#547792]">College added by college itself via signup - ID {selectedCollege.id} - Departments {(getPublicColleges().find(c=>c.id===selectedCollege.id)?.departments||[]).length}, Courses {(getPublicColleges().find(c=>c.id===selectedCollege.id)?.courses||[]).length} - Added A-Z themselves - College content managed by college</div>
             </div>
           )}
         </div>

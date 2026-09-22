@@ -87,7 +87,7 @@ export default function PlatformHeader() {
             <Link to="/platform-admin" className="h-11 px-6 rounded-full bg-[#547792] text-white font-bold grid place-items-center">Platform Admin - Analytics & PDF</Link>
             <Link to="/admin" className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] font-bold grid place-items-center">College Admin - Manage Own</Link>
           </div>
-          <div className="pt-4 text-[11px] text-[#547792] leading-[1.5]">Three roles: STUDENT/COLLEGE/PLATFORM_ADMIN • Role-based auth • Student activity tracking secure • Privacy: viewing does NOT auto-send personal info • Only ENQUIRE NOW with consent shares • PDF Reports with #E8E2DB #FAB95B #547792 #1A3263</div>
+          <div className="pt-4 text-[11px] text-[#547792] leading-[1.5]">Three roles: STUDENT/COLLEGE/PLATFORM_ADMIN • Role-based auth • Student activity tracking secure • Privacy: viewing does NOT auto-send personal info • Only ENQUIRE NOW with consent shares</div>
         </div>
       )}
     </header>

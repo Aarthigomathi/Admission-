@@ -26,9 +26,8 @@ export default function CollegeSignup() {
   const handleSubmit = (e) => {
     e.preventDefault()
     const college = createNewCollegeFromSignup(formData)
-    // Notify platform that new college registered - no default colleges, only registered
     window.dispatchEvent(new Event('collegeRegistered'))
-    alert(`College registered! ${college.name} - ID: ${college.id} - Status: PENDING. Automatic default college name kattama - Done! Ippa unga college mattum thaan irukkum. Login panni unga college details - logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - ellam neengale add pannalam.`)
+    alert(`College registered! ${college.name} - ID: ${college.id} - Status: PENDING. You can now login and add your college details.`)
     navigate('/admin')
   }
 
@@ -40,21 +39,21 @@ export default function CollegeSignup() {
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-[14px] bg-[#FAB95B] text-[#1A3263] grid place-items-center font-bold text-[22px]">C</div>
             <div>
-              <div className="font-display font-bold">College Registration - Own Website</div>
-              <div className="text-[11px] tracking-widest uppercase text-[#FAB95B]">A to Z You Add Yourself • Our UI Frame Only</div>
+              <div className="font-display font-bold">College Registration</div>
+              <div className="text-[11px] tracking-widest uppercase text-[#FAB95B]">Official Academic Portal</div>
             </div>
           </div>
 
-          <h1 className="font-display text-[34px] font-bold leading-[0.9] mt-12">Register your college and build your own website - A to Z you add</h1>
-          <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">After signup, you login and you add everything yourself: college logo, campus images, environment, placement, facilities, exam details, each department with HOD, courses, admissions, hostel, library, sports, research, accreditation, events, gallery, announcements, contact - full A to Z. Our UI frame only is ours, content full your control. Palette #E8E2DB #FAB95B #547792 #1A3263</p>
+          <h1 className="font-display text-[34px] font-bold leading-[0.9] mt-12">Register your college and build your official website</h1>
+          <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">After signup, you can manage your complete college profile - logo, campus images, departments, courses, facilities, placements, examinations, and more through our official academic portal.</p>
 
           <div className="mt-8 space-y-3">
             {[
-              { title: "After signup - Your own empty website", desc: "Not PSG - Your college empty, you add logo, images, departments, courses, facilities, placements, exam details A to Z", icon: Building2 },
-              { title: "Add College Logo & Campus Images", desc: "Branding: logo, hero image, cover, colors primary #1A3263 secondary #547792 accent #FAB95B, tagline", icon: ImageIcon },
-              { title: "Add Departments with HOD", desc: "Each department: name, HOD name, faculty count, labs, description, image - You add as many as you want", icon: Users },
-              { title: "Add Facilities, Placements, Exams", desc: "Environment, placement records, facilities, hostel, library, sports, exam details, research centres, accreditation - All sections you add", icon: Award },
-              { title: "Verification: Pending → Verified", desc: "After you add, platform admin reviews. Only verified gets badge. Students see authentic info", icon: CheckCircle2 },
+              { title: "Your own college website", desc: "After signup, your college profile is empty - you add all details yourself", icon: Building2 },
+              { title: "Add Logo & Campus Images", desc: "Branding: logo, hero image, cover, tagline and visual identity", icon: ImageIcon },
+              { title: "Add Departments with HOD", desc: "Each department: name, HOD name, faculty count, labs, description, image", icon: Users },
+              { title: "Add Facilities, Placements, Exams", desc: "Environment, placement records, facilities, hostel, library, sports, exam details, research centres", icon: Award },
+              { title: "Verification Process", desc: "After you add information, platform admin reviews. Verified colleges get badge", icon: CheckCircle2 },
             ].map((item,i)=>(
               <div key={i} className="flex gap-3 p-3 rounded-[14px] bg-white/5 border border-white/10">
                 <div className="h-8 w-8 rounded-[10px] bg-[#FAB95B] text-[#1A3263] grid place-items-center shrink-0"><item.icon size={14} /></div>
@@ -66,12 +65,12 @@ export default function CollegeSignup() {
             ))}
           </div>
         </div>
-        <div className="text-[10px] text-white/30">UI Frame Ours • Content Yours • A to Z You Add • #E8E2DB #FAB95B #547792 #1A3263 • Secure college_id isolation</div>
+        <div className="text-[10px] text-white/30">Official Academic Portal • Secure Registration • Verified Platform</div>
       </div>
 
       <div className="flex-1 flex flex-col">
         <div className="h-[64px] border-b-2 border-[#1A3263]/10 bg-white px-6 lg:px-10 flex items-center justify-between">
-          <div className="font-bold text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> College Sign Up - Own A to Z Website</div>
+          <div className="font-bold text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> College Registration</div>
           <Link to="/login" className="text-[13px] font-semibold text-[#1A3263]">Already registered? <span className="bg-[#1A3263] text-[#FAB95B] px-3 py-1 rounded-full ml-2">Login</span></Link>
         </div>
 
@@ -80,25 +79,25 @@ export default function CollegeSignup() {
             <div className="rounded-[20px] bg-[#1A3263] text-white p-5 flex gap-4 mb-8 border-2 border-[#1A3263]">
               <div className="h-10 w-10 rounded-[12px] bg-[#FAB95B] text-[#1A3263] grid place-items-center shrink-0"><Sparkles size={18} /></div>
               <div>
-                <div className="font-bold text-[13px] text-[#FAB95B]">After Signup - Your Own College Website (Not PSG) - You Add A to Z</div>
-                <div className="text-[12px] text-[#E8E2DB]/80 mt-1 leading-[1.5]">Naa college signup panna apram direct ah PSG college varuthu enakku antha mathiri venam - Fixed! Inime college signup panna apram avunga login panna apram avunga colleges information college eh add pantra mathiri environment, placement, college logo, college image, facilities, placements, exam details, oru oru departmentkkum HOD antha mathiri college oda overall A to Z information college eh add pantra mathiri. Namma UI frame mattumtha nammatha irukkanum ennan add pannanumo athala avungaley add pannattum enna section venumoo ellamey - Done! Your college empty initially, you add everything yourself. UI frame ours, content yours.</div>
+                <div className="font-bold text-[13px] text-[#FAB95B]">After Signup - Your College Dashboard</div>
+                <div className="text-[12px] text-[#E8E2DB]/80 mt-1 leading-[1.5]">Once registered, login to your college admin dashboard where you can add complete college information - logo, campus images, departments with HOD, courses, facilities, placements, examinations, and full college profile. Your college website will be live after verification.</div>
               </div>
             </div>
 
             <div className="rounded-[16px] bg-amber-50 border-2 border-[#FAB95B]/50 p-4 flex gap-3 mb-6">
               <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5" />
               <div>
-                <div className="font-bold text-[12px] text-amber-900">What you can add after login - Full A to Z</div>
-                <div className="text-[11px] text-amber-800/80 mt-1 leading-[1.5]">College Logo, Campus Images, Environment, Placement Records, Facilities, Hostel, Library, Sports, Exam Details, Departments with HOD, Courses, Admissions, Management, Principal, Research Centres, Accreditation, Events, Gallery, Announcements, Contact, Social, Documents, Careers, IIC, Alumni, Custom Sections - Anything you want - All sections you add yourself - UI frame only ours - #E8E2DB #FAB95B #547792 #1A3263</div>
+                <div className="font-bold text-[12px] text-amber-900">What you can add after login</div>
+                <div className="text-[11px] text-amber-800/80 mt-1 leading-[1.5]">College Logo, Campus Images, Environment, Placement Records, Facilities, Hostel, Library, Sports, Exam Details, Departments with HOD, Courses, Admissions, Management, Principal, Research Centres, Accreditation, Events, Gallery, Announcements, Contact, Social, Documents and more.</div>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm space-y-5">
-              <h2 className="font-display text-[22px] font-bold text-[#1A3263]">College Registration - Official Details - Your Own Website Starts Here</h2>
+              <h2 className="font-display text-[22px] font-bold text-[#1A3263]">College Registration - Official Details</h2>
 
               <div>
                 <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Building2 size={12} className="text-[#FAB95B]" /> College Name *</label>
-                <input required value={formData.collegeName} onChange={e=>updateField('collegeName', e.target.value)} placeholder="e.g. Your College Name - After signup you add full info yourself" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]" />
+                <input required value={formData.collegeName} onChange={e=>updateField('collegeName', e.target.value)} placeholder="e.g. Your College Name" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]" />
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
@@ -119,7 +118,7 @@ export default function CollegeSignup() {
 
               <div>
                 <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><MapPin size={12} className="text-[#FAB95B]" /> Address *</label>
-                <textarea required value={formData.address} onChange={e=>updateField('address', e.target.value)} placeholder="Full address - After login you add environment, facilities, hostel, etc yourself" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px] resize-none" />
+                <textarea required value={formData.address} onChange={e=>updateField('address', e.target.value)} placeholder="Full college address" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px] resize-none" />
               </div>
 
               <div className="grid md:grid-cols-3 gap-4">
@@ -161,7 +160,7 @@ export default function CollegeSignup() {
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><User size={12} className="text-[#FAB95B]" /> Principal Name</label>
-                  <input value={formData.principalName} onChange={e=>updateField('principalName', e.target.value)} placeholder="Dr. Principal Name - You add full principal details after login" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]" />
+                  <input value={formData.principalName} onChange={e=>updateField('principalName', e.target.value)} placeholder="Dr. Principal Name" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]" />
                 </div>
                 <div>
                   <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Lock size={12} className="text-[#FAB95B]" /> Password *</label>
@@ -170,21 +169,21 @@ export default function CollegeSignup() {
               </div>
 
               <div>
-                <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Upload size={12} className="text-[#FAB95B]" /> Verification Documents (Optional - Upload after login also)</label>
+                <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Upload size={12} className="text-[#FAB95B]" /> Verification Documents (Optional)</label>
                 <div className="mt-2 rounded-[12px] border-2 border-dashed border-[#1A3263]/20 bg-[#E8E2DB]/50 p-6 text-center">
                   <Upload size={24} className="mx-auto text-[#547792]" />
                   <div className="text-[12px] font-semibold text-[#1A3263] mt-2">Upload AICTE, NAAC, UGC certificates, college ID proof</div>
-                  <div className="text-[11px] text-[#547792] mt-1">After login you can add more documents, logo, campus images, environment, placement, facilities, exam details, department HOD etc - Full A to Z</div>
+                  <div className="text-[11px] text-[#547792] mt-1">You can add more documents, logo, campus images after login</div>
                 </div>
               </div>
 
               <button type="submit" className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center justify-center gap-2 hover:bg-[#1A3263]/90">
-                Register College - Your Own Website A to Z You Add <CheckCircle2 size={18} />
+                Register College <CheckCircle2 size={18} />
               </button>
 
-              <div className="rounded-[12px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4">
-                <div className="text-[11px] font-bold text-[#1A3263]">After Registration - What Happens?</div>
-                <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.5]">1. Status PENDING VERIFICATION 2. You login → Your own college dashboard (NOT PSG - Your college empty) 3. You add A to Z: Logo, Campus Images, Environment, Placement, Facilities, Hostel, Library, Sports, Exam Details, Departments with HOD, Courses, Admissions, Management, Principal, Research, Accreditation, Events, Gallery, Announcements, Contact, Social, Documents, Careers, IIC, Alumni, Custom Sections - Whatever section you need 4. Our UI frame only ours, content yours 5. Preview → Publish → Live! Students discover your college - Palette #E8E2DB #FAB95B #547792 #1A3263</div>
+              <div className="rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4">
+                <div className="text-[11px] font-bold text-[#1A3263]">After Registration</div>
+                <div className="text-[11px] text-[#547792] mt-2 leading-[1.5]">1. Status PENDING VERIFICATION 2. Login to your college dashboard 3. Add complete college information - Logo, campus images, departments, courses, facilities, placements, examinations 4. Preview and publish - Your college will be live for students after verification</div>
               </div>
             </form>
           </div>

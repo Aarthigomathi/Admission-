@@ -30,8 +30,8 @@ export default function CollegeAnalytics({ college }) {
       <html>
       <head><title>Visitors Report - ${college.name}</title>
       <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #E8E2DB; color: #1A3263; }
-        .header { background: #1A3263; color: #FAB95B; padding: 20px; border-radius: 12px; border: 4px solid #FAB95B; }
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f8f9fa; color: #1A3263; }
+        .header { background: #1A3263; color: #FAB95B; padding: 20px; border-radius: 12px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 12px; overflow: hidden; }
         th { background: #1A3263; color: #FAB95B; padding: 12px; text-align: left; font-size: 11px; }
         td { padding: 10px; border-bottom: 1px solid #E8E2DB; font-size: 11px; }
@@ -41,15 +41,14 @@ export default function CollegeAnalytics({ college }) {
       <body>
         <div class="header">
           <h1>${college.name} - Visitor Report</h1>
-          <p>College ID: ${college.id} • District: ${college.district} • Total Visitors: ${visitors.length} • Generated: ${new Date().toLocaleString()} • Your Own College (Not PSG) - Visitors Who Visited Your College</p>
-          <p>Yar yaru entha college visit pananga - Name, Mail, Address ellam admin pakkura mathiri - Download panra mathiri</p>
+          <p>College ID: ${college.id} • District: ${college.district} • Total Visitors: ${visitors.length} • Generated: ${new Date().toLocaleString()}</p>
         </div>
         <table>
-          <tr><th>College ID</th><th>College Name - Visit Panna College</th><th>Student Name</th><th>Email</th><th>Mobile</th><th>District/City/Address</th><th>Education</th><th>Interested Course</th><th>Visits - College ID Name</th><th>Last Visit</th><th>Activity</th></tr>
-          ${visitorsList.map(v=>`<tr><td><span class="badge">ID ${v.college_id || college.id}</span></td><td><strong>${v.college_name || college.name}</strong><br><small>Visit Panna College - ID ${v.college_id} - Name ${v.college_name}</small></td><td><strong>${v.student_name}</strong><br>ID ${v.student_id}</td><td>${v.student_email}</td><td>${v.student_mobile}</td><td>${v.student_district}, ${v.student_city}<br><small>${v.student_address}</small></td><td>${v.student_educationLevel} - ${v.student_percentage}</td><td>${v.student_interestedCourse}</td><td><span class="badge">${v.total_visits} visits - College ID ${v.college_id} - ${v.college_name}</span><br>${v.college_views} views, ${v.saves} saves, ${v.enquiries} enq</td><td>${v.last_visit_date} ${v.last_visit_time}</td><td>${v.last_activity}</td></tr>`).join('')}
+          <tr><th>College ID</th><th>College Name</th><th>Student Name</th><th>Email</th><th>Mobile</th><th>District/City</th><th>Education</th><th>Interested Course</th><th>Visits</th><th>Last Visit</th><th>Activity</th></tr>
+          ${visitorsList.map(v=>`<tr><td><span class="badge">ID ${v.college_id || college.id}</span></td><td><strong>${v.college_name || college.name}</strong></td><td><strong>${v.student_name}</strong><br>ID ${v.student_id}</td><td>${v.student_email}</td><td>${v.student_mobile}</td><td>${v.student_district}, ${v.student_city}<br><small>${v.student_address}</small></td><td>${v.student_educationLevel} - ${v.student_percentage}</td><td>${v.student_interestedCourse}</td><td><span class="badge">${v.total_visits} visits</span><br>${v.college_views} views, ${v.saves} saves, ${v.enquiries} enq</td><td>${v.last_visit_date} ${v.last_visit_time}</td><td>${v.last_activity}</td></tr>`).join('')}
         </table>
-        <div style="margin-top:20px; padding:15px; background:white; border-radius:12px; border:2px solid #FAB95B;">
-          <strong>Summary:</strong> Total Visitors ${visitors.length} • Total Views ${agg?.totalViews} • Saves ${agg?.saved} • Enquiries ${agg?.enquiries} • Your Own College ID ${college.id} • UI Frame Ours, Content Yours • Palette #E8E2DB #FAB95B #547792 #1A3263
+        <div style="margin-top:20px; padding:15px; background:white; border-radius:12px; border:2px solid #E8E2DB;">
+          <strong>Summary:</strong> Total Visitors ${visitors.length} • Total Views ${agg?.totalViews} • Saves ${agg?.saved} • Enquiries ${agg?.enquiries} • College ID ${college.id}
         </div>
       </body>
       </html>
@@ -77,12 +76,12 @@ export default function CollegeAnalytics({ college }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h2 className="font-display text-[22px] font-bold text-[#1A3263]">College Analytics - Your Own College - {college.shortName} - ID {college.id} - Visitors Details with Name Mail Address</h2>
-          <div className="text-[11px] text-[#547792] mt-1">Yar yaru entha college visit pananga - Name, Mail, Address ellam admin pakkura mathiri & download panra mathiri - Your own college visitors only - College ID isolation - Your own (Not PSG)</div>
+          <h2 className="font-display text-[22px] font-bold text-[#1A3263]">College Analytics - {college.name} - Analytics</h2>
+          <div className="text-[11px] text-[#547792] mt-1">Detailed visitor analytics for your college - Secure and privacy protected</div>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <button onClick={handleDownloadCSV} className="h-10 px-4 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[11px] flex items-center gap-1.5 border-2 border-[#FAB95B]"><Download size={14} /> Download CSV - Visitors Name Mail Address</button>
-          <button onClick={handleDownloadDetailedPDF} className="h-10 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[11px] flex items-center gap-1.5"><FileText size={14} /> Download PDF - Detailed</button>
+          <button onClick={handleDownloadCSV} className="h-10 px-4 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[11px] flex items-center gap-1.5 border-2 border-[#FAB95B]"><Download size={14} /> Download CSV</button>
+          <button onClick={handleDownloadDetailedPDF} className="h-10 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[11px] flex items-center gap-1.5"><FileText size={14} /> Download PDF</button>
           <button onClick={handleDownloadPDF} className="h-10 px-4 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5">📄 PDF Report</button>
         </div>
       </div>
@@ -108,7 +107,7 @@ export default function CollegeAnalytics({ college }) {
       {/* Visitor Details Table - Name Mail Address */}
       <div className="rounded-[24px] bg-white border-2 border-[#FAB95B]/30 p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h3 className="font-bold text-[18px] text-[#1A3263] flex items-center gap-2"><Users size={20} className="text-[#FAB95B]" /> Who Visited Your College - Detailed List - Name, Email, Mobile, District, City, Address, Education, Course - Your Own College Visitors (Not PSG) - {filteredVisitors.length} Visitors</h3>
+          <h3 className="font-bold text-[18px] text-[#1A3263] flex items-center gap-2"><Users size={20} className="text-[#FAB95B]" /> Who Visited Your College List - Name, Email, Mobile, District, City, Address, Education, Course - Your Own College Visitors (Not PSG) - {filteredVisitors.length} Visitors</h3>
           <div className="flex gap-2">
             <div className="flex items-center gap-2 px-4 h-10 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB]">
               <Search size={14} className="text-[#547792]" />
@@ -129,8 +128,8 @@ export default function CollegeAnalytics({ college }) {
           <table className="w-full text-left min-w-[1100px]">
             <thead>
               <tr className="bg-[#1A3263] text-white">
-                <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">College ID & College Name - Visit Panna College</th>
-                <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Student Name - Who Visited</th>
+                <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">College ID & Name</th>
+                <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Student Name</th>
                 <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Email & Mobile</th>
                 <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">District / City / Address</th>
                 <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Education & Course Interest</th>
@@ -142,16 +141,16 @@ export default function CollegeAnalytics({ college }) {
               {filteredVisitors.length===0 ? (
                 <tr><td colSpan={7} className="p-12 text-center">
                   <div className="text-3xl">👥</div>
-                  <div className="font-bold text-[#1A3263] mt-3">No visitors yet - Demo visitors will appear with College ID and College Name</div>
-                  <div className="text-[11px] text-[#547792] mt-2">When students visit your college page, their name, email, mobile, district, city, address, college ID {college.id}, college name {college.name} will appear here - Your own college visitors - You can download CSV/PDF with college ID and college name - Demo data seeded - {college.name} ID {college.id}</div>
+                  <div className="font-bold text-[#1A3263] mt-3">No visitors yet</div>
+                  <div className="text-[11px] text-[#547792] mt-2">When students visit your college, their details will appear here</div>
                 </td></tr>
               ) : filteredVisitors.map(visitor=>(
                 <tr key={visitor.student_id} className="border-b border-[#E8E2DB] hover:bg-[#E8E2DB]/20 transition-colors">
                   <td className="p-3">
-                    <div className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold inline-flex">College ID: {visitor.college_id || college.id}</div>
+                    <div className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold inline-flex">ID: {visitor.college_id || college.id}</div>
                     <div className="font-bold text-[#1A3263] text-[12px] mt-2">{visitor.college_name || college.name}</div>
-                    <div className="text-[10px] text-[#547792] mt-1">Visit Panna College ID & Name - {visitor.college_id} - {visitor.college_name}</div>
-                    <div className="text-[10px] px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[#1A3263] font-bold inline-flex mt-2">Your Own College ID {college.id}</div>
+                    <div className="text-[10px] text-[#547792] mt-1"></div>
+                    <div className="text-[10px] px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[#1A3263] font-bold inline-flex mt-2"></div>
                   </td>
                   <td className="p-3">
                     <div className="font-bold text-[#1A3263]">{visitor.student_name}</div>
@@ -182,8 +181,8 @@ export default function CollegeAnalytics({ college }) {
                     </div>
                   </td>
                   <td className="p-3">
-                    <div className="text-[10px] text-[#547792]">Total {visitor.total_visits} activities</div>
-                    <div className="text-[10px] font-bold text-[#1A3263] mt-1">College ID {visitor.college_id} - {visitor.college_name?.slice(0,20)}</div>
+                    <div className="text-[10px] text-[#547792]">{visitor.total_visits} activities</div>
+                    <div className="text-[10px] font-bold text-[#1A3263] mt-1"></div>
                   </td>
                 </tr>
               ))}
@@ -192,13 +191,13 @@ export default function CollegeAnalytics({ college }) {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-3">
-          <button onClick={handleDownloadCSV} className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-2"><Download size={16} /> Download All Visitors CSV - Name, Email, Mobile, District, City, Address, Education, Course, Visits</button>
-          <button onClick={handleDownloadDetailedPDF} className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] font-bold text-[12px] flex items-center gap-2"><FileText size={16} /> Download PDF - Detailed Visitor Report - Your College ID {college.id}</button>
+          <button onClick={handleDownloadCSV} className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-2"><Download size={16} /> Download All Visitors CSV</button>
+          <button onClick={handleDownloadDetailedPDF} className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] font-bold text-[12px] flex items-center gap-2"><FileText size={16} /> Download PDF Visitor Report - Your College ID {college.id}</button>
         </div>
 
         <div className="mt-6 rounded-[12px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4">
-          <div className="text-[11px] font-bold text-[#1A3263]">Yar Yaru Entha College Visit Pananga - Admin Pakkura Mathiri & Download - Your Own College (Not PSG)</div>
-          <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.5]">College Admin can see who visited your college with name, email, mobile, district, city, address, education level, school/college, percentage, group/stream, interested course, total visits, college views, course views, saves, compares, enquiries, last visit date/time, last activity. You can download as CSV and PDF. This is YOUR OWN college visitors only - ID {college.id} - {college.name} - Not PSG - College ID isolation - Your own visitors - UI frame ours, content yours - Download panra mathiri venum - Done! Platform Admin sees all colleges visitors, College Admin sees only own college visitors.</div>
+          <div className="text-[11px] font-bold text-[#1A3263]">Yar Yaru Entha College Visit Pananga - Admin Pakkura Mathiri & Download - Your College</div>
+          <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.5]">College Admin can see who visited your college with detailed information. Download as CSV and PDF for records. Secure college data isolation - only your college visitors are shown.</div>
         </div>
       </div>
 

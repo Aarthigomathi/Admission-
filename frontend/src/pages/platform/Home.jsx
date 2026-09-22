@@ -44,7 +44,7 @@ export default function PlatformHome() {
           <div className="max-w-[900px]">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1A3263] border-2 border-[#FAB95B] shadow-sm text-[11px] font-bold tracking-wide text-[#FAB95B]">
               <span className="h-2 w-2 rounded-full bg-[#FAB95B] animate-pulse" />
-              Premium • Secure • {isStudent ? (language==='ta' ? 'மாணவருக்கு மட்டும் தமிழ் / English Toggle' : 'Only Student Tamil / English Toggle') : 'Three Roles STUDENT/COLLEGE/PLATFORM_ADMIN'} • Activity Tracking • PDF Reports • #E8E2DB #FAB95B #547792 #1A3263
+              Premium • Secure • {isStudent ? (language==='ta' ? 'மாணவருக்கு மட்டும் தமிழ் / English Toggle' : 'Only Student Tamil / English Toggle') : 'Three Roles STUDENT/COLLEGE/PLATFORM_ADMIN'} • Activity Tracking • PDF Reports
             </div>
             {isStudent && <div className="mt-4"><LanguageToggle variant="default" /></div>}
 
@@ -158,13 +158,7 @@ export default function PlatformHome() {
             ))}
           </div>
           <div className="hidden lg:flex items-center gap-2">
-            <span className="text-[11px] font-bold uppercase text-[#547792]">Palette:</span>
-            <div className="flex gap-1">
-              <span className="h-6 w-6 rounded-full border-2 border-white shadow" style={{ background: '#E8E2DB' }} title="#E8E2DB" />
-              <span className="h-6 w-6 rounded-full border-2 border-white shadow -ml-1" style={{ background: '#FAB95B' }} title="#FAB95B" />
-              <span className="h-6 w-6 rounded-full border-2 border-white shadow -ml-1" style={{ background: '#547792' }} title="#547792" />
-              <span className="h-6 w-6 rounded-full border-2 border-white shadow -ml-1" style={{ background: '#1A3263' }} title="#1A3263" />
-            </div>
+            <span className="text-[11px] font-bold uppercase text-[#547792]">{filtered.length} Colleges • Verified Platform</span>
           </div>
         </div>
       </div>
@@ -251,7 +245,7 @@ export default function PlatformHome() {
                 <div>2. <strong>Login:</strong> College login pannina avunga college empty website varum - PSG illa, vera default illa - Avunga college mattum</div>
                 <div>3. <strong>Add A-Z Yourself:</strong> Logo, Campus Hero Image, Tagline, Colors, About, Vision, Mission, Management, Principal, Departments with HOD (oru oru dept kum HOD), Courses (degree, fees, intake), Facilities, Hostel, Placements, Exams, Research, Accreditation, Events, Gallery, Announcements, Contact, Social - Full A-Z</div>
                 <div>4. <strong>Publish:</strong> Preview → Publish → Students can discover - Chennai filter: student Chennai nu sonna Chennai colleges first based on details</div>
-                <div>5. <strong>UI Frame Ours, Content Yours:</strong> Header, sidebar, colors #E8E2DB #FAB95B #547792 #1A3263, layout - Platform controls. Content full college adds.</div>
+                <div>5. <strong>College Content:</strong> Colleges add their own details - logo, campus images, departments, courses, facilities, placements - Content fully managed by college.</div>
               </div>
             </div>
           </div>
@@ -299,16 +293,11 @@ export default function PlatformHome() {
                 <div className="h-10 w-10 rounded-[12px] bg-[#FAB95B] text-[#1A3263] grid place-items-center font-display font-bold border-2 border-[#E8E2DB]">T</div>
                 <div className="leading-tight">
                   <div className="font-display text-[18px] font-semibold text-white">Tamil Nadu Colleges</div>
-                  <div className="text-[11px] tracking-widest uppercase text-[#FAB95B]">Premium • Secure • #E8E2DB #FAB95B #547792 #1A3263</div>
+                  <div className="text-[11px] tracking-widest uppercase text-[#FAB95B]">Premium • Secure</div>
                 </div>
               </div>
               <p className="mt-6 max-w-[360px] text-[13px] leading-[1.6] text-[#E8E2DB]/70">Complete modern premium Tamil Nadu College Discovery Platform - centralized discovery across all districts. Three roles STUDENT/COLLEGE/PLATFORM_ADMIN role-based auth. Student multi-step signup, College self-service CMS, Platform Admin analytics & PDF reports. Privacy protected.</p>
-              <div className="mt-4 flex gap-2">
-                <span className="h-8 w-8 rounded-full border-2 border-white" style={{ background: '#E8E2DB' }} />
-                <span className="h-8 w-8 rounded-full border-2 border-white" style={{ background: '#FAB95B' }} />
-                <span className="h-8 w-8 rounded-full border-2 border-white" style={{ background: '#547792' }} />
-                <span className="h-8 w-8 rounded-full border-2 border-white" style={{ background: '#1A3263' }} />
-              </div>
+
             </div>
             <div className="flex gap-16 text-[13px]">
               <div>
@@ -331,18 +320,18 @@ export default function PlatformHome() {
                 </div>
               </div>
               <div>
-                <div className="font-bold tracking-wide uppercase text-[11px] text-[#FAB95B]">Colors - Palette</div>
-                <div className="mt-4 space-y-2 text-[12px] text-[#E8E2DB]/80">
-                  <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full" style={{ background: '#E8E2DB' }} /> #E8E2DB Beige BG</div>
-                  <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full" style={{ background: '#FAB95B' }} /> #FAB95B Gold CTA</div>
-                  <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full" style={{ background: '#547792' }} /> #547792 Slate Secondary</div>
-                  <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full" style={{ background: '#1A3263' }} /> #1A3263 Navy Primary</div>
+                <div className="font-bold tracking-wide uppercase text-[11px] text-[#FAB95B]">Platform</div>
+                <div className="mt-4 space-y-3 text-[#E8E2DB]/80">
+                  <div className="block">Verified Colleges Only</div>
+                  <div className="block">Secure Student Tracking</div>
+                  <div className="block">PDF Reports Generation</div>
+                  <div className="block">Official Academic Portal</div>
                 </div>
               </div>
             </div>
           </div>
           <div className="mt-16 pt-8 border-t border-[#FAB95B]/20 flex flex-wrap justify-between gap-4 text-[11px] text-[#E8E2DB]/60">
-            <div>© 2026 Tamil Nadu College Discovery Platform • Complete Premium Production System • Three Roles STUDENT/COLLEGE/PLATFORM_ADMIN • Secure Activity Tracking • PDF Reports • #E8E2DB #FAB95B #547792 #1A3263</div>
+            <div>© 2026 Tamil Nadu College Discovery Platform • Complete Premium Production System • Three Roles STUDENT/COLLEGE/PLATFORM_ADMIN • Secure Activity Tracking • PDF Reports</div>
             <div>Student Signup Multi-step • College Signup Verification • Platform Admin Analytics • College Analytics Own Only • Save Compare Enquiry Consent Only • Recommendation Why Shown • Recently Viewed • Premium SaaS</div>
           </div>
         </div>
