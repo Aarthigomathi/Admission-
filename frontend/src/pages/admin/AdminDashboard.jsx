@@ -16,8 +16,8 @@ export default function AdminDashboard() {
  const [isLoggedIn, setIsLoggedIn] = useState(false)
  const [selectedCollegeId, setSelectedCollegeId] = useState(null)
 
- // Forms for adding data
- const [deptForm, setDeptForm] = useState({ name: '', hod: '', facultyCount: '', description: '', image: '' })
+ // Forms for adding data - HOD with image + biography like principal screenshot
+ const [deptForm, setDeptForm] = useState({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', hodDetailedBio: '', hodBio: '', hodResearch: '', hodPublications: '', hodAwards: '', facultyCount: '', description: '', image: '' })
  const [courseForm, setCourseForm] = useState({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '' })
  const [facilityForm, setFacilityForm] = useState({ name: '', description: '', icon: '', image: '' })
  const [placementForm, setPlacementForm] = useState({ year: '', company: '', package: '', students: '', department: '' })
@@ -81,13 +81,14 @@ export default function AdminDashboard() {
 
  const handleAddDepartment = () => {
   if (!deptForm.name) return alert("Department name required")
+  if (!deptForm.hod) return alert("HOD name required - oru oru department HOD")
   const list = customData.departments || []
   const newDept = { id: Date.now(), ...deptForm, createdAt: new Date().toISOString() }
   const updated = [...list, newDept]
   saveCollegeData(selectedCollegeId, 'departments', updated)
   setCustomData({ ...customData, departments: updated })
-  setDeptForm({ name: '', hod: '', facultyCount: '', description: '', image: '' })
-  alert(`Department ${newDept.name} with HOD ${newDept.hod} added! Students will see it. Your college content.`)
+  setDeptForm({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', hodDetailedBio: '', hodBio: '', hodResearch: '', hodPublications: '', hodAwards: '', facultyCount: '', description: '', image: '' })
+  alert(`Department ${newDept.name} with HOD ${newDept.hod} + Image + Biography added like principal screenshot! Students will see dark blue design with yellow underline.`)
  }
 
  const handleAddCourse = () => {
@@ -196,6 +197,22 @@ export default function AdminDashboard() {
   if (!file) return
   const reader = new FileReader()
   reader.onload = (ev) => setPrincipalForm({ ...principalForm, image: ev.target.result })
+  reader.readAsDataURL(file)
+ }
+
+ const handleDeptHodImageUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setDeptForm({ ...deptForm, hodImage: ev.target.result })
+  reader.readAsDataURL(file)
+ }
+
+ const handleDeptImageUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setDeptForm({ ...deptForm, image: ev.target.result })
   reader.readAsDataURL(file)
  }
 
@@ -636,60 +653,136 @@ export default function AdminDashboard() {
      {activeSection==='departments' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263]">Departments with HOD - Add Each Department with HOD - Your Own Departments - A to Z You Add</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Oru oru departmentkkum HOD antha mathiri college oda overall - You add each department yourself with HOD name, faculty count, labs, description, image. Your college content.</p>
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Building2 className="text-[#FAB95B]" /> Departments with HOD - Like Principal Screenshot Design - Image + Biography</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Oru oru department HOD kum principal mathiri image + biography odd pantra maathiri venum - Dark blue bg, yellow underline, left HOD image + name/email, right white box detailed bio. Principal design same replica for HOD.</p>
 
         <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
-         <h4 className="font-bold text-[#1A3263]">Add New Department - With HOD</h4>
-         <div className="mt-4 grid md:grid-cols-2 gap-4">
+         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add New Department - With HOD Image + Detailed Biography Like Principal</h4>
+         <div className="mt-2 text-[11px] text-[#547792]">Principal ku panna mathiri oru oru department HOD kum: image left, name + email below, right white box la long bio with research, publications, awards.</div>
+         <div className="mt-6 grid md:grid-cols-2 gap-4">
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Name *</label>
            <input value={deptForm.name} onChange={e=>setDeptForm({...deptForm, name: e.target.value})} placeholder="e.g. Computer Science and Engineering" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Name * - Each Dept HOD</label>
-           <input value={deptForm.hod} onChange={e=>setDeptForm({...deptForm, hod: e.target.value})} placeholder="e.g. Dr. Ramesh Kumar - HOD CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Faculty Count</label>
            <input value={deptForm.facultyCount} onChange={e=>setDeptForm({...deptForm, facultyCount: e.target.value})} placeholder="e.g. 25" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Image URL</label>
-           <input value={deptForm.image} onChange={e=>setDeptForm({...deptForm, image: e.target.value})} placeholder="Paste dept image URL" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Image URL (Optional)</label>
+           <div className="mt-2 flex gap-2">
+            <input value={deptForm.image} onChange={e=>setDeptForm({...deptForm, image: e.target.value})} placeholder="Dept banner image URL" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-11 px-3 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 text-[11px] font-bold flex items-center gap-1 cursor-pointer">
+              <Upload size={12} /> Upload
+              <input type="file" accept="image/*" className="hidden" onChange={handleDeptImageUpload} />
+            </label>
+           </div>
+          </div>
+          <div className="md:col-span-1">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Dept Description - Labs, Facilities</label>
+           <input value={deptForm.description} onChange={e=>setDeptForm({...deptForm, description: e.target.value})} placeholder="Labs, facilities, achievements" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+
+          <div className="md:col-span-2 mt-4 p-4 rounded-[16px] bg-[#1A3263]/5 border-2 border-[#1A3263]/10">
+            <div className="font-bold text-[13px] text-[#1A3263] flex items-center gap-2">👨‍🏫 HOD Details - Like Principal Screenshot - Image + Biography</div>
+            <div className="text-[11px] text-[#547792] mt-1">Oru oru department HOD kum principal maathiri dark blue design - HOD image, name, email, detailed bio</div>
+          </div>
+
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Name *</label>
+           <input value={deptForm.hod} onChange={e=>setDeptForm({...deptForm, hod: e.target.value})} placeholder="e.g. Dr. Ramesh Kumar - HOD CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Designation</label>
+           <input value={deptForm.hodDesignation} onChange={e=>setDeptForm({...deptForm, hodDesignation: e.target.value})} placeholder="Head of Department, CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Qualification</label>
+           <input value={deptForm.hodQualification} onChange={e=>setDeptForm({...deptForm, hodQualification: e.target.value})} placeholder="e.g. Ph.D, M.E CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Experience</label>
+           <input value={deptForm.hodExperience} onChange={e=>setDeptForm({...deptForm, hodExperience: e.target.value})} placeholder="e.g. 15 years academic + 2 years industrial" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Email</label>
+           <input value={deptForm.hodEmail} onChange={e=>setDeptForm({...deptForm, hodEmail: e.target.value})} placeholder="hod.cse@college.edu - like principal [at]" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Phone</label>
+           <input value={deptForm.hodPhone} onChange={e=>setDeptForm({...deptForm, hodPhone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Labs, Facilities, etc</label>
-           <textarea value={deptForm.description} onChange={e=>setDeptForm({...deptForm, description: e.target.value})} placeholder="Department description, labs, facilities, achievements" rows={3} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" />
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Image - Upload or URL - Like Principal Screenshot Left Side - 320px height</label>
+           <div className="mt-2 flex gap-2">
+            <input value={deptForm.hodImage} onChange={e=>setDeptForm({...deptForm, hodImage: e.target.value})} placeholder="Paste HOD photo URL - like principal screenshot" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+              <Upload size={12} /> Upload HOD Image
+              <input type="file" accept="image/*" className="hidden" onChange={handleDeptHodImageUpload} />
+            </label>
+           </div>
+           {deptForm.hodImage && <div className="mt-3"><img src={deptForm.hodImage} className="h-20 w-20 rounded-[12px] object-cover border-2 border-[#FAB95B]" alt="HOD preview" /></div>}
+          </div>
+          <div className="md:col-span-2">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Detailed Biography - Long Bio Like Principal Screenshot - Right White Box</label>
+           <textarea value={deptForm.hodDetailedBio} onChange={e=>setDeptForm({...deptForm, hodDetailedBio: e.target.value})} placeholder="Paste detailed HOD biography like principal example: Dr. Ramesh Kumar was Postdoctoral Fellow from ... He has 15 years academic experience in CSE. He has published 85 technical papers in International journals, presented 60 papers in conferences. He has completed 12 Govt funded projects worth 5 Crores, currently 3 projects in progress worth 2 Crores. He has developed 8 products, 5 transferred to industries. He has created 3 Centres of Excellence. His PhD work on AI/ML earned National Award. He has guided 45 projects, produced 5 PhD scholars, 4 doing PhD under supervision. He has visited countries for collaboration, keynote speaker in 120 programs, organized 40 events. He completed B.E CSE from Anna University, M.E from PSG Tech." rows={10} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none leading-[1.6]" />
+           <div className="text-[10px] text-[#547792] mt-1">This long bio will appear in white box right side like principal screenshot - detailed research, publications, projects, awards for HOD</div>
           </div>
          </div>
-         <button onClick={handleAddDepartment} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Department with HOD - Your Own Dept</button>
+         <button onClick={handleAddDepartment} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Department with HOD Image + Biography - Like Principal</button>
         </div>
 
         <div className="mt-8">
-         <h4 className="font-bold text-[#1A3263]">Your Departments - {(allCustomData.departments||[]).length} Departments You Added </h4>
+         <h4 className="font-bold text-[#1A3263]">Your Departments - {(allCustomData.departments||[]).length} Departments You Added - Each with HOD Image + Bio Like Principal</h4>
          {(allCustomData.departments||[]).length===0 ? (
           <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
            <div className="text-3xl">🏛️</div>
-           <div className="font-bold text-[#1A3263] mt-3">No departments yet - Add your departments with HOD</div>
-           <div className="text-[12px] text-[#547792] mt-2">Oru oru departmentkkum HOD - You add each department yourself - Your college departments, not PSG - Your college content</div>
+           <div className="font-bold text-[#1A3263] mt-3">No departments yet - Add your departments with HOD Image + Biography</div>
+           <div className="text-[12px] text-[#547792] mt-2">Oru oru departmentkkum HOD image + biography - Principal maathiri dark blue + yellow underline - You add each department yourself</div>
+           <div className="mt-4 inline-flex px-4 py-2 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">Example: CSE Dept - HOD Dr. Ramesh Kumar - Image left, bio right white box</div>
           </div>
          ) : (
-          <div className="mt-4 grid md:grid-cols-2 gap-4">
+          <div className="mt-4 space-y-4">
            {allCustomData.departments.map(dept=>(
-            <div key={dept.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-5 flex gap-4">
-             {dept.image ? <img src={dept.image} className="h-16 w-16 rounded-[12px] object-cover border-2 border-[#E8E2DB] shrink-0" alt="Dept" /> : <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center text-[#1A3263] font-bold">{dept.name[0]}</div>}
-             <div className="flex-1 min-w-0">
-              <div className="font-bold text-[13px] text-[#1A3263]">{dept.name}</div>
-              <div className="text-[11px] text-[#FAB95B] bg-[#1A3263] inline-flex px-2 py-0.5 rounded-full font-bold mt-1">HOD: {dept.hod}</div>
-              <div className="text-[11px] text-[#547792] mt-2">Faculty: {dept.facultyCount} • {dept.description?.slice(0,80)}...</div>
-             </div>
-             <button onClick={()=>handleDelete('departments', dept.id)} className="h-8 w-8 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center text-[#547792] hover:border-red-200 hover:text-red-600 shrink-0"><Trash2 size={12} /></button>
+            <div key={dept.id} className="rounded-[20px] bg-[#1A3263] border-2 border-[#1A3263] p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div className="font-bold text-white text-[14px]">{dept.name} <span className="text-[#FAB95B] text-[11px]">• {dept.facultyCount} Faculty</span></div>
+                <button onClick={()=>handleDelete('departments', dept.id)} className="h-8 w-8 rounded-full bg-white/10 border border-white/20 grid place-items-center text-white hover:bg-red-500"><Trash2 size={12} /></button>
+              </div>
+              <div className="grid md:grid-cols-[100px_1fr] gap-4">
+                {dept.hodImage ? <img src={dept.hodImage} className="h-[100px] w-[100px] rounded-[12px] object-cover border-2 border-[#FAB95B]/30 bg-white" alt={dept.hod} /> : <div className="h-[100px] w-[100px] rounded-[12px] bg-white/10 border border-white/20 grid place-items-center text-white font-bold text-[24px]">{dept.hod ? dept.hod[0] : dept.name[0]}</div>}
+                <div>
+                  <div className="font-bold text-[13px] text-white">{dept.hod}</div>
+                  <div className="text-[11px] text-[#FAB95B] mt-1">{dept.hodDesignation || `HOD - ${dept.name}`}</div>
+                  <div className="text-[11px] text-white/70 mt-1 break-all">{dept.hodEmail || 'hod [at] college [dot] edu'} • {dept.hodPhone}</div>
+                  <div className="text-[11px] text-white/60 mt-2 line-clamp-3">{dept.hodDetailedBio ? dept.hodDetailedBio.slice(0,200)+'...' : dept.description?.slice(0,200)}</div>
+                </div>
+              </div>
             </div>
            ))}
           </div>
          )}
         </div>
+
+        {(allCustomData.departments||[]).length>0 && (
+          <div className="mt-8 rounded-[20px] bg-[#1A3263] border-2 border-[#1A3263] p-6">
+            <div className="text-center mb-6">
+              <h4 className="font-display text-[18px] font-bold text-white inline-block relative">{allCustomData.departments[0]?.name || 'Department'} - Preview Like Principal<span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-1 w-10 bg-[#FAB95B] rounded-full"></span></h4>
+              <div className="text-[11px] text-white/60 mt-3">Oru oru department HOD kum ithu maathiri thaan website la theriyum - Dark blue + yellow underline</div>
+            </div>
+            <div className="grid md:grid-cols-[200px_1fr] gap-6 max-w-[900px] mx-auto">
+              <div className="text-center">
+                {deptForm.hodImage || allCustomData.departments[0]?.hodImage ? <img src={deptForm.hodImage || allCustomData.departments[0]?.hodImage} className="w-full h-[220px] rounded-[12px] object-cover border-2 border-white/20 shadow-xl object-top" alt="HOD" /> : <div className="w-full h-[220px] rounded-[12px] bg-white/10 border-2 border-dashed border-white/20 grid place-items-center text-white/40 text-[11px]">HOD Image 320px Like Principal Screenshot</div>}
+                <div className="mt-3 font-bold text-[14px] text-white">{deptForm.hod || allCustomData.departments[0]?.hod || 'Dr. HOD Name'}</div>
+                <div className="text-[12px] text-[#FAB95B] mt-1">{deptForm.hodDesignation || 'Head of Department'}</div>
+                <div className="text-[11px] text-white/70 mt-2 break-all">{deptForm.hodEmail || allCustomData.departments[0]?.hodEmail || 'hod [at] college [dot] edu'}</div>
+              </div>
+              <div className="rounded-[8px] bg-white p-5">
+                <div className="text-[12px] leading-[1.7] text-[#1A3263]/80 whitespace-pre-wrap">{deptForm.hodDetailedBio || allCustomData.departments[0]?.hodDetailedBio || 'Detailed HOD biography will appear here like principal screenshot - long text with research, publications, projects, awards, achievements. Add in form above - HOD Detailed Biography field.'}</div>
+              </div>
+            </div>
+          </div>
+        )}
        </div>
       </div>
      )}

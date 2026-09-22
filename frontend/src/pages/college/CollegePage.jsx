@@ -290,26 +290,93 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-        {/* Departments */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Building2 className="text-[#FAB95B]" /> Departments - {departments.length}</h2>
+        {/* Departments - Each HOD Like Principal Screenshot Design - Dark Blue + Yellow Underline + Image + Bio */}
+        <section className="space-y-6">
+          <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 flex flex-wrap items-center justify-between gap-4">
+            <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Building2 className="text-[#FAB95B]" /> Departments - {departments.length} Departments</h2>
+            <div className="text-[11px] text-[#547792] bg-[#E8E2DB]/50 px-3 py-1 rounded-full border">Each HOD with image + detailed biography like principal screenshot - dark blue + yellow underline</div>
+          </div>
+
           {hasContent(departments) ? (
-            <div className="mt-6 grid md:grid-cols-2 gap-4">
+            <div className="space-y-6">
               {departments.map(dept=>(
-                <div key={dept.id} className="rounded-[16px] border-2 border-[#E8E2DB] p-5 flex gap-4 hover:border-[#FAB95B]/40 transition-colors">
-                  {dept.image ? <img src={dept.image} className="h-16 w-16 rounded-[12px] object-cover border-2 border-[#E8E2DB] shrink-0" alt={dept.name} /> : <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] grid place-items-center text-[#1A3263] font-bold">{dept.name[0]}</div>}
-                  <div>
-                    <div className="font-bold text-[#1A3263]">{dept.name}</div>
-                    <div className="mt-1 inline-flex px-3 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">HOD: {dept.hod}</div>
-                    <div className="text-[12px] text-[#547792] mt-2">Faculty: {dept.facultyCount} • {dept.description}</div>
+                <div key={dept.id} className="rounded-[24px] bg-[#1A3263] border-2 border-[#1A3263] overflow-hidden">
+                  <div className="p-8">
+                    <div className="text-center mb-8">
+                      <h3 className="font-display text-[24px] font-bold text-white inline-block relative">
+                        {dept.name}
+                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 w-12 bg-[#FAB95B] rounded-full"></span>
+                      </h3>
+                      <div className="mt-4 flex flex-wrap justify-center gap-2">
+                        <span className="inline-flex px-3 py-1 rounded-full bg-[#FAB95B]/20 border border-[#FAB95B]/30 text-[#FAB95B] text-[11px] font-bold">HOD: {dept.hod}</span>
+                        {dept.facultyCount && <span className="inline-flex px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/70 text-[11px]">{dept.facultyCount} Faculty</span>}
+                        {dept.hodQualification && <span className="inline-flex px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/70 text-[11px]">{dept.hodQualification}</span>}
+                      </div>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-[280px_1fr] gap-6 lg:gap-8 max-w-[1200px] mx-auto">
+                      {/* Left - HOD Image + Name + Email Like Principal Screenshot */}
+                      <div className="text-center md:text-left">
+                        <div className="rounded-[12px] overflow-hidden border-2 border-white/10 shadow-xl bg-white">
+                          {(dept.hodImage || dept.image) ? (
+                            <img src={dept.hodImage || dept.image} className="w-full h-[320px] object-cover object-top" alt={dept.hod} />
+                          ) : (
+                            <div className="w-full h-[320px] bg-gradient-to-br from-[#E8E2DB] to-[#547792] grid place-items-center text-[#1A3263] font-bold text-[48px]">{dept.hod ? dept.hod[0] : dept.name[0]}</div>
+                          )}
+                        </div>
+                        <div className="mt-4 text-center">
+                          <div className="font-bold text-[16px] text-white">{dept.hod}</div>
+                          <div className="text-[13px] text-[#FAB95B] mt-1">{dept.hodDesignation || `Head of Department - ${dept.name}`}</div>
+                          <div className="text-[13px] text-white/80 mt-2 font-medium break-all">{dept.hodEmail || `${dept.hod ? dept.hod.toLowerCase().replace(/\s+/g,'') : 'hod'} [at] college [dot] edu`}</div>
+                          {dept.hodPhone && <div className="text-[12px] text-white/60 mt-1">{dept.hodPhone}</div>}
+                          {dept.hodQualification && <div className="mt-3 inline-flex px-3 py-1 rounded-full bg-[#FAB95B]/20 border border-[#FAB95B]/30 text-[#FAB95B] text-[11px] font-bold">{dept.hodQualification}</div>}
+                          {dept.hodExperience && <div className="mt-2 text-[11px] text-white/60">{dept.hodExperience}</div>}
+                          {dept.facultyCount && <div className="mt-2 text-[11px] text-white/50">Faculty Count: {dept.facultyCount}</div>}
+                        </div>
+                      </div>
+
+                      {/* Right - White Box Detailed HOD Bio Like Principal Screenshot */}
+                      <div className="rounded-[8px] bg-white p-6 lg:p-8 shadow-xl">
+                        <div className="text-[13px] lg:text-[14px] leading-[1.8] text-[#1A3263]/90 space-y-4">
+                          {dept.hodDetailedBio ? (
+                            <div className="whitespace-pre-wrap">{dept.hodDetailedBio}</div>
+                          ) : dept.hodBio ? (
+                            <div className="whitespace-pre-wrap">{dept.hodBio}</div>
+                          ) : (
+                            <>
+                              {dept.description && <p><span className="font-bold">About {dept.name}:</span> {dept.description}</p>}
+                              <p>{dept.hod} is currently working as {dept.hodDesignation || `Head of Department, ${dept.name}`} at {college.name}, {college.city}, {college.district}. {dept.hodQualification ? `Qualification: ${dept.hodQualification}. ` : ''}{dept.hodExperience ? `Experience: ${dept.hodExperience}. ` : ''}Add detailed HOD biography in Admin → Departments → HOD Detailed Biography field - Include research, publications, projects, awards like principal screenshot example of Dr. L. Ashok Kumar.</p>
+                              {dept.facultyCount && <p><span className="font-bold">Department Strength:</span> {dept.facultyCount} faculty members with expertise in various domains of {dept.name}.</p>}
+                            </>
+                          )}
+                          {dept.hodResearch && <p><span className="font-bold">Research:</span> {dept.hodResearch}</p>}
+                          {dept.hodPublications && <p><span className="font-bold">Publications:</span> {dept.hodPublications}</p>}
+                          {dept.hodAwards && <p><span className="font-bold">Awards:</span> {dept.hodAwards}</p>}
+                        </div>
+
+                        {/* Department extra info if bio exists */}
+                        {dept.description && dept.hodDetailedBio && (
+                          <div className="mt-8 pt-6 border-t-2 border-[#E8E2DB]">
+                            <div className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><Building2 size={16} className="text-[#FAB95B]" /> About {dept.name} Department</div>
+                            <div className="text-[13px] text-[#547792] mt-3 leading-[1.7]">{dept.description}</div>
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              {dept.facultyCount && <span className="px-3 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[11px] font-bold">Faculty: {dept.facultyCount}</span>}
+                              {dept.image && <span className="px-3 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[11px] font-bold">Dept Image Available</span>}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="mt-6 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
-              <div className="font-bold text-[#1A3263] mt-3">No departments added yet</div>
-              <div className="text-[12px] text-[#547792] mt-2">Add departments with HOD in Admin → Departments</div>
+            <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8 py-16 text-center">
+              <div className="text-4xl">🏛️</div>
+              <div className="font-bold text-[#1A3263] mt-4 text-[18px]">No departments added yet - Add with HOD Image + Biography Like Principal</div>
+              <div className="text-[13px] text-[#547792] mt-2 max-w-[600px] mx-auto">Add departments with HOD image and detailed biography like principal screenshot: dark blue background, title with yellow underline, left HOD image with name/email, right white box detailed bio. Go to Admin → Departments → Add Department with HOD Image + Biography.</div>
+              <div className="mt-6 inline-flex px-4 py-2 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">Example: CSE - HOD Dr. Ramesh Kumar - Image 320px + Bio like Dr. L. Ashok Kumar</div>
             </div>
           )}
         </section>
