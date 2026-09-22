@@ -27,7 +27,7 @@ export default function AdminDashboard() {
  const [hostelForm, setHostelForm] = useState({ name: '', type: 'Boys', capacity: '', fees: '', facilities: '' })
  const [accreditationForm, setAccreditationForm] = useState({ name: '', grade: '', year: '', validTill: '' })
  const [managementForm, setManagementForm] = useState({ name: '', designation: '', image: '', email: '', phone: '', description: '' })
- const [principalForm, setPrincipalForm] = useState({ name: '', qualification: '', experience: '', image: '', message: '', email: '', phone: '' })
+ const [principalForm, setPrincipalForm] = useState({ name: '', designation: 'Principal', qualification: '', experience: '', image: '', message: '', detailedBio: '', email: '', phone: '', bio: '', research: '', publications: '', awards: '' })
  const [aboutForm, setAboutForm] = useState({ fullText: '', vision: '', mission: '' })
  const [brandingForm, setBrandingForm] = useState({ logo: '', heroImage: '', tagline: '', collegeImages: [], primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' })
  const [newCollegeImageUrl, setNewCollegeImageUrl] = useState('')
@@ -969,36 +969,41 @@ export default function AdminDashboard() {
      {activeSection==='principal' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><UserCheck size={22} className="text-[#FAB95B]" /> Principal Details - Add Principal Information</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add your college principal details - name, qualification, experience, image, message, contact - Will appear prominently on your college website.</p>
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><UserCheck size={22} className="text-[#FAB95B]" /> Principal Details - Like Screenshot Design - Dark Blue + Yellow Underline</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add principal like screenshot: dark blue background, title Principal with yellow underline, left image with name/email below, right white box detailed biography. Example from image: Dr. L. Ashok Kumar - Thiagarajar College - Detailed research, publications, projects.</p>
 
         <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
-         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Edit3 size={16} /> Principal Information - Proper Form - Works Now</h4>
+         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Edit3 size={16} /> Principal Information - Like Screenshot - Detailed Bio</h4>
+         <div className="mt-2 text-[11px] text-[#547792]">Screenshot la irukka maathiri: dark blue bg, Principal title yellow underline, left image + name/email, right white box la long detailed bio - Example: Dr. L. Ashok Kumar bio with Postdoctoral, BHAVAN Fellowship, SYST Fellowship, 3 years industrial, 25 years academic, 173 papers, 167 conferences, 28 projects 15 Crores, 9 projects 13 Crores, 27 products, 23 transferred, Eight Centres of Excellence, PhD wearable electronics National Award ISTE, 27 awards, 92 projects guided, 13 PhD Scholars, 373 programs, 112 events etc.</div>
          <div className="mt-4 grid md:grid-cols-2 gap-4">
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Name *</label>
-           <input value={principalForm.name} onChange={e=>setPrincipalForm({...principalForm, name: e.target.value})} placeholder="e.g. Dr. R. Kumar - Principal" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+           <input value={principalForm.name} onChange={e=>setPrincipalForm({...principalForm, name: e.target.value})} placeholder="e.g. Dr. L. Ashok Kumar" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Designation</label>
+           <input value={principalForm.designation} onChange={e=>setPrincipalForm({...principalForm, designation: e.target.value})} placeholder="Principal" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Qualification</label>
-           <input value={principalForm.qualification} onChange={e=>setPrincipalForm({...principalForm, qualification: e.target.value})} placeholder="e.g. Ph.D, M.E, M.Tech" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+           <input value={principalForm.qualification} onChange={e=>setPrincipalForm({...principalForm, qualification: e.target.value})} placeholder="e.g. Ph.D, Postdoctoral Research Fellow" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Experience</label>
-           <input value={principalForm.experience} onChange={e=>setPrincipalForm({...principalForm, experience: e.target.value})} placeholder="e.g. 20 years in education" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+           <input value={principalForm.experience} onChange={e=>setPrincipalForm({...principalForm, experience: e.target.value})} placeholder="e.g. 3 years industrial + 25 years academic" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Email</label>
-           <input value={principalForm.email} onChange={e=>setPrincipalForm({...principalForm, email: e.target.value})} placeholder="principal@yourcollege.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+           <input value={principalForm.email} onChange={e=>setPrincipalForm({...principalForm, email: e.target.value})} placeholder="principal@tce.edu - will show as principal [at] tce [dot] edu like screenshot" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone</label>
            <input value={principalForm.phone} onChange={e=>setPrincipalForm({...principalForm, phone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Image - Upload or URL</label>
+          <div className="md:col-span-2">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Image - Upload or URL - Like screenshot left side</label>
            <div className="mt-2 flex gap-2">
-            <input value={principalForm.image} onChange={e=>setPrincipalForm({...principalForm, image: e.target.value})} placeholder="Paste image URL" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <input value={principalForm.image} onChange={e=>setPrincipalForm({...principalForm, image: e.target.value})} placeholder="Paste image URL - principal photo like screenshot" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
             <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
               <Upload size={12} /> Upload
               <input type="file" accept="image/*" className="hidden" onChange={handlePrincipalImageUpload} />
@@ -1006,22 +1011,31 @@ export default function AdminDashboard() {
            </div>
           </div>
           <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Message</label>
-           <textarea value={principalForm.message} onChange={e=>setPrincipalForm({...principalForm, message: e.target.value})} placeholder="Principal's message to students, vision for college, welcome message" rows={4} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" />
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Detailed Biography - Long Bio Like Screenshot - Main Content Right White Box</label>
+           <textarea value={principalForm.detailedBio} onChange={e=>setPrincipalForm({...principalForm, detailedBio: e.target.value})} placeholder="Paste detailed biography like screenshot example: Dr. L. Ashok Kumar was a Postdoctoral Research Fellow from San Diego State University, California. He was selected among seven scientists in India for the BHAVAN Fellowship from the Indo-US Science and Technology Forum and also, he received SYST Fellowship from DST, Govt. of India. Currently working as a Principal, Thiagarajar College of Engineering, Madurai, Tamil Nadu He has 3 years of industrial experience and 25 years of academic and research experience in PSG College of Technology, Coimbatore. He has published 173 technical papers in International and National journals and presented 167 papers in National and International Conferences. He has completed 28 Government of India funded projects worth about 15 Crores and currently 9 projects are in progress worth about 13 Crores. He has developed 27 products and out of that 23 products have been technology transferred to industries and for Government funding agencies. He has created Eight Centres of Excellence at PSG Tech in collaboration with Government agencies and Industries. His PhD work on wearable electronics earned him a National Award from ISTE, and he has received 27 awards in the National and in International level. He has guided 92 graduate and postgraduate projects. He has produced 13 PhD Scholars and 12 candidates are doing PhD under his supervision. He has visited many countries for institute industry collaboration and as a keynote speaker. He has been an invited speaker in 373 programs. Also, he has organized 112 events, including conferences, workshops, and seminars. He completed his graduate program in Electrical and Electronics Engineering from University of Madras and his post-graduate from PSG College of Technology, Coimbatore." rows={12} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none leading-[1.6]" />
+           <div className="text-[10px] text-[#547792] mt-1">This long bio will appear in white box right side like screenshot - detailed research, publications, projects, awards</div>
+          </div>
+          <div className="md:col-span-2">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Short Message (Optional)</label>
+           <textarea value={principalForm.message} onChange={e=>setPrincipalForm({...principalForm, message: e.target.value})} placeholder="Short principal message" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" />
           </div>
          </div>
-         <button onClick={handleSavePrincipal} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Save size={16} /> Save Principal Details - Proper Works</button>
+         <button onClick={handleSavePrincipal} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Save size={16} /> Save Principal - Like Screenshot Design</button>
         </div>
 
-        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6">
-         <h4 className="font-bold text-[#1A3263]">Preview - Principal</h4>
-         <div className="mt-4 flex gap-4 p-5 rounded-[16px] bg-[#E8E2DB]/30 border-2 border-[#E8E2DB]">
-          {principalForm.image ? <img src={principalForm.image} className="h-20 w-20 rounded-[16px] object-cover border-2 border-[#FAB95B] bg-white shrink-0" alt="Principal" /> : <div className="h-20 w-20 rounded-[16px] bg-[#E8E2DB] border-2 border-dashed grid place-items-center text-[#547792] text-[10px]">Principal Image</div>}
-          <div className="flex-1">
-           <div className="font-bold text-[16px] text-[#1A3263]">{principalForm.name || 'Principal Name'}</div>
-           <div className="text-[11px] text-[#FAB95B] bg-[#1A3263] inline-flex px-2 py-0.5 rounded-full font-bold mt-1">{principalForm.qualification || 'Qualification'} • {principalForm.experience || 'Experience'}</div>
-           <div className="text-[12px] text-[#547792] mt-3 italic">{principalForm.message ? `"${principalForm.message.slice(0,150)}..."` : 'Principal message will appear here'}</div>
-           <div className="text-[11px] text-[#547792] mt-2">{principalForm.email} • {principalForm.phone}</div>
+        <div className="mt-8 rounded-[20px] bg-[#1A3263] border-2 border-[#1A3263] p-6">
+         <div className="text-center mb-6">
+           <h4 className="font-display text-[20px] font-bold text-white inline-block relative">Principal<span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-1 w-10 bg-[#FAB95B] rounded-full"></span></h4>
+         </div>
+         <div className="grid md:grid-cols-[200px_1fr] gap-6 max-w-[900px] mx-auto">
+          <div className="text-center">
+            {principalForm.image ? <img src={principalForm.image} className="w-full h-[220px] rounded-[12px] object-cover border-2 border-white/20 shadow-xl" alt="Principal" /> : <div className="w-full h-[220px] rounded-[12px] bg-white/10 border-2 border-dashed border-white/20 grid place-items-center text-white/40 text-[11px]">Principal Image Like Screenshot</div>}
+            <div className="mt-3 font-bold text-[14px] text-white">{principalForm.name || 'Dr. L. Ashok Kumar'}</div>
+            <div className="text-[12px] text-[#FAB95B] mt-1">{principalForm.designation || 'Principal'}</div>
+            <div className="text-[11px] text-white/70 mt-2 break-all">{principalForm.email || 'principal [at] tce [dot] edu'}</div>
+          </div>
+          <div className="rounded-[8px] bg-white p-5">
+            <div className="text-[12px] leading-[1.7] text-[#1A3263]/80 whitespace-pre-wrap">{principalForm.detailedBio || principalForm.message || 'Detailed biography will appear here like screenshot - long text with research, publications, projects, awards, achievements'}</div>
           </div>
          </div>
         </div>

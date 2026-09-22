@@ -204,37 +204,68 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-        {/* Principal Section */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Users className="text-[#FAB95B]" /> Principal - {college.name}</h2>
-          {principal && principal.name ? (
-            <div className="mt-6 rounded-[20px] bg-[#E8E2DB]/30 border-2 border-[#E8E2DB] p-6 flex flex-col md:flex-row gap-6">
-              {principal.image ? (
-                <img src={principal.image} className="h-32 w-32 rounded-[20px] object-cover border-4 border-[#FAB95B] bg-white shadow-lg shrink-0" alt={principal.name} />
-              ) : (
-                <div className="h-32 w-32 rounded-[20px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold text-[36px] border-4 border-[#FAB95B] shrink-0">{principal.name[0]}</div>
-              )}
-              <div className="flex-1">
-                <div className="font-bold text-[20px] text-[#1A3263]">{principal.name}</div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {principal.qualification && <span className="px-3 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">{principal.qualification}</span>}
-                  {principal.experience && <span className="px-3 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[11px] font-bold">{principal.experience}</span>}
-                </div>
-                {principal.message && (
-                  <div className="mt-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] p-4">
-                    <div className="text-[11px] font-bold uppercase text-[#547792]">Principal's Message</div>
-                    <div className="text-[13px] text-[#1A3263]/80 mt-2 leading-[1.6] italic">"{principal.message}"</div>
+        {/* Principal Section - Design like attached image: dark blue bg, yellow underline, left image + name/email, right white box detailed bio */}
+        <section className="rounded-[24px] bg-[#1A3263] border-2 border-[#1A3263] overflow-hidden">
+          <div className="p-8">
+            <div className="text-center mb-8">
+              <h2 className="font-display text-[28px] font-bold text-white inline-block relative">
+                Principal
+                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 w-12 bg-[#FAB95B] rounded-full"></span>
+              </h2>
+            </div>
+            
+            {principal && principal.name ? (
+              <div className="grid md:grid-cols-[280px_1fr] gap-6 lg:gap-8 max-w-[1200px] mx-auto">
+                {/* Left - Image + Name + Email - Like screenshot */}
+                <div className="text-center md:text-left">
+                  <div className="rounded-[12px] overflow-hidden border-2 border-white/10 shadow-xl bg-white">
+                    {principal.image ? (
+                      <img src={principal.image} className="w-full h-[320px] object-cover object-top" alt={principal.name} />
+                    ) : (
+                      <div className="w-full h-[320px] bg-gradient-to-br from-[#E8E2DB] to-[#547792] grid place-items-center text-[#1A3263] font-bold text-[48px]">{principal.name[0]}</div>
+                    )}
                   </div>
-                )}
-                <div className="mt-4 flex flex-wrap gap-3 text-[12px] text-[#547792]">
-                  {principal.email && <span className="flex items-center gap-1.5"><Mail size={12} /> {principal.email}</span>}
-                  {principal.phone && <span className="flex items-center gap-1.5"><Phone size={12} /> {principal.phone}</span>}
+                  <div className="mt-4 text-center">
+                    <div className="font-bold text-[16px] text-white">{principal.name}</div>
+                    {principal.designation && <div className="text-[13px] text-[#FAB95B] mt-1">{principal.designation}</div>}
+                    <div className="text-[13px] text-white/80 mt-2 font-medium break-all">{principal.email || 'principal [at] college [dot] edu'}</div>
+                    {principal.phone && <div className="text-[12px] text-white/60 mt-1">{principal.phone}</div>}
+                    {principal.qualification && <div className="mt-3 inline-flex px-3 py-1 rounded-full bg-[#FAB95B]/20 border border-[#FAB95B]/30 text-[#FAB95B] text-[11px] font-bold">{principal.qualification}</div>}
+                    {principal.experience && <div className="mt-2 text-[11px] text-white/60">{principal.experience}</div>}
+                  </div>
+                </div>
+
+                {/* Right - White box with detailed bio - Like screenshot */}
+                <div className="rounded-[8px] bg-white p-6 lg:p-8 shadow-xl">
+                  <div className="text-[13px] lg:text-[14px] leading-[1.8] text-[#1A3263]/90 space-y-4">
+                    {principal.detailedBio ? (
+                      <div className="whitespace-pre-wrap">{principal.detailedBio}</div>
+                    ) : (
+                      <>
+                        {principal.message && <p>{principal.message}</p>}
+                        {principal.qualification && <p><span className="font-bold">Qualification:</span> {principal.qualification} {principal.experience ? `with ${principal.experience} of experience` : ''}.</p>}
+                        {principal.bio && <p>{principal.bio}</p>}
+                        {!principal.message && !principal.bio && !principal.detailedBio && (
+                          <p>{principal.name} is currently working as Principal, {college.name}, {college.city}, {college.district}. {principal.qualification ? `He has ${principal.experience || 'extensive'} experience in academic and research.` : ''} Add detailed biography in Admin → Principal Details → Detailed Bio field - Include research, publications, projects, awards, achievements like in screenshot example of Dr. L. Ashok Kumar.</p>
+                        )}
+                      </>
+                    )}
+                    {/* If detailedBio not provided but we have separate fields, show combined */}
+                    {principal.research && <p>{principal.research}</p>}
+                    {principal.publications && <p>{principal.publications}</p>}
+                    {principal.awards && <p>{principal.awards}</p>}
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">No principal details added yet - Add in Admin → Principal Details</div>
-          )}
+            ) : (
+              <div className="max-w-[800px] mx-auto py-16 text-center rounded-[16px] bg-white/5 border-2 border-dashed border-white/20">
+                <div className="text-4xl">👨‍🏫</div>
+                <div className="font-bold text-white mt-4 text-[18px]">Principal Details Not Added Yet</div>
+                <div className="text-[13px] text-white/60 mt-2 max-w-[500px] mx-auto">Add principal details in Admin → Principal Details - Like screenshot: image left, name + email below image, detailed biography right white box with dark blue background and yellow underline title</div>
+                <div className="mt-6 inline-flex px-4 py-2 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[11px]">Example: Dr. L. Ashok Kumar - Thiagarajar College - Detailed bio with research, publications, projects</div>
+              </div>
+            )}
+          </div>
         </section>
 
         {/* Management Section */}
