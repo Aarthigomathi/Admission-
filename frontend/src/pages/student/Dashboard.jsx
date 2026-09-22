@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { colleges } from '../../lib/colleges'
 import { activityTracker } from '../../lib/activityTracker'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { GraduationCap, Bookmark, GitCompare, Clock, MapPin, TrendingUp, MessageCircle, Search, BookOpen, Heart, LogOut, User, Mail, Phone, Calendar, IdCard, Home, Award, Building, Briefcase, FileText, Star, Trophy, Calculator } from 'lucide-react'
+import { GraduationCap, Bookmark, GitCompare, Clock, MapPin, TrendingUp, MessageCircle, Search, BookOpen, Heart, LogOut, User, Mail, Phone, Calendar, IdCard, Home, Award, Building, Briefcase, FileText, Star, Trophy, Calculator, Edit3 } from 'lucide-react'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
@@ -36,7 +36,23 @@ export default function StudentDashboard() {
   }
 
   const recentlyViewedColleges = recentlyViewedIds.map(id => colleges.find(c => c.id === id)).filter(Boolean)
-  const recommended = colleges.filter(c => c.district === student.preferredDistrict || c.courses.some(co => co.name.includes(student.interestedCourse?.split(' ')[0]))).slice(0,3)
+  // Enhanced: If student says Chennai, Chennai colleges matching details first
+  const recommended = useMemo(() => {
+    if (!student) return []
+    const preferredDistrict = student.preferredDistrict || 'Coimbatore'
+    const interestedCourse = student.interestedCourse || ''
+    let filtered = [...colleges]
+    filtered.sort((a, b) => {
+      const aPref = a.district.toLowerCase() === preferredDistrict.toLowerCase() ? 1 : 0
+      const bPref = b.district.toLowerCase() === preferredDistrict.toLowerCase() ? 1 : 0
+      if (bPref !== aPref) return bPref - aPref
+      const aCourse = interestedCourse ? (a.courses.some(c => c.name.toLowerCase().includes(interestedCourse.split(' ')[0].toLowerCase())) ? 1 : 0) : 0
+      const bCourse = interestedCourse ? (b.courses.some(c => c.name.toLowerCase().includes(interestedCourse.split(' ')[0].toLowerCase())) ? 1 : 0) : 0
+      if (bCourse !== aCourse) return bCourse - aCourse
+      return parseInt(b.placements?.percentage || 0) - parseInt(a.placements?.percentage || 0)
+    })
+    return filtered.slice(0,4)
+  }, [student])
   const savedColleges = saved.map(id => colleges.find(c => c.id === id)).filter(Boolean)
   const docsCount = student.documentsUploaded || Object.values(student.documentNames || {}).filter(Boolean).length || 0
 
@@ -78,6 +94,7 @@ export default function StudentDashboard() {
               <button onClick={()=>setShowFullDetails(!showFullDetails)} className="mt-4 h-10 px-5 rounded-full bg-white text-[#1A3263] font-bold text-[12px] flex items-center gap-2">
                 <User size={14} /> {showFullDetails ? (language==='ta' ? 'விவரங்களை மறை' : 'Hide Full Details') : (language==='ta' ? 'முழு விவரங்களை பார் - தமிழ் / English' : t('viewProfile') + ' - Tamil / English Proper')}
               </button>
+              <Link to="/student/profile" className="mt-4 ml-2 inline-flex h-10 px-5 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[12px] items-center gap-2 border-2 border-[#FAB95B]"><Edit3 size={14} /> {language==='ta' ? 'விவரங்களை திருத்து - Edit Options' : 'Edit Details - Edit Options'}</Link>
             </div>
             <div className="flex gap-2 flex-wrap">
               <StudentLanguageToggleAlways variant="compact" />

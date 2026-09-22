@@ -12,6 +12,7 @@ import StudentDashboard from './pages/student/Dashboard'
 import StudentSaved from './pages/student/Saved'
 import StudentCompare from './pages/student/Compare'
 import StudentEnquiries from './pages/student/Enquiries'
+import StudentProfile from './pages/student/Profile'
 import PlatformAdminDashboard from './pages/platformAdmin/PlatformAdminDashboard'
 import { activityTracker, ACTIVITY_TYPES } from './lib/activityTracker'
 import { LanguageProvider } from './lib/languageContext'
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           
           <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/student/profile" element={<StudentProfile />} />
           <Route path="/student/saved" element={<StudentSaved />} />
           <Route path="/student/compare" element={<StudentCompare />} />
           <Route path="/student/enquiries" element={<StudentEnquiries />} />
