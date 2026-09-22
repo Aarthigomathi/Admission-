@@ -420,15 +420,61 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-        {/* Placements */}
+        {/* Hostel with Images */}
+        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🏠 Hostel - {hostels.length}</h2>
+          {hasContent(hostels) ? (
+            <div className="mt-6 grid md:grid-cols-2 gap-6">
+              {hostels.map(h=>(
+                <div key={h.id} className="rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white hover:border-[#FAB95B]/40 transition-colors">
+                  {(h.images && h.images.length>0) && (
+                    <div className="relative">
+                      <div className="grid grid-cols-3 gap-1 p-1 bg-[#E8E2DB]">
+                        {h.images.slice(0,6).map((img, i)=>(
+                          <img key={i} src={img.url || img} className="h-[110px] w-full object-cover rounded-[8px]" alt={`${h.name} ${i+1}`} />
+                        ))}
+                      </div>
+                      {h.images.length>1 && <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{h.images.length} Photos</div>}
+                    </div>
+                  )}
+                  <div className="p-5">
+                    <div className="flex items-center gap-2">
+                      <div className="font-bold text-[16px] text-[#1A3263]">{h.name}</div>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${h.type==='Girls' ? 'bg-pink-100 text-pink-700 border border-pink-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>{h.type}</span>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {h.capacity && <span className="px-3 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[11px] font-bold">Capacity: {h.capacity}</span>}
+                      {h.fees && <span className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{h.fees}</span>}
+                    </div>
+                    {h.facilities && <div className="mt-3 text-[12px] text-[#547792]"><span className="font-bold text-[#1A3263]">Facilities:</span> {h.facilities}</div>}
+                    {h.description && <div className="mt-3 text-[12px] leading-[1.6] text-[#1A3263]/70 whitespace-pre-wrap">{h.description}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Hostel information will be updated soon</div>
+          )}
+        </section>
+
+        {/* Placements with Company Logo */}
         <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-bold text-[20px] text-[#1A3263]">Placements - {placements.length} Records</h2>
           {hasContent(placements) ? (
-            <div className="mt-6 space-y-3">
+            <div className="mt-6 grid md:grid-cols-2 gap-4">
               {placements.map(p=>(
-                <div key={p.id} className="flex items-center justify-between p-4 rounded-[12px] border-2 border-[#E8E2DB] bg-[#E8E2DB]/20">
-                  <div><div className="font-bold text-[#1A3263] text-[13px]">{p.company} - {p.year}</div><div className="text-[11px] text-[#547792]">{p.package} • {p.students} students • {p.department}</div></div>
-                  <span className="px-3 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">{p.package}</span>
+                <div key={p.id} className="flex gap-4 p-4 rounded-[16px] border-2 border-[#E8E2DB] bg-[#E8E2DB]/20 hover:border-[#FAB95B]/40 transition-colors">
+                  {p.logo ? <img src={p.logo} className="h-16 w-16 rounded-[12px] object-contain bg-white border-2 border-[#E8E2DB] p-2 shrink-0" alt={p.company} /> : <div className="h-16 w-16 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold text-[20px] shrink-0">{p.company[0]}</div>}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-[#1A3263] text-[14px]">{p.company}</div>
+                    <div className="text-[11px] text-[#547792] mt-1 flex flex-wrap gap-1.5 items-center">
+                      {p.year && <span className="px-2 py-0.5 rounded-full bg-white border text-[10px]">{p.year}</span>}
+                      {p.package && <span className="px-2.5 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{p.package}</span>}
+                      {p.students && <span className="px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[10px]">{p.students} students</span>}
+                      {p.department && <span className="px-2 py-0.5 rounded-full bg-[#E8E2DB] text-[10px]">{p.department}</span>}
+                    </div>
+                    {p.description && <div className="text-[11px] text-[#1A3263]/60 mt-2 line-clamp-2">{p.description}</div>}
+                  </div>
                 </div>
               ))}
             </div>

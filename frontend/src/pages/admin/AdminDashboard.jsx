@@ -20,11 +20,12 @@ export default function AdminDashboard() {
  const [deptForm, setDeptForm] = useState({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', hodDetailedBio: '', hodBio: '', hodResearch: '', hodPublications: '', hodAwards: '', facultyCount: '', description: '', image: '' })
  const [courseForm, setCourseForm] = useState({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '' })
  const [facilityForm, setFacilityForm] = useState({ name: '', description: '', icon: '', image: '' })
- const [placementForm, setPlacementForm] = useState({ year: '', company: '', package: '', students: '', department: '' })
+ const [placementForm, setPlacementForm] = useState({ year: '', company: '', package: '', students: '', department: '', logo: '', description: '' })
  const [eventForm, setEventForm] = useState({ title: '', date: '', category: '', description: '', image: '' })
  const [galleryForm, setGalleryForm] = useState({ url: '', caption: '' })
  const [announcementForm, setAnnouncementForm] = useState({ title: '', date: '', category: '', description: '' })
- const [hostelForm, setHostelForm] = useState({ name: '', type: 'Boys', capacity: '', fees: '', facilities: '' })
+ const [hostelForm, setHostelForm] = useState({ name: '', type: 'Boys', capacity: '', fees: '', facilities: '', description: '', images: [] })
+ const [newHostelImageUrl, setNewHostelImageUrl] = useState('')
  const [accreditationForm, setAccreditationForm] = useState({ name: '', grade: '', year: '', validTill: '' })
  const [managementForm, setManagementForm] = useState({ name: '', designation: '', image: '', email: '', phone: '', description: '' })
  const [principalForm, setPrincipalForm] = useState({ name: '', designation: 'Principal', qualification: '', experience: '', image: '', message: '', detailedBio: '', email: '', phone: '', bio: '', research: '', publications: '', awards: '' })
@@ -117,7 +118,15 @@ export default function AdminDashboard() {
   const updated = [...list, { id: Date.now(), ...placementForm }]
   saveCollegeData(selectedCollegeId, 'placements', updated)
   setCustomData({ ...customData, placements: updated })
-  setPlacementForm({ year: '', company: '', package: '', students: '', department: '' })
+  setPlacementForm({ year: '', company: '', package: '', students: '', department: '', logo: '', description: '' })
+ }
+
+ const handlePlacementLogoUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setPlacementForm({ ...placementForm, logo: ev.target.result })
+  reader.readAsDataURL(file)
  }
 
  const handleAddEvent = () => {
@@ -153,7 +162,33 @@ export default function AdminDashboard() {
   const updated = [...list, { id: Date.now(), ...hostelForm }]
   saveCollegeData(selectedCollegeId, 'hostels', updated)
   setCustomData({ ...customData, hostels: updated })
-  setHostelForm({ name: '', type: 'Boys', capacity: '', fees: '', facilities: '' })
+  setHostelForm({ name: '', type: 'Boys', capacity: '', fees: '', facilities: '', description: '', images: [] })
+  setNewHostelImageUrl('')
+ }
+
+ const handleAddHostelImage = () => {
+  if (!newHostelImageUrl) return alert("Enter image URL")
+  setHostelForm({ ...hostelForm, images: [...(hostelForm.images||[]), { id: Date.now(), url: newHostelImageUrl }] })
+  setNewHostelImageUrl('')
+ }
+
+ const handleRemoveHostelImage = (id) => {
+  setHostelForm({ ...hostelForm, images: (hostelForm.images||[]).filter(img => img.id !== id) })
+ }
+
+ const handleHostelImageUpload = (e) => {
+  const files = Array.from(e.target.files || [])
+  if ((hostelForm.images||[]).length + files.length > 10) return alert("Maximum 10 images allowed per hostel")
+  files.forEach(file => {
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      setHostelForm(prev => {
+        if ((prev.images||[]).length >= 10) return prev
+        return { ...prev, images: [...(prev.images||[]), { id: Date.now()+Math.random(), url: ev.target.result }] }
+      })
+    }
+    reader.readAsDataURL(file)
+  })
  }
 
  const handleAddAccreditation = () => {
@@ -908,26 +943,102 @@ export default function AdminDashboard() {
      )}
 
      {activeSection==='placements' && (
-      <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Placements</h3>
-       <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
-        <div className="grid md:grid-cols-3 gap-4">
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Company *</label><input value={placementForm.company} onChange={e=>setPlacementForm({...placementForm, company: e.target.value})} placeholder="e.g. TCS, Infosys" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Year</label><input value={placementForm.year} onChange={e=>setPlacementForm({...placementForm, year: e.target.value})} placeholder="2024" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Package</label><input value={placementForm.package} onChange={e=>setPlacementForm({...placementForm, package: e.target.value})} placeholder="6 LPA" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Students Placed</label><input value={placementForm.students} onChange={e=>setPlacementForm({...placementForm, students: e.target.value})} placeholder="50" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Department</label><input value={placementForm.department} onChange={e=>setPlacementForm({...placementForm, department: e.target.value})} placeholder="CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-        </div>
-        <button onClick={handleAddPlacement} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Placement</button>
-       </div>
-       <div className="mt-6 space-y-3">
-        {(allCustomData.placements||[]).map(p=>(
-         <div key={p.id} className="flex items-center justify-between p-4 rounded-[12px] border-2 border-[#E8E2DB] bg-white">
-          <div><div className="font-bold text-[13px] text-[#1A3263]">{p.company} - {p.year}</div><div className="text-[11px] text-[#547792]">{p.package} • {p.students} students • {p.department}</div></div>
-          <button onClick={()=>handleDelete('placements', p.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button>
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Briefcase className="text-[#FAB95B]" /> Placements with Company Logo</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add placement records with company logo - images odd pantra mathiri</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add New Placement - Company Logo</h4>
+         <div className="mt-2 text-[12px] text-[#547792]">Add company with logo, package, students - logo will show on college website</div>
+
+         <div className="mt-8 space-y-6">
+          <div className="space-y-4">
+           <h5 className="font-bold text-[13px] uppercase tracking-wide text-[#1A3263] border-b-2 border-[#E8E2DB] pb-2">Company Information</h5>
+           <div className="grid md:grid-cols-2 gap-5">
+            <div>
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Company Name *</label>
+             <input value={placementForm.company} onChange={e=>setPlacementForm({...placementForm, company: e.target.value})} placeholder="e.g. TCS, Infosys, Zoho, Google" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium transition-colors" />
+            </div>
+            <div>
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Year</label>
+             <input value={placementForm.year} onChange={e=>setPlacementForm({...placementForm, year: e.target.value})} placeholder="e.g. 2024, 2025" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] transition-colors" />
+            </div>
+            <div>
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Package</label>
+             <input value={placementForm.package} onChange={e=>setPlacementForm({...placementForm, package: e.target.value})} placeholder="e.g. 6 LPA, 12 LPA, 8-12 LPA" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] transition-colors" />
+            </div>
+            <div>
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Students Placed</label>
+             <input value={placementForm.students} onChange={e=>setPlacementForm({...placementForm, students: e.target.value})} placeholder="e.g. 50, 120" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] transition-colors" />
+            </div>
+            <div className="md:col-span-2">
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department</label>
+             <input value={placementForm.department} onChange={e=>setPlacementForm({...placementForm, department: e.target.value})} placeholder="e.g. CSE, All Departments, CSE + IT" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] transition-colors" />
+            </div>
+           </div>
+          </div>
+
+          <div className="space-y-4">
+           <h5 className="font-bold text-[13px] uppercase tracking-wide text-[#1A3263] border-b-2 border-[#E8E2DB] pb-2 flex items-center gap-2"><ImageIcon size={14} className="text-[#FAB95B]" /> Company Logo - Image Odd Pantra Mathiri</h5>
+           <div>
+            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Company Logo - Upload or URL</label>
+            <div className="mt-2 flex gap-3">
+             <input value={placementForm.logo} onChange={e=>setPlacementForm({...placementForm, logo: e.target.value})} placeholder="Paste company logo URL - https://logo.com/tcs.png or upload" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+             <label className="h-12 px-5 rounded-[14px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-2 cursor-pointer hover:bg-[#1A3263]/90 transition-colors">
+               <Upload size={14} /> Upload Logo
+               <input type="file" accept="image/*" className="hidden" onChange={handlePlacementLogoUpload} />
+             </label>
+            </div>
+            {placementForm.logo && (
+              <div className="mt-4 p-4 rounded-[14px] bg-[#E8E2DB]/30 border-2 border-[#E8E2DB] flex gap-4 items-center">
+                <img src={placementForm.logo} className="h-20 w-20 rounded-[12px] object-contain border-2 border-[#FAB95B] bg-white shadow p-2" alt="Company logo preview" />
+                <div>
+                  <div className="font-bold text-[13px] text-[#1A3263]">{placementForm.company || 'Company Name'}</div>
+                  <div className="text-[11px] text-[#547792]">{placementForm.package} • {placementForm.year}</div>
+                  <div className="text-[10px] text-[#547792] mt-1">Logo preview - will show on college website</div>
+                </div>
+              </div>
+            )}
+           </div>
+           <div>
+            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Placement Description (Optional) - Large Field</label>
+            <textarea value={placementForm.description} onChange={e=>setPlacementForm({...placementForm, description: e.target.value})} placeholder="Add details about placement drive, roles offered, selection process, etc - large field supports long text" rows={4} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[100px]" />
+           </div>
+          </div>
          </div>
-        ))}
-        {(allCustomData.placements||[]).length===0 && <div className="py-8 text-center text-[#547792] text-[12px]">No placement records added yet</div>}
+
+         <button onClick={handleAddPlacement} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2 hover:bg-[#1A3263]/90 shadow-lg"><Plus size={18} /> Add Placement with Logo</button>
+        </div>
+
+        <div className="mt-8">
+         <h4 className="font-bold text-[#1A3263]">Placements - {(allCustomData.placements||[]).length} Records</h4>
+         {(allCustomData.placements||[]).length===0 ? (
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
+           <div className="text-3xl">💼</div>
+           <div className="font-bold text-[#1A3263] mt-3">No placement records yet</div>
+           <div className="text-[12px] text-[#547792] mt-2">Add companies with logos - will display on college website with company logo</div>
+          </div>
+         ) : (
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+           {(allCustomData.placements||[]).map(p=>(
+            <div key={p.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-5 flex gap-4 hover:border-[#FAB95B]/40 transition-colors">
+             {p.logo ? <img src={p.logo} className="h-16 w-16 rounded-[12px] object-contain border-2 border-[#E8E2DB] bg-white p-1.5 shrink-0" alt={p.company} /> : <div className="h-16 w-16 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold text-[20px] shrink-0">{p.company[0]}</div>}
+             <div className="flex-1 min-w-0">
+              <div className="font-bold text-[13px] text-[#1A3263]">{p.company} - {p.year}</div>
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                <span className="px-2 py-0.5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[10px] font-bold">{p.package}</span>
+                <span className="px-2 py-0.5 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[10px]">{p.students} students</span>
+                {p.department && <span className="px-2 py-0.5 rounded-full bg-white border text-[10px]">{p.department}</span>}
+              </div>
+              {p.description && <div className="text-[11px] text-[#547792] mt-2 line-clamp-2">{p.description}</div>}
+             </div>
+             <button onClick={()=>handleDelete('placements', p.id)} className="h-8 w-8 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center text-[#547792] hover:border-red-200 hover:text-red-600 shrink-0"><Trash2 size={12} /></button>
+            </div>
+           ))}
+          </div>
+         )}
+        </div>
        </div>
       </div>
      )}
@@ -981,22 +1092,125 @@ export default function AdminDashboard() {
      )}
 
      {activeSection==='hostel' && (
-      <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Hostel</h3>
-       <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
-        <div className="grid md:grid-cols-3 gap-4">
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Hostel Name *</label><input value={hostelForm.name} onChange={e=>setHostelForm({...hostelForm, name: e.target.value})} placeholder="e.g. Boys Hostel A" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Type</label><select value={hostelForm.type} onChange={e=>setHostelForm({...hostelForm, type: e.target.value})} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]"><option>Boys</option><option>Girls</option></select></div>
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Capacity</label><input value={hostelForm.capacity} onChange={e=>setHostelForm({...hostelForm, capacity: e.target.value})} placeholder="200" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Fees</label><input value={hostelForm.fees} onChange={e=>setHostelForm({...hostelForm, fees: e.target.value})} placeholder="50000 per year" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label><input value={hostelForm.facilities} onChange={e=>setHostelForm({...hostelForm, facilities: e.target.value})} placeholder="WiFi, Mess, Gym, etc" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Home className="text-[#FAB95B]" /> Hostel with Images</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add hostel details with images - hostel la images odd pantra mathiri venum</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add New Hostel - With Images</h4>
+         <div className="mt-2 text-[12px] text-[#547792]">Add hostel info + upload multiple images - will show gallery on college website</div>
+
+         <div className="mt-8 space-y-6">
+          <div className="space-y-4">
+           <h5 className="font-bold text-[13px] uppercase tracking-wide text-[#1A3263] border-b-2 border-[#E8E2DB] pb-2">Hostel Information</h5>
+           <div className="grid md:grid-cols-2 gap-5">
+            <div>
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Hostel Name *</label>
+             <input value={hostelForm.name} onChange={e=>setHostelForm({...hostelForm, name: e.target.value})} placeholder="e.g. Boys Hostel A, Girls Hostel Main" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium transition-colors" />
+            </div>
+            <div>
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Type</label>
+             <select value={hostelForm.type} onChange={e=>setHostelForm({...hostelForm, type: e.target.value})} className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px]">
+              <option>Boys</option><option>Girls</option><option>Boys & Girls</option>
+             </select>
+            </div>
+            <div>
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Capacity</label>
+             <input value={hostelForm.capacity} onChange={e=>setHostelForm({...hostelForm, capacity: e.target.value})} placeholder="e.g. 200, 500 students" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] transition-colors" />
+            </div>
+            <div>
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Fees</label>
+             <input value={hostelForm.fees} onChange={e=>setHostelForm({...hostelForm, fees: e.target.value})} placeholder="e.g. 50000 per year, 60000 with mess" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] transition-colors" />
+            </div>
+            <div className="md:col-span-2">
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label>
+             <input value={hostelForm.facilities} onChange={e=>setHostelForm({...hostelForm, facilities: e.target.value})} placeholder="e.g. WiFi, Mess, Gym, Library, RO Water, Hot Water, Study Room" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] transition-colors" />
+            </div>
+            <div className="md:col-span-2">
+             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Hostel Description - Large Field</label>
+             <textarea value={hostelForm.description} onChange={e=>setHostelForm({...hostelForm, description: e.target.value})} placeholder="Enter detailed hostel description:&#10;&#10;• Rooms: Well-furnished rooms with cot, table, chair, cupboard&#10;• Mess: Hygienic vegetarian & non-veg mess, 3 times food&#10;• Facilities: 24/7 WiFi, library, gym, indoor games, medical facility&#10;• Security: 24/7 security, CCTV, warden&#10;• Rules, timings, etc&#10;&#10;Large field supports long text" rows={6} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[140px]" />
+            </div>
+           </div>
+          </div>
+
+          <div className="space-y-4">
+           <h5 className="font-bold text-[13px] uppercase tracking-wide text-[#1A3263] border-b-2 border-[#E8E2DB] pb-2 flex items-center gap-2"><Camera size={14} className="text-[#FAB95B]" /> Hostel Images - Multiple Images Odd Pantra Mathiri</h5>
+           
+           <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/30 p-5">
+            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Add Hostel Images - URL or Upload (Up to 10)</label>
+            <div className="mt-3 flex gap-2">
+             <input value={newHostelImageUrl} onChange={e=>setNewHostelImageUrl(e.target.value)} placeholder="Paste hostel image URL - https://college.edu/hostel1.jpg" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+             <button onClick={handleAddHostelImage} className="h-12 px-5 rounded-[14px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-1.5"><Plus size={14} /> Add</button>
+            </div>
+            <div className="mt-3 flex gap-2">
+             <label className="flex-1 h-12 px-4 rounded-[14px] bg-white border-2 border-dashed border-[#1A3263]/20 text-[#1A3263] font-bold text-[12px] flex items-center justify-center gap-2 cursor-pointer hover:border-[#FAB95B]">
+               <Upload size={14} /> Upload Multiple Images ({(hostelForm.images||[]).length}/10)
+               <input type="file" accept="image/*" multiple className="hidden" onChange={handleHostelImageUpload} />
+             </label>
+            </div>
+
+            {(hostelForm.images||[]).length===0 ? (
+             <div className="mt-4 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 p-6 text-center">
+               <div className="text-2xl">🏠</div>
+               <div className="text-[11px] text-[#547792] mt-2">No hostel images added yet - add room, mess, building photos</div>
+             </div>
+            ) : (
+             <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
+               {(hostelForm.images||[]).map((img, idx)=>(
+                 <div key={img.id} className="relative rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-white group">
+                   <img src={img.url} className="h-[110px] w-full object-cover" alt={`Hostel ${idx+1}`} />
+                   <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{idx+1}</div>
+                   <button onClick={()=>handleRemoveHostelImage(img.id)} className="absolute top-2 right-2 h-6 w-6 rounded-full bg-red-500 text-white grid place-items-center hover:bg-red-600"><Trash2 size={10} /></button>
+                 </div>
+               ))}
+             </div>
+            )}
+           </div>
+          </div>
+         </div>
+
+         <button onClick={handleAddHostel} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2 hover:bg-[#1A3263]/90 shadow-lg"><Plus size={18} /> Add Hostel with Images</button>
         </div>
-        <button onClick={handleAddHostel} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Hostel</button>
-       </div>
-       <div className="mt-6 grid md:grid-cols-2 gap-4">
-        {(allCustomData.hostels||[]).map(h=>(
-         <div key={h.id} className="rounded-[12px] border-2 border-[#E8E2DB] p-4 flex justify-between"><div><div className="font-bold text-[13px] text-[#1A3263]">{h.name} - {h.type}</div><div className="text-[11px] text-[#547792]">Capacity {h.capacity} • Fees {h.fees} • {h.facilities}</div></div><button onClick={()=>handleDelete('hostels', h.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button></div>
-        ))}
+
+        <div className="mt-8">
+         <h4 className="font-bold text-[#1A3263]">Hostels - {(allCustomData.hostels||[]).length}</h4>
+         {(allCustomData.hostels||[]).length===0 ? (
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
+           <div className="text-3xl">🏠</div>
+           <div className="font-bold text-[#1A3263] mt-3">No hostels added yet</div>
+           <div className="text-[12px] text-[#547792] mt-2">Add hostel with images - will show gallery on college website</div>
+          </div>
+         ) : (
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+           {(allCustomData.hostels||[]).map(h=>(
+            <div key={h.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] overflow-hidden hover:border-[#FAB95B]/40 transition-colors">
+             {(h.images && h.images.length>0) ? (
+               <div className="grid grid-cols-3 gap-1 p-1 bg-[#E8E2DB]">
+                 {h.images.slice(0,3).map((img, i)=>(
+                   <img key={i} src={img.url || img} className="h-[80px] w-full object-cover rounded-[8px]" alt="Hostel" />
+                 ))}
+                 {h.images.length>3 && <div className="h-[80px] rounded-[8px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold text-[12px]">+{h.images.length-3} more</div>}
+               </div>
+             ) : null}
+             <div className="p-4 flex justify-between gap-3">
+              <div className="flex-1 min-w-0">
+               <div className="font-bold text-[13px] text-[#1A3263]">{h.name} - {h.type}</div>
+               <div className="mt-1 flex flex-wrap gap-1">
+                 {h.capacity && <span className="px-2 py-0.5 rounded-full bg-[#E8E2DB] text-[10px]">Cap {h.capacity}</span>}
+                 {h.fees && <span className="px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[10px] font-bold">{h.fees}</span>}
+                 {h.images && <span className="px-2 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px]">{h.images.length} images</span>}
+               </div>
+               <div className="text-[11px] text-[#547792] mt-2">{h.facilities}</div>
+               {h.description && <div className="text-[11px] text-[#1A3263]/60 mt-1 line-clamp-2">{h.description.slice(0,100)}</div>}
+              </div>
+              <button onClick={()=>handleDelete('hostels', h.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center shrink-0"><Trash2 size={12} /></button>
+             </div>
+            </div>
+           ))}
+          </div>
+         )}
+        </div>
        </div>
       </div>
      )}
