@@ -28,7 +28,8 @@ export default function AdminDashboard() {
  const [accreditationForm, setAccreditationForm] = useState({ name: '', grade: '', year: '', validTill: '' })
  const [managementForm, setManagementForm] = useState({ name: '', designation: '', image: '' })
  const [aboutForm, setAboutForm] = useState({ fullText: '', vision: '', mission: '' })
- const [brandingForm, setBrandingForm] = useState({ logo: '', heroImage: '', tagline: '', primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' })
+ const [brandingForm, setBrandingForm] = useState({ logo: '', heroImage: '', tagline: '', collegeImages: [], primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' })
+ const [newCollegeImageUrl, setNewCollegeImageUrl] = useState('')
 
  useEffect(() => {
   const stored = localStorage.getItem('tn_current_college')
@@ -42,6 +43,7 @@ export default function AdminDashboard() {
    setBrandingForm({
     logo: custom.branding?.logo || fullCollege.branding?.logo || '',
     heroImage: custom.branding?.heroImage || fullCollege.branding?.heroImage || '',
+    collegeImages: custom.branding?.collegeImages || fullCollege.branding?.collegeImages || [],
     tagline: custom.tagline || fullCollege.tagline || '',
     primary: custom.branding?.colors?.primary || '#1A3263',
     secondary: custom.branding?.colors?.secondary || '#547792',
@@ -170,13 +172,52 @@ export default function AdminDashboard() {
   const branding = {
    logo: brandingForm.logo,
    heroImage: brandingForm.heroImage,
+   collegeImages: brandingForm.collegeImages || [],
    colors: { primary: brandingForm.primary, secondary: brandingForm.secondary, accent: brandingForm.accent },
    preset: 'custom'
   }
   saveCollegeData(selectedCollegeId, 'branding', branding)
   saveCollegeData(selectedCollegeId, 'tagline', brandingForm.tagline)
   setCustomData({ ...customData, branding, tagline: brandingForm.tagline })
-  alert("Branding saved! Your college identity updated successfully")
+  alert(`Branding saved! Logo and ${branding.collegeImages.length} campus images saved - Will auto swipe every 5 sec on your website`)
+ }
+
+ const handleAddCollegeImage = () => {
+  if (!newCollegeImageUrl) return alert("Enter image URL")
+  if ((brandingForm.collegeImages||[]).length >= 10) return alert("Maximum 10 college images allowed - 10 kitta odd pannalam")
+  const updated = [...(brandingForm.collegeImages||[]), { id: Date.now(), url: newCollegeImageUrl, caption: `Campus Image ${(brandingForm.collegeImages||[]).length+1}` }]
+  setBrandingForm({ ...brandingForm, collegeImages: updated })
+  setNewCollegeImageUrl('')
+ }
+
+ const handleRemoveCollegeImage = (id) => {
+  const updated = (brandingForm.collegeImages||[]).filter(img => img.id !== id)
+  setBrandingForm({ ...brandingForm, collegeImages: updated })
+ }
+
+ const handleLogoUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => {
+    setBrandingForm({ ...brandingForm, logo: ev.target.result })
+  }
+  reader.readAsDataURL(file)
+ }
+
+ const handleCollegeImageUpload = (e) => {
+  const files = Array.from(e.target.files || [])
+  if ((brandingForm.collegeImages||[]).length + files.length > 10) return alert("Maximum 10 images - 10 kitta mattum")
+  files.forEach(file => {
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      setBrandingForm(prev => {
+        if ((prev.collegeImages||[]).length >= 10) return prev
+        return { ...prev, collegeImages: [...(prev.collegeImages||[]), { id: Date.now()+Math.random(), url: ev.target.result, caption: `Campus Image ${(prev.collegeImages||[]).length+1}` }] }
+      })
+    }
+    reader.readAsDataURL(file)
+  })
  }
 
  const handleDelete = (section, id) => {
@@ -435,84 +476,116 @@ export default function AdminDashboard() {
      {activeSection==='branding' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263]">College Logo & Branding - Add Your Logo, Campus Image, Tagline, Colors - Your College - Official</h3>
-        <p className="text-[12px] text-[#547792] mt-2">After signup, your college empty - you add logo, campus images yourself. Your college content appears with our official academic design. Add your information and it will be displayed professionally.</p>
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><ImageIcon className="text-[#FAB95B]" /> College Logo & Campus Images - Up to 10 Images - Auto Swipe Every 5 Sec</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add your college logo and up to 10 campus images. Logo appears on header/cards. Campus images auto swipe every 5 seconds on your college website hero - oru oru image 5 sec ku auto swipe aagum.</p>
         
         <div className="mt-8 grid lg:grid-cols-2 gap-8">
-         <div className="space-y-5">
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">College Logo - Add Your Logo - Your College Logo </label>
-           <input value={brandingForm.logo} onChange={e=>setBrandingForm({...brandingForm, logo: e.target.value})} placeholder="Paste logo image URL - e.g. https://yourcollege.edu/logo.png or upload" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-           <div className="mt-3 rounded-[12px] border-2 border-dashed border-[#1A3263]/20 bg-[#E8E2DB]/30 p-6 text-center">
-            {brandingForm.logo ? (
-             <img src={brandingForm.logo} className="h-20 w-20 rounded-[12px] mx-auto object-cover border-2 border-[#FAB95B] bg-white" alt="Your Logo" />
-            ) : (
-             <div className="h-20 w-20 rounded-[12px] bg-white border-2 border-[#E8E2DB] mx-auto grid place-items-center text-[#547792]">Logo</div>
-            )}
-            <div className="text-[11px] text-[#547792] mt-3">Your college logo - Add your own - logo - Will appear on your website header, cards, everywhere</div>
+         <div className="space-y-6">
+          <div className="rounded-[16px] bg-[#E8E2DB]/30 border-2 border-[#E8E2DB] p-5">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><ImageIcon size={12} className="text-[#FAB95B]" /> College Logo - Upload or Paste URL</label>
+           <div className="mt-3 flex gap-3">
+            <input value={brandingForm.logo} onChange={e=>setBrandingForm({...brandingForm, logo: e.target.value})} placeholder="Paste logo URL https://yourcollege.edu/logo.png" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-2 cursor-pointer hover:bg-[#1A3263]/90">
+              <Upload size={14} /> Upload
+              <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+            </label>
            </div>
-          </div>
-
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Campus Hero Image - Add Your Campus Image - Your College Image</label>
-           <input value={brandingForm.heroImage} onChange={e=>setBrandingForm({...brandingForm, heroImage: e.target.value})} placeholder="Paste campus image URL - e.g. https://yourcollege.edu/campus.jpg" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-           <div className="mt-3 rounded-[12px] border-2 border-dashed border-[#1A3263]/20 overflow-hidden">
-            {brandingForm.heroImage ? (
-             <img src={brandingForm.heroImage} className="h-[140px] w-full object-cover" alt="Your Campus" />
+           <div className="mt-4 rounded-[12px] border-2 border-dashed border-[#1A3263]/20 bg-white p-6 text-center">
+            {brandingForm.logo ? (
+             <div className="space-y-3">
+              <img src={brandingForm.logo} className="h-24 w-24 rounded-[16px] mx-auto object-cover border-2 border-[#FAB95B] bg-white shadow" alt="Your Logo" />
+              <div className="flex justify-center gap-2">
+                <button onClick={()=>setBrandingForm({...brandingForm, logo: ''})} className="h-8 px-3 rounded-full bg-red-50 border border-red-200 text-red-600 text-[11px] font-bold">Remove Logo</button>
+              </div>
+             </div>
             ) : (
-             <div className="h-[140px] bg-[#E8E2DB] grid place-items-center text-[#547792] text-[12px] font-bold">Add Your Campus Image - Your College Environment</div>
+             <div>
+              <div className="h-24 w-24 rounded-[16px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 mx-auto grid place-items-center text-[#547792] text-[10px] font-bold">No Logo Yet</div>
+              <div className="text-[11px] text-[#547792] mt-3">Upload your college logo - JPG, PNG, up to 5MB</div>
+             </div>
             )}
-            <div className="p-3 text-center bg-white"><span className="text-[11px] text-[#547792]">Your campus image - Add your own environment, buildings - Will appear as hero on your website</span></div>
            </div>
           </div>
 
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Tagline</label>
-           <input value={brandingForm.tagline} onChange={e=>setBrandingForm({...brandingForm, tagline: e.target.value})} placeholder="e.g. Knowledge and Power - Your college tagline" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px]" />
+           <input value={brandingForm.tagline} onChange={e=>setBrandingForm({...brandingForm, tagline: e.target.value})} placeholder="e.g. Knowledge is Power" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px]" />
+          </div>
+
+          <div className="rounded-[16px] bg-[#1A3263] text-white p-5">
+           <div className="font-bold text-[#FAB95B] text-[13px] flex items-center gap-2"><Eye size={14} /> Preview - Logo & Tagline</div>
+           <div className="mt-4 flex gap-3 items-center">
+            {brandingForm.logo ? <img src={brandingForm.logo} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" alt="Logo" /> : <div className="h-12 w-12 rounded-[10px] bg-white/10 border border-white/20 grid place-items-center text-[10px]">Logo</div>}
+            <div>
+             <div className="font-bold text-[14px]">{college.name}</div>
+             <div className="text-[11px] text-[#FAB95B]">{brandingForm.tagline || 'Your tagline here'}</div>
+             <div className="text-[10px] text-white/60 mt-1">{college.district} • {college.city}</div>
+            </div>
+           </div>
           </div>
          </div>
 
          <div className="space-y-5">
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Brand Colors - Your College Colors</label>
-           <div className="mt-3 grid grid-cols-3 gap-4">
-            <div>
-             <label className="text-[10px] font-bold uppercase text-[#547792]">Primary</label>
-             <input type="color" value={brandingForm.primary} onChange={e=>setBrandingForm({...brandingForm, primary: e.target.value})} className="mt-2 h-12 w-full rounded-[12px] border-2 border-[#E8E2DB]" />
-             <input value={brandingForm.primary} onChange={e=>setBrandingForm({...brandingForm, primary: e.target.value})} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[12px]" />
-            </div>
-            <div>
-             <label className="text-[10px] font-bold uppercase text-[#547792]">Secondary</label>
-             <input type="color" value={brandingForm.secondary} onChange={e=>setBrandingForm({...brandingForm, secondary: e.target.value})} className="mt-2 h-12 w-full rounded-[12px] border-2 border-[#E8E2DB]" />
-             <input value={brandingForm.secondary} onChange={e=>setBrandingForm({...brandingForm, secondary: e.target.value})} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[12px]" />
-            </div>
-            <div>
-             <label className="text-[10px] font-bold uppercase text-[#547792]">Accent</label>
-             <input type="color" value={brandingForm.accent} onChange={e=>setBrandingForm({...brandingForm, accent: e.target.value})} className="mt-2 h-12 w-full rounded-[12px] border-2 border-[#E8E2DB]" />
-             <input value={brandingForm.accent} onChange={e=>setBrandingForm({...brandingForm, accent: e.target.value})} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[12px]" />
-            </div>
-           </div>
-           <div className="mt-4 rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4 text-[11px] text-[#547792]">Your college colors - Customize to match your college identity with our official design system.</div>
-          </div>
-
-          <div className="rounded-[16px] bg-[#1A3263] text-white p-5">
-           <div className="font-bold text-[#FAB95B] text-[13px]">Your College Branding Preview - Your College - Official</div>
-           <div className="mt-4 flex gap-3 items-center">
-            {brandingForm.logo ? <img src={brandingForm.logo} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" alt="Logo" /> : <div className="h-12 w-12 rounded-[10px] bg-white/10 border border-white/20 grid place-items-center">Logo</div>}
-            <div>
-             <div className="font-bold">{college.name}</div>
-             <div className="text-[11px] text-[#FAB95B]">{brandingForm.tagline || 'Your tagline here'}</div>
-            </div>
-           </div>
+          <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/30 p-5">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Camera size={12} className="text-[#FAB95B]" /> College Campus Images - Up to 10 - Auto Swipe 5 sec</label>
+           <div className="text-[11px] text-[#1A3263]/70 mt-1">Add up to 10 campus images - Each auto swipes every 5 seconds on website hero.</div>
+           
            <div className="mt-4 flex gap-2">
-            <span className="h-6 w-6 rounded-full border-2 border-white" style={{ background: brandingForm.primary }} />
-            <span className="h-6 w-6 rounded-full border-2 border-white" style={{ background: brandingForm.secondary }} />
-            <span className="h-6 w-6 rounded-full border-2 border-white" style={{ background: brandingForm.accent }} />
-            <span className="text-[11px] text-white/60 ml-2">Your branding preview</span>
+            <input value={newCollegeImageUrl} onChange={e=>setNewCollegeImageUrl(e.target.value)} placeholder="Paste image URL https://yourcollege.edu/campus1.jpg" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <button onClick={handleAddCollegeImage} className="h-11 px-5 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-1.5"><Plus size={14} /> Add</button>
            </div>
+
+           <div className="mt-3 flex gap-2">
+            <label className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 text-[#1A3263] font-bold text-[12px] flex items-center justify-center gap-2 cursor-pointer hover:border-[#FAB95B]">
+              <Upload size={14} /> Upload Multiple (Up to 10)
+              <input type="file" accept="image/*" multiple className="hidden" onChange={handleCollegeImageUpload} />
+            </label>
+            <div className="h-11 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px] flex items-center justify-center">
+              {(brandingForm.collegeImages||[]).length}/10
+            </div>
+           </div>
+
+           {(brandingForm.collegeImages||[]).length===0 ? (
+            <div className="mt-4 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 p-8 text-center">
+              <div className="text-3xl">🖼️</div>
+              <div className="font-bold text-[#1A3263] mt-3 text-[13px]">No campus images yet - Add up to 10</div>
+              <div className="text-[11px] text-[#547792] mt-2">Add campus images - 5 sec oru time oru image auto swipe aagum</div>
+              <div className="mt-3 grid grid-cols-3 gap-2 max-w-[300px] mx-auto">
+                {[
+                  "https://www.psgtech.edu/images/slider/foundationday_2026.jpg",
+                  "https://www.psgtech.edu/images/slider/Orientation_2026.jpg",
+                  "https://www.psgtech.edu/images/slider/TheConfluence-2026.jpg"
+                ].map((demo,i)=>(
+                  <img key={i} src={demo} className="h-16 w-full rounded-[8px] object-cover border border-[#E8E2DB]" alt="Demo" />
+                ))}
+              </div>
+            </div>
+           ) : (
+            <div className="mt-4 space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                {(brandingForm.collegeImages||[]).map((img, idx)=>(
+                  <div key={img.id} className="relative rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-white group">
+                    <img src={img.url} className="h-[110px] w-full object-cover" alt={`Campus ${idx+1}`} />
+                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{idx+1}/{(brandingForm.collegeImages||[]).length}</div>
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      <button onClick={()=>handleRemoveCollegeImage(img.id)} className="h-6 w-6 rounded-full bg-red-500 text-white grid place-items-center hover:bg-red-600"><Trash2 size={10} /></button>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
+                      <div className="text-[10px] font-bold text-white truncate">{img.caption || `Campus Image ${idx+1}`}</div>
+                      <div className="text-[9px] text-white/70">5 sec auto swipe</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="rounded-[12px] bg-[#1A3263] text-white p-3">
+                <div className="text-[11px] font-bold text-[#FAB95B] flex items-center gap-1.5"><Camera size={12} /> Auto Swipe Preview - Every 5 sec</div>
+                <div className="text-[10px] text-[#E8E2DB]/70 mt-1">Your website will show { (brandingForm.collegeImages||[]).length } images in hero carousel - oru oru image 5 sec ku auto swipe</div>
+              </div>
+            </div>
+           )}
           </div>
 
-          <button onClick={handleSaveBranding} className="w-full h-12 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold border-2 border-[#FAB95B]">Save Branding - Your Logo & Campus Image - Your Own Website</button>
+          <button onClick={handleSaveBranding} className="w-full h-12 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold border-2 border-[#FAB95B] flex items-center justify-center gap-2"><Save size={16} /> Save Logo & { (brandingForm.collegeImages||[]).length } Images - Auto Swipe 5 Sec</button>
          </div>
         </div>
        </div>

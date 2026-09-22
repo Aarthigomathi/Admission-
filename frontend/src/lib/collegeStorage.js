@@ -51,6 +51,7 @@ export function getCollegeBySlug(slug) {
 export function enrichCollege(base) {
   const now = new Date().toISOString()
   // base may already be enriched, keep its data
+  const baseBranding = base.branding || {}
   return {
     id: base.id,
     slug: base.slug || base.name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0,50) || `college-${base.id}`,
@@ -78,12 +79,13 @@ export function enrichCollege(base) {
     active: true,
     createdAt: base.createdAt || now,
     updatedAt: base.updatedAt || now,
-    branding: base.branding || {
-      logo: '',
-      heroImage: '',
-      coverImage: '',
-      colors: { primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' },
-      preset: 'engineering_blue'
+    branding: {
+      logo: baseBranding.logo || '',
+      heroImage: baseBranding.heroImage || '',
+      coverImage: baseBranding.coverImage || '',
+      collegeImages: baseBranding.collegeImages || base.collegeImages || [],
+      colors: baseBranding.colors || { primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' },
+      preset: baseBranding.preset || 'engineering_blue'
     },
     about: base.about || { fullText: '', vision: '', mission: [] },
     departments: base.departments || [],
@@ -170,6 +172,7 @@ export function createNewCollegeFromSignup(formData) {
       logo: '',
       heroImage: '',
       coverImage: '',
+      collegeImages: [],
       colors: { primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' },
       preset: 'engineering_blue'
     },
@@ -221,14 +224,14 @@ export function getProfileCompletion(college) {
   const custom = getCollegeCustomData(college.id)
   const checks = [
     !!college.branding?.logo || !!custom.branding?.logo,
-    !!college.branding?.heroImage || !!custom.branding?.heroImage,
+    !!college.branding?.heroImage || !!custom.branding?.heroImage || (college.branding?.collegeImages?.length>0) || (custom.branding?.collegeImages?.length>0),
     !!custom.about?.fullText || !!college.about?.fullText,
     (custom.departments?.length > 0) || (college.departments?.length > 0),
     (custom.courses?.length > 0) || (college.courses?.length > 0),
     (custom.customFacilities?.length > 0),
     (custom.placements?.length > 0),
     (custom.events?.length > 0),
-    (custom.gallery?.length > 0),
+    (custom.gallery?.length > 0) || (custom.branding?.collegeImages?.length>0) || (college.branding?.collegeImages?.length>0),
     !!college.principalName,
   ]
   const filled = checks.filter(Boolean).length
