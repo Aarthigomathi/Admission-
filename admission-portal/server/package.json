@@ -1,0 +1,39 @@
+{
+  "name": "admission-portal-server",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "seed": "node src/seed.js",
+    "smoke": "node scripts/smoke.mjs",
+    "test:import": "node scripts/test-import.mjs",
+    "sync:entities": "node scripts/sync-entities.mjs",
+    "build:client": "npm --prefix ../client run build",
+    "start:prod": "npm run build:client && NODE_ENV=production node src/index.js",
+    "test:realtime": "node scripts/realtime-test.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^13.0.3",
+    "cheerio": "^1.2.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.12.1",
+    "multer": "^2.4.0",
+    "socket.io": "^4.8.3",
+    "zod": "^4.6.5"
+  },
+  "type": "module",
+  "devDependencies": {
+    "socket.io-client": "^4.8.3"
+  }
+}

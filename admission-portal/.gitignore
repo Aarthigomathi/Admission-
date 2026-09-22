@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+.npm/
+
+# build output
+client/dist/
+client/dist-ssr/
+client/dist-dom/
+client/dist-debug/
+
+# runtime data + uploads
+server/data/
+server/uploads/
+
+# logs & local env
+*.log
+.env
+.env.local
+npm-debug.log*
+
+# editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
