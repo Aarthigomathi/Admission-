@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, Image as ImageIcon, X, Calculator, Sparkles } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles } from 'lucide-react'
 import { colleges } from '../../lib/colleges'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
@@ -20,7 +20,6 @@ export default function StudentSignup() {
     interestedCourse: 'B.E Computer Science',
     interestedSubject: 'Computer Science',
     careerGoal: '',
-    whyThisCourse: '',
     dob: '',
     gender: 'Male',
     bloodGroup: 'O+',
@@ -205,10 +204,10 @@ export default function StudentSignup() {
   }
 
   const steps = [
-    { id: 1, title: language==='ta' ? 'அடிப்படை & கனவு பாடம் - City க்கு கீழே' : 'Basic & Dream Course - Below City', icon: Heart, desc: language==='ta' ? 'பெயர், மின்னஞ்சல், கைபேசி, மாவட்டம், நகரம், அதற்கு கீழே கனவு பாடம்' : 'Name, Email, Mobile, District, City, Below City Dream Course' },
+    { id: 1, title: language==='ta' ? 'அடிப்படை & கனவு பாடம்' : 'Basic & Dream Course', icon: Heart, desc: language==='ta' ? 'பெயர், மின்னஞ்சல், கைபேசி, மாவட்டம், நகரம், அதற்கு கீழே கனவு பாடம்' : 'Name, Email, Mobile, District, City, Below City Dream Course' },
     { id: 2, title: language==='ta' ? 'தனிப்பட்ட & குடும்ப விவரங்கள்' : 'Personal & Family Details', icon: Users, desc: 'DOB, Gender, Parents, Aadhar, Address' },
-    { id: 3, title: language==='ta' ? 'கல்வி & ஆவணங்கள் - Auto %' : 'Education & Documents - Auto %', icon: FileText, desc: 'Marks Auto %, Percentage, Original Documents' },
-    { id: 4, title: language==='ta' ? 'விருப்பங்கள் & சிறந்த கல்லூரிகள்' : 'Preferences & Top Colleges', icon: Trophy, desc: 'Your % ku etha top rating colleges' },
+    { id: 3, title: language==='ta' ? 'கல்வி & ஆவணங்கள்' : 'Education & Documents', icon: FileText, desc: 'Marks Auto %, Percentage, Original Documents' },
+    { id: 4, title: language==='ta' ? 'விருப்பங்கள் & சிறந்த கல்லூரிகள்' : 'Preferences & Top Colleges', icon: Trophy, desc: 'Your % ku etha top colleges' },
     { id: 5, title: language==='ta' ? 'சரிபார்ப்பு & சமர்ப்பி' : 'Review & Submit', icon: BadgeCheck, desc: 'Verify all info and create account' }
   ]
 
@@ -226,8 +225,8 @@ export default function StudentSignup() {
           </div>
 
           <div className="mt-10">
-            <h1 className="font-display text-[28px] font-bold leading-[0.95]">{language==='ta' ? 'City க்கு கீழே உங்கள் கனவு பாடம் - Real Website' : 'Your Dream Course Below City - Real Website'}</h1>
-            <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">{language==='ta' ? 'என்ன படிக்க ஆசைப்படுகிறாய் என்பதை City க்கு கீழே உடனே கேட்கிறோம் - Real website போல - Dream course signup போதே போடணும் - City க்கு கீழே - #E8E2DB #FAB95B #547792 #1A3263' : 'We ask what you want to study immediately below City - Like real website - Dream course at signup itself - Below City - Real website style - #E8E2DB #FAB95B #547792 #1A3263'}</p>
+            <h1 className="font-display text-[28px] font-bold leading-[0.95]">{language==='ta' ? 'City க்கு கீழே உங்கள் கனவு பாடம்' : 'Your Dream Course Below City'}</h1>
+            <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">{language==='ta' ? 'என்ன படிக்க ஆசைப்படுகிறாய் என்பதை City க்கு கீழே உடனே கேட்கிறோம் - Dream course signup போதே போடணும் - City க்கு கீழே - Tamil / English toggle' : 'We ask what you want to study immediately below City - Dream course at signup itself - Below City - Tamil / English toggle - #E8E2DB #FAB95B #547792 #1A3263'}</p>
           </div>
 
           <div className="mt-8 space-y-3">
@@ -257,7 +256,7 @@ export default function StudentSignup() {
             </div>
           )}
         </div>
-        <div className="text-[10px] text-white/40">City → Dream Course Below • Real Website • #E8E2DB #FAB95B #547792 #1A3263</div>
+        <div className="text-[10px] text-white/40">City → Dream Course Below • Tamil / English • #E8E2DB #FAB95B #547792 #1A3263</div>
       </div>
 
       <div className="flex-1 flex flex-col">
@@ -272,7 +271,7 @@ export default function StudentSignup() {
                 ))}
               </div>
               <div className="ml-3 flex items-center gap-2">
-                <span className="text-[10px] font-bold text-[#547792]">🌐 City → Dream Course Below • Real Website:</span>
+                <span className="text-[10px] font-bold text-[#547792]">🌐 City → Dream Course Below:</span>
                 <StudentLanguageToggleAlways variant="pill" />
               </div>
             </div>
@@ -290,15 +289,13 @@ export default function StudentSignup() {
             {step===1 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={22} className="text-[#FAB95B]" /> {language==='ta' ? 'அடிப்படை தகவல் - City க்கு கீழே கனவு பாடம் - Real Website' : 'Basic Info - Dream Course Below City - Real Website'} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 City → Dream Course</span></h2>
-                  <p className="text-[12px] text-[#547792] mt-1">{language==='ta' ? 'City க்கு கீழே என்ன படிக்க ஆசைப்படுகிறாய் என்பதை கேட்கிறோம் - Real website போல - Dream course signup போதே - City க்கு கீழே வேண்டும் - Real website style' : 'We ask what you want to study right below City - Like real website - Dream course at signup itself - Below City - Real website style - Enna padikka aasa padra dream course signup pothey podanum'}</p>
+                  <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={22} className="text-[#FAB95B]" /> {language==='ta' ? 'அடிப்படை தகவல் - City க்கு கீழே கனவு பாடம்' : 'Basic Info - Dream Course Below City'} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 City → Dream Course</span></h2>
+                  <p className="text-[12px] text-[#547792] mt-1">{language==='ta' ? 'City க்கு கீழே என்ன படிக்க ஆசைப்படுகிறாய் என்பதை கேட்கிறோம் - Dream course signup போதே - City க்கு கீழே வேண்டும்' : 'We ask what you want to study right below City - Dream course at signup itself - Below City needed - Enna padikka aasa padra dream course signup pothey podanum citykku keela'}</p>
                 </div>
 
-                {/* REAL WEBSITE STYLE - Single Card with City -> Dream Course Below */}
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6 shadow-sm space-y-5">
-                  {/* Basic Fields */}
                   <div>
-                    <div className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5 mb-3"><User size={12} className="text-[#FAB95B]" /> {language==='ta' ? 'அடிப்படை தகவல்' : 'Basic Information'} - Real Website</div>
+                    <div className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5 mb-3"><User size={12} className="text-[#FAB95B]" /> {language==='ta' ? 'அடிப்படை தகவல்' : 'Basic Information'}</div>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="md:col-span-2">
                         <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><User size={12} className="text-[#FAB95B]" /> {t('fullName')} * - {t('asPerAadhar')}</label>
@@ -323,62 +320,57 @@ export default function StudentSignup() {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><MapPin size={12} className="text-[#FAB95B]" /> {t('city')} * - City</label>
+                        <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><MapPin size={12} className="text-[#FAB95B]" /> {t('city')} *</label>
                         <input value={formData.city} onChange={e=>updateField('city', e.target.value)} placeholder={language==='ta' ? 'நகரத்தை உள்ளிடவும்' : 'Enter city'} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[13px] border-b-4 border-b-[#FAB95B]" />
-                        <div className="text-[10px] text-[#FAB95B] font-bold mt-1">↓ {language==='ta' ? 'City க்கு கீழே கனவு பாடம் - Real Website' : 'Below City - Dream Course - Real Website'} ↓</div>
+                        <div className="text-[10px] text-[#FAB95B] font-bold mt-1">↓ {language==='ta' ? 'City க்கு கீழே கனவு பாடம்' : 'Below City - Dream Course'} ↓</div>
                       </div>
                     </div>
                   </div>
 
-                  {/* DREAM COURSE IMMEDIATELY BELOW CITY - Real Website Style */}
-                  <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/40 p-5 -mt-2">
-                    <div className="flex items-center gap-2 text-[13px] font-bold text-[#1A3263]"><Sparkles size={16} className="text-[#FAB95B]" /> {language==='ta' ? 'என்ன படிக்க ஆசைப்படுகிறாய்? - கனவு பாடம் - City க்கு கீழே - Real Website' : 'What do you want to study? - Dream Course - Below City - Real Website'} <span className="px-2 py-0.5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[10px]">{language==='ta' ? 'City க்கு கீழே' : 'Below City'} *</span></div>
-                    <div className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'City க்கு கீழே உடனே கேட்கிறோம் - என்ன படிக்க ஆசைப்படுகிறாய் என்பதை - Real website போல - Dream course signup போதே போடணும் - City க்கு கீழே வேண்டும்' : 'We ask immediately below City - What do you want to study - Like real website - Dream course at signup itself - Below City needed - Real website style'}</div>
+                  <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/40 p-5">
+                    <div className="flex items-center gap-2 text-[13px] font-bold text-[#1A3263]"><Sparkles size={16} className="text-[#FAB95B]" /> {language==='ta' ? 'என்ன படிக்க ஆசைப்படுகிறாய்? - கனவு பாடம் - City க்கு கீழே' : 'What do you want to study? - Dream Course - Below City'} <span className="px-2 py-0.5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[10px]">{language==='ta' ? 'City க்கு கீழே' : 'Below City'} *</span></div>
+                    <div className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'City க்கு கீழே உடனே கேட்கிறோம் - என்ன படிக்க ஆசைப்படுகிறாய் என்பதை - Dream course signup போதே போடணும்' : 'We ask immediately below City - What do you want to study - Dream course at signup itself - Below City needed'}</div>
                     
                     <div className="grid md:grid-cols-2 gap-4 mt-4">
                       <div className="md:col-span-2">
-                        <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><BookOpen size={12} className="text-[#FAB95B]" /> {language==='ta' ? 'ஆர்வமுள்ள பாடம் - என்ன படிக்க ஆசைப்படுகிறாய்? - City க்கு கீழே' : 'Interested Course - What do you want to study? - Below City'} *</label>
+                        <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><BookOpen size={12} className="text-[#FAB95B]" /> {language==='ta' ? 'ஆர்வமுள்ள பாடம் - என்ன படிக்க ஆசைப்படுகிறாய்?' : 'Interested Course - What do you want to study?'} *</label>
                         <select value={formData.interestedCourse} onChange={e=>updateField('interestedCourse', e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-white border-2 border-[#FAB95B] focus:border-[#1A3263] outline-none text-[13px] font-bold text-[#1A3263] shadow-sm">
                           <option>B.E Computer Science</option><option>B.Tech AI & Data Science</option><option>B.E CSE AI & ML</option><option>B.Tech Information Technology</option><option>B.E Electronics and Communication</option><option>B.E Mechanical</option><option>B.E Civil</option><option>BCA</option><option>B.Sc Computer Science</option><option>B.Com</option><option>BBA</option><option>MBBS</option><option>MBA</option><option>B.Sc Nursing</option><option>LLB</option>
                         </select>
-                        <div className="text-[10px] text-[#1A3263] font-bold mt-1 bg-[#FAB95B]/20 px-2 py-1 rounded-full inline-flex">📍 City ({formData.city || 'Your City'}) → Dream Course: {formData.interestedCourse} - Real Website Flow</div>
+                        <div className="text-[10px] text-[#1A3263] font-bold mt-1 bg-[#FAB95B]/20 px-2 py-1 rounded-full inline-flex">📍 City ({formData.city || 'Your City'}) → Dream Course: {formData.interestedCourse}</div>
                       </div>
                       <div>
                         <label className="text-[11px] font-bold uppercase text-[#1A3263]">{language==='ta' ? 'ஆர்வமுள்ள பாடம் / பிரிவு' : 'Interested Subject / Stream'}</label>
-                        <input value={formData.interestedSubject} onChange={e=>updateField('interestedSubject', e.target.value)} placeholder={language==='ta' ? 'கணினி அறிவியல், உயிரியல்' : 'Computer Science, Biology'} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-[#E8E2DB]/20 outline-none text-[13px]" />
+                        <input value={formData.interestedSubject} onChange={e=>updateField('interestedSubject', e.target.value)} placeholder={language==='ta' ? 'கணினி அறிவியல், உயிரியல்' : 'Computer Science, Biology'} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#1A3263] outline-none text-[13px]" />
                       </div>
                       <div>
                         <label className="text-[11px] font-bold uppercase text-[#1A3263]">{language==='ta' ? 'தொழில் இலக்கு - என்ன ஆக வேண்டும்?' : 'Career Goal - What you want to become?'}</label>
                         <input value={formData.careerGoal} onChange={e=>updateField('careerGoal', e.target.value)} placeholder={language==='ta' ? 'மென்பொருள் பொறியாளர், மருத்துவர்' : 'Software Engineer, Doctor'} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#1A3263] outline-none text-[13px]" />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="text-[11px] font-bold uppercase text-[#1A3263]">{language==='ta' ? 'ஏன் இந்த பாடம்? - காரணம்' : 'Why This Course? - Reason'}</label>
-                        <input value={formData.whyThisCourse} onChange={e=>updateField('whyThisCourse', e.target.value)} placeholder={language==='ta' ? 'இந்த பாடத்தை ஏன் விரும்புகிறீர்கள்?' : 'Why you love this course?'} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#1A3263] outline-none text-[13px]" />
                       </div>
                     </div>
 
                     <div className="mt-4 rounded-[12px] bg-[#1A3263] text-white p-3 flex items-start gap-2">
                       <Heart size={14} className="text-[#FAB95B] shrink-0 mt-0.5" />
                       <div className="text-[11px] leading-[1.5]">
-                        <div className="font-bold text-[#FAB95B]">{language==='ta' ? 'City க்கு கீழே Dream Course - Real Website Logic' : 'Dream Course Below City - Real Website Logic'}</div>
-                        <div className="text-[#E8E2DB]/80 mt-1">{language==='ta' ? `நீங்கள் ${formData.city || 'உங்கள் நகரம்'} - ${formData.district} ல் இருந்து ${formData.interestedCourse} படிக்க ஆசைப்படுகிறீர்கள் - இதற்கு ஏற்ற கல்லூரிகள் அடுத்த படியில் காட்டப்படும் - City க்கு கீழே கேட்பதால் Real Website போல இருக்கும்` : `You are from ${formData.city || 'your city'} - ${formData.district} and want to study ${formData.interestedCourse} - Colleges for this will be shown in next steps - Asking below City makes it like real website - Enna padikka aasa padra dream course signup pothey podanum citykku keela`}</div>
+                        <div className="font-bold text-[#FAB95B]">{language==='ta' ? 'City க்கு கீழே Dream Course' : 'Dream Course Below City'}</div>
+                        <div className="text-[#E8E2DB]/80 mt-1">{language==='ta' ? `நீங்கள் ${formData.city || 'உங்கள் நகரம்'} - ${formData.district} ல் இருந்து ${formData.interestedCourse} படிக்க ஆசைப்படுகிறீர்கள் - இதற்கு ஏற்ற கல்லூரிகள் அடுத்த படியில் காட்டப்படும்` : `You are from ${formData.city || 'your city'} - ${formData.district} and want to study ${formData.interestedCourse} - Colleges for this will be shown in next steps`}</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <button onClick={()=>setStep(2)} disabled={!formData.fullName || !formData.email || !formData.mobile || !formData.city || !formData.interestedCourse} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center justify-center gap-2 hover:bg-[#1A3263]/90 disabled:opacity-50">
-                  {language==='ta' ? `தொடர்க - ${formData.city} → ${formData.interestedCourse} - City க்கு கீழே Dream Course` : `Continue - ${formData.city || 'City'} → ${formData.interestedCourse} - Dream Course Below City`} <ArrowRight size={18} />
+                  {language==='ta' ? `தொடர்க - ${formData.city} → ${formData.interestedCourse}` : `Continue - ${formData.city || 'City'} → ${formData.interestedCourse}`} <ArrowRight size={18} />
                 </button>
-                <div className="text-[11px] text-center text-[#547792]">📍 {language==='ta' ? 'Real Website Flow: பெயர் → மின்னஞ்சல் → கைபேசி → கடவுச்சொல் → மாவட்டம் → நகரம் → அதற்கு கீழே கனவு பாடம் - City க்கு கீழே' : 'Real Website Flow: Name → Email → Mobile → Password → District → City → Immediately Below City Dream Course - Citykku Keela'} • #E8E2DB #FAB95B #547792 #1A3263</div>
+                <div className="text-[11px] text-center text-[#547792]">📍 {language==='ta' ? 'Flow: பெயர் → மின்னஞ்சல் → கைபேசி → கடவுச்சொல் → மாவட்டம் → நகரம் → அதற்கு கீழே கனவு பாடம்' : 'Flow: Name → Email → Mobile → Password → District → City → Immediately Below City Dream Course'} • #E8E2DB #FAB95B #547792 #1A3263</div>
               </div>
             )}
 
             {step===2 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Users size={20} className="text-[#FAB95B]" /> {language==='ta' ? 'தனிப்பட்ட & குடும்ப விவரங்கள்' : 'Personal & Family Details'} - Full Info</h2>
-                  <p className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'முழு தகவல் - வேறு என்ன தகவல் வேண்டுமோ அது' : 'Vera enna information student kitta irunthu venumoo athala odd pantra mathiri - Complete profile'}</p>
+                  <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Users size={20} className="text-[#FAB95B]" /> {language==='ta' ? 'தனிப்பட்ட & குடும்ப விவரங்கள்' : 'Personal & Family Details'}</h2>
+                  <p className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'முழு தகவல் - வேறு என்ன தகவல் வேண்டுமோ அது' : 'Complete profile - Full information'}</p>
                 </div>
 
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6 shadow-sm space-y-5">
@@ -417,11 +409,11 @@ export default function StudentSignup() {
                     </div>
                     <div>
                       <label className="text-[10px] font-bold uppercase text-[#1A3263]">{t('caste')}</label>
-                      <input value={formData.caste} onChange={e=>updateField('caste', e.target.value)} placeholder={t('caste')} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
+                      <input value={formData.caste} onChange={e=>updateField('caste', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
                     </div>
                     <div>
                       <label className="text-[10px] font-bold uppercase text-[#1A3263] flex items-center gap-1"><IdCard size={10} className="text-[#FAB95B]" /> {t('aadharNumber')} *</label>
-                      <input value={formData.aadharNumber} onChange={e=>updateField('aadharNumber', e.target.value)} placeholder="1234 5678 9012" className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
+                      <input value={formData.aadharNumber} onChange={e=>updateField('aadharNumber', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
                     </div>
                     <div>
                       <label className="text-[10px] font-bold uppercase text-[#1A3263]">{t('annualIncome')}</label>
@@ -436,11 +428,11 @@ export default function StudentSignup() {
                     <div className="grid md:grid-cols-2 gap-4 mt-3">
                       <div>
                         <label className="text-[10px] font-bold uppercase text-[#1A3263]">{t('fatherName')} *</label>
-                        <input value={formData.fatherName} onChange={e=>updateField('fatherName', e.target.value)} placeholder={t('fatherName')} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
+                        <input value={formData.fatherName} onChange={e=>updateField('fatherName', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
                       </div>
                       <div>
                         <label className="text-[10px] font-bold uppercase text-[#1A3263]">{t('motherName')} *</label>
-                        <input value={formData.motherName} onChange={e=>updateField('motherName', e.target.value)} placeholder={t('motherName')} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
+                        <input value={formData.motherName} onChange={e=>updateField('motherName', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
                       </div>
                       <div>
                         <label className="text-[10px] font-bold uppercase text-[#1A3263]">{t('fatherOccupation')}</label>
@@ -486,8 +478,8 @@ export default function StudentSignup() {
             {step===3 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><FileText size={20} className="text-[#FAB95B]" /> {language==='ta' ? 'கல்வி & அசல் ஆவணங்கள் - Auto %' : 'Education & Original Documents - Auto %'}</h2>
-                  <p className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'மதிப்பெண் போட்டவுடன் தானியங்கி சதவீதம் - அசல் ஆவணங்கள் பதிவேற்றம்' : 'Mark potta odaney automatic ah percentage show aagum - Original documents upload'}</p>
+                  <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><FileText size={20} className="text-[#FAB95B]" /> {language==='ta' ? 'கல்வி & அசல் ஆவணங்கள்' : 'Education & Original Documents'}</h2>
+                  <p className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'மதிப்பெண் போட்டவுடன் தானியங்கி சதவீதம் - அசல் ஆவணங்கள் பதிவேற்றம்' : 'Mark potta odaney automatic percentage - Original documents upload'}</p>
                 </div>
 
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6 shadow-sm space-y-5">
@@ -519,18 +511,18 @@ export default function StudentSignup() {
                   </div>
 
                   <div className="rounded-[16px] bg-[#1A3263] text-white p-5">
-                    <div className="flex items-center gap-2 font-bold text-[13px] text-[#FAB95B]"><Calculator size={16} /> {t('marksAuto')} - Mark Potta Odaney Auto %</div>
+                    <div className="flex items-center gap-2 font-bold text-[13px] text-[#FAB95B]"><Calculator size={16} /> {t('marksAuto')}</div>
                     <div className="grid md:grid-cols-3 gap-4 mt-4">
                       <div>
-                        <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('marksObtained')} * - e.g. 540 or 450/500</label>
-                        <input value={formData.marksObtained} onChange={e=>handleMarksChange('marksObtained', e.target.value)} placeholder="e.g. 540 or 450/500" className="mt-1 w-full h-11 px-3 rounded-[10px] bg-white text-[#1A3263] border-2 border-[#FAB95B] outline-none text-[13px] font-bold" />
+                        <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('marksObtained')} *</label>
+                        <input value={formData.marksObtained} onChange={e=>handleMarksChange('marksObtained', e.target.value)} placeholder="540 or 450/500" className="mt-1 w-full h-11 px-3 rounded-[10px] bg-white text-[#1A3263] border-2 border-[#FAB95B] outline-none text-[13px] font-bold" />
                       </div>
                       <div>
-                        <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('totalMarks')} * - Auto: {formData.educationLevel} = {formData.totalMarks}</label>
+                        <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('totalMarks')} * - {formData.educationLevel} = {formData.totalMarks}</label>
                         <input value={formData.totalMarks} onChange={e=>handleMarksChange('totalMarks', e.target.value)} className="mt-1 w-full h-11 px-3 rounded-[10px] bg-white text-[#1A3263] border-2 border-[#FAB95B] outline-none text-[13px] font-bold" />
                       </div>
                       <div>
-                        <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('percentage')} % - Automatic</label>
+                        <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('percentage')} %</label>
                         <div className="mt-1 w-full h-11 px-3 rounded-[10px] bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] grid place-items-center font-bold text-[16px]">
                           {formData.percentage ? `${formData.percentage}% - ${formData.grade}` : 'Enter marks - Auto %'}
                         </div>
@@ -544,7 +536,7 @@ export default function StudentSignup() {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('cutoff')} - Optional</label>
+                        <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('cutoff')}</label>
                         <input value={formData.cutoff} onChange={e=>updateField('cutoff', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-white text-[#1A3263] border-2 border-[#E8E2DB] outline-none text-[12px]" />
                       </div>
                       <div>
@@ -557,25 +549,25 @@ export default function StudentSignup() {
                     {formData.percentage && (
                       <div className="mt-4 rounded-[12px] bg-white text-[#1A3263] p-3">
                         <div className="text-[11px] font-bold">✨ {t('autoPercentResult')}:</div>
-                        <div className="text-[12px] mt-1">{t('marksObtained')}: {formData.marksObtained} / {formData.totalMarks} = <span className="font-bold">{formData.percentage}%</span> - {t('grade')}: <span className="font-bold">{formData.grade}</span></div>
+                        <div className="text-[12px] mt-1">{formData.marksObtained} / {formData.totalMarks} = <span className="font-bold">{formData.percentage}%</span> - {formData.grade}</div>
                       </div>
                     )}
                   </div>
 
                   <div>
-                    <div className="flex items-center gap-2 font-bold text-[14px] text-[#1A3263]"><Upload size={18} className="text-[#FAB95B]" /> {t('originalDocs')} - {t('documents')} Upload - Required & Optional</div>
+                    <div className="flex items-center gap-2 font-bold text-[14px] text-[#1A3263]"><Upload size={18} className="text-[#FAB95B]" /> {t('originalDocs')} - {t('documents')}</div>
                     <div className="grid md:grid-cols-2 gap-3 mt-4">
                       {[
-                        { key: 'tenthMarksheet', label: `${t('tenthMarksheet')} *`, desc: 'SSLC Original - Required', required: true, icon: '📄' },
-                        { key: 'twelfthMarksheet', label: `${t('twelfthMarksheet')} *`, desc: 'HSC Original - Required', required: true, icon: '📄' },
-                        { key: 'tc', label: `${t('tc')} *`, desc: 'School/College TC - Required', required: true, icon: '📜' },
-                        { key: 'communityCertificate', label: `${t('communityCertificate')} *`, desc: 'BC/MBC/SC/ST - Required', required: true, icon: '🏛️' },
-                        { key: 'incomeCertificate', label: t('incomeCertificate'), desc: 'Family Income - For scholarship', required: false, icon: '💰' },
-                        { key: 'aadharCard', label: `${t('aadharCard')} *`, desc: 'ID Proof - Required', required: true, icon: '🪪' },
-                        { key: 'photo', label: `${t('photo')} *`, desc: 'Recent Photo - Required', required: true, icon: '📸' },
-                        { key: 'nativityCertificate', label: t('nativityCertificate'), desc: 'Tamil Nadu Nativity - Optional', required: false, icon: '📍' },
-                        { key: 'firstGraduateCertificate', label: t('firstGraduateCertificate'), desc: 'If first graduate - Optional', required: false, icon: '🎓' },
-                        { key: 'specialReservation', label: t('specialReservation'), desc: 'Sports/Ex-Servicemen/PH - Optional', required: false, icon: '⭐' },
+                        { key: 'tenthMarksheet', label: `${t('tenthMarksheet')} *`, desc: 'SSLC Original', required: true, icon: '📄' },
+                        { key: 'twelfthMarksheet', label: `${t('twelfthMarksheet')} *`, desc: 'HSC Original', required: true, icon: '📄' },
+                        { key: 'tc', label: `${t('tc')} *`, desc: 'School/College TC', required: true, icon: '📜' },
+                        { key: 'communityCertificate', label: `${t('communityCertificate')} *`, desc: 'BC/MBC/SC/ST', required: true, icon: '🏛️' },
+                        { key: 'incomeCertificate', label: t('incomeCertificate'), desc: 'For scholarship', required: false, icon: '💰' },
+                        { key: 'aadharCard', label: `${t('aadharCard')} *`, desc: 'ID Proof', required: true, icon: '🪪' },
+                        { key: 'photo', label: `${t('photo')} *`, desc: 'Recent Photo', required: true, icon: '📸' },
+                        { key: 'nativityCertificate', label: t('nativityCertificate'), desc: 'TN Nativity', required: false, icon: '📍' },
+                        { key: 'firstGraduateCertificate', label: t('firstGraduateCertificate'), desc: 'First graduate', required: false, icon: '🎓' },
+                        { key: 'specialReservation', label: t('specialReservation'), desc: 'Sports/PH', required: false, icon: '⭐' },
                       ].map(doc=>(
                         <div key={doc.key} className={`rounded-[14px] border-2 p-3 ${formData.documentNames[doc.key] ? 'bg-[#FAB95B]/20 border-[#FAB95B]' : 'bg-[#E8E2DB]/50 border-[#E8E2DB]'} `}>
                           <div className="flex items-start justify-between gap-2">
@@ -607,7 +599,7 @@ export default function StudentSignup() {
 
                 <div className="flex gap-3">
                   <button onClick={()=>setStep(2)} className="h-11 px-6 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-semibold text-[12px] flex items-center gap-2"><ArrowLeft size={16} /> Back</button>
-                  <button onClick={()=>setStep(4)} disabled={!formData.marksObtained || !formData.totalMarks} className="flex-1 h-11 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center justify-center gap-2 disabled:opacity-50">Continue - Show Top Colleges for {formData.percentage || 'Your'}% <Trophy size={16} /></button>
+                  <button onClick={()=>setStep(4)} disabled={!formData.marksObtained || !formData.totalMarks} className="flex-1 h-11 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center justify-center gap-2 disabled:opacity-50">Continue - Top Colleges for {formData.percentage || 'Your'}% <Trophy size={16} /></button>
                 </div>
               </div>
             )}
@@ -615,8 +607,7 @@ export default function StudentSignup() {
             {step===4 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Trophy size={20} className="text-[#FAB95B]" /> {language==='ta' ? `உங்கள் ${formData.percentage}% க்கான விருப்பங்கள் & சிறந்த கல்லூரிகள்` : `Preferences & Top Rated Colleges for Your ${formData.percentage}%`}</h2>
-                  <p className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'உங்கள் சதவீதத்திற்கு ஏற்ற சிறந்த கல்லூரிகள் - தானியங்கி காட்சி' : 'Avanoda percentagekku etha mathiri top ratingla irukkura colleges - Auto show'}</p>
+                  <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Trophy size={20} className="text-[#FAB95B]" /> {language==='ta' ? `உங்கள் ${formData.percentage}% க்கான விருப்பங்கள் & சிறந்த கல்லூரிகள்` : `Preferences & Top Colleges for Your ${formData.percentage}%`}</h2>
                 </div>
 
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6 shadow-sm space-y-5">
@@ -668,17 +659,17 @@ export default function StudentSignup() {
                   <div className="pt-4 border-t-2 border-[#E8E2DB]">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <div className="flex items-center gap-2 font-bold text-[14px] text-[#1A3263]"><Star size={18} className="text-[#FAB95B]" /> {t('topRatedColleges')} {formData.percentage}% - {formData.interestedCourse}</div>
-                      <div className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{t('percentage')}: {formData.percentage}% - {topCollegesByPercentage.length} Matched</div>
+                      <div className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{formData.percentage}% - {topCollegesByPercentage.length} Matched</div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-3 mt-4">
                       {topCollegesByPercentage.map(college=>(
                         <div key={college.id} className="rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4 hover:border-[#FAB95B] transition-colors">
                           <div className="flex gap-3">
-                            <img src={college.branding.logo} alt={college.shortName} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" onError={e=>e.target.src=`https://ui-avatars.com/api/?name=${college.shortName}&background=1A3263&color=FAB95B`} />
+                            <img src={college.branding.logo} alt={college.shortName} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" />
                             <div className="flex-1">
                               <div className="font-bold text-[#1A3263] text-[13px]">{college.name}</div>
                               <div className="text-[10px] text-[#547792]">{college.district} • {college.type}</div>
-                              <div className="text-[10px] font-bold text-[#1A3263] mt-1">{college.placements.percentage} {t('placement')} • {college.placements.average}</div>
+                              <div className="text-[10px] font-bold text-[#1A3263] mt-1">{college.placements.percentage} {t('placement')}</div>
                             </div>
                             <div className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{college.matchPercent}% Match</div>
                           </div>
@@ -702,7 +693,7 @@ export default function StudentSignup() {
             {step===5 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><BadgeCheck size={20} className="text-[#FAB95B]" /> {t('reviewDetails')} - Final Check</h2>
+                  <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><BadgeCheck size={20} className="text-[#FAB95B]" /> {t('reviewDetails')}</h2>
                 </div>
 
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6 shadow-sm space-y-4">
@@ -710,8 +701,7 @@ export default function StudentSignup() {
                     <div className="space-y-2">
                       <div className="font-bold text-[#1A3263] text-[12px]">Basic & Dream - City → Dream Course Below</div>
                       <div><span className="text-[#547792]">Name:</span> <span className="font-bold text-[#1A3263]">{formData.fullName}</span></div>
-                      <div><span className="text-[#547792]">City:</span> {formData.city} → <span className="font-bold bg-[#FAB95B]/20 px-2 py-0.5 rounded-full">{formData.interestedCourse}</span> - Real Website Flow Below City</div>
-                      <div><span className="text-[#547792]">Dream Course Below City:</span> <span className="font-bold text-[#1A3263] bg-[#FAB95B] px-2 py-0.5 rounded-full">{formData.interestedCourse}</span> - Citykku Keela</div>
+                      <div><span className="text-[#547792]">City:</span> {formData.city} → <span className="font-bold bg-[#FAB95B] px-2 py-0.5 rounded-full">{formData.interestedCourse}</span> - Below City</div>
                     </div>
                     <div className="space-y-2">
                       <div className="font-bold text-[#1A3263] text-[12px]">Marks Auto %</div>
