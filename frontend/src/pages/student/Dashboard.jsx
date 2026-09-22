@@ -32,20 +32,6 @@ export default function StudentDashboard() {
     }
   }, [])
 
-  if (!student) {
-    return (
-      <div className="min-h-screen bg-[#E8E2DB] grid place-items-center p-6">
-        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-12 text-center max-w-[400px]">
-          <h2 className="font-bold text-[#1A3263] text-[20px]">{language==='ta' ? 'மாணவராக உள்நுழையவும்' : 'Please login as student'}</h2>
-          <p className="text-[13px] text-[#547792] mt-2">{language==='ta' ? 'மாணவர் டாஷ்போர்டுக்கு உள்நுழைவு தேவை' : 'Student dashboard requires login'}</p>
-          <Link to="/login" className="mt-6 inline-flex h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold">{t('login')}</Link>
-        </div>
-      </div>
-    )
-  }
-
-  const recentlyViewedColleges = recentlyViewedIds.map(id => colleges.find(c => String(c.id) === String(id))).filter(Boolean)
-
   const recommended = useMemo(() => {
     if (!student) return []
     const preferredDistrict = student.preferredDistrict || 'Coimbatore'
@@ -64,12 +50,33 @@ export default function StudentDashboard() {
     return filtered.slice(0,4)
   }, [student, colleges])
 
-  const savedColleges = saved.map(item => {
-    const id = typeof item === 'object' ? item.id : item
-    return colleges.find(c => String(c.id) === String(id))
-  }).filter(Boolean)
+  const recentlyViewedColleges = useMemo(() => {
+    return recentlyViewedIds.map(id => colleges.find(c => String(c.id) === String(id))).filter(Boolean)
+  }, [recentlyViewedIds, colleges])
 
-  const docsCount = student.documentsUploaded || Object.values(student.documentNames || {}).filter(Boolean).length || 0
+  const savedColleges = useMemo(() => {
+    return saved.map(item => {
+      const id = typeof item === 'object' ? item.id : item
+      return colleges.find(c => String(c.id) === String(id))
+    }).filter(Boolean)
+  }, [saved, colleges])
+
+  const docsCount = useMemo(() => {
+    if (!student) return 0
+    return student.documentsUploaded || Object.values(student.documentNames || {}).filter(Boolean).length || 0
+  }, [student])
+
+  if (!student) {
+    return (
+      <div className="min-h-screen bg-[#E8E2DB] grid place-items-center p-6">
+        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-12 text-center max-w-[400px]">
+          <h2 className="font-bold text-[#1A3263] text-[20px]">{language==='ta' ? 'மாணவராக உள்நுழையவும்' : 'Please login as student'}</h2>
+          <p className="text-[13px] text-[#547792] mt-2">{language==='ta' ? 'மாணவர் டாஷ்போர்டுக்கு உள்நுழைவு தேவை' : 'Student dashboard requires login'}</p>
+          <Link to="/login" className="mt-6 inline-flex h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold">{t('login')}</Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#E8E2DB]">
