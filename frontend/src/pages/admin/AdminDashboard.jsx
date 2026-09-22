@@ -16,7 +16,7 @@ export default function AdminDashboard() {
  const [isLoggedIn, setIsLoggedIn] = useState(false)
  const [selectedCollegeId, setSelectedCollegeId] = useState(null)
 
- // Forms for adding data - HOD with image + biography like principal screenshot
+ // Forms
  const [deptForm, setDeptForm] = useState({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', hodDetailedBio: '', hodBio: '', hodResearch: '', hodPublications: '', hodAwards: '', facultyCount: '', description: '', image: '' })
  const [courseForm, setCourseForm] = useState({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '' })
  const [facilityForm, setFacilityForm] = useState({ name: '', description: '', icon: '', image: '' })
@@ -81,14 +81,14 @@ export default function AdminDashboard() {
 
  const handleAddDepartment = () => {
   if (!deptForm.name) return alert("Department name required")
-  if (!deptForm.hod) return alert("HOD name required - oru oru department HOD")
+  if (!deptForm.hod) return alert("HOD name required")
   const list = customData.departments || []
   const newDept = { id: Date.now(), ...deptForm, createdAt: new Date().toISOString() }
   const updated = [...list, newDept]
   saveCollegeData(selectedCollegeId, 'departments', updated)
   setCustomData({ ...customData, departments: updated })
   setDeptForm({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', hodDetailedBio: '', hodBio: '', hodResearch: '', hodPublications: '', hodAwards: '', facultyCount: '', description: '', image: '' })
-  alert(`Department ${newDept.name} with HOD ${newDept.hod} + Image + Biography added like principal screenshot! Students will see dark blue design with yellow underline.`)
+  alert(`Department ${newDept.name} with HOD ${newDept.hod} added successfully`)
  }
 
  const handleAddCourse = () => {
@@ -237,12 +237,12 @@ export default function AdminDashboard() {
   saveCollegeData(selectedCollegeId, 'branding', branding)
   saveCollegeData(selectedCollegeId, 'tagline', brandingForm.tagline)
   setCustomData({ ...customData, branding, tagline: brandingForm.tagline })
-  alert(`Branding saved! Logo and ${branding.collegeImages.length} campus images saved - Will auto swipe every 5 sec on your website`)
+  alert(`Branding saved successfully`)
  }
 
  const handleAddCollegeImage = () => {
   if (!newCollegeImageUrl) return alert("Enter image URL")
-  if ((brandingForm.collegeImages||[]).length >= 10) return alert("Maximum 10 college images allowed - 10 kitta odd pannalam")
+  if ((brandingForm.collegeImages||[]).length >= 10) return alert("Maximum 10 college images allowed")
   const updated = [...(brandingForm.collegeImages||[]), { id: Date.now(), url: newCollegeImageUrl, caption: `Campus Image ${(brandingForm.collegeImages||[]).length+1}` }]
   setBrandingForm({ ...brandingForm, collegeImages: updated })
   setNewCollegeImageUrl('')
@@ -265,7 +265,7 @@ export default function AdminDashboard() {
 
  const handleCollegeImageUpload = (e) => {
   const files = Array.from(e.target.files || [])
-  if ((brandingForm.collegeImages||[]).length + files.length > 10) return alert("Maximum 10 images - 10 kitta mattum")
+  if ((brandingForm.collegeImages||[]).length + files.length > 10) return alert("Maximum 10 images allowed")
   files.forEach(file => {
     const reader = new FileReader()
     reader.onload = (ev) => {
@@ -291,25 +291,25 @@ export default function AdminDashboard() {
    <div className="min-h-screen bg-[#E8E2DB] grid place-items-center p-6">
     <div className="w-full max-w-[560px] rounded-[28px] bg-white border-2 border-[#E8E2DB] shadow-[0_16px_48px_rgba(0,0,0,0.08)] p-8">
      <div className="h-12 w-12 rounded-[14px] bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] grid place-items-center font-bold text-[20px] mx-auto">C</div>
-     <h1 className="font-display text-[24px] font-bold text-center mt-6 text-[#1A3263]">College Admin Login - Your Own College</h1>
-     <p className="text-[12px] text-[#547792] text-center mt-2">No default colleges - Only colleges that signed up via College Sign Up. After signup, you login and add your college A to Z yourself - logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses, etc.</p>
+     <h1 className="font-display text-[24px] font-bold text-center mt-6 text-[#1A3263]">College Admin Login</h1>
+     <p className="text-[12px] text-[#547792] text-center mt-2">Login to your college admin portal</p>
      
      {allColleges.length===0 ? (
       <div className="mt-8 rounded-[20px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-8 text-center">
        <div className="text-3xl">🏛️</div>
-       <div className="font-bold text-[#1A3263] mt-4">No Colleges Registered Yet - No Default</div>
-       <div className="text-[12px] text-[#1A3263]/80 mt-2">Automatic default college name kattama - Platform la default PSG illa. First college signup pannanum.</div>
+       <div className="font-bold text-[#1A3263] mt-4">No Colleges Registered</div>
+       <div className="text-[12px] text-[#1A3263]/80 mt-2">Please register your college to get started</div>
        <div className="mt-6 flex gap-2 justify-center">
-        <Link to="/college/signup" className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] inline-flex items-center justify-center">College Sign Up - Add A-Z Yourself</Link>
+        <Link to="/college/signup" className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] inline-flex items-center justify-center">College Sign Up</Link>
         <Link to="/" className="h-11 px-6 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px] inline-flex items-center justify-center">Home</Link>
        </div>
       </div>
      ) : (
      <div className="mt-8 space-y-4">
       <div>
-       <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Select Your College - Only Registered - No Default</label>
+       <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Select Your College</label>
        <select value={selectedCollegeId || ''} onChange={e=>setSelectedCollegeId(e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] font-medium">
-        <option value="">Select your college - Only registered colleges</option>
+        <option value="">Select your college</option>
         {allColleges.map(c=>(
          <option key={c.id} value={c.id}>{c.name} - ID {c.id} - {c.district} - {c.verificationStatus || 'PENDING'} - Added by college itself</option>
         ))}
@@ -327,29 +327,29 @@ export default function AdminDashboard() {
        setCurrentCollege(college)
        setCustomData(getCollegeCustomData(college.id))
        setIsLoggedIn(true)
-      }} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] font-bold text-[14px]">Login to Your College Admin - Add A to Z Yourself</button>
-      <div className="text-[11px] text-[#547792] text-center leading-[1.5]">If you just signed up, your college will be in list with ID {Date.now()} and status PENDING. Select it and login - you will see empty website where you add everything yourself - logo, images, departments, courses, facilities, placements, exams, etc. Your own college - no default!</div>
+      }} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] font-bold text-[14px]">Login to College Admin</button>
+      <div className="text-[11px] text-[#547792] text-center leading-[1.5]">If you just signed up, select your college from the list to login</div>
      </div>
      )}
 
      <div className="mt-8 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4">
-      <div className="text-[12px] font-bold text-[#1A3263]">After Login - You Add A to Z Yourself:</div>
+      <div className="text-[12px] font-bold text-[#1A3263]">What you can manage:</div>
       <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.6]">
-       • College Logo, Campus Images, Environment<br/>
-       • Departments with HOD name, faculty count, labs, description, image<br/>
-       • Courses: degree, name, duration, fees, intake, eligibility<br/>
-       • Facilities, Hostel Boys/Girls, Library, Sports<br/>
-       • Placements: year, company, package, department<br/>
-       • Exam Details: controller, timetable, results<br/>
-       • Management, Principal, Research Centres, Accreditation<br/>
-       • Events, Gallery, Announcements, Contact<br/>
-       • Add all sections your college needs!
+       • College Logo, Campus Images<br/>
+       • Departments with HOD<br/>
+       • Courses<br/>
+       • Facilities, Hostel, Library, Sports<br/>
+       • Placements<br/>
+       • Exam Details<br/>
+       • Management, Principal, Accreditation<br/>
+       • Events, Gallery, Announcements<br/>
+       • Manage all college sections
       </div>
      </div>
 
      <div className="mt-4 flex gap-2">
       <Link to="/" className="flex-1 h-10 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px] grid place-items-center">← Platform Home</Link>
-      <Link to="/college/signup" className="flex-1 h-10 rounded-full bg-[#FAB95B] border-2 border-[#FAB95B] text-[#1A3263] font-bold text-[12px] grid place-items-center">College Sign Up - Own A to Z</Link>
+      <Link to="/college/signup" className="flex-1 h-10 rounded-full bg-[#FAB95B] border-2 border-[#FAB95B] text-[#1A3263] font-bold text-[12px] grid place-items-center">College Sign Up</Link>
      </div>
     </div>
    </div>
@@ -361,29 +361,29 @@ export default function AdminDashboard() {
  const allCustomData = customData
 
  const menu = [
-  { id: 'dashboard', label: 'Dashboard - Your College', icon: LayoutDashboard, count: `${profileCompletion}%` },
-  { id: 'branding', label: 'College Logo & Branding - Add Logo, Campus Image', icon: Palette, badge: 'Logo+Image', highlight: true },
-  { id: 'about', label: 'About, Vision, Mission - Add About', icon: FileText, count: 'Full' },
-  { id: 'management', label: 'Management & Trustees - Add Management', icon: Users, count: `${(allCustomData.management||[]).length}` },
-  { id: 'principal', label: 'Principal Details - Add Principal', icon: UserCheck, count: 'Add' },
-  { id: 'departments', label: 'Departments with HOD - Add Dept + HOD', icon: Building2, count: `${(allCustomData.departments||[]).length} Depts`, highlight: true },
-  { id: 'courses', label: 'Courses - Add Courses A to Z', icon: GraduationCap, count: `${(allCustomData.courses||[]).length} Courses`, highlight: true },
-  { id: 'admissions', label: 'Admissions - Add Admission Details', icon: FileCheck },
-  { id: 'examinations', label: 'Examinations - Add Exam Details', icon: FileText, highlight: true },
-  { id: 'facilities', label: 'Facilities - Add Facilities', icon: Layers, count: `${(allCustomData.customFacilities||[]).length}` },
-  { id: 'hostel', label: 'Hostel - Boys/Girls Add Hostel', icon: Home, count: `${(allCustomData.hostels||[]).length}` },
-  { id: 'placements', label: 'Placements - Add Placement Records', icon: Briefcase, count: `${(allCustomData.placements||[]).length} Records`, highlight: true },
-  { id: 'research', label: 'Research & Centres - Add Centres', icon: Microscope },
-  { id: 'accreditation', label: 'Accreditation - Add NAAC/NBA', icon: Award, count: `${(allCustomData.accreditations||[]).length}` },
-  { id: 'campus', label: 'Campus & Environment - Add Campus', icon: MapPin },
-  { id: 'library', label: 'Library - Add Library', icon: Library },
-  { id: 'sports', label: 'Sports - Add Sports', icon: Heart },
-  { id: 'events', label: 'Events - Add Events', icon: Calendar, count: `${(allCustomData.events||[]).length}`, highlight: true },
-  { id: 'gallery', label: 'Gallery - Add Campus Images', icon: Camera, count: `${(allCustomData.gallery||[]).length} Images`, highlight: true },
-  { id: 'announcements', label: 'Announcements - Add News', icon: Bell, count: `${(allCustomData.announcements||[]).length}` },
-  { id: 'contact', label: 'Contact - Add Contact Info', icon: Contact },
-  { id: 'analytics', label: 'Analytics - Own College Only', icon: BarChart3, badge: 'Secure' },
-  { id: 'settings', label: 'Settings & Verification', icon: Settings },
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, count: `${profileCompletion}%` },
+  { id: 'branding', label: 'College Logo & Branding', icon: Palette, badge: '', highlight: true },
+  { id: 'about', label: 'About, Vision, Mission', icon: FileText, count: 'Full' },
+  { id: 'management', label: 'Management & Trustees', icon: Users, count: `${(allCustomData.management||[]).length}` },
+  { id: 'principal', label: 'Principal Details', icon: UserCheck, count: 'Add' },
+  { id: 'departments', label: 'Departments with HOD', icon: Building2, count: `${(allCustomData.departments||[]).length} Depts`, highlight: true },
+  { id: 'courses', label: 'Courses', icon: GraduationCap, count: `${(allCustomData.courses||[]).length} Courses`, highlight: true },
+  { id: 'admissions', label: 'Admissions', icon: FileCheck },
+  { id: 'examinations', label: 'Examinations', icon: FileText, highlight: true },
+  { id: 'facilities', label: 'Facilities', icon: Layers, count: `${(allCustomData.customFacilities||[]).length}` },
+  { id: 'hostel', label: 'Hostel', icon: Home, count: `${(allCustomData.hostels||[]).length}` },
+  { id: 'placements', label: 'Placements', icon: Briefcase, count: `${(allCustomData.placements||[]).length} Records`, highlight: true },
+  { id: 'research', label: 'Research & Centres', icon: Microscope },
+  { id: 'accreditation', label: 'Accreditation', icon: Award, count: `${(allCustomData.accreditations||[]).length}` },
+  { id: 'campus', label: 'Campus & Environment', icon: MapPin },
+  { id: 'library', label: 'Library', icon: Library },
+  { id: 'sports', label: 'Sports', icon: Heart },
+  { id: 'events', label: 'Events', icon: Calendar, count: `${(allCustomData.events||[]).length}`, highlight: true },
+  { id: 'gallery', label: 'Gallery', icon: Camera, count: `${(allCustomData.gallery||[]).length} Images`, highlight: true },
+  { id: 'announcements', label: 'Announcements', icon: Bell, count: `${(allCustomData.announcements||[]).length}` },
+  { id: 'contact', label: 'Contact', icon: Contact },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3,  },
+  { id: 'settings', label: 'Settings', icon: Settings },
  ]
 
  return (
@@ -393,7 +393,7 @@ export default function AdminDashboard() {
      <div className="h-9 w-9 rounded-[10px] bg-[#FAB95B] text-[#1A3263] grid place-items-center font-bold">C</div>
      <div className="flex-1 min-w-0">
       <div className="font-semibold text-[12px] leading-none truncate">{college.name}</div>
-      <div className="text-[11px] text-[#FAB95B] truncate">ID {college.id} • {college.district} • {college.verificationStatus} • Your Own</div>
+      <div className="text-[11px] text-[#FAB95B] truncate">ID {college.id} • {college.district} • {college.verificationStatus}</div>
      </div>
      <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
     </div>
@@ -407,7 +407,7 @@ export default function AdminDashboard() {
       )}
       <div className="min-w-0 flex-1">
        <div className="font-semibold text-[12px] truncate leading-tight">{college.name}</div>
-       <div className="text-[11px] text-[#FAB95B] flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> {college.verificationStatus} • {profileCompletion}% Complete • Your College - Official</div>
+       <div className="text-[11px] text-[#FAB95B] flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> {college.verificationStatus} • {profileCompletion}% Complete</div>
       </div>
      </div>
     </div>
@@ -431,21 +431,21 @@ export default function AdminDashboard() {
      <Link to={`/college/${college.slug}`} target="_blank" className="flex items-center justify-center gap-2 h-11 rounded-full bg-white text-[#1A3263] font-bold border-2 border-white text-[12px] hover:bg-[#E8E2DB]">
       <Eye size={14} /> Preview Your Website <ExternalLink size={12} />
      </Link>
-     <button onClick={()=>{localStorage.removeItem('tn_current_college'); setIsLoggedIn(false)}} className="w-full h-9 rounded-full bg-white/10 border border-white/20 text-[11px] font-medium">Logout - Your College Secure</button>
-     <div className="text-[10px] text-white/40 text-center">College ID: {college.id} • Your College - Official • A to Z You Add</div>
+     <button onClick={()=>{localStorage.removeItem('tn_current_college'); setIsLoggedIn(false)}} className="w-full h-9 rounded-full bg-white/10 border border-white/20 text-[11px] font-medium">Logout - Secure</button>
+     <div className="text-[10px] text-white/40 text-center">College ID: {college.id}</div>
     </div>
    </aside>
 
    <div className="flex-1 min-w-0">
     <div className="sticky top-0 z-20 h-[72px] bg-white/90 backdrop-blur-xl border-b-2 border-[#FAB95B]/30 px-6 lg:px-8 flex items-center justify-between gap-4">
      <div className="flex items-center gap-4">
-      <h1 className="font-display text-[16px] font-bold capitalize text-[#1A3263]">{activeSection.replace(/-/g,' ')} - {college.name} - Your College - Official - ID {college.id}</h1>
+      <h1 className="font-display text-[16px] font-bold capitalize text-[#1A3263]">{college.name} - {activeSection}</h1>
       <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] border-2 border-[#FAB95B]/30 text-[11px] font-bold uppercase"><CheckCircle2 size={12} /> {profileCompletion}% Complete</span>
      </div>
      <div className="flex items-center gap-2">
-      <span className="hidden lg:flex items-center gap-2 text-[11px] text-[#547792]"><Shield size={12} /> Your College Only • College ID {college.id}</span>
-      <button className="h-10 px-5 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">Save Draft - Your Data</button>
-      <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold flex items-center gap-2"><Save size={14} /> Publish - Your Website Live</button>
+      <span className="hidden lg:flex items-center gap-2 text-[11px] text-[#547792]"><Shield size={12} /> College ID {college.id}</span>
+      <button className="h-10 px-5 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">Save Draft</button>
+      <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold flex items-center gap-2"><Save size={14} /> Publish</button>
      </div>
     </div>
 
@@ -455,15 +455,15 @@ export default function AdminDashboard() {
        <div className="rounded-[24px] bg-[#1A3263] text-white p-8 border-2 border-[#1A3263] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[#FAB95B]/10 rounded-full blur-[30px]" />
         <div className="relative">
-         <h2 className="font-display text-[28px] font-bold text-[#FAB95B]">Welcome to Your College Admin - {college.name} - Your Own Website - Add A to Z Yourself</h2>
+         <h2 className="font-display text-[28px] font-bold text-[#FAB95B]">Welcome to {college.name}</h2>
          <p className="text-[13px] text-[#E8E2DB]/80 mt-3 leading-[1.6] max-w-[800px]">Welcome to your college administration portal - {college.name}. This is your official college dashboard where you can add and manage all your college information - Logo, campus images, departments, courses, facilities, placements, and complete college profile.</p>
          
          <div className="mt-8 grid md:grid-cols-4 gap-4">
           {[
-           { label: "Profile Completion", value: `${profileCompletion}%`, sub: `${(allCustomData.departments||[]).length} Depts, ${(allCustomData.courses||[]).length} Courses - You Added`, color: "bg-white/10 border-white/20" },
-           { label: "Your College ID", value: college.id, sub: `Your Own - ${college.district}`, color: "bg-[#FAB95B] text-[#1A3263] border-[#FAB95B]" },
-           { label: "Departments You Added", value: (allCustomData.departments||[]).length, sub: "With HOD - You add", color: "bg-white/5 border-white/10" },
-           { label: "Verification", value: college.verificationStatus, sub: "Pending → Verified badge", color: "bg-emerald-500/20 border-emerald-500/30 text-emerald-300" },
+           { label: "Profile", value: `${profileCompletion}%`, sub: `${(allCustomData.departments||[]).length} Depts, ${(allCustomData.courses||[]).length} Courses - You Added`, color: "bg-white/10 border-white/20" },
+           { label: "College ID", value: college.id, sub: `Your Own - ${college.district}`, color: "bg-[#FAB95B] text-[#1A3263] border-[#FAB95B]" },
+           { label: "Departments", value: (allCustomData.departments||[]).length, sub: "With HOD", color: "bg-white/5 border-white/10" },
+           { label: "Verification", value: college.verificationStatus, sub: "Verification Status", color: "bg-emerald-500/20 border-emerald-500/30 text-emerald-300" },
           ].map((s,i)=>(
            <div key={i} className={`rounded-[16px] border-2 p-4 ${s.color}`}>
             <div className="text-[10px] font-bold uppercase opacity-60">{s.label}</div>
@@ -477,47 +477,47 @@ export default function AdminDashboard() {
 
        <div className="grid lg:grid-cols-2 gap-6">
         <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6">
-         <h3 className="font-bold text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> Your College - Preview - Your College - Official</h3>
+         <h3 className="font-bold text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> College Preview</h3>
          <div className="mt-4 flex gap-4">
           {allCustomData.branding?.logo ? (
            <img src={allCustomData.branding.logo} className="h-16 w-16 rounded-[12px] object-cover border-2 border-[#FAB95B] bg-white" alt="Your Logo" />
           ) : (
-           <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[10px] font-bold text-center">Add Your Logo</div>
+           <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[10px] font-bold text-center">College Logo</div>
           )}
           <div>
            <div className="font-bold text-[#1A3263]">{college.name}</div>
            <div className="text-[12px] text-[#547792]">{college.district} • {college.city} • {college.type} • ID {college.id}</div>
-           <div className="text-[11px] text-[#1A3263]/60 mt-1">{allCustomData.tagline || college.tagline || 'Add tagline in Branding'}</div>
+           <div className="text-[11px] text-[#1A3263]/60 mt-1">{allCustomData.tagline || college.tagline || 'Add tagline'}</div>
           </div>
          </div>
          {allCustomData.branding?.heroImage ? (
           <img src={allCustomData.branding.heroImage} className="mt-4 h-[160px] w-full rounded-[16px] object-cover border-2 border-[#E8E2DB]" alt="Your Campus" />
          ) : (
-          <div className="mt-4 h-[160px] rounded-[16px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[12px] font-bold">Add Your Campus Image - Your College Image - </div>
+          <div className="mt-4 h-[160px] rounded-[16px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[12px] font-bold">Campus Image </div>
          )}
          <div className="mt-4 flex gap-2">
-          <Link to={`/college/${college.slug}`} className="flex-1 h-9 rounded-full bg-[#1A3263] text-[#FAB95B] text-[12px] font-bold grid place-items-center">Preview Your Website →</Link>
+          <Link to={`/college/${college.slug}`} className="flex-1 h-9 rounded-full bg-[#1A3263] text-[#FAB95B] text-[12px] font-bold grid place-items-center">Preview Website</Link>
          </div>
         </div>
 
         <div className="rounded-[20px] bg-white border-2 border-[#FAB95B]/30 p-6">
-         <h3 className="font-bold text-[#1A3263]">What You Can Add - Complete College Management</h3>
+         <h3 className="font-bold text-[#1A3263]">College Management</h3>
          <div className="mt-4 grid grid-cols-2 gap-2 text-[11px]">
           {[
-           "✓ College Logo & Campus Images - Your Images",
-           "✓ Departments with HOD - Each Dept HOD",
-           "✓ Courses - Degree, Fees, Intake, Eligibility",
-           "✓ Facilities - Environment, Labs, etc",
-           "✓ Placements - Company, Package, Year",
-           "✓ Hostel - Boys/Girls, Capacity, Fees",
-           "✓ Exam Details - Controller, Timetable",
+           "✓ College Logo & Campus Images - ",
+           "✓ Departments with HOD - ",
+           "✓ Courses - ",
+           "✓ Facilities - ",
+           "✓ Placements - ",
+           "✓ Hostel - ",
+           "✓ Exam Details - ",
            "✓ Management & Principal",
-           "✓ Research Centres & Accreditation",
+           "✓ ",
            "✓ Events, Gallery, Announcements",
-           "✓ Library, Sports, Campus",
-           "✓ Contact, Social, Documents",
-           "✓ Custom Sections - Any Section You Need",
-           "✓ Whatever You Want - Full Control"
+           "✓ ",
+           "✓ ",
+           "✓ ",
+           "✓ "
           ].map(item=>(
            <div key={item} className="p-2 rounded-[8px] bg-[#E8E2DB]/50 border border-[#E8E2DB] text-[#1A3263] font-medium">{item}</div>
           ))}
@@ -534,13 +534,13 @@ export default function AdminDashboard() {
      {activeSection==='branding' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><ImageIcon className="text-[#FAB95B]" /> College Logo & Campus Images - Up to 10 Images - Auto Swipe Every 5 Sec</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add your college logo and up to 10 campus images. Logo appears on header/cards. Campus images auto swipe every 5 seconds on your college website hero - oru oru image 5 sec ku auto swipe aagum.</p>
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><ImageIcon className="text-[#FAB95B]" /> College Logo & Campus Images</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add your college logo and campus images</p>
         
         <div className="mt-8 grid lg:grid-cols-2 gap-8">
          <div className="space-y-6">
           <div className="rounded-[16px] bg-[#E8E2DB]/30 border-2 border-[#E8E2DB] p-5">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><ImageIcon size={12} className="text-[#FAB95B]" /> College Logo - Upload or Paste URL</label>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><ImageIcon size={12} className="text-[#FAB95B]" /> College Logo</label>
            <div className="mt-3 flex gap-3">
             <input value={brandingForm.logo} onChange={e=>setBrandingForm({...brandingForm, logo: e.target.value})} placeholder="Paste logo URL https://yourcollege.edu/logo.png" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
             <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-2 cursor-pointer hover:bg-[#1A3263]/90">
@@ -559,7 +559,7 @@ export default function AdminDashboard() {
             ) : (
              <div>
               <div className="h-24 w-24 rounded-[16px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 mx-auto grid place-items-center text-[#547792] text-[10px] font-bold">No Logo Yet</div>
-              <div className="text-[11px] text-[#547792] mt-3">Upload your college logo - JPG, PNG, up to 5MB</div>
+              <div className="text-[11px] text-[#547792] mt-3">Upload your college logo</div>
              </div>
             )}
            </div>
@@ -571,7 +571,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="rounded-[16px] bg-[#1A3263] text-white p-5">
-           <div className="font-bold text-[#FAB95B] text-[13px] flex items-center gap-2"><Eye size={14} /> Preview - Logo & Tagline</div>
+           <div className="font-bold text-[#FAB95B] text-[13px] flex items-center gap-2"><Eye size={14} /> Preview</div>
            <div className="mt-4 flex gap-3 items-center">
             {brandingForm.logo ? <img src={brandingForm.logo} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" alt="Logo" /> : <div className="h-12 w-12 rounded-[10px] bg-white/10 border border-white/20 grid place-items-center text-[10px]">Logo</div>}
             <div>
@@ -585,8 +585,8 @@ export default function AdminDashboard() {
 
          <div className="space-y-5">
           <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/30 p-5">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Camera size={12} className="text-[#FAB95B]" /> College Campus Images - Up to 10 - Auto Swipe 5 sec</label>
-           <div className="text-[11px] text-[#1A3263]/70 mt-1">Add up to 10 campus images - Each auto swipes every 5 seconds on website hero.</div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Camera size={12} className="text-[#FAB95B]" /> College Campus Images</label>
+           <div className="text-[11px] text-[#1A3263]/70 mt-1">Add campus images for your college website</div>
            
            <div className="mt-4 flex gap-2">
             <input value={newCollegeImageUrl} onChange={e=>setNewCollegeImageUrl(e.target.value)} placeholder="Paste image URL https://yourcollege.edu/campus1.jpg" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
@@ -606,8 +606,8 @@ export default function AdminDashboard() {
            {(brandingForm.collegeImages||[]).length===0 ? (
             <div className="mt-4 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 p-8 text-center">
               <div className="text-3xl">🖼️</div>
-              <div className="font-bold text-[#1A3263] mt-3 text-[13px]">No campus images yet - Add up to 10</div>
-              <div className="text-[11px] text-[#547792] mt-2">Add campus images - 5 sec oru time oru image auto swipe aagum</div>
+              <div className="font-bold text-[#1A3263] mt-3 text-[13px]">No campus images yet</div>
+              <div className="text-[11px] text-[#547792] mt-2">Add campus images for your college</div>
               <div className="mt-3 grid grid-cols-3 gap-2 max-w-[300px] mx-auto">
                 {[
                   "https://www.psgtech.edu/images/slider/foundationday_2026.jpg",
@@ -630,20 +630,20 @@ export default function AdminDashboard() {
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
                       <div className="text-[10px] font-bold text-white truncate">{img.caption || `Campus Image ${idx+1}`}</div>
-                      <div className="text-[9px] text-white/70">5 sec auto swipe</div>
+                      <div className="text-[9px] text-white/70"></div>
                     </div>
                   </div>
                 ))}
               </div>
               <div className="rounded-[12px] bg-[#1A3263] text-white p-3">
-                <div className="text-[11px] font-bold text-[#FAB95B] flex items-center gap-1.5"><Camera size={12} /> Auto Swipe Preview - Every 5 sec</div>
-                <div className="text-[10px] text-[#E8E2DB]/70 mt-1">Your website will show { (brandingForm.collegeImages||[]).length } images in hero carousel - oru oru image 5 sec ku auto swipe</div>
+                <div className="text-[11px] font-bold text-[#FAB95B] flex items-center gap-1.5"><Camera size={12} /> Preview</div>
+                <div className="text-[10px] text-[#E8E2DB]/70 mt-1">Your website will display images in carousel</div>
               </div>
             </div>
            )}
           </div>
 
-          <button onClick={handleSaveBranding} className="w-full h-12 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold border-2 border-[#FAB95B] flex items-center justify-center gap-2"><Save size={16} /> Save Logo & { (brandingForm.collegeImages||[]).length } Images - Auto Swipe 5 Sec</button>
+          <button onClick={handleSaveBranding} className="w-full h-12 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold border-2 border-[#FAB95B] flex items-center justify-center gap-2"><Save size={16} /> Save Logo & Images</button>
          </div>
         </div>
        </div>
@@ -653,12 +653,12 @@ export default function AdminDashboard() {
      {activeSection==='departments' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Building2 className="text-[#FAB95B]" /> Departments with HOD - Like Principal Screenshot Design - Image + Biography</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Oru oru department HOD kum principal mathiri image + biography odd pantra maathiri venum - Dark blue bg, yellow underline, left HOD image + name/email, right white box detailed bio. Principal design same replica for HOD.</p>
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Building2 className="text-[#FAB95B]" /> Departments with HOD</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add departments with HOD information including image and biography</p>
 
         <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
-         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add New Department - With HOD Image + Detailed Biography Like Principal</h4>
-         <div className="mt-2 text-[11px] text-[#547792]">Principal ku panna mathiri oru oru department HOD kum: image left, name + email below, right white box la long bio with research, publications, awards.</div>
+         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add New Department</h4>
+         <div className="mt-2 text-[11px] text-[#547792]">Add department and HOD details for your college</div>
          <div className="mt-6 grid md:grid-cols-2 gap-4">
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Name *</label>
@@ -684,8 +684,8 @@ export default function AdminDashboard() {
           </div>
 
           <div className="md:col-span-2 mt-4 p-4 rounded-[16px] bg-[#1A3263]/5 border-2 border-[#1A3263]/10">
-            <div className="font-bold text-[13px] text-[#1A3263] flex items-center gap-2">👨‍🏫 HOD Details - Like Principal Screenshot - Image + Biography</div>
-            <div className="text-[11px] text-[#547792] mt-1">Oru oru department HOD kum principal maathiri dark blue design - HOD image, name, email, detailed bio</div>
+            <div className="font-bold text-[13px] text-[#1A3263] flex items-center gap-2">👨‍🏫 HOD Details</div>
+            <div className="text-[11px] text-[#547792] mt-1">Add HOD information with image and biography</div>
           </div>
 
           <div>
@@ -706,16 +706,16 @@ export default function AdminDashboard() {
           </div>
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Email</label>
-           <input value={deptForm.hodEmail} onChange={e=>setDeptForm({...deptForm, hodEmail: e.target.value})} placeholder="hod.cse@college.edu - like principal [at]" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+           <input value={deptForm.hodEmail} onChange={e=>setDeptForm({...deptForm, hodEmail: e.target.value})} placeholder="hod@college.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Phone</label>
            <input value={deptForm.hodPhone} onChange={e=>setDeptForm({...deptForm, hodPhone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Image - Upload or URL - Like Principal Screenshot Left Side - 320px height</label>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Image</label>
            <div className="mt-2 flex gap-2">
-            <input value={deptForm.hodImage} onChange={e=>setDeptForm({...deptForm, hodImage: e.target.value})} placeholder="Paste HOD photo URL - like principal screenshot" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <input value={deptForm.hodImage} onChange={e=>setDeptForm({...deptForm, hodImage: e.target.value})} placeholder="Paste HOD photo URL or upload" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
             <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
               <Upload size={12} /> Upload HOD Image
               <input type="file" accept="image/*" className="hidden" onChange={handleDeptHodImageUpload} />
@@ -724,22 +724,21 @@ export default function AdminDashboard() {
            {deptForm.hodImage && <div className="mt-3"><img src={deptForm.hodImage} className="h-20 w-20 rounded-[12px] object-cover border-2 border-[#FAB95B]" alt="HOD preview" /></div>}
           </div>
           <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Detailed Biography - Long Bio Like Principal Screenshot - Right White Box</label>
-           <textarea value={deptForm.hodDetailedBio} onChange={e=>setDeptForm({...deptForm, hodDetailedBio: e.target.value})} placeholder="Paste detailed HOD biography like principal example: Dr. Ramesh Kumar was Postdoctoral Fellow from ... He has 15 years academic experience in CSE. He has published 85 technical papers in International journals, presented 60 papers in conferences. He has completed 12 Govt funded projects worth 5 Crores, currently 3 projects in progress worth 2 Crores. He has developed 8 products, 5 transferred to industries. He has created 3 Centres of Excellence. His PhD work on AI/ML earned National Award. He has guided 45 projects, produced 5 PhD scholars, 4 doing PhD under supervision. He has visited countries for collaboration, keynote speaker in 120 programs, organized 40 events. He completed B.E CSE from Anna University, M.E from PSG Tech." rows={10} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none leading-[1.6]" />
-           <div className="text-[10px] text-[#547792] mt-1">This long bio will appear in white box right side like principal screenshot - detailed research, publications, projects, awards for HOD</div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Detailed Biography</label>
+           <textarea value={deptForm.hodDetailedBio} onChange={e=>setDeptForm({...deptForm, hodDetailedBio: e.target.value})} placeholder="Enter detailed HOD biography including qualification, experience, research and achievements" rows={10} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none leading-[1.6]" />
+           <div className="text-[10px] text-[#547792] mt-1">Detailed biography will appear on college website</div>
           </div>
          </div>
-         <button onClick={handleAddDepartment} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Department with HOD Image + Biography - Like Principal</button>
+         <button onClick={handleAddDepartment} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Department</button>
         </div>
 
         <div className="mt-8">
-         <h4 className="font-bold text-[#1A3263]">Your Departments - {(allCustomData.departments||[]).length} Departments You Added - Each with HOD Image + Bio Like Principal</h4>
+         <h4 className="font-bold text-[#1A3263]">Departments - {(allCustomData.departments||[]).length}</h4>
          {(allCustomData.departments||[]).length===0 ? (
           <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
            <div className="text-3xl">🏛️</div>
-           <div className="font-bold text-[#1A3263] mt-3">No departments yet - Add your departments with HOD Image + Biography</div>
-           <div className="text-[12px] text-[#547792] mt-2">Oru oru departmentkkum HOD image + biography - Principal maathiri dark blue + yellow underline - You add each department yourself</div>
-           <div className="mt-4 inline-flex px-4 py-2 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">Example: CSE Dept - HOD Dr. Ramesh Kumar - Image left, bio right white box</div>
+           <div className="font-bold text-[#1A3263] mt-3">No departments added yet</div>
+           <div className="text-[12px] text-[#547792] mt-2">Add your departments with HOD information</div>
           </div>
          ) : (
           <div className="mt-4 space-y-4">
@@ -754,7 +753,7 @@ export default function AdminDashboard() {
                 <div>
                   <div className="font-bold text-[13px] text-white">{dept.hod}</div>
                   <div className="text-[11px] text-[#FAB95B] mt-1">{dept.hodDesignation || `HOD - ${dept.name}`}</div>
-                  <div className="text-[11px] text-white/70 mt-1 break-all">{dept.hodEmail || 'hod [at] college [dot] edu'} • {dept.hodPhone}</div>
+                  <div className="text-[11px] text-white/70 mt-1 break-all">{dept.hodEmail || 'hod@college.edu'} • {dept.hodPhone}</div>
                   <div className="text-[11px] text-white/60 mt-2 line-clamp-3">{dept.hodDetailedBio ? dept.hodDetailedBio.slice(0,200)+'...' : dept.description?.slice(0,200)}</div>
                 </div>
               </div>
@@ -767,18 +766,18 @@ export default function AdminDashboard() {
         {(allCustomData.departments||[]).length>0 && (
           <div className="mt-8 rounded-[20px] bg-[#1A3263] border-2 border-[#1A3263] p-6">
             <div className="text-center mb-6">
-              <h4 className="font-display text-[18px] font-bold text-white inline-block relative">{allCustomData.departments[0]?.name || 'Department'} - Preview Like Principal<span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-1 w-10 bg-[#FAB95B] rounded-full"></span></h4>
-              <div className="text-[11px] text-white/60 mt-3">Oru oru department HOD kum ithu maathiri thaan website la theriyum - Dark blue + yellow underline</div>
+              <h4 className="font-display text-[18px] font-bold text-white inline-block relative">{allCustomData.departments[0]?.name || 'Department'}<span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-1 w-10 bg-[#FAB95B] rounded-full"></span></h4>
+              <div className="text-[11px] text-white/60 mt-3">Preview of department display</div>
             </div>
             <div className="grid md:grid-cols-[200px_1fr] gap-6 max-w-[900px] mx-auto">
               <div className="text-center">
-                {deptForm.hodImage || allCustomData.departments[0]?.hodImage ? <img src={deptForm.hodImage || allCustomData.departments[0]?.hodImage} className="w-full h-[220px] rounded-[12px] object-cover border-2 border-white/20 shadow-xl object-top" alt="HOD" /> : <div className="w-full h-[220px] rounded-[12px] bg-white/10 border-2 border-dashed border-white/20 grid place-items-center text-white/40 text-[11px]">HOD Image 320px Like Principal Screenshot</div>}
-                <div className="mt-3 font-bold text-[14px] text-white">{deptForm.hod || allCustomData.departments[0]?.hod || 'Dr. HOD Name'}</div>
+                {deptForm.hodImage || allCustomData.departments[0]?.hodImage ? <img src={deptForm.hodImage || allCustomData.departments[0]?.hodImage} className="w-full h-[220px] rounded-[12px] object-cover border-2 border-white/20 shadow-xl object-top" alt="HOD" /> : <div className="w-full h-[220px] rounded-[12px] bg-white/10 border-2 border-dashed border-white/20 grid place-items-center text-white/40 text-[11px]">HOD Image</div>}
+                <div className="mt-3 font-bold text-[14px] text-white">{deptForm.hod || allCustomData.departments[0]?.hod || 'HOD Name'}</div>
                 <div className="text-[12px] text-[#FAB95B] mt-1">{deptForm.hodDesignation || 'Head of Department'}</div>
-                <div className="text-[11px] text-white/70 mt-2 break-all">{deptForm.hodEmail || allCustomData.departments[0]?.hodEmail || 'hod [at] college [dot] edu'}</div>
+                <div className="text-[11px] text-white/70 mt-2 break-all">{deptForm.hodEmail || allCustomData.departments[0]?.hodEmail || 'hod@college.edu'}</div>
               </div>
               <div className="rounded-[8px] bg-white p-5">
-                <div className="text-[12px] leading-[1.7] text-[#1A3263]/80 whitespace-pre-wrap">{deptForm.hodDetailedBio || allCustomData.departments[0]?.hodDetailedBio || 'Detailed HOD biography will appear here like principal screenshot - long text with research, publications, projects, awards, achievements. Add in form above - HOD Detailed Biography field.'}</div>
+                <div className="text-[12px] leading-[1.7] text-[#1A3263]/80 whitespace-pre-wrap">{deptForm.hodDetailedBio || allCustomData.departments[0]?.hodDetailedBio || 'Detailed HOD biography will appear here'}</div>
               </div>
             </div>
           </div>
@@ -790,8 +789,8 @@ export default function AdminDashboard() {
      {activeSection==='courses' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263]">Courses - Add All Courses A to Z - Your Own Courses </h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add all your courses yourself - B.E, B.Tech, BCA, MBA, etc with degree, fees, intake, eligibility, duration. Your college content.</p>
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263]">Courses </h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add courses offered by your college</p>
 
         <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
          <h4 className="font-bold text-[#1A3263]">Add New Course</h4>
@@ -821,16 +820,16 @@ export default function AdminDashboard() {
            <input value={courseForm.eligibility} onChange={e=>setCourseForm({...courseForm, eligibility: e.target.value})} placeholder="e.g. 10+2 with 50% PCM" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
          </div>
-         <button onClick={handleAddCourse} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Course - Your Own Course</button>
+         <button onClick={handleAddCourse} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Course</button>
         </div>
 
         <div className="mt-8">
-         <h4 className="font-bold text-[#1A3263]">Your Courses - {(allCustomData.courses||[]).length} Courses You Added </h4>
+         <h4 className="font-bold text-[#1A3263]">Courses - {(allCustomData.courses||[]).length} </h4>
          {(allCustomData.courses||[]).length===0 ? (
           <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
            <div className="text-3xl">🎓</div>
-           <div className="font-bold text-[#1A3263] mt-3">No courses yet - Add your courses A to Z</div>
-           <div className="text-[12px] text-[#547792] mt-2">Add all your courses yourself - Your college courses, not PSG - Your college content</div>
+           <div className="font-bold text-[#1A3263] mt-3">No courses added yet</div>
+           <div className="text-[12px] text-[#547792] mt-2">Add courses for your college</div>
           </div>
          ) : (
           <div className="mt-4 grid md:grid-cols-2 gap-4">
@@ -855,14 +854,14 @@ export default function AdminDashboard() {
 
      {activeSection==='facilities' && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Facilities - Add Facilities - Your College Facilities (Environment, Labs, etc) - Your Own</h3>
+       <h3 className="font-bold text-[18px] text-[#1A3263]">Facilities</h3>
        <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
         <div className="grid md:grid-cols-2 gap-4">
          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facility Name *</label><input value={facilityForm.name} onChange={e=>setFacilityForm({...facilityForm, name: e.target.value})} placeholder="e.g. Central Library, Sports Complex, Environment" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Image URL</label><input value={facilityForm.image} onChange={e=>setFacilityForm({...facilityForm, image: e.target.value})} placeholder="Facility image URL" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={facilityForm.description} onChange={e=>setFacilityForm({...facilityForm, description: e.target.value})} placeholder="Facility description - environment, placement, etc" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px] resize-none" /></div>
         </div>
-        <button onClick={handleAddFacility} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">+ Add Facility - Your Own Facility</button>
+        <button onClick={handleAddFacility} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Facility</button>
        </div>
        <div className="mt-6 grid md:grid-cols-2 gap-4">
         {(allCustomData.customFacilities||[]).map(f=>(
@@ -872,14 +871,14 @@ export default function AdminDashboard() {
           <button onClick={()=>handleDelete('customFacilities', f.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button>
          </div>
         ))}
-        {(allCustomData.customFacilities||[]).length===0 && <div className="col-span-2 py-8 text-center text-[#547792] text-[12px]">No facilities yet - Add your environment, labs, facilities</div>}
+        {(allCustomData.customFacilities||[]).length===0 && <div className="col-span-2 py-8 text-center text-[#547792] text-[12px]">No facilities added yet</div>}
        </div>
       </div>
      )}
 
      {activeSection==='placements' && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Placements - Add Placement Records - Your College Placements - Your Own Placement Data</h3>
+       <h3 className="font-bold text-[18px] text-[#1A3263]">Placements</h3>
        <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
         <div className="grid md:grid-cols-3 gap-4">
          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Company *</label><input value={placementForm.company} onChange={e=>setPlacementForm({...placementForm, company: e.target.value})} placeholder="e.g. TCS, Infosys" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
@@ -888,7 +887,7 @@ export default function AdminDashboard() {
          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Students Placed</label><input value={placementForm.students} onChange={e=>setPlacementForm({...placementForm, students: e.target.value})} placeholder="50" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Department</label><input value={placementForm.department} onChange={e=>setPlacementForm({...placementForm, department: e.target.value})} placeholder="CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
         </div>
-        <button onClick={handleAddPlacement} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">+ Add Placement - Your Own Placement Record</button>
+        <button onClick={handleAddPlacement} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Placement</button>
        </div>
        <div className="mt-6 space-y-3">
         {(allCustomData.placements||[]).map(p=>(
@@ -897,15 +896,15 @@ export default function AdminDashboard() {
           <button onClick={()=>handleDelete('placements', p.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button>
          </div>
         ))}
-        {(allCustomData.placements||[]).length===0 && <div className="py-8 text-center text-[#547792] text-[12px]">No placement records yet - Add your placement data</div>}
+        {(allCustomData.placements||[]).length===0 && <div className="py-8 text-center text-[#547792] text-[12px]">No placement records added yet</div>}
        </div>
       </div>
      )}
 
      {activeSection==='examinations' && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Examinations - Add Exam Details - Your College Exam Details - Your Own</h3>
-       <p className="text-[12px] text-[#547792] mt-2">Add examination details: Controller of Examinations, timetable, results, notifications, revaluation - Your own exam details, not PSG - Your college content - Whatever section you need</p>
+       <h3 className="font-bold text-[18px] text-[#1A3263]">Examinations</h3>
+       <p className="text-[12px] text-[#547792] mt-2">Add examination details for your college</p>
        
        <div className="mt-6 grid md:grid-cols-2 gap-6">
         <div className="rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
@@ -917,26 +916,26 @@ export default function AdminDashboard() {
         <div className="rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
          <h4 className="font-bold text-[#1A3263] text-[13px]">Examination Timetable & Results</h4>
          <textarea placeholder="Add examination timetable, result dates, revaluation process - Your own exam details" rows={4} className="mt-3 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px] resize-none" />
-         <button className="mt-3 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Save Exam Details - Your Own</button>
+         <button className="mt-3 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Save Exam Details</button>
         </div>
        </div>
 
        <div className="mt-6 rounded-[16px] bg-[#1A3263] text-white p-5">
-        <div className="font-bold text-[#FAB95B]">Exam Details Sections You Can Add - Full A to Z</div>
-        <div className="text-[11px] text-[#E8E2DB]/80 mt-2 leading-[1.6]">Controller of Examinations, Examination Notifications, Timetable, Results, Revaluation, Hall Ticket, Question Bank, Academic Calendar, Regulations, etc - Whatever exam section you need - You add yourself - Your college content - All sections!</div>
+        <div className="font-bold text-[#FAB95B]">Examination Details</div>
+        <div className="text-[11px] text-[#E8E2DB]/80 mt-2 leading-[1.6]">Manage examination notifications, timetable, results and academic calendar</div>
        </div>
       </div>
      )}
 
      {activeSection==='gallery' && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Gallery - Add Campus Images - Your College Images - Your Own Environment Images</h3>
+       <h3 className="font-bold text-[18px] text-[#1A3263]">Gallery</h3>
        <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
         <div className="grid md:grid-cols-2 gap-4">
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Image URL * - Your Campus Image</label><input value={galleryForm.url} onChange={e=>setGalleryForm({...galleryForm, url: e.target.value})} placeholder="Paste your campus image URL - Real image from your college" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Image URL</label><input value={galleryForm.url} onChange={e=>setGalleryForm({...galleryForm, url: e.target.value})} placeholder="Paste image URL" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Caption</label><input value={galleryForm.caption} onChange={e=>setGalleryForm({...galleryForm, caption: e.target.value})} placeholder="e.g. Main Building, Library, Hostel" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
         </div>
-        <button onClick={handleAddGallery} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">+ Add Campus Image - Your Own Image </button>
+        <button onClick={handleAddGallery} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Campus Image </button>
        </div>
        <div className="mt-6 grid md:grid-cols-3 gap-4">
         {(allCustomData.gallery||[]).map(img=>(
@@ -945,14 +944,14 @@ export default function AdminDashboard() {
           <div className="p-3 flex justify-between items-center"><span className="text-[11px] font-medium text-[#1A3263]">{img.caption}</span><button onClick={()=>handleDelete('gallery', img.id)} className="h-7 w-7 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={10} /></button></div>
          </div>
         ))}
-        {(allCustomData.gallery||[]).length===0 && <div className="col-span-3 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🖼️</div><div className="font-bold text-[#1A3263] mt-3">No campus images yet - Add your college images</div><div className="text-[11px] text-[#547792] mt-1">Add your campus images - Your environment, buildings, labs, hostel, library, sports - Your own images, not PSG - Your college content</div></div>}
+        {(allCustomData.gallery||[]).length===0 && <div className="col-span-3 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🖼️</div><div className="font-bold text-[#1A3263] mt-3">No campus images added yet</div><div className="text-[11px] text-[#547792] mt-1">Add campus images for your college</div></div>}
        </div>
       </div>
      )}
 
      {activeSection==='hostel' && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Hostel - Add Hostel - Boys/Girls Hostel - Your Own Hostel</h3>
+       <h3 className="font-bold text-[18px] text-[#1A3263]">Hostel</h3>
        <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
         <div className="grid md:grid-cols-3 gap-4">
          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Hostel Name *</label><input value={hostelForm.name} onChange={e=>setHostelForm({...hostelForm, name: e.target.value})} placeholder="e.g. Boys Hostel A" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
@@ -961,7 +960,7 @@ export default function AdminDashboard() {
          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Fees</label><input value={hostelForm.fees} onChange={e=>setHostelForm({...hostelForm, fees: e.target.value})} placeholder="50000 per year" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label><input value={hostelForm.facilities} onChange={e=>setHostelForm({...hostelForm, facilities: e.target.value})} placeholder="WiFi, Mess, Gym, etc" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
         </div>
-        <button onClick={handleAddHostel} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">+ Add Hostel - Your Own Hostel</button>
+        <button onClick={handleAddHostel} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Hostel</button>
        </div>
        <div className="mt-6 grid md:grid-cols-2 gap-4">
         {(allCustomData.hostels||[]).map(h=>(
@@ -973,12 +972,12 @@ export default function AdminDashboard() {
 
      {activeSection==='about' && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">About, Vision, Mission - Add Your College About - Your Own About </h3>
+       <h3 className="font-bold text-[18px] text-[#1A3263]">About, Vision, Mission </h3>
        <div className="mt-6 space-y-5">
-        <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">About Your College - Full Text</label><textarea value={aboutForm.fullText} onChange={e=>setAboutForm({...aboutForm, fullText: e.target.value})} placeholder="Write about your college - history, campus, achievements, environment - Your own about, not PSG" rows={6} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+        <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">About College</label><textarea value={aboutForm.fullText} onChange={e=>setAboutForm({...aboutForm, fullText: e.target.value})} placeholder="Write about your college - history, campus, achievements" rows={6} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Vision</label><textarea value={aboutForm.vision} onChange={e=>setAboutForm({...aboutForm, vision: e.target.value})} placeholder="Your college vision" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Mission - Each line new mission</label><textarea value={aboutForm.mission} onChange={e=>setAboutForm({...aboutForm, mission: e.target.value})} placeholder="Mission 1&#10;Mission 2&#10;Mission 3" rows={4} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
-        <button onClick={handleSaveAbout} className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px]">Save About - Your Own About - Your College Story</button>
+        <button onClick={handleSaveAbout} className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px]">Save About</button>
        </div>
       </div>
      )}
@@ -990,8 +989,8 @@ export default function AdminDashboard() {
      {activeSection==='management' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Users size={22} className="text-[#FAB95B]" /> Management & Trustees - Add Management Members</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add your college management, trustees, chairman, secretary, etc. Each member with name, designation, image, contact - Will appear on your college website.</p>
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Users size={22} className="text-[#FAB95B]" /> Management & Trustees</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add management and trustee information</p>
 
         <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
          <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add New Management Member</h4>
@@ -1027,16 +1026,16 @@ export default function AdminDashboard() {
            <input value={managementForm.description} onChange={e=>setManagementForm({...managementForm, description: e.target.value})} placeholder="Short bio, achievements" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
          </div>
-         <button onClick={handleAddManagement} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Management Member - Works Now</button>
+         <button onClick={handleAddManagement} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Management Member</button>
         </div>
 
         <div className="mt-8">
-         <h4 className="font-bold text-[#1A3263]">Your Management Members - {(allCustomData.management||[]).length} Members</h4>
+         <h4 className="font-bold text-[#1A3263]">Management - {(allCustomData.management||[]).length}</h4>
          {(allCustomData.management||[]).length===0 ? (
           <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
            <div className="text-3xl">👥</div>
-           <div className="font-bold text-[#1A3263] mt-3">No management members yet - Add your trustees</div>
-           <div className="text-[12px] text-[#547792] mt-2">Add chairman, secretary, trustees with name, designation, image - Will appear on website</div>
+           <div className="font-bold text-[#1A3263] mt-3">No management members added yet</div>
+           <div className="text-[12px] text-[#547792] mt-2">Add management details for your college</div>
           </div>
          ) : (
           <div className="mt-4 grid md:grid-cols-2 gap-4">
@@ -1062,12 +1061,12 @@ export default function AdminDashboard() {
      {activeSection==='principal' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><UserCheck size={22} className="text-[#FAB95B]" /> Principal Details - Like Screenshot Design - Dark Blue + Yellow Underline</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add principal like screenshot: dark blue background, title Principal with yellow underline, left image with name/email below, right white box detailed biography. Example from image: Dr. L. Ashok Kumar - Thiagarajar College - Detailed research, publications, projects.</p>
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><UserCheck size={22} className="text-[#FAB95B]" /> Principal Details</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add principal information for your college</p>
 
         <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
-         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Edit3 size={16} /> Principal Information - Like Screenshot - Detailed Bio</h4>
-         <div className="mt-2 text-[11px] text-[#547792]">Screenshot la irukka maathiri: dark blue bg, Principal title yellow underline, left image + name/email, right white box la long detailed bio - Example: Dr. L. Ashok Kumar bio with Postdoctoral, BHAVAN Fellowship, SYST Fellowship, 3 years industrial, 25 years academic, 173 papers, 167 conferences, 28 projects 15 Crores, 9 projects 13 Crores, 27 products, 23 transferred, Eight Centres of Excellence, PhD wearable electronics National Award ISTE, 27 awards, 92 projects guided, 13 PhD Scholars, 373 programs, 112 events etc.</div>
+         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Edit3 size={16} /> Principal Information</h4>
+         <div className="mt-2 text-[11px] text-[#547792]">Add principal biography including qualification, experience and achievements</div>
          <div className="mt-4 grid md:grid-cols-2 gap-4">
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Name *</label>
@@ -1087,16 +1086,16 @@ export default function AdminDashboard() {
           </div>
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Email</label>
-           <input value={principalForm.email} onChange={e=>setPrincipalForm({...principalForm, email: e.target.value})} placeholder="principal@tce.edu - will show as principal [at] tce [dot] edu like screenshot" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+           <input value={principalForm.email} onChange={e=>setPrincipalForm({...principalForm, email: e.target.value})} placeholder="principal@college.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div>
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone</label>
            <input value={principalForm.phone} onChange={e=>setPrincipalForm({...principalForm, phone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
           <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Image - Upload or URL - Like screenshot left side</label>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Image</label>
            <div className="mt-2 flex gap-2">
-            <input value={principalForm.image} onChange={e=>setPrincipalForm({...principalForm, image: e.target.value})} placeholder="Paste image URL - principal photo like screenshot" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <input value={principalForm.image} onChange={e=>setPrincipalForm({...principalForm, image: e.target.value})} placeholder="Paste image URL or upload photo" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
             <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
               <Upload size={12} /> Upload
               <input type="file" accept="image/*" className="hidden" onChange={handlePrincipalImageUpload} />
@@ -1104,16 +1103,16 @@ export default function AdminDashboard() {
            </div>
           </div>
           <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Detailed Biography - Long Bio Like Screenshot - Main Content Right White Box</label>
-           <textarea value={principalForm.detailedBio} onChange={e=>setPrincipalForm({...principalForm, detailedBio: e.target.value})} placeholder="Paste detailed biography like screenshot example: Dr. L. Ashok Kumar was a Postdoctoral Research Fellow from San Diego State University, California. He was selected among seven scientists in India for the BHAVAN Fellowship from the Indo-US Science and Technology Forum and also, he received SYST Fellowship from DST, Govt. of India. Currently working as a Principal, Thiagarajar College of Engineering, Madurai, Tamil Nadu He has 3 years of industrial experience and 25 years of academic and research experience in PSG College of Technology, Coimbatore. He has published 173 technical papers in International and National journals and presented 167 papers in National and International Conferences. He has completed 28 Government of India funded projects worth about 15 Crores and currently 9 projects are in progress worth about 13 Crores. He has developed 27 products and out of that 23 products have been technology transferred to industries and for Government funding agencies. He has created Eight Centres of Excellence at PSG Tech in collaboration with Government agencies and Industries. His PhD work on wearable electronics earned him a National Award from ISTE, and he has received 27 awards in the National and in International level. He has guided 92 graduate and postgraduate projects. He has produced 13 PhD Scholars and 12 candidates are doing PhD under his supervision. He has visited many countries for institute industry collaboration and as a keynote speaker. He has been an invited speaker in 373 programs. Also, he has organized 112 events, including conferences, workshops, and seminars. He completed his graduate program in Electrical and Electronics Engineering from University of Madras and his post-graduate from PSG College of Technology, Coimbatore." rows={12} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none leading-[1.6]" />
-           <div className="text-[10px] text-[#547792] mt-1">This long bio will appear in white box right side like screenshot - detailed research, publications, projects, awards</div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Detailed Biography</label>
+           <textarea value={principalForm.detailedBio} onChange={e=>setPrincipalForm({...principalForm, detailedBio: e.target.value})} placeholder="Enter detailed biography including qualification, experience, research, publications and achievements" rows={12} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none leading-[1.6]" />
+           <div className="text-[10px] text-[#547792] mt-1">Detailed biography will appear on college website</div>
           </div>
           <div className="md:col-span-2">
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Short Message (Optional)</label>
            <textarea value={principalForm.message} onChange={e=>setPrincipalForm({...principalForm, message: e.target.value})} placeholder="Short principal message" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" />
           </div>
          </div>
-         <button onClick={handleSavePrincipal} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Save size={16} /> Save Principal - Like Screenshot Design</button>
+         <button onClick={handleSavePrincipal} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Save size={16} /> Save Principal</button>
         </div>
 
         <div className="mt-8 rounded-[20px] bg-[#1A3263] border-2 border-[#1A3263] p-6">
@@ -1122,13 +1121,13 @@ export default function AdminDashboard() {
          </div>
          <div className="grid md:grid-cols-[200px_1fr] gap-6 max-w-[900px] mx-auto">
           <div className="text-center">
-            {principalForm.image ? <img src={principalForm.image} className="w-full h-[220px] rounded-[12px] object-cover border-2 border-white/20 shadow-xl" alt="Principal" /> : <div className="w-full h-[220px] rounded-[12px] bg-white/10 border-2 border-dashed border-white/20 grid place-items-center text-white/40 text-[11px]">Principal Image Like Screenshot</div>}
-            <div className="mt-3 font-bold text-[14px] text-white">{principalForm.name || 'Dr. L. Ashok Kumar'}</div>
+            {principalForm.image ? <img src={principalForm.image} className="w-full h-[220px] rounded-[12px] object-cover border-2 border-white/20 shadow-xl" alt="Principal" /> : <div className="w-full h-[220px] rounded-[12px] bg-white/10 border-2 border-dashed border-white/20 grid place-items-center text-white/40 text-[11px]">Principal Image</div>}
+            <div className="mt-3 font-bold text-[14px] text-white">{principalForm.name || 'Principal Name'}</div>
             <div className="text-[12px] text-[#FAB95B] mt-1">{principalForm.designation || 'Principal'}</div>
-            <div className="text-[11px] text-white/70 mt-2 break-all">{principalForm.email || 'principal [at] tce [dot] edu'}</div>
+            <div className="text-[11px] text-white/70 mt-2 break-all">{principalForm.email || 'principal@college.edu'}</div>
           </div>
           <div className="rounded-[8px] bg-white p-5">
-            <div className="text-[12px] leading-[1.7] text-[#1A3263]/80 whitespace-pre-wrap">{principalForm.detailedBio || principalForm.message || 'Detailed biography will appear here like screenshot - long text with research, publications, projects, awards, achievements'}</div>
+            <div className="text-[12px] leading-[1.7] text-[#1A3263]/80 whitespace-pre-wrap">{principalForm.detailedBio || principalForm.message || 'Detailed biography will appear here'}</div>
           </div>
          </div>
         </div>
@@ -1145,7 +1144,7 @@ export default function AdminDashboard() {
        </p>
        <div className="mt-6 flex justify-center gap-2">
         <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[13px] font-bold">+ Add New {activeSection} - Your Own - </button>
-        <button className="h-10 px-5 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-bold text-[#1A3263]">Your College ID {college.id} - Your Own Data</button>
+        <button className="h-10 px-5 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-bold text-[#1A3263]">College ID {college.id} - Your Own Data</button>
        </div>
        <div className="mt-8 grid md:grid-cols-3 gap-3 text-left max-w-[800px] mx-auto">
         {[

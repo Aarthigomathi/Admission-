@@ -40,7 +40,7 @@ function CollegeHeroCarousel({ branding, college, customData }) {
           <div className="text-center text-white p-8">
             <div className="font-display text-[36px] font-bold">{college.name}</div>
             <div className="text-[14px] text-[#FAB95B] mt-2">{college.district} • {college.city} • Established {college.established}</div>
-            <div className="text-[12px] text-white/60 mt-4 max-w-[500px]">Add your campus images in Admin → Branding → College Campus Images (Up to 10) - Will auto swipe every 5 sec</div>
+            <div className="text-[12px] text-white/60 mt-4 max-w-[500px]">{college.name} - Official Website</div>
           </div>
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#1A3263]/90 via-[#1A3263]/20 to-transparent" />
@@ -94,7 +94,7 @@ function CollegeHeroCarousel({ branding, college, customData }) {
       {/* Image counter */}
       {allImages.length > 1 && (
         <div className="absolute top-6 right-6 px-3 py-1 rounded-full bg-black/40 backdrop-blur text-white text-[11px] font-bold border border-white/20 z-20">
-          {currentIdx+1} / {allImages.length} • Auto swipe 5 sec
+          {currentIdx+1} / {allImages.length}
         </div>
       )}
 
@@ -149,7 +149,7 @@ function CustomCollegePage({ college, customData }) {
     <div className="min-h-screen bg-[#E8E2DB]">
       <CollegeHeader college={{ ...college, branding: { ...college.branding, ...branding, logo: branding.logo || college.branding?.logo, heroImage: branding.heroImage || college.branding?.heroImage } }} />
 
-      {/* Hero - College own images with auto swipe carousel every 5 sec - up to 10 images */}
+      {/* Hero */}
       <CollegeHeroCarousel branding={branding} college={college} customData={customData} />
 
       {/* Quick Stats */}
@@ -204,7 +204,7 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-        {/* Principal Section - Design like attached image: dark blue bg, yellow underline, left image + name/email, right white box detailed bio */}
+        {/* Principal Section */}
         <section className="rounded-[24px] bg-[#1A3263] border-2 border-[#1A3263] overflow-hidden">
           <div className="p-8">
             <div className="text-center mb-8">
@@ -216,7 +216,7 @@ function CustomCollegePage({ college, customData }) {
             
             {principal && principal.name ? (
               <div className="grid md:grid-cols-[280px_1fr] gap-6 lg:gap-8 max-w-[1200px] mx-auto">
-                {/* Left - Image + Name + Email - Like screenshot */}
+                {/* Left - Principal Image */}
                 <div className="text-center md:text-left">
                   <div className="rounded-[12px] overflow-hidden border-2 border-white/10 shadow-xl bg-white">
                     {principal.image ? (
@@ -235,7 +235,7 @@ function CustomCollegePage({ college, customData }) {
                   </div>
                 </div>
 
-                {/* Right - White box with detailed bio - Like screenshot */}
+                {/* Right - Biography */}
                 <div className="rounded-[8px] bg-white p-6 lg:p-8 shadow-xl">
                   <div className="text-[13px] lg:text-[14px] leading-[1.8] text-[#1A3263]/90 space-y-4">
                     {principal.detailedBio ? (
@@ -246,7 +246,7 @@ function CustomCollegePage({ college, customData }) {
                         {principal.qualification && <p><span className="font-bold">Qualification:</span> {principal.qualification} {principal.experience ? `with ${principal.experience} of experience` : ''}.</p>}
                         {principal.bio && <p>{principal.bio}</p>}
                         {!principal.message && !principal.bio && !principal.detailedBio && (
-                          <p>{principal.name} is currently working as Principal, {college.name}, {college.city}, {college.district}. {principal.qualification ? `He has ${principal.experience || 'extensive'} experience in academic and research.` : ''} Add detailed biography in Admin → Principal Details → Detailed Bio field - Include research, publications, projects, awards, achievements like in screenshot example of Dr. L. Ashok Kumar.</p>
+                          <p>{principal.name} is currently working as Principal, {college.name}, {college.city}, {college.district}. {principal.qualification ? `He has ${principal.experience || 'extensive'} experience in academic and research.` : ''}</p>
                         )}
                       </>
                     )}
@@ -260,9 +260,8 @@ function CustomCollegePage({ college, customData }) {
             ) : (
               <div className="max-w-[800px] mx-auto py-16 text-center rounded-[16px] bg-white/5 border-2 border-dashed border-white/20">
                 <div className="text-4xl">👨‍🏫</div>
-                <div className="font-bold text-white mt-4 text-[18px]">Principal Details Not Added Yet</div>
-                <div className="text-[13px] text-white/60 mt-2 max-w-[500px] mx-auto">Add principal details in Admin → Principal Details - Like screenshot: image left, name + email below image, detailed biography right white box with dark blue background and yellow underline title</div>
-                <div className="mt-6 inline-flex px-4 py-2 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[11px]">Example: Dr. L. Ashok Kumar - Thiagarajar College - Detailed bio with research, publications, projects</div>
+                <div className="font-bold text-white mt-4 text-[18px]">Principal</div>
+                <div className="text-[13px] text-white/60 mt-2 max-w-[500px] mx-auto">Principal information will be updated soon</div>
               </div>
             )}
           </div>
@@ -286,15 +285,14 @@ function CustomCollegePage({ college, customData }) {
               ))}
             </div>
           ) : (
-            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">No management members added yet - Add in Admin → Management</div>
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Management information will be updated soon</div>
           )}
         </section>
 
-        {/* Departments - Each HOD Like Principal Screenshot Design - Dark Blue + Yellow Underline + Image + Bio */}
+        {/* Departments */}
         <section className="space-y-6">
-          <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 flex flex-wrap items-center justify-between gap-4">
-            <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Building2 className="text-[#FAB95B]" /> Departments - {departments.length} Departments</h2>
-            <div className="text-[11px] text-[#547792] bg-[#E8E2DB]/50 px-3 py-1 rounded-full border">Each HOD with image + detailed biography like principal screenshot - dark blue + yellow underline</div>
+          <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6">
+            <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Building2 className="text-[#FAB95B]" /> Departments</h2>
           </div>
 
           {hasContent(departments) ? (
@@ -315,7 +313,7 @@ function CustomCollegePage({ college, customData }) {
                     </div>
                     
                     <div className="grid md:grid-cols-[280px_1fr] gap-6 lg:gap-8 max-w-[1200px] mx-auto">
-                      {/* Left - HOD Image + Name + Email Like Principal Screenshot */}
+                      {/* Left - HOD Image */}
                       <div className="text-center md:text-left">
                         <div className="rounded-[12px] overflow-hidden border-2 border-white/10 shadow-xl bg-white">
                           {(dept.hodImage || dept.image) ? (
@@ -335,7 +333,7 @@ function CustomCollegePage({ college, customData }) {
                         </div>
                       </div>
 
-                      {/* Right - White Box Detailed HOD Bio Like Principal Screenshot */}
+                      {/* Right - Biography */}
                       <div className="rounded-[8px] bg-white p-6 lg:p-8 shadow-xl">
                         <div className="text-[13px] lg:text-[14px] leading-[1.8] text-[#1A3263]/90 space-y-4">
                           {dept.hodDetailedBio ? (
@@ -345,7 +343,7 @@ function CustomCollegePage({ college, customData }) {
                           ) : (
                             <>
                               {dept.description && <p><span className="font-bold">About {dept.name}:</span> {dept.description}</p>}
-                              <p>{dept.hod} is currently working as {dept.hodDesignation || `Head of Department, ${dept.name}`} at {college.name}, {college.city}, {college.district}. {dept.hodQualification ? `Qualification: ${dept.hodQualification}. ` : ''}{dept.hodExperience ? `Experience: ${dept.hodExperience}. ` : ''}Add detailed HOD biography in Admin → Departments → HOD Detailed Biography field - Include research, publications, projects, awards like principal screenshot example of Dr. L. Ashok Kumar.</p>
+                              <p>{dept.hod} is currently working as {dept.hodDesignation || `Head of Department, ${dept.name}`} at {college.name}, {college.city}, {college.district}.</p>
                               {dept.facultyCount && <p><span className="font-bold">Department Strength:</span> {dept.facultyCount} faculty members with expertise in various domains of {dept.name}.</p>}
                             </>
                           )}
@@ -374,9 +372,8 @@ function CustomCollegePage({ college, customData }) {
           ) : (
             <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8 py-16 text-center">
               <div className="text-4xl">🏛️</div>
-              <div className="font-bold text-[#1A3263] mt-4 text-[18px]">No departments added yet - Add with HOD Image + Biography Like Principal</div>
-              <div className="text-[13px] text-[#547792] mt-2 max-w-[600px] mx-auto">Add departments with HOD image and detailed biography like principal screenshot: dark blue background, title with yellow underline, left HOD image with name/email, right white box detailed bio. Go to Admin → Departments → Add Department with HOD Image + Biography.</div>
-              <div className="mt-6 inline-flex px-4 py-2 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">Example: CSE - HOD Dr. Ramesh Kumar - Image 320px + Bio like Dr. L. Ashok Kumar</div>
+              <div className="font-bold text-[#1A3263] mt-4 text-[18px]">Departments</div>
+              <div className="text-[13px] text-[#547792] mt-2 max-w-[600px] mx-auto">Departments information will be updated soon</div>
             </div>
           )}
         </section>
@@ -400,8 +397,8 @@ function CustomCollegePage({ college, customData }) {
             </div>
           ) : (
             <div className="mt-6 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
-              <div className="font-bold text-[#1A3263] mt-3">No courses added yet</div>
-              <div className="text-[12px] text-[#547792] mt-2">Add courses in Admin → Courses</div>
+              <div className="font-bold text-[#1A3263] mt-3">Courses</div>
+              <div className="text-[12px] text-[#547792] mt-2">Courses information will be updated soon</div>
             </div>
           )}
         </section>
@@ -419,7 +416,7 @@ function CustomCollegePage({ college, customData }) {
               ))}
             </div>
           ) : (
-            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">No facilities added yet - Add in Admin → Facilities</div>
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Facilities information will be updated soon</div>
           )}
         </section>
 
@@ -436,7 +433,7 @@ function CustomCollegePage({ college, customData }) {
               ))}
             </div>
           ) : (
-            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">No placement records yet - Add in Admin → Placements</div>
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Placement information will be updated soon</div>
           )}
         </section>
 
@@ -454,8 +451,8 @@ function CustomCollegePage({ college, customData }) {
             </div>
           ) : (
             <div className="mt-6 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
-              <div className="font-bold text-[#1A3263] mt-3">No campus images yet</div>
-              <div className="text-[11px] text-[#547792] mt-1">Add campus images in Admin → Gallery</div>
+              <div className="font-bold text-[#1A3263] mt-3">Gallery</div>
+              <div className="text-[11px] text-[#547792] mt-1">Gallery will be updated soon</div>
             </div>
           )}
         </section>
@@ -513,8 +510,8 @@ export default function CollegePage() {
       <div className="min-h-screen grid place-items-center bg-[#E8E2DB] p-8">
         <div className="text-center">
           <h1 className="font-display text-[32px] font-bold text-[#1A3263]">College not found</h1>
-          <p className="text-[13px] text-[#547792] mt-2">Slug: {slug} - College may not have signed up yet. Be first to register your college.</p>
-          <Link to="/college/signup" className="mt-6 inline-flex h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-semibold">College Sign Up - Add Your College A-Z</Link>
+          <p className="text-[13px] text-[#547792] mt-2">College information not found</p>
+          <Link to="/college/signup" className="mt-6 inline-flex h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-semibold">College Sign Up</Link>
         </div>
       </div>
     )
