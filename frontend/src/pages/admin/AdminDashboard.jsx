@@ -656,80 +656,111 @@ export default function AdminDashboard() {
         <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Building2 className="text-[#FAB95B]" /> Departments with HOD</h3>
         <p className="text-[12px] text-[#547792] mt-2">Add departments with HOD information including image and biography</p>
 
-        <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
-         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add New Department</h4>
-         <div className="mt-2 text-[11px] text-[#547792]">Add department and HOD details for your college</div>
-         <div className="mt-6 grid md:grid-cols-2 gap-4">
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Name *</label>
-           <input value={deptForm.name} onChange={e=>setDeptForm({...deptForm, name: e.target.value})} placeholder="e.g. Computer Science and Engineering" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Faculty Count</label>
-           <input value={deptForm.facultyCount} onChange={e=>setDeptForm({...deptForm, facultyCount: e.target.value})} placeholder="e.g. 25" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Image URL (Optional)</label>
-           <div className="mt-2 flex gap-2">
-            <input value={deptForm.image} onChange={e=>setDeptForm({...deptForm, image: e.target.value})} placeholder="Dept banner image URL" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-            <label className="h-11 px-3 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 text-[11px] font-bold flex items-center gap-1 cursor-pointer">
-              <Upload size={12} /> Upload
-              <input type="file" accept="image/*" className="hidden" onChange={handleDeptImageUpload} />
-            </label>
-           </div>
-          </div>
-          <div className="md:col-span-1">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Dept Description - Labs, Facilities</label>
-           <input value={deptForm.description} onChange={e=>setDeptForm({...deptForm, description: e.target.value})} placeholder="Labs, facilities, achievements" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add New Department</h4>
+         <div className="mt-2 text-[12px] text-[#547792]">Add department and HOD details - all fields support long text</div>
+         
+         <div className="mt-8 space-y-6">
+          {/* Department Info */}
+          <div className="space-y-4">
+            <h5 className="font-bold text-[13px] uppercase tracking-wide text-[#1A3263] border-b-2 border-[#E8E2DB] pb-2">Department Information</h5>
+            <div className="grid md:grid-cols-2 gap-5">
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Name *</label>
+               <input value={deptForm.name} onChange={e=>setDeptForm({...deptForm, name: e.target.value})} placeholder="e.g. Computer Science and Engineering" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium transition-colors" />
+              </div>
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">Faculty Count</label>
+               <input value={deptForm.facultyCount} onChange={e=>setDeptForm({...deptForm, facultyCount: e.target.value})} placeholder="e.g. 25" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] transition-colors" />
+              </div>
+            </div>
+            
+            <div className="grid md:grid-cols-1 gap-5">
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Image URL</label>
+               <div className="mt-2 flex gap-3">
+                <input value={deptForm.image} onChange={e=>setDeptForm({...deptForm, image: e.target.value})} placeholder="Paste department image URL - https://college.edu/cse.jpg" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                <label className="h-12 px-5 rounded-[14px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-2 cursor-pointer hover:bg-[#1A3263]/90 transition-colors">
+                  <Upload size={14} /> Upload
+                  <input type="file" accept="image/*" className="hidden" onChange={handleDeptImageUpload} />
+                </label>
+               </div>
+              </div>
+              
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">Department Description - Laboratories, Facilities, Achievements - Large Field</label>
+               <textarea value={deptForm.description} onChange={e=>setDeptForm({...deptForm, description: e.target.value})} placeholder="Enter detailed department description:&#10;&#10;• Laboratories: The Department of Information Technology provides well-equipped laboratories with latest systems, high-speed internet, advanced software tools&#10;• Facilities: Smart classrooms, seminar halls, research labs, project labs&#10;• Achievements: Department has won national awards, students placed in top companies, research publications&#10;• Vision of department, mission, programs offered, intake, etc&#10;&#10;You can write long paragraphs - this field supports unlimited text like principal biography" rows={8} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[180px]" />
+               <div className="text-[10px] text-[#547792] mt-2">This large field supports long text - write as much as you want about labs, facilities, achievements</div>
+              </div>
+            </div>
           </div>
 
-          <div className="md:col-span-2 mt-4 p-4 rounded-[16px] bg-[#1A3263]/5 border-2 border-[#1A3263]/10">
-            <div className="font-bold text-[13px] text-[#1A3263] flex items-center gap-2">👨‍🏫 HOD Details</div>
-            <div className="text-[11px] text-[#547792] mt-1">Add HOD information with image and biography</div>
+          <div className="mt-8 p-6 rounded-[16px] bg-[#1A3263] text-white">
+            <div className="font-bold text-[14px] text-[#FAB95B] flex items-center gap-2">👨‍🏫 HOD Details - Image + Biography</div>
+            <div className="text-[11px] text-white/70 mt-1">Add HOD information with image and detailed biography - supports long text</div>
           </div>
 
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Name *</label>
-           <input value={deptForm.hod} onChange={e=>setDeptForm({...deptForm, hod: e.target.value})} placeholder="e.g. Dr. Ramesh Kumar - HOD CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Designation</label>
-           <input value={deptForm.hodDesignation} onChange={e=>setDeptForm({...deptForm, hodDesignation: e.target.value})} placeholder="Head of Department, CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Qualification</label>
-           <input value={deptForm.hodQualification} onChange={e=>setDeptForm({...deptForm, hodQualification: e.target.value})} placeholder="e.g. Ph.D, M.E CSE" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Experience</label>
-           <input value={deptForm.hodExperience} onChange={e=>setDeptForm({...deptForm, hodExperience: e.target.value})} placeholder="e.g. 15 years academic + 2 years industrial" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Email</label>
-           <input value={deptForm.hodEmail} onChange={e=>setDeptForm({...deptForm, hodEmail: e.target.value})} placeholder="hod@college.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Phone</label>
-           <input value={deptForm.hodPhone} onChange={e=>setDeptForm({...deptForm, hodPhone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Image</label>
-           <div className="mt-2 flex gap-2">
-            <input value={deptForm.hodImage} onChange={e=>setDeptForm({...deptForm, hodImage: e.target.value})} placeholder="Paste HOD photo URL or upload" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-            <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
-              <Upload size={12} /> Upload HOD Image
-              <input type="file" accept="image/*" className="hidden" onChange={handleDeptHodImageUpload} />
-            </label>
-           </div>
-           {deptForm.hodImage && <div className="mt-3"><img src={deptForm.hodImage} className="h-20 w-20 rounded-[12px] object-cover border-2 border-[#FAB95B]" alt="HOD preview" /></div>}
-          </div>
-          <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Detailed Biography</label>
-           <textarea value={deptForm.hodDetailedBio} onChange={e=>setDeptForm({...deptForm, hodDetailedBio: e.target.value})} placeholder="Enter detailed HOD biography including qualification, experience, research and achievements" rows={10} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none leading-[1.6]" />
-           <div className="text-[10px] text-[#547792] mt-1">Detailed biography will appear on college website</div>
+          <div className="space-y-4">
+            <h5 className="font-bold text-[13px] uppercase tracking-wide text-[#1A3263] border-b-2 border-[#E8E2DB] pb-2">HOD Personal Information</h5>
+            <div className="grid md:grid-cols-2 gap-5">
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Name *</label>
+               <input value={deptForm.hod} onChange={e=>setDeptForm({...deptForm, hod: e.target.value})} placeholder="e.g. Dr. Ramesh Kumar" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] font-medium" />
+              </div>
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Designation</label>
+               <input value={deptForm.hodDesignation} onChange={e=>setDeptForm({...deptForm, hodDesignation: e.target.value})} placeholder="Head of Department" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+              </div>
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Qualification</label>
+               <input value={deptForm.hodQualification} onChange={e=>setDeptForm({...deptForm, hodQualification: e.target.value})} placeholder="e.g. Ph.D, M.E CSE" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+              </div>
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Experience</label>
+               <input value={deptForm.hodExperience} onChange={e=>setDeptForm({...deptForm, hodExperience: e.target.value})} placeholder="e.g. 15 years academic + 2 years industrial" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+              </div>
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Email</label>
+               <input value={deptForm.hodEmail} onChange={e=>setDeptForm({...deptForm, hodEmail: e.target.value})} placeholder="hod@college.edu" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+              </div>
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Phone</label>
+               <input value={deptForm.hodPhone} onChange={e=>setDeptForm({...deptForm, hodPhone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+              </div>
+            </div>
+
+            <div className="space-y-5">
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Image - Large Preview</label>
+               <div className="mt-2 flex gap-3">
+                <input value={deptForm.hodImage} onChange={e=>setDeptForm({...deptForm, hodImage: e.target.value})} placeholder="Paste HOD photo URL or upload - supports large images" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                <label className="h-12 px-5 rounded-[14px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-2 cursor-pointer hover:bg-[#1A3263]/90">
+                  <Upload size={14} /> Upload HOD Photo
+                  <input type="file" accept="image/*" className="hidden" onChange={handleDeptHodImageUpload} />
+                </label>
+               </div>
+               {deptForm.hodImage && (
+                 <div className="mt-4 p-4 rounded-[14px] bg-[#E8E2DB]/30 border-2 border-[#E8E2DB] flex gap-4 items-center">
+                   <img src={deptForm.hodImage} className="h-24 w-24 rounded-[14px] object-cover border-2 border-[#FAB95B] shadow" alt="HOD preview" />
+                   <div>
+                     <div className="font-bold text-[13px] text-[#1A3263]">{deptForm.hod || 'HOD Name'}</div>
+                     <div className="text-[11px] text-[#547792]">{deptForm.hodDesignation}</div>
+                     <div className="text-[11px] text-[#547792] mt-1">{deptForm.hodEmail}</div>
+                   </div>
+                 </div>
+               )}
+              </div>
+
+              <div>
+               <label className="text-[11px] font-bold uppercase text-[#1A3263]">HOD Detailed Biography - Large Field - Supports Long Text Like Principal</label>
+               <textarea value={deptForm.hodDetailedBio} onChange={e=>setDeptForm({...deptForm, hodDetailedBio: e.target.value})} placeholder="Enter detailed HOD biography - you can write long text:&#10;&#10;Dr. Ramesh Kumar is currently working as Head of Department, Computer Science at College. He has 15 years of academic experience and 2 years of industrial experience.&#10;&#10;Qualification: Ph.D in Computer Science from Anna University, M.E from PSG Tech&#10;Research: Artificial Intelligence, Machine Learning, Data Science, IoT&#10;Publications: Published 85 papers in international journals, presented 60 papers in conferences&#10;Projects: Completed 12 government funded projects worth 5 Crores, 3 projects in progress worth 2 Crores&#10;Products: Developed 8 products, 5 technology transferred to industries&#10;Centres: Created 3 Centres of Excellence in collaboration with industries&#10;Awards: National Award for research, Best Teacher Award, etc&#10;Guidance: Guided 45 graduate projects, 5 PhD scholars, 4 currently pursuing&#10;Events: Keynote speaker in 120 programs, organized 40 conferences and workshops&#10;&#10;This field supports unlimited long text like principal detailed bio" rows={14} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[280px]" />
+               <div className="text-[10px] text-[#547792] mt-2">Large field - write detailed biography with research, publications, projects, awards - supports long paragraphs</div>
+              </div>
+            </div>
           </div>
          </div>
-         <button onClick={handleAddDepartment} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Department</button>
+
+         <button onClick={handleAddDepartment} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2 hover:bg-[#1A3263]/90 shadow-lg"><Plus size={18} /> Add Department</button>
         </div>
 
         <div className="mt-8">
