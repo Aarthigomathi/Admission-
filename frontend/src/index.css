@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
+@import "tailwindcss";
+
+:root {
+  --font-display: "Fraunces", serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-serif: "Instrument Serif", serif;
+}
+
+* {
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* Platform vars */
+:root {
+  --platform-bg: #fbfaf8;
+  --platform-card: #ffffff;
+  --platform-border: #ede9e3;
+  --platform-text: #1a1a1a;
+  --platform-muted: #7a746e;
+}
+
+/* College theming via CSS vars set inline per college */
+.college-theme {
+  --c-primary: var(--college-primary, #0f172a);
+  --c-secondary: var(--college-secondary, #334155);
+  --c-accent: var(--college-accent, #f59e0b);
+  --c-bg: var(--college-bg, #ffffff);
+  --c-surface: var(--college-surface, #f8fafc);
+  --c-text: var(--college-text, #0f172a);
+  --c-muted: var(--college-muted, #64748b);
+}
+
+/* Premium utilities */
+.glass {
+  backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.premium-card {
+  background: white;
+  border: 1px solid #f1f1ef;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
+  border-radius: 24px;
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.premium-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 16px 48px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 2.5s infinite;
+}
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Animations */
+@keyframes float {
+  0%,100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.6s ease-out; }
+
+body {
+  background: var(--platform-bg);
+  color: var(--platform-text);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
