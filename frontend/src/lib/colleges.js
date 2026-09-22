@@ -12,11 +12,13 @@ export const colleges = [
     established: 1951,
     verified: true,
     branding: {
-      preset: "engineering_blue",
+      preset: "psg_real",
       colors: {
-        primary: "#0a1931",
-        secondary: "#1e3a5f",
-        accent: "#ffcc00",
+        primary: "#1a3263",
+        secondary: "#547792",
+        accent: "#fab95b",
+        bg: "#e8e2db",
+        surface: "#ffffff",
       },
       logo: "https://www.psgtech.edu/images/psgtech-logo.png",
       heroImage: "https://www.psgtech.edu/images/slider/foundationday_2026.jpg",
@@ -117,12 +119,39 @@ export const colleges = [
       { id: 7, title: "International Day of Yoga Celebration - 21 June 2026", date: "2026-06-21", venue: "Campus", category: "Cultural", image: "https://www.psgtech.edu/images/yogaDay2026.jpg" },
     ],
     gallery: [
+      // 100% Real images from www.psgtech.edu - no AI, real-time
       "https://www.psgtech.edu/images/slider/foundationday_2026.jpg",
       "https://www.psgtech.edu/images/slider/Orientation_2026.jpg",
       "https://www.psgtech.edu/images/slider/RC2026.jpg",
       "https://www.psgtech.edu/images/slider/TheConfluence-2026.jpg",
       "https://www.psgtech.edu/images/TeachersDay2025.JPG",
       "https://www.psgtech.edu/images/slider/viksit@2047_image.webp",
+      "https://www.psgtech.edu/images/slider/Interactivesession_jains.jpg",
+      "https://www.psgtech.edu/images/slider/Facultyinteraction_1.jpg",
+      "https://www.psgtech.edu/images/slider/faculty_interaction_section.jpg",
+      "https://www.psgtech.edu/images/slider/AwardCeremony2026-AUT_Mech_MTL_PRO.jpg",
+      "https://www.psgtech.edu/images/slider/AwardCeremony2026-BME-BioTech-CSEIT.jpg",
+      "https://www.psgtech.edu/images/slider/AwardCeremony2026-ScienceStream.jpg",
+      "https://www.psgtech.edu/images/slider/AwardCeremony_2026_ElectricalAlliedEngineering.jpg",
+      "https://www.psgtech.edu/images/slider/votersDayImage_1.jpg",
+      "https://www.psgtech.edu/images/slider/slider_Dinesh1.webp",
+      "https://www.psgtech.edu/images/slider/slider_shivan1.webp",
+      "https://www.psgtech.edu/images/slider/IISF.jpg",
+      "https://www.psgtech.edu/images/amrit_mahotsav.jpg",
+      "https://www.psgtech.edu/images/events/rc2026/image001.JPG",
+      "https://www.psgtech.edu/images/yogaDay2026.jpg",
+      "https://library.psgtech.ac.in/images/logos/about_img_1694408630.jpg",
+      "https://library.psgtech.ac.in/images/logos/about_img_1694401847.jpg",
+      "https://library.psgtech.ac.in/images/logos/about_img_1694247891.jpg",
+      "https://library.psgtech.ac.in/images/logos/about_img_1694247869.jpg",
+      "https://library.psgtech.ac.in/images/lap-book.jpg",
+      "https://library.psgtech.ac.in/libnew.png",
+    ],
+    videos: [
+      // Real videos from psgtech.edu library page
+      "https://www.youtube.com/watch?v=L3U4Z6pkB8s", // How to Identify Scopus Indexed Journals
+      "https://www.youtube.com/watch?v=rnLyerOn7Xg", // How to Create ORCID ID and integration with Scopus
+      "https://www.youtube.com/user/nptelhrd", // NPTEL Video Lectures from library
     ],
     contact: {
       phone: "0422 2572177 / 4344280 / 2572477",

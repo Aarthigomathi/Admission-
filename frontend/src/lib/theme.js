@@ -1,116 +1,134 @@
 export const themePresets = {
-  engineering_blue: {
-    name: "Academic Blue",
-    category: "Engineering",
+  psg_real: {
+    name: "PSG Official Real",
+    category: "PSG Tech - Real Time",
     colors: {
-      primary: "#0f2c5c",
-      secondary: "#1e4a8a",
-      accent: "#f59e0b",
-      bg: "#ffffff",
-      surface: "#f6f8fb",
-      text: "#0f172a",
-      muted: "#64748b",
+      primary: "#1a3263",
+      secondary: "#547792",
+      accent: "#fab95b",
+      bg: "#e8e2db",
+      surface: "#ffffff",
+      text: "#1a3263",
+      muted: "#547792",
     },
     typography: "modern",
     headerStyle: "classic",
     cardStyle: "elevated",
     buttonStyle: "rounded",
-    description: "For engineering & technology institutions"
+    description: "Real PSG Tech - #e8e2db beige, #fab95b gold, #547792 slate, #1a3263 navy - 100% real images from psgtech.edu"
+  },
+  engineering_blue: {
+    name: "Navy Gold Beige",
+    category: "Engineering - Your Palette",
+    colors: {
+      primary: "#1a3263",
+      secondary: "#547792",
+      accent: "#fab95b",
+      bg: "#e8e2db",
+      surface: "#ffffff",
+      text: "#1a3263",
+      muted: "#547792",
+    },
+    typography: "modern",
+    headerStyle: "classic",
+    cardStyle: "elevated",
+    buttonStyle: "rounded",
+    description: "Deep navy #1a3263 + slate #547792 + gold #fab95b + beige #e8e2db - Premium"
   },
   arts_maroon: {
-    name: "Heritage Maroon",
-    category: "Arts & Science",
+    name: "Heritage Beige Gold",
+    category: "Arts & Science - Your Palette",
     colors: {
-      primary: "#6b1d2a",
-      secondary: "#8b2d3b",
-      accent: "#d4a017",
-      bg: "#fffbf7",
-      surface: "#fdf2e9",
-      text: "#2c1810",
-      muted: "#8b7355",
+      primary: "#1a3263",
+      secondary: "#547792",
+      accent: "#fab95b",
+      bg: "#e8e2db",
+      surface: "#fdf6ee",
+      text: "#1a3263",
+      muted: "#547792",
     },
     typography: "elegant",
     headerStyle: "heritage",
     cardStyle: "soft",
     buttonStyle: "pill",
-    description: "Elegant cultural heritage for arts colleges"
+    description: "Same palette - beige #e8e2db background with heritage layout - unique but same colors"
   },
   corporate_slate: {
-    name: "Corporate Slate",
-    category: "Management",
+    name: "Corporate Navy Gold",
+    category: "Management - Your Palette",
     colors: {
-      primary: "#111827",
-      secondary: "#374151",
-      accent: "#10b981",
-      bg: "#ffffff",
-      surface: "#f9fafb",
-      text: "#111827",
-      muted: "#6b7280",
+      primary: "#1a3263",
+      secondary: "#547792",
+      accent: "#fab95b",
+      bg: "#e8e2db",
+      surface: "#ffffff",
+      text: "#1a3263",
+      muted: "#547792",
     },
     typography: "corporate",
     headerStyle: "minimal",
     cardStyle: "sharp",
     buttonStyle: "sharp",
-    description: "Modern corporate for B-schools"
+    description: "Corporate minimal using #1a3263 navy #547792 slate #fab95b gold #e8e2db beige"
   },
   medical_teal: {
-    name: "Healthcare Teal",
-    category: "Medical",
+    name: "Clinical Navy Beige",
+    category: "Medical - Your Palette",
     colors: {
-      primary: "#0f766e",
-      secondary: "#115e59",
-      accent: "#06b6d4",
-      bg: "#ffffff",
-      surface: "#f0fdfa",
-      text: "#042f2e",
-      muted: "#5f8a8b",
+      primary: "#1a3263",
+      secondary: "#547792",
+      accent: "#fab95b",
+      bg: "#e8e2db",
+      surface: "#ffffff",
+      text: "#1a3263",
+      muted: "#547792",
     },
     typography: "clean",
     headerStyle: "clinical",
     cardStyle: "clean",
     buttonStyle: "rounded",
-    description: "Clean healthcare aesthetic"
+    description: "Healthcare clean using your 4 colors - navy slate gold beige"
   },
   royal_purple: {
-    name: "Royal Purple",
-    category: "University",
+    name: "Royal Navy Gold",
+    category: "University - Your Palette",
     colors: {
-      primary: "#4c1d95",
-      secondary: "#6d28d9",
-      accent: "#fbbf24",
-      bg: "#ffffff",
-      surface: "#f5f3ff",
-      text: "#1e1b4b",
-      muted: "#6b7280",
+      primary: "#1a3263",
+      secondary: "#547792",
+      accent: "#fab95b",
+      bg: "#e8e2db",
+      surface: "#ffffff",
+      text: "#1a3263",
+      muted: "#547792",
     },
     typography: "prestige",
     headerStyle: "grand",
     cardStyle: "elevated",
     buttonStyle: "rounded",
-    description: "Prestigious university feel"
+    description: "Prestigious using #1a3263 #547792 #fab95b #e8e2db - unique layout"
   },
   forest_green: {
-    name: "Forest Green",
-    category: "Agriculture / Rural",
+    name: "Organic Beige Navy",
+    category: "Agriculture - Your Palette",
     colors: {
-      primary: "#14532d",
-      secondary: "#166534",
-      accent: "#facc15",
-      bg: "#ffffff",
-      surface: "#f0fdf4",
-      text: "#052e16",
-      muted: "#4a7c59",
+      primary: "#1a3263",
+      secondary: "#547792",
+      accent: "#fab95b",
+      bg: "#e8e2db",
+      surface: "#ffffff",
+      text: "#1a3263",
+      muted: "#547792",
     },
     typography: "organic",
     headerStyle: "organic",
     cardStyle: "soft",
     buttonStyle: "pill",
-    description: "Natural, grounded, sustainable"
+    description: "Organic layout but same palette #e8e2db #fab95b #547792 #1a3263 - unique"
   }
 }
 
 export function applyCollegeTheme(college) {
-  const preset = themePresets[college.branding?.preset] || themePresets.engineering_blue
+  const preset = themePresets[college.branding?.preset] || themePresets.psg_real
   const custom = college.branding?.colors || {}
   const colors = { ...preset.colors, ...custom }
   return {

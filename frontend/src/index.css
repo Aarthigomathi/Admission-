@@ -18,13 +18,16 @@
   font-family: var(--font-serif);
 }
 
-/* Platform vars */
+/* Platform vars - User requested palette #e8e2db #fab95b #547792 #1a3263 */
 :root {
-  --platform-bg: #fbfaf8;
+  --platform-bg: #e8e2db;
   --platform-card: #ffffff;
-  --platform-border: #ede9e3;
-  --platform-text: #1a1a1a;
-  --platform-muted: #7a746e;
+  --platform-border: #d6cfc6;
+  --platform-text: #1a3263;
+  --platform-muted: #547792;
+  --platform-accent: #fab95b;
+  --platform-primary: #1a3263;
+  --platform-secondary: #547792;
 }
 
 /* College theming via CSS vars set inline per college */

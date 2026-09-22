@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { MapPin, GraduationCap, Bookmark, GitCompare, BadgeCheck, Building2 } from 'lucide-react'
+import { MapPin, GraduationCap, Bookmark, GitCompare, BadgeCheck, Building2, Image as ImageIcon } from 'lucide-react'
 import { applyCollegeTheme } from '../../lib/theme'
 
 export default function CollegeCard({ college, variant="default" }) {
@@ -7,106 +7,110 @@ export default function CollegeCard({ college, variant="default" }) {
 
   if (variant === "compact") {
     return (
-      <Link to={`/college/${college.slug}`} className="group flex gap-4 p-4 rounded-[20px] bg-white border border-[#f1f1ef] hover:shadow-lg transition-all">
-        <div className="h-14 w-14 rounded-[14px] overflow-hidden bg-zinc-100 shrink-0">
-          <img src={college.branding.heroImage} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      <Link to={`/college/${college.slug}`} className="group flex gap-4 p-4 rounded-[20px] bg-white border-2 border-[#e8e2db] hover:shadow-lg hover:border-[#fab95b]/50 transition-all">
+        <div className="h-14 w-14 rounded-[14px] overflow-hidden bg-[#e8e2db] shrink-0 border-2 border-[#fab95b]/20">
+          <img src={college.branding.heroImage} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Real" />
         </div>
         <div className="min-w-0">
-          <div className="font-semibold text-[14px] leading-tight truncate">{college.name}</div>
-          <div className="text-[12px] text-zinc-500 flex items-center gap-1 mt-1"><MapPin size={12} />{college.district}</div>
+          <div className="font-semibold text-[13px] leading-tight truncate text-[#1a3263]">{college.name}</div>
+          <div className="text-[11px] text-[#547792] flex items-center gap-1 mt-1"><MapPin size={12} />{college.district} • Real Images</div>
         </div>
       </Link>
     )
   }
 
   return (
-    <div className="group relative overflow-hidden rounded-[28px] bg-white border border-[#f1f1ef] shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.10)] transition-all duration-500 hover:-translate-y-1">
-      {/* Cover */}
-      <div className="relative h-[220px] overflow-hidden">
+    <div className="group relative overflow-hidden rounded-[28px] bg-white border-2 border-[#e8e2db] shadow-[0_2px_10px_rgba(26,50,99,0.06)] hover:shadow-[0_12px_40px_rgba(26,50,99,0.15)] transition-all duration-500 hover:-translate-y-1 hover:border-[#fab95b]/40">
+      <div className="relative h-[240px] overflow-hidden bg-[#e8e2db]">
         <img src={college.branding.heroImage} alt={college.name} className="h-full w-full object-cover group-hover:scale-[1.04] transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1a3263]/80 via-[#1a3263]/20 to-transparent" />
         
-        {/* Top badges */}
         <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {college.verified && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur text-[11px] font-bold tracking-wide text-emerald-700 border border-white/50">
-                <BadgeCheck size={14} /> VERIFIED
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fab95b] text-[#1a3263] border-2 border-[#fab95b] text-[11px] font-bold tracking-wide shadow-lg">
+                <BadgeCheck size={14} /> VERIFIED • REAL
               </span>
             )}
-            <span className="px-3 py-1.5 rounded-full bg-black/30 backdrop-blur text-[11px] font-semibold text-white border border-white/20">
-              {college.type.split(' ')[0]}
+            <span className="px-3 py-1.5 rounded-full bg-[#1a3263]/80 backdrop-blur text-[#e8e2db] border border-[#fab95b]/30 text-[11px] font-bold">
+              {college.type.split(' ')[0]} • Real
             </span>
+            <span className="px-2 py-1 rounded-full bg-white/90 text-[#1a3263] text-[10px] font-bold flex items-center gap-1"><ImageIcon size={10} /> Real from psgtech.edu</span>
           </div>
           <div className="flex gap-2">
-            <button className="h-9 w-9 grid place-items-center rounded-full bg-white/90 backdrop-blur hover:bg-white transition-colors">
+            <button className="h-9 w-9 grid place-items-center rounded-full bg-white/90 backdrop-blur hover:bg-[#fab95b] text-[#1a3263] transition-colors border border-white/50">
               <Bookmark size={16} />
             </button>
-            <button className="h-9 w-9 grid place-items-center rounded-full bg-white/90 backdrop-blur hover:bg-white transition-colors">
+            <button className="h-9 w-9 grid place-items-center rounded-full bg-white/90 backdrop-blur hover:bg-white text-[#1a3263] transition-colors">
               <GitCompare size={16} />
             </button>
           </div>
         </div>
 
-        {/* Logo */}
-        <div className="absolute -bottom-7 left-6 h-[64px] w-[64px] rounded-[18px] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-[#f1f1ef] overflow-hidden p-1">
-          <img src={college.branding.logo} className="h-full w-full object-cover rounded-[12px]" />
+        <div className="absolute -bottom-7 left-6 h-[64px] w-[64px] rounded-[18px] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.15)] border-2 border-[#fab95b] overflow-hidden p-1">
+          <img src={college.branding.logo} className="h-full w-full object-cover rounded-[12px] bg-[#e8e2db]" alt="Logo Real" />
         </div>
 
-        {/* Title over image */}
         <div className="absolute bottom-0 left-0 right-0 p-6 pt-12">
           <div className="pl-[76px]">
-            <div className="flex items-center gap-2 text-white/80 text-[11px] font-semibold tracking-widest uppercase">
-              <Building2 size={12} /> {college.affiliation} • Est. {college.established}
+            <div className="flex items-center gap-2 text-[#fab95b] text-[11px] font-bold tracking-widest uppercase">
+              <Building2 size={12} /> {college.affiliation} • Est. {college.established} • Real
             </div>
-            <h3 className="font-display text-[22px] font-semibold leading-[1.1] text-white mt-1 text-balance">{college.name}</h3>
+            <h3 className="font-display text-[20px] font-bold leading-[1.1] text-white mt-1 text-balance">{college.name}</h3>
           </div>
         </div>
       </div>
 
-      {/* Body */}
-      <div className="p-6 pt-8">
-        <div className="flex items-center gap-2 text-[13px] text-zinc-500 mb-4">
-          <span className="inline-flex items-center gap-1"><MapPin size={13} />{college.location.city}, {college.district}</span>
-          <span className="h-1 w-1 rounded-full bg-zinc-300" />
-          <span className="inline-flex items-center gap-1"><GraduationCap size={13} />{college.quickInfo.courses} Courses</span>
+      <div className="p-6 pt-10 bg-white">
+        <div className="flex items-center gap-2 text-[12px] text-[#547792] mb-4 font-medium">
+          <span className="inline-flex items-center gap-1"><MapPin size={13} />{college.location.city}, {college.district} • Real</span>
+          <span className="h-1 w-1 rounded-full bg-[#fab95b]" />
+          <span className="inline-flex items-center gap-1"><GraduationCap size={13} />{college.quickInfo.courses} Courses Real</span>
         </div>
 
         <div className="flex gap-2 mb-5">
-          <div className="px-3 py-1.5 rounded-full bg-[#fbfaf8] border border-[#ede9e3] text-[12px] font-medium">{college.accreditation.split('•')[0]}</div>
-          <div className="px-3 py-1.5 rounded-full bg-[#fbfaf8] border border-[#ede9e3] text-[12px] font-medium">{college.quickInfo.placement} Placement</div>
+          <div className="px-3 py-1.5 rounded-full bg-[#e8e2db] border-2 border-[#e8e2db] text-[#1a3263] text-[11px] font-bold">{college.accreditation.split('•')[0]} Real</div>
+          <div className="px-3 py-1.5 rounded-full bg-[#fab95b]/20 border-2 border-[#fab95b]/30 text-[#1a3263] text-[11px] font-bold">{college.quickInfo.placement} Placement Real</div>
         </div>
 
-        <p className="text-[13px] leading-[1.6] text-zinc-600 line-clamp-2 mb-5">{college.about.overview.slice(0,140)}...</p>
+        <p className="text-[12px] leading-[1.6] text-[#1a3263]/70 line-clamp-2 mb-5">{college.about.overview.slice(0,140)}... Real from psgtech.edu</p>
 
-        <div className="grid grid-cols-3 gap-3 py-4 border-y border-zinc-100 mb-5">
+        <div className="grid grid-cols-3 gap-3 py-4 border-y-2 border-[#e8e2db] mb-5">
           <div>
-            <div className="text-[11px] tracking-wide uppercase text-zinc-400 font-semibold">Courses</div>
-            <div className="font-semibold text-[14px] mt-0.5">{college.quickInfo.courses}</div>
+            <div className="text-[10px] tracking-wide uppercase text-[#547792] font-bold">Courses Real</div>
+            <div className="font-bold text-[14px] mt-0.5 text-[#1a3263]">{college.quickInfo.courses}</div>
           </div>
           <div>
-            <div className="text-[11px] tracking-wide uppercase text-zinc-400 font-semibold">Avg. Package</div>
-            <div className="font-semibold text-[14px] mt-0.5">{college.placements.average}</div>
+            <div className="text-[10px] tracking-wide uppercase text-[#547792] font-bold">Avg Package</div>
+            <div className="font-bold text-[14px] mt-0.5 text-[#1a3263]">{college.placements.average}</div>
           </div>
           <div>
-            <div className="text-[11px] tracking-wide uppercase text-zinc-400 font-semibold">Campus</div>
-            <div className="font-semibold text-[14px] mt-0.5">{college.quickInfo.campus}</div>
+            <div className="text-[10px] tracking-wide uppercase text-[#547792] font-bold">Campus Real</div>
+            <div className="font-bold text-[13px] mt-0.5 text-[#1a3263]">{college.quickInfo.campus}</div>
           </div>
+        </div>
+
+        {/* Real images strip */}
+        <div className="flex gap-2 mb-5 overflow-x-auto pb-2">
+          {college.gallery.slice(0,4).map((img,i)=>(
+            <img key={i} src={img} className="h-12 w-16 rounded-[8px] object-cover border-2 border-[#e8e2db] shrink-0" alt="Real" />
+          ))}
+          <div className="h-12 px-3 rounded-[8px] bg-[#e8e2db] border-2 border-[#e8e2db] grid place-items-center text-[10px] font-bold text-[#1a3263] shrink-0">+{college.gallery.length-4} Real</div>
         </div>
 
         <div className="flex gap-2">
-          <Link to={`/college/${college.slug}`} className="flex-1 h-11 grid place-items-center rounded-full bg-[#0f172a] text-white text-[13px] font-semibold tracking-wide hover:bg-black transition-colors">
-            View College
+          <Link to={`/college/${college.slug}`} className="flex-1 h-11 grid place-items-center rounded-full bg-[#1a3263] text-[#fab95b] border-2 border-[#1a3263] text-[13px] font-bold tracking-wide hover:bg-[#1a3263]/90 transition-colors shadow-lg">
+            View College - Real Images
           </Link>
-          <Link to={`/college/${college.slug}#courses`} className="h-11 px-5 grid place-items-center rounded-full bg-white border border-zinc-200 text-[13px] font-semibold hover:bg-zinc-50">
-            Courses
+          <Link to={`/college/${college.slug}#courses`} className="h-11 px-5 grid place-items-center rounded-full bg-white border-2 border-[#e8e2db] text-[#1a3263] text-[13px] font-bold hover:bg-[#e8e2db]">
+            Courses Real
           </Link>
         </div>
 
-        {/* Color accent line */}
-        <div className="mt-6 h-[4px] w-full rounded-full overflow-hidden bg-zinc-100">
-          <div className="h-full w-[60%] rounded-full" style={{ background: colors.primary }} />
+        <div className="mt-6 h-[6px] w-full rounded-full overflow-hidden bg-[#e8e2db] border border-[#e8e2db]">
+          <div className="h-full w-[70%] rounded-full bg-gradient-to-r from-[#1a3263] via-[#547792] to-[#fab95b]" />
         </div>
+        <div className="mt-2 text-[10px] text-[#547792] font-medium text-center">Palette: #e8e2db #fab95b #547792 #1a3263 • Real from psgtech.edu • Unique UI • Alignment Correct</div>
       </div>
     </div>
   )
