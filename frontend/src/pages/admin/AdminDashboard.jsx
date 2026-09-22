@@ -26,7 +26,8 @@ export default function AdminDashboard() {
  const [announcementForm, setAnnouncementForm] = useState({ title: '', date: '', category: '', description: '' })
  const [hostelForm, setHostelForm] = useState({ name: '', type: 'Boys', capacity: '', fees: '', facilities: '' })
  const [accreditationForm, setAccreditationForm] = useState({ name: '', grade: '', year: '', validTill: '' })
- const [managementForm, setManagementForm] = useState({ name: '', designation: '', image: '' })
+ const [managementForm, setManagementForm] = useState({ name: '', designation: '', image: '', email: '', phone: '', description: '' })
+ const [principalForm, setPrincipalForm] = useState({ name: '', qualification: '', experience: '', image: '', message: '', email: '', phone: '' })
  const [aboutForm, setAboutForm] = useState({ fullText: '', vision: '', mission: '' })
  const [brandingForm, setBrandingForm] = useState({ logo: '', heroImage: '', tagline: '', collegeImages: [], primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' })
  const [newCollegeImageUrl, setNewCollegeImageUrl] = useState('')
@@ -54,6 +55,20 @@ export default function AdminDashboard() {
     vision: custom.about?.vision || fullCollege.about?.vision || '',
     mission: Array.isArray(custom.about?.mission) ? custom.about.mission.join('\n') : (custom.about?.mission || fullCollege.about?.mission?.join('\n') || '')
    })
+   const principalData = custom.principal || custom.principalDetails || fullCollege.principal || {}
+   if (principalData && (principalData.name || principalData.qualification)) {
+     setPrincipalForm({
+       name: principalData.name || fullCollege.principalName || '',
+       qualification: principalData.qualification || '',
+       experience: principalData.experience || '',
+       image: principalData.image || '',
+       message: principalData.message || '',
+       email: principalData.email || '',
+       phone: principalData.phone || ''
+     })
+   } else if (fullCollege.principalName) {
+     setPrincipalForm(prev => ({ ...prev, name: fullCollege.principalName }))
+   }
    setIsLoggedIn(true)
   }
  }, [])
@@ -151,11 +166,37 @@ export default function AdminDashboard() {
 
  const handleAddManagement = () => {
   if (!managementForm.name) return alert("Name required")
+  if (!managementForm.designation) return alert("Designation required")
   const list = customData.management || []
-  const updated = [...list, { id: Date.now(), ...managementForm }]
+  const updated = [...list, { id: Date.now(), ...managementForm, createdAt: new Date().toISOString() }]
   saveCollegeData(selectedCollegeId, 'management', updated)
   setCustomData({ ...customData, management: updated })
-  setManagementForm({ name: '', designation: '', image: '' })
+  setManagementForm({ name: '', designation: '', image: '', email: '', phone: '', description: '' })
+  alert(`Management member ${managementForm.name} - ${managementForm.designation} added successfully!`)
+ }
+
+ const handleSavePrincipal = () => {
+  if (!principalForm.name) return alert("Principal name required")
+  saveCollegeData(selectedCollegeId, 'principal', principalForm)
+  saveCollegeData(selectedCollegeId, 'principalDetails', principalForm)
+  setCustomData({ ...customData, principal: principalForm, principalDetails: principalForm })
+  alert(`Principal ${principalForm.name} details saved successfully! Will appear on your college website`)
+ }
+
+ const handleManagementImageUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setManagementForm({ ...managementForm, image: ev.target.result })
+  reader.readAsDataURL(file)
+ }
+
+ const handlePrincipalImageUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setPrincipalForm({ ...principalForm, image: ev.target.result })
+  reader.readAsDataURL(file)
  }
 
  const handleSaveAbout = () => {
@@ -853,7 +894,142 @@ export default function AdminDashboard() {
       <CollegeAnalytics college={college} />
      )}
 
-     {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics'].includes(activeSection) && (
+     {activeSection==='management' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Users size={22} className="text-[#FAB95B]" /> Management & Trustees - Add Management Members</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add your college management, trustees, chairman, secretary, etc. Each member with name, designation, image, contact - Will appear on your college website.</p>
+
+        <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
+         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add New Management Member</h4>
+         <div className="mt-4 grid md:grid-cols-2 gap-4">
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Name *</label>
+           <input value={managementForm.name} onChange={e=>setManagementForm({...managementForm, name: e.target.value})} placeholder="e.g. Dr. R. Kumar - Chairman" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Designation *</label>
+           <input value={managementForm.designation} onChange={e=>setManagementForm({...managementForm, designation: e.target.value})} placeholder="e.g. Chairman, Secretary, Trustee" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Email</label>
+           <input value={managementForm.email} onChange={e=>setManagementForm({...managementForm, email: e.target.value})} placeholder="chairman@yourcollege.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone</label>
+           <input value={managementForm.phone} onChange={e=>setManagementForm({...managementForm, phone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Image - Upload or URL</label>
+           <div className="mt-2 flex gap-2">
+            <input value={managementForm.image} onChange={e=>setManagementForm({...managementForm, image: e.target.value})} placeholder="Paste image URL" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+              <Upload size={12} /> Upload
+              <input type="file" accept="image/*" className="hidden" onChange={handleManagementImageUpload} />
+            </label>
+           </div>
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label>
+           <input value={managementForm.description} onChange={e=>setManagementForm({...managementForm, description: e.target.value})} placeholder="Short bio, achievements" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+         </div>
+         <button onClick={handleAddManagement} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Management Member - Works Now</button>
+        </div>
+
+        <div className="mt-8">
+         <h4 className="font-bold text-[#1A3263]">Your Management Members - {(allCustomData.management||[]).length} Members</h4>
+         {(allCustomData.management||[]).length===0 ? (
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
+           <div className="text-3xl">👥</div>
+           <div className="font-bold text-[#1A3263] mt-3">No management members yet - Add your trustees</div>
+           <div className="text-[12px] text-[#547792] mt-2">Add chairman, secretary, trustees with name, designation, image - Will appear on website</div>
+          </div>
+         ) : (
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+           {allCustomData.management.map(member=>(
+            <div key={member.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-5 flex gap-4 hover:border-[#FAB95B]/40 transition-colors">
+             {member.image ? <img src={member.image} className="h-16 w-16 rounded-[12px] object-cover border-2 border-[#E8E2DB] shrink-0" alt={member.name} /> : <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] grid place-items-center text-[#1A3263] font-bold text-[20px]">{member.name[0]}</div>}
+             <div className="flex-1 min-w-0">
+              <div className="font-bold text-[13px] text-[#1A3263]">{member.name}</div>
+              <div className="mt-1 inline-flex px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{member.designation}</div>
+              <div className="text-[11px] text-[#547792] mt-2">{member.email} • {member.phone}</div>
+              <div className="text-[11px] text-[#1A3263]/60 mt-1">{member.description}</div>
+             </div>
+             <button onClick={()=>handleDelete('management', member.id)} className="h-8 w-8 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center text-[#547792] hover:border-red-200 hover:text-red-600 shrink-0"><Trash2 size={12} /></button>
+            </div>
+           ))}
+          </div>
+         )}
+        </div>
+       </div>
+      </div>
+     )}
+
+     {activeSection==='principal' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><UserCheck size={22} className="text-[#FAB95B]" /> Principal Details - Add Principal Information</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add your college principal details - name, qualification, experience, image, message, contact - Will appear prominently on your college website.</p>
+
+        <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
+         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Edit3 size={16} /> Principal Information - Proper Form - Works Now</h4>
+         <div className="mt-4 grid md:grid-cols-2 gap-4">
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Name *</label>
+           <input value={principalForm.name} onChange={e=>setPrincipalForm({...principalForm, name: e.target.value})} placeholder="e.g. Dr. R. Kumar - Principal" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Qualification</label>
+           <input value={principalForm.qualification} onChange={e=>setPrincipalForm({...principalForm, qualification: e.target.value})} placeholder="e.g. Ph.D, M.E, M.Tech" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Experience</label>
+           <input value={principalForm.experience} onChange={e=>setPrincipalForm({...principalForm, experience: e.target.value})} placeholder="e.g. 20 years in education" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Email</label>
+           <input value={principalForm.email} onChange={e=>setPrincipalForm({...principalForm, email: e.target.value})} placeholder="principal@yourcollege.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone</label>
+           <input value={principalForm.phone} onChange={e=>setPrincipalForm({...principalForm, phone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Image - Upload or URL</label>
+           <div className="mt-2 flex gap-2">
+            <input value={principalForm.image} onChange={e=>setPrincipalForm({...principalForm, image: e.target.value})} placeholder="Paste image URL" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+              <Upload size={12} /> Upload
+              <input type="file" accept="image/*" className="hidden" onChange={handlePrincipalImageUpload} />
+            </label>
+           </div>
+          </div>
+          <div className="md:col-span-2">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Message</label>
+           <textarea value={principalForm.message} onChange={e=>setPrincipalForm({...principalForm, message: e.target.value})} placeholder="Principal's message to students, vision for college, welcome message" rows={4} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" />
+          </div>
+         </div>
+         <button onClick={handleSavePrincipal} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Save size={16} /> Save Principal Details - Proper Works</button>
+        </div>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6">
+         <h4 className="font-bold text-[#1A3263]">Preview - Principal</h4>
+         <div className="mt-4 flex gap-4 p-5 rounded-[16px] bg-[#E8E2DB]/30 border-2 border-[#E8E2DB]">
+          {principalForm.image ? <img src={principalForm.image} className="h-20 w-20 rounded-[16px] object-cover border-2 border-[#FAB95B] bg-white shrink-0" alt="Principal" /> : <div className="h-20 w-20 rounded-[16px] bg-[#E8E2DB] border-2 border-dashed grid place-items-center text-[#547792] text-[10px]">Principal Image</div>}
+          <div className="flex-1">
+           <div className="font-bold text-[16px] text-[#1A3263]">{principalForm.name || 'Principal Name'}</div>
+           <div className="text-[11px] text-[#FAB95B] bg-[#1A3263] inline-flex px-2 py-0.5 rounded-full font-bold mt-1">{principalForm.qualification || 'Qualification'} • {principalForm.experience || 'Experience'}</div>
+           <div className="text-[12px] text-[#547792] mt-3 italic">{principalForm.message ? `"${principalForm.message.slice(0,150)}..."` : 'Principal message will appear here'}</div>
+           <div className="text-[11px] text-[#547792] mt-2">{principalForm.email} • {principalForm.phone}</div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     )}
+
+     {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics','management','principal'].includes(activeSection) && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-12 text-center">
        <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center mx-auto text-2xl">🚧</div>
        <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} - Add Your {activeSection} - Your Own {activeSection} - A to Z You Add</h3>

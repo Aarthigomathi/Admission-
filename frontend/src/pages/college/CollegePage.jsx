@@ -140,6 +140,8 @@ function CustomCollegePage({ college, customData }) {
   const hostels = customData.hostels || []
   const about = customData.about || college.about || {}
   const management = customData.management || []
+  const principal = customData.principal || customData.principalDetails || college.principal || null
+  const principalFromStorage = customData.principalDetails || customData.principal
 
   const hasContent = (arr) => arr && arr.length > 0
 
@@ -199,6 +201,61 @@ function CustomCollegePage({ college, customData }) {
                 {about.mission.map((m,i)=><div key={i} className="flex gap-2 text-[13px] text-[#1A3263]"><span className="h-5 w-5 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[10px] font-bold shrink-0">{i+1}</span>{m}</div>)}
               </div>
             </div>
+          )}
+        </section>
+
+        {/* Principal Section */}
+        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Users className="text-[#FAB95B]" /> Principal - {college.name}</h2>
+          {principal && principal.name ? (
+            <div className="mt-6 rounded-[20px] bg-[#E8E2DB]/30 border-2 border-[#E8E2DB] p-6 flex flex-col md:flex-row gap-6">
+              {principal.image ? (
+                <img src={principal.image} className="h-32 w-32 rounded-[20px] object-cover border-4 border-[#FAB95B] bg-white shadow-lg shrink-0" alt={principal.name} />
+              ) : (
+                <div className="h-32 w-32 rounded-[20px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold text-[36px] border-4 border-[#FAB95B] shrink-0">{principal.name[0]}</div>
+              )}
+              <div className="flex-1">
+                <div className="font-bold text-[20px] text-[#1A3263]">{principal.name}</div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {principal.qualification && <span className="px-3 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">{principal.qualification}</span>}
+                  {principal.experience && <span className="px-3 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[11px] font-bold">{principal.experience}</span>}
+                </div>
+                {principal.message && (
+                  <div className="mt-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] p-4">
+                    <div className="text-[11px] font-bold uppercase text-[#547792]">Principal's Message</div>
+                    <div className="text-[13px] text-[#1A3263]/80 mt-2 leading-[1.6] italic">"{principal.message}"</div>
+                  </div>
+                )}
+                <div className="mt-4 flex flex-wrap gap-3 text-[12px] text-[#547792]">
+                  {principal.email && <span className="flex items-center gap-1.5"><Mail size={12} /> {principal.email}</span>}
+                  {principal.phone && <span className="flex items-center gap-1.5"><Phone size={12} /> {principal.phone}</span>}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">No principal details added yet - Add in Admin → Principal Details</div>
+          )}
+        </section>
+
+        {/* Management Section */}
+        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Users className="text-[#FAB95B]" /> Management & Trustees - {management.length}</h2>
+          {hasContent(management) ? (
+            <div className="mt-6 grid md:grid-cols-2 gap-4">
+              {management.map(member=>(
+                <div key={member.id} className="rounded-[16px] border-2 border-[#E8E2DB] p-5 flex gap-4 hover:border-[#FAB95B]/40 transition-colors">
+                  {member.image ? <img src={member.image} className="h-16 w-16 rounded-[12px] object-cover border-2 border-[#E8E2DB] shrink-0" alt={member.name} /> : <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] grid place-items-center text-[#1A3263] font-bold text-[20px]">{member.name[0]}</div>}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-[#1A3263]">{member.name}</div>
+                    <div className="mt-1 inline-flex px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{member.designation}</div>
+                    <div className="text-[11px] text-[#547792] mt-2">{member.email} {member.phone ? `• ${member.phone}` : ''}</div>
+                    <div className="text-[11px] text-[#1A3263]/60 mt-1">{member.description}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">No management members added yet - Add in Admin → Management</div>
           )}
         </section>
 
