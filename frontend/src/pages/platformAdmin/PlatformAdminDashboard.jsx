@@ -246,28 +246,34 @@ export default function PlatformAdminDashboard() {
             </div>
 
             <div className="mt-8 overflow-auto rounded-[16px] border-2 border-[#E8E2DB] max-h-[400px]">
-              <table className="w-full text-left min-w-[1000px]">
+              <table className="w-full text-left min-w-[1200px]">
                 <thead className="sticky top-0 bg-[#1A3263] text-white">
                   <tr>
-                    <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Name - Who Visited Your College</th>
+                    <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">College ID & College Name - Visit Panna College</th>
+                    <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Student Name - Who Visited</th>
                     <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Email & Mobile</th>
                     <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">District / City / Address</th>
                     <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Education / Course</th>
-                    <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Visits</th>
-                    <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Last Visit</th>
+                    <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Visits - College ID Name</th>
+                    <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Last Visit - Date Time</th>
                   </tr>
                 </thead>
                 <tbody className="text-[11px]">
                   {detailedVisitorsForSelected.length===0 ? (
-                    <tr><td colSpan={6} className="p-10 text-center text-[#547792]">No visitors for {selectedCollege.name} yet - When students visit, their name, email, address will appear here - You can download CSV/PDF - Demo data available - ID {selectedCollege.id}</td></tr>
+                    <tr><td colSpan={7} className="p-10 text-center text-[#547792]">No visitors for {selectedCollege.name} ID {selectedCollege.id} yet - When students visit, their name, email, address, college ID {selectedCollege.id}, college name {selectedCollege.name} will appear here - You can download CSV/PDF with college ID and college name - Demo data available</td></tr>
                   ) : detailedVisitorsForSelected.map(v=>(
                     <tr key={v.student_id} className="border-b border-[#E8E2DB] hover:bg-[#E8E2DB]/20">
-                      <td className="p-3"><div className="font-bold text-[#1A3263]">{v.student_name}</div><div className="text-[10px] text-[#547792]">ID {v.student_id} • {v.student_schoolCollege}</div></td>
+                      <td className="p-3">
+                        <div className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold inline-flex">College ID: {v.college_id || selectedCollege.id}</div>
+                        <div className="font-bold text-[#1A3263] mt-2">{v.college_name || selectedCollege.name}</div>
+                        <div className="text-[10px] text-[#547792]">Visit Panna College - ID {v.college_id} - Name {v.college_name?.slice(0,30)}</div>
+                      </td>
+                      <td className="p-3"><div className="font-bold text-[#1A3263]">{v.student_name}</div><div className="text-[10px] text-[#547792]">Student ID {v.student_id} • {v.student_schoolCollege}</div></td>
                       <td className="p-3"><div>{v.student_email}</div><div className="text-[10px] text-[#547792]">{v.student_mobile}</div></td>
                       <td className="p-3"><div className="font-medium">{v.student_district} • {v.student_city}</div><div className="text-[10px] text-[#547792]">{v.student_address}</div></td>
                       <td className="p-3"><div>{v.student_educationLevel} • {v.student_percentage}</div><div className="text-[10px] px-2 py-0.5 rounded-full bg-[#E8E2DB] inline-flex mt-1">{v.student_interestedCourse}</div></td>
-                      <td className="p-3"><span className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{v.total_visits} visits</span><div className="text-[10px] mt-1">{v.college_views} views • {v.enquiries} enq</div></td>
-                      <td className="p-3"><div>{v.last_visit_date}</div><div className="text-[10px] text-[#547792]">{v.last_visit_time} • {v.last_activity}</div></td>
+                      <td className="p-3"><span className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{v.total_visits} visits</span><div className="text-[10px] mt-1">College ID {v.college_id} - {v.college_name?.slice(0,20)} • {v.college_views} views • {v.enquiries} enq</div></td>
+                      <td className="p-3"><div>{v.last_visit_date}</div><div className="text-[10px] text-[#547792]">{v.last_visit_time} • {v.last_activity}</div><div className="text-[10px] font-bold text-[#1A3263] mt-1">College ID {v.college_id} - Visit Panna College</div></td>
                     </tr>
                   ))}
                 </tbody>

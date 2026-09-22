@@ -45,8 +45,8 @@ export default function CollegeAnalytics({ college }) {
           <p>Yar yaru entha college visit pananga - Name, Mail, Address ellam admin pakkura mathiri - Download panra mathiri</p>
         </div>
         <table>
-          <tr><th>Name</th><th>Email</th><th>Mobile</th><th>District/City/Address</th><th>Education</th><th>Interested Course</th><th>Visits</th><th>Last Visit</th><th>Activity</th></tr>
-          ${visitorsList.map(v=>`<tr><td><strong>${v.student_name}</strong></td><td>${v.student_email}</td><td>${v.student_mobile}</td><td>${v.student_district}, ${v.student_city}<br><small>${v.student_address}</small></td><td>${v.student_educationLevel} - ${v.student_percentage}</td><td>${v.student_interestedCourse}</td><td><span class="badge">${v.total_visits} visits</span><br>${v.college_views} views, ${v.saves} saves, ${v.enquiries} enq</td><td>${v.last_visit_date} ${v.last_visit_time}</td><td>${v.last_activity}</td></tr>`).join('')}
+          <tr><th>College ID</th><th>College Name - Visit Panna College</th><th>Student Name</th><th>Email</th><th>Mobile</th><th>District/City/Address</th><th>Education</th><th>Interested Course</th><th>Visits - College ID Name</th><th>Last Visit</th><th>Activity</th></tr>
+          ${visitorsList.map(v=>`<tr><td><span class="badge">ID ${v.college_id || college.id}</span></td><td><strong>${v.college_name || college.name}</strong><br><small>Visit Panna College - ID ${v.college_id} - Name ${v.college_name}</small></td><td><strong>${v.student_name}</strong><br>ID ${v.student_id}</td><td>${v.student_email}</td><td>${v.student_mobile}</td><td>${v.student_district}, ${v.student_city}<br><small>${v.student_address}</small></td><td>${v.student_educationLevel} - ${v.student_percentage}</td><td>${v.student_interestedCourse}</td><td><span class="badge">${v.total_visits} visits - College ID ${v.college_id} - ${v.college_name}</span><br>${v.college_views} views, ${v.saves} saves, ${v.enquiries} enq</td><td>${v.last_visit_date} ${v.last_visit_time}</td><td>${v.last_activity}</td></tr>`).join('')}
         </table>
         <div style="margin-top:20px; padding:15px; background:white; border-radius:12px; border:2px solid #FAB95B;">
           <strong>Summary:</strong> Total Visitors ${visitors.length} • Total Views ${agg?.totalViews} • Saves ${agg?.saved} • Enquiries ${agg?.enquiries} • Your Own College ID ${college.id} • UI Frame Ours, Content Yours • Palette #E8E2DB #FAB95B #547792 #1A3263
@@ -129,60 +129,61 @@ export default function CollegeAnalytics({ college }) {
           <table className="w-full text-left min-w-[1100px]">
             <thead>
               <tr className="bg-[#1A3263] text-white">
+                <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">College ID & College Name - Visit Panna College</th>
                 <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Student Name - Who Visited</th>
                 <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Email & Mobile</th>
                 <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">District / City / Address</th>
                 <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Education & Course Interest</th>
                 <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Visits - Your College</th>
-                <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Last Visit</th>
-                <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Download</th>
+                <th className="p-3 text-[11px] font-bold uppercase text-[#FAB95B]">Last Visit & Download</th>
               </tr>
             </thead>
             <tbody className="text-[12px]">
               {filteredVisitors.length===0 ? (
                 <tr><td colSpan={7} className="p-12 text-center">
                   <div className="text-3xl">👥</div>
-                  <div className="font-bold text-[#1A3263] mt-3">No visitors yet - Demo visitors will appear</div>
-                  <div className="text-[11px] text-[#547792] mt-2">When students visit your college page, their name, email, mobile, district, city, address will appear here - Your own college visitors - You can download CSV/PDF - Demo data seeded for testing - {college.name} ID {college.id}</div>
+                  <div className="font-bold text-[#1A3263] mt-3">No visitors yet - Demo visitors will appear with College ID and College Name</div>
+                  <div className="text-[11px] text-[#547792] mt-2">When students visit your college page, their name, email, mobile, district, city, address, college ID {college.id}, college name {college.name} will appear here - Your own college visitors - You can download CSV/PDF with college ID and college name - Demo data seeded - {college.name} ID {college.id}</div>
                 </td></tr>
               ) : filteredVisitors.map(visitor=>(
                 <tr key={visitor.student_id} className="border-b border-[#E8E2DB] hover:bg-[#E8E2DB]/20 transition-colors">
                   <td className="p-3">
+                    <div className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold inline-flex">College ID: {visitor.college_id || college.id}</div>
+                    <div className="font-bold text-[#1A3263] text-[12px] mt-2">{visitor.college_name || college.name}</div>
+                    <div className="text-[10px] text-[#547792] mt-1">Visit Panna College ID & Name - {visitor.college_id} - {visitor.college_name}</div>
+                    <div className="text-[10px] px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[#1A3263] font-bold inline-flex mt-2">Your Own College ID {college.id}</div>
+                  </td>
+                  <td className="p-3">
                     <div className="font-bold text-[#1A3263]">{visitor.student_name}</div>
-                    <div className="text-[11px] text-[#547792]">ID {visitor.student_id} • {visitor.student_schoolCollege}</div>
+                    <div className="text-[11px] text-[#547792]">Student ID {visitor.student_id} • {visitor.student_schoolCollege}</div>
                     <div className="text-[10px] px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[#1A3263] font-bold inline-flex mt-1">{visitor.total_visits} visits your college</div>
                   </td>
                   <td className="p-3">
                     <div className="flex items-center gap-1 text-[11px]"><Mail size={12} className="text-[#547792]" /> {visitor.student_email}</div>
                     <div className="flex items-center gap-1 text-[11px] mt-1"><Phone size={12} className="text-[#547792]" /> {visitor.student_mobile}</div>
-                    <div className="text-[10px] text-[#547792] mt-1">Contact: {visitor.student_mobile}</div>
                   </td>
                   <td className="p-3">
-                    <div className="flex items-center gap-1 font-medium text-[#1A3263]"><MapPin size={12} className="text-[#FAB95B]" /> {visitor.student_district} • {visitor.student_city}</div>
-                    <div className="flex items-center gap-1 text-[11px] text-[#547792] mt-1"><Home size={10} /> {visitor.student_address}</div>
-                    <div className="text-[10px] text-[#547792] mt-1">{visitor.student_district}, {visitor.student_city}, Tamil Nadu</div>
+                    <div className="flex items-center gap-1 font-medium text-[#1A3263] text-[11px]"><MapPin size={12} className="text-[#FAB95B]" /> {visitor.student_district} • {visitor.student_city}</div>
+                    <div className="text-[10px] text-[#547792] mt-1">{visitor.student_address}</div>
                   </td>
                   <td className="p-3">
                     <div className="font-medium text-[#1A3263] text-[11px]">{visitor.student_educationLevel} - {visitor.student_percentage}</div>
-                    <div className="text-[11px] text-[#547792]">{visitor.student_groupStream}</div>
                     <div className="mt-1 px-2 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[10px] font-bold inline-flex">{visitor.student_interestedCourse}</div>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex flex-wrap gap-1">
-                      <span className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{visitor.college_views} views</span>
-                      <span className="px-2 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[10px]">{visitor.course_views} course views</span>
-                      <span className="px-2 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[10px]">{visitor.saves} saves</span>
-                      <span className="px-2 py-1 rounded-full bg-[#547792] text-white text-[10px]">{visitor.enquiries} enquiries</span>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      <span className="px-2 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[9px] font-bold">{visitor.college_views} views</span>
+                      <span className="px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[9px]">{visitor.saves} saves</span>
                     </div>
-                    <div className="text-[10px] text-[#547792] mt-2">Total {visitor.total_visits} activities your college</div>
                   </td>
                   <td className="p-3">
                     <div className="text-[11px] font-medium text-[#1A3263]">{visitor.last_visit_date}</div>
-                    <div className="text-[11px] text-[#547792]">{visitor.last_visit_time}</div>
-                    <div className="mt-1 px-2 py-0.5 rounded-full bg-white border-2 border-[#E8E2DB] text-[10px] font-bold inline-flex">{visitor.last_activity}</div>
+                    <div className="text-[10px] text-[#547792]">{visitor.last_visit_time} • {visitor.last_activity}</div>
+                    <div className="mt-2 flex gap-1">
+                      <button onClick={()=>activityTracker.downloadVisitorsAsCSV(college.id, college.shortName)} className="h-7 px-2 rounded-full bg-[#FAB95B] text-[#1A3263] text-[9px] font-bold flex items-center gap-1"><Download size={10} /> CSV College ID Name</button>
+                    </div>
                   </td>
                   <td className="p-3">
-                    <button onClick={()=>activityTracker.downloadVisitorsAsCSV(college.id, college.shortName)} className="h-8 px-3 rounded-full bg-[#FAB95B] text-[#1A3263] text-[10px] font-bold flex items-center gap-1"><Download size={12} /> CSV</button>
+                    <div className="text-[10px] text-[#547792]">Total {visitor.total_visits} activities</div>
+                    <div className="text-[10px] font-bold text-[#1A3263] mt-1">College ID {visitor.college_id} - {visitor.college_name?.slice(0,20)}</div>
                   </td>
                 </tr>
               ))}
