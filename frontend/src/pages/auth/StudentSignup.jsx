@@ -2,10 +2,13 @@ import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, Image as ImageIcon, X, Calculator, Sparkles } from 'lucide-react'
 import { colleges } from '../../lib/colleges'
+import { useLanguage } from '../../lib/languageContext'
+import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
 export default function StudentSignup() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
+  const { t, language, setLanguage } = useLanguage()
 
   // Enhanced form data
   const [formData, setFormData] = useState({
@@ -280,17 +283,24 @@ export default function StudentSignup() {
         <div className="h-[64px] border-b-2 border-[#1A3263]/10 bg-white/80 backdrop-blur px-6 lg:px-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="lg:hidden h-9 w-9 rounded-[10px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold">T</div>
-            <div className="hidden lg:flex items-center gap-2 text-[12px]">
+            <div className="hidden lg:flex items-center gap-3 text-[12px]">
               <span className="text-[#547792]">Step {step} of 5</span>
               <div className="flex gap-1">
                 {[1,2,3,4,5].map(i=>(
                   <div key={i} className={`h-2 w-10 rounded-full transition-all ${i===step?'bg-[#1A3263] w-14': i<step?'bg-[#FAB95B]':'bg-[#E8E2DB] border'}`} />
                 ))}
               </div>
+              <div className="ml-3 flex items-center gap-2">
+                <span className="text-[10px] font-bold text-[#547792]">🌐 {language==='ta' ? 'மாணவர் விவரங்கள் தமிழ் / English' : 'Student Details Tamil / English'}:</span>
+                <StudentLanguageToggleAlways variant="pill" />
+              </div>
             </div>
-            <span className="lg:hidden font-bold text-[#1A3263] text-[13px]">Step {step}: {steps[step-1].title}</span>
+            <span className="lg:hidden font-bold text-[#1A3263] text-[13px] flex items-center gap-2">Step {step}: {steps[step-1].title} <StudentLanguageToggleAlways variant="compact" /></span>
           </div>
-          <Link to="/login" className="text-[12px] font-semibold text-[#1A3263]">Have account? <span className="text-[#FAB95B] bg-[#1A3263] px-3 py-1 rounded-full ml-1">Login</span></Link>
+          <div className="flex items-center gap-2">
+            <div className="hidden md:flex"><StudentLanguageToggleAlways variant="pill" /></div>
+            <Link to="/login" className="text-[12px] font-semibold text-[#1A3263]">Have account? <span className="text-[#FAB95B] bg-[#1A3263] px-3 py-1 rounded-full ml-1">Login</span></Link>
+          </div>
         </div>
 
         <div className="flex-1 overflow-auto p-4 lg:p-8">
@@ -300,8 +310,8 @@ export default function StudentSignup() {
             {step===1 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="font-display text-[26px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={22} className="text-[#FAB95B]" /> Basic Information & Dream Course</h2>
-                  <p className="text-[12px] text-[#547792] mt-1">Enna padikka aasa padra-nu signup pothey podanum - Interested course, dream, basic details</p>
+                  <h2 className="font-display text-[26px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={22} className="text-[#FAB95B]" /> {language==='ta' ? 'அடிப்படை தகவல் & கனவு பாடம் - Proper Details Tamil / English' : 'Basic Information & Dream Course - Proper Details'} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 {language==='ta' ? 'தமிழ் / English - Toggle-ல் மாறும்' : 'Tamil / English - Toggle Changes'}</span></h2>
+                  <p className="text-[12px] text-[#547792] mt-1">{language==='ta' ? 'என்ன படிக்க ஆசைப்படுகிறாய் என்பதை பதிவு செய்யும் போதே சொல்ல வேண்டும் - ஆர்வமுள்ள பாடம், கனவு, அடிப்படை விவரங்கள் - Toggle-ல் தமிழ் / English-ல் Proper-a மாறும்' : 'Enna padikka aasa padra-nu signup pothey podanum - Interested course, dream, basic details - Proper details change via toggle Tamil / English'}</p>
                 </div>
 
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6 shadow-sm space-y-4">

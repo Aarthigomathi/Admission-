@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom'
 import { MapPin, GraduationCap, Bookmark, GitCompare, BadgeCheck, Building2, Image as ImageIcon } from 'lucide-react'
 import { applyCollegeTheme } from '../../lib/theme'
 import { getCollegeCustomData } from '../../lib/collegeStorage'
+import { useLanguage } from '../../lib/languageContext'
 
 export default function CollegeCard({ college, variant="default" }) {
   const customData = getCollegeCustomData(college.id)
+  const { t, language } = useLanguage()
   // Merge custom data for display - your own college (not PSG) shows your own logo/images
   const displayCollege = {
     ...college,
