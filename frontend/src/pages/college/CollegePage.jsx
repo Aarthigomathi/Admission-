@@ -653,27 +653,67 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-        {/* Events with Images - hostel maathiri */}
+        {/* Events with Images - 5 Categories */}
         <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">📅 Events - {events.length}</h2>
+          <h2 className="font-display text-[26px] font-bold text-[#1A3263] flex items-center gap-3">📅 Events - {events.length} - Category Wise</h2>
+          <p className="text-[12px] text-[#547792] mt-2">Cultural, Technical, Sports, College Day, Social Awareness - details college neenga add pannalam</p>
           {hasContent(events) ? (
-            <div className="mt-6 grid md:grid-cols-2 gap-6">
-              {events.map(ev=>(
-                <div key={ev.id} className="rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white hover:border-[#FAB95B]/40 transition-colors">
-                  {ev.image && <img src={ev.image} className="h-[200px] w-full object-cover" alt={ev.title} />}
-                  <div className="p-5">
-                    <div className="font-bold text-[16px] text-[#1A3263]">{ev.title}</div>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {ev.date && <span className="px-3 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[11px] font-bold">📅 {ev.date}</span>}
-                      {ev.category && <span className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{ev.category}</span>}
+            <div className="mt-8 space-y-10">
+              {['Cultural / Arts Events','Technical / Academic Events','Sports Events','College / Student Events','Social / Awareness Events'].map(cat=>{
+                const catEvents = events.filter(ev=> (ev.category||'Cultural / Arts Events')===cat)
+                if (catEvents.length===0) return null
+                const icons = {
+                  'Cultural / Arts Events': '🎭',
+                  'Technical / Academic Events': '💻',
+                  'Sports Events': '⚽',
+                  'College / Student Events': '🎓',
+                  'Social / Awareness Events': '🌱'
+                }
+                return (
+                  <div key={cat}>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="h-10 w-10 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[18px]">{icons[cat]||'📅'}</div>
+                      <div>
+                        <h3 className="font-display text-[18px] font-bold text-[#1A3263]">{cat}</h3>
+                        <div className="text-[11px] text-[#547792]">{catEvents.length} events</div>
+                      </div>
+                      <div className="flex-1 h-[1px] bg-[#E8E2DB] ml-4"></div>
                     </div>
-                    {ev.description && <div className="text-[12px] text-[#1A3263]/80 mt-3 leading-[1.6]">{ev.description}</div>}
+                    {cat==='Social / Awareness Events' && (
+                      <div className="mb-4 rounded-[12px] bg-[#1A3263] text-white p-4">
+                        <div className="font-bold text-[#FAB95B] text-[12px]">🌱 Social / Awareness - Examples you can add:</div>
+                        <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-[#E8E2DB]/70">
+                          {["Teachers' Day","Women's Day","World Environment Day","Energy Conservation Day","Plastic Bag Free Day","Education Development Day","Blood Donation Camps","Tree Planting","Coastal Cleaning","NCC/NSS Awareness"].map(t=>(
+                            <span key={t} className="px-2 py-1 rounded-full bg-white/10 border border-white/10">{t}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {catEvents.map(ev=>(
+                        <div key={ev.id} className="rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white hover:border-[#FAB95B]/40 transition-colors shadow-sm">
+                          {ev.image && <img src={ev.image} className="h-[200px] w-full object-cover" alt={ev.title} />}
+                          <div className="p-5">
+                            <div className="font-bold text-[15px] text-[#1A3263]">{ev.title}</div>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {ev.date && <span className="px-3 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[11px] font-bold">📅 {ev.date}</span>}
+                              <span className="px-3 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[10px] font-bold border border-[#FAB95B]/30">{ev.category}</span>
+                            </div>
+                            {ev.description && <div className="mt-3 text-[12px] text-[#1A3263]/80 leading-[1.7] whitespace-pre-wrap">{ev.description}</div>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
-            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Events information will be updated soon</div>
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">
+              <div className="text-3xl">📅</div>
+              <div className="font-bold text-[#1A3263] mt-3">Events - 5 Categories</div>
+              <div className="text-[11px] mt-2">Cultural / Arts, Technical / Academic, Sports, College / Student (College Day), Social / Awareness - College admin can add with images</div>
+            </div>
           )}
         </section>
 
