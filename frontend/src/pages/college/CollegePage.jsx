@@ -146,6 +146,7 @@ function CustomCollegePage({ college, customData }) {
   const campusEnv = customData.campusEnvironment || customData.campus || []
   const library = customData.library || null
   const sports = customData.sports || []
+  const admissions = customData.admissions || null
 
   const hasContent = (arr) => arr && arr.length > 0
 
@@ -204,6 +205,109 @@ function CustomCollegePage({ college, customData }) {
               <div className="mt-3 space-y-2">
                 {about.mission.map((m,i)=><div key={i} className="flex gap-2 text-[13px] text-[#1A3263]"><span className="h-5 w-5 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[10px] font-bold shrink-0">{i+1}</span>{m}</div>)}
               </div>
+            </div>
+          )}
+        </section>
+
+        {/* Admissions - Real-time Working */}
+        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h2 className="font-display text-[26px] font-bold text-[#1A3263] flex items-center gap-3">🎓 Admissions {admissions ? `- ${admissions.academicYear}` : ''}</h2>
+            {admissions && (
+              <div className="flex gap-2">
+                <span className={`px-4 py-1.5 rounded-full text-[12px] font-bold border-2 ${admissions.status==='Open' ? 'bg-green-100 text-green-700 border-green-200' : admissions.status==='Closed' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-[#FAB95B]/20 text-[#1A3263] border-[#FAB95B]/30'}`}>{admissions.status} • {admissions.academicYear}</span>
+                {admissions.totalSeats && <span className="px-3 py-1.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">{admissions.totalSeats}</span>}
+              </div>
+            )}
+          </div>
+
+          {admissions ? (
+            <div className="mt-6 space-y-6">
+              <div className="rounded-[20px] bg-[#1A3263] text-white p-6 lg:p-8">
+                <div className="font-display text-[22px] font-bold text-[#FAB95B]">{admissions.title}</div>
+                {admissions.description && <div className="text-[13px] text-[#E8E2DB]/90 mt-3 leading-[1.7] whitespace-pre-wrap">{admissions.description}</div>}
+                {admissions.brochureImage && <img src={admissions.brochureImage} className="mt-6 rounded-[12px] h-[240px] w-full object-cover border-2 border-white/10" alt="Admissions Brochure" />}
+              </div>
+
+              {(admissions.applicationStart || admissions.applicationEnd || admissions.counsellingDate || admissions.lastDate) && (
+                <div>
+                  <h3 className="font-bold text-[16px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#FAB95B] text-[#1A3263] grid place-items-center text-[12px]">📅</span> Important Dates</h3>
+                  <div className="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    {admissions.applicationStart && <div className="rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4 text-center"><div className="text-[10px] font-bold uppercase text-[#547792]">Application Start</div><div className="font-bold text-[#1A3263] text-[13px] mt-1">{admissions.applicationStart}</div></div>}
+                    {admissions.applicationEnd && <div className="rounded-[12px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4 text-center"><div className="text-[10px] font-bold uppercase text-[#1A3263]">Application End</div><div className="font-bold text-[#1A3263] text-[13px] mt-1">{admissions.applicationEnd}</div></div>}
+                    {admissions.counsellingDate && <div className="rounded-[12px] bg-[#1A3263] text-white p-4 text-center"><div className="text-[10px] font-bold uppercase text-[#FAB95B]">Counselling</div><div className="font-bold text-[13px] mt-1">{admissions.counsellingDate}</div></div>}
+                    {admissions.lastDate && <div className="rounded-[12px] bg-white border-2 border-[#E8E2DB] p-4 text-center"><div className="text-[10px] font-bold uppercase text-[#547792]">Last Date</div><div className="font-bold text-[#1A3263] text-[13px] mt-1">{admissions.lastDate}</div></div>}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {admissions.eligibility && (
+                  <div className="rounded-[16px] border-2 border-[#E8E2DB] p-5 bg-white">
+                    <div className="font-bold text-[13px] text-[#1A3263] flex items-center gap-2">✅ Eligibility Criteria</div>
+                    <div className="text-[12px] text-[#1A3263]/80 mt-3 leading-[1.7] whitespace-pre-wrap">{admissions.eligibility}</div>
+                  </div>
+                )}
+                {admissions.process && (
+                  <div className="rounded-[16px] border-2 border-[#E8E2DB] p-5 bg-[#E8E2DB]/30">
+                    <div className="font-bold text-[13px] text-[#1A3263] flex items-center gap-2">📝 Admission Process</div>
+                    <div className="text-[12px] text-[#1A3263]/80 mt-3 leading-[1.7] whitespace-pre-wrap">{admissions.process}</div>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {admissions.fees && <div className="rounded-[12px] bg-white border-2 border-[#E8E2DB] p-4"><div className="text-[10px] font-bold uppercase text-[#547792]">Fees Structure</div><div className="font-bold text-[13px] text-[#1A3263] mt-1">{admissions.fees}</div></div>}
+                {admissions.entranceExam && <div className="rounded-[12px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4"><div className="text-[10px] font-bold uppercase text-[#1A3263]">Entrance Exam</div><div className="font-bold text-[13px] text-[#1A3263] mt-1">{admissions.entranceExam}</div></div>}
+                {admissions.cutoff && <div className="rounded-[12px] bg-[#1A3263] text-white p-4"><div className="text-[10px] font-bold uppercase text-[#FAB95B]">Cutoff</div><div className="font-bold text-[13px] mt-1">{admissions.cutoff}</div></div>}
+                {admissions.quota && <div className="rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4"><div className="text-[10px] font-bold uppercase text-[#547792]">Quota / Reservation</div><div className="font-bold text-[13px] text-[#1A3263] mt-1">{admissions.quota}</div></div>}
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {admissions.documents && (
+                  <div className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-6">
+                    <div className="font-bold text-[14px] text-[#1A3263]">📄 Documents Required</div>
+                    <div className="mt-4 space-y-2">
+                      {admissions.documents.split('\n').filter(l=>l.trim()).map((line,i)=>{
+                        const clean = line.replace(/^[•\-\*]\s*/, '').trim()
+                        return <div key={i} className="flex gap-2.5 text-[12px] text-[#1A3263]/80 leading-[1.6]"><span className="h-1.5 w-1.5 rounded-full bg-[#547792] mt-[7px] shrink-0"></span><span>{clean}</span></div>
+                      })}
+                    </div>
+                  </div>
+                )}
+                {admissions.scholarships && (
+                  <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/30 p-6">
+                    <div className="font-bold text-[14px] text-[#1A3263]">🎁 Scholarships</div>
+                    <div className="mt-4 space-y-2">
+                      {admissions.scholarships.split('\n').filter(l=>l.trim()).map((line,i)=>{
+                        const clean = line.replace(/^[•\-\*]\s*/, '').trim()
+                        return <div key={i} className="flex gap-2.5 text-[12px] text-[#1A3263]/80 leading-[1.6]"><span className="h-1.5 w-1.5 rounded-full bg-[#FAB95B] mt-[7px] shrink-0"></span><span>{clean}</span></div>
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-[16px] bg-[#1A3263] border-2 border-[#1A3263] p-6 flex flex-wrap items-center justify-between gap-4">
+                <div className="text-white">
+                  <div className="font-bold text-[#FAB95B]">Admission Enquiry</div>
+                  <div className="text-[13px] text-[#E8E2DB]/80 mt-2 flex flex-wrap gap-4">
+                    {admissions.contactPhone && <span>📞 {admissions.contactPhone}</span>}
+                    {admissions.contactEmail && <span>✉️ {admissions.contactEmail}</span>}
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  {admissions.applicationLink && <a href={admissions.applicationLink} target="_blank" rel="noreferrer" className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[13px] grid place-items-center">Apply Now →</a>}
+                  <span className="h-11 px-5 rounded-full bg-white/10 border border-white/20 text-white text-[12px] font-bold grid place-items-center">ID {college.id} • {admissions.academicYear}</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
+              <div className="text-3xl">🎓</div>
+              <div className="font-bold text-[#1A3263] mt-3">Admissions - Real-time update pannalam</div>
+              <div className="text-[12px] text-[#547792] mt-2 max-w-[500px] mx-auto">College admin can add admission status, dates, eligibility, process, fees, documents, cutoff, scholarships - students will see real-time on website</div>
+              <div className="mt-4 inline-flex px-4 py-2 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">Academic Year 2026-27 • Admissions Open / Closed</div>
             </div>
           )}
         </section>

@@ -38,6 +38,7 @@ export default function AdminDashboard() {
  const [aboutForm, setAboutForm] = useState({ fullText: '', vision: '', mission: '' })
  const [brandingForm, setBrandingForm] = useState({ logo: '', heroImage: '', tagline: '', collegeImages: [], primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' })
  const [newCollegeImageUrl, setNewCollegeImageUrl] = useState('')
+ const [admissionForm, setAdmissionForm] = useState({ status: 'Open', academicYear: '2026-27', title: '', description: '', eligibility: '', process: '', applicationStart: '', applicationEnd: '', counsellingDate: '', lastDate: '', entranceExam: '', cutoff: '', fees: '', totalSeats: '', documents: '', quota: '', scholarships: '', applicationLink: '', brochureImage: '', contactPhone: '', contactEmail: '' })
 
  useEffect(() => {
   const stored = localStorage.getItem('tn_current_college')
@@ -78,6 +79,9 @@ export default function AdminDashboard() {
    }
    if (custom.library) {
      setLibraryForm(custom.library)
+   }
+   if (custom.admissions) {
+     setAdmissionForm({ status: custom.admissions.status || 'Open', academicYear: custom.admissions.academicYear || '2026-27', title: custom.admissions.title || '', description: custom.admissions.description || '', eligibility: custom.admissions.eligibility || '', process: custom.admissions.process || '', applicationStart: custom.admissions.applicationStart || '', applicationEnd: custom.admissions.applicationEnd || '', counsellingDate: custom.admissions.counsellingDate || '', lastDate: custom.admissions.lastDate || '', entranceExam: custom.admissions.entranceExam || '', cutoff: custom.admissions.cutoff || '', fees: custom.admissions.fees || '', totalSeats: custom.admissions.totalSeats || '', documents: custom.admissions.documents || '', quota: custom.admissions.quota || '', scholarships: custom.admissions.scholarships || '', applicationLink: custom.admissions.applicationLink || '', brochureImage: custom.admissions.brochureImage || '', contactPhone: custom.admissions.contactPhone || '', contactEmail: custom.admissions.contactEmail || '' })
    }
    setIsLoggedIn(true)
   }
@@ -306,6 +310,22 @@ export default function AdminDashboard() {
   setSportsForm({ name: '', coach: '', description: '', facilities: '', achievements: '', image: '' })
   alert(`Sports ${sportsForm.name || 'details'} added!`)
  }
+
+ const handleSaveAdmissions = () => {
+  if (!admissionForm.title && !admissionForm.description) return alert("Add at least title or description for Admissions")
+  saveCollegeData(selectedCollegeId, 'admissions', admissionForm)
+  setCustomData({ ...customData, admissions: admissionForm })
+  alert("Admissions details saved! Your college website updated real-time - " + admissionForm.title)
+ }
+
+ const handleAdmissionBrochureUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setAdmissionForm({ ...admissionForm, brochureImage: ev.target.result })
+  reader.readAsDataURL(file)
+ }
+
 
  const handleSportsImageUpload = (e) => {
   const file = e.target.files?.[0]
@@ -1857,7 +1877,93 @@ export default function AdminDashboard() {
       </div>
      )}
 
-     {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics','management','principal','research','accreditation','campus','library','sports','events','announcements'].includes(activeSection) && (
+     {activeSection==='admissions' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><FileCheck className="text-[#FAB95B]" /> Admissions - Real-Time Working</h3>
+            <p className="text-[12px] text-[#547792] mt-2">Add admission details - open/close status, dates, eligibility, process, fees, documents, cutoff - website la real-time update aagum</p>
+          </div>
+          <div className="flex gap-2">
+            <span className={`px-3 py-1 rounded-full text-[11px] font-bold ${admissionForm.status==='Open' ? 'bg-green-100 text-green-700 border border-green-200' : admissionForm.status==='Closed' ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-[#FAB95B]/20 text-[#1A3263] border border-[#FAB95B]/30'}`}>{admissionForm.status} • {admissionForm.academicYear}</span>
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm space-y-8">
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">1</span> Basic Info - Status & Title</h4>
+            <div className="mt-4 grid md:grid-cols-3 gap-4">
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Admission Status *</label><select value={admissionForm.status} onChange={e=>setAdmissionForm({...admissionForm, status: e.target.value})} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] font-bold"><option>Open</option><option>Closed</option><option>Upcoming</option></select></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Academic Year *</label><input value={admissionForm.academicYear} onChange={e=>setAdmissionForm({...admissionForm, academicYear: e.target.value})} placeholder="e.g. 2026-27" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Total Seats</label><input value={admissionForm.totalSeats} onChange={e=>setAdmissionForm({...admissionForm, totalSeats: e.target.value})} placeholder="e.g. 1200 Seats" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div className="md:col-span-3"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Admission Title *</label><input value={admissionForm.title} onChange={e=>setAdmissionForm({...admissionForm, title: e.target.value})} placeholder="e.g. Admissions Open 2026-27 - B.E / B.Tech / MBA / MCA" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[13px] font-bold" /></div>
+              <div className="md:col-span-3"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Large - College details</label><textarea value={admissionForm.description} onChange={e=>setAdmissionForm({...admissionForm, description: e.target.value})} placeholder="Enter full admission description: about admission, why join your college, highlights, NAAC grade, placements..." rows={5} className="mt-2 w-full p-4 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] leading-[1.7] min-h-[120px] resize-y" /></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#FAB95B] text-[#1A3263] grid place-items-center text-[12px]">2</span> Important Dates - Real-time</h4>
+            <div className="mt-4 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Application Start</label><input value={admissionForm.applicationStart} onChange={e=>setAdmissionForm({...admissionForm, applicationStart: e.target.value})} placeholder="e.g. 2026-03-01" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Application End</label><input value={admissionForm.applicationEnd} onChange={e=>setAdmissionForm({...admissionForm, applicationEnd: e.target.value})} placeholder="e.g. 2026-05-30" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Counselling Date</label><input value={admissionForm.counsellingDate} onChange={e=>setAdmissionForm({...admissionForm, counsellingDate: e.target.value})} placeholder="e.g. 2026-06-15" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Last Date</label><input value={admissionForm.lastDate} onChange={e=>setAdmissionForm({...admissionForm, lastDate: e.target.value})} placeholder="e.g. 2026-07-31" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#547792] text-white grid place-items-center text-[12px]">3</span> Eligibility, Process, Entrance, Cutoff</h4>
+            <div className="mt-4 grid md:grid-cols-2 gap-4">
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Eligibility Criteria</label><textarea value={admissionForm.eligibility} onChange={e=>setAdmissionForm({...admissionForm, eligibility: e.target.value})} placeholder="e.g. 10+2 with 50% PCM for B.E, Graduation 50% for MBA..." rows={4} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Admission Process - Step by Step</label><textarea value={admissionForm.process} onChange={e=>setAdmissionForm({...admissionForm, process: e.target.value})} placeholder="1. Fill online application&#10;2. Submit documents&#10;3. Entrance / Merit&#10;4. Counselling&#10;5. Fee payment..." rows={4} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Entrance Exam</label><input value={admissionForm.entranceExam} onChange={e=>setAdmissionForm({...admissionForm, entranceExam: e.target.value})} placeholder="e.g. TNEA / TANCET / JEE / Management Quota" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Cutoff Details</label><input value={admissionForm.cutoff} onChange={e=>setAdmissionForm({...admissionForm, cutoff: e.target.value})} placeholder="e.g. Cutoff 170+ for CSE, 160+ for ECE..." className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Fees Structure</label><input value={admissionForm.fees} onChange={e=>setAdmissionForm({...admissionForm, fees: e.target.value})} placeholder="e.g. 85,000 per year + hostel, scholarship available" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Quota Details</label><input value={admissionForm.quota} onChange={e=>setAdmissionForm({...admissionForm, quota: e.target.value})} placeholder="e.g. Govt 65% / Management 35%, SC/ST, BC/MBC reservation" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">4</span> Documents, Scholarships, Contact & Links</h4>
+            <div className="mt-4 grid md:grid-cols-2 gap-4">
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Documents Required - bullet list</label><textarea value={admissionForm.documents} onChange={e=>setAdmissionForm({...admissionForm, documents: e.target.value})} placeholder="• 10th Marksheet&#10;• 12th Marksheet&#10;• TC&#10;• Community Certificate&#10;• Aadhar&#10;• Photos..." rows={5} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Scholarships Available</label><textarea value={admissionForm.scholarships} onChange={e=>setAdmissionForm({...admissionForm, scholarships: e.target.value})} placeholder="• Merit Scholarship&#10;• SC/ST Scholarship&#10;• First Graduate&#10;• Sports Quota..." rows={5} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Application Link (URL)</label><input value={admissionForm.applicationLink} onChange={e=>setAdmissionForm({...admissionForm, applicationLink: e.target.value})} placeholder="https://yourcollege.edu/admissions/apply" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Contact Phone</label><input value={admissionForm.contactPhone} onChange={e=>setAdmissionForm({...admissionForm, contactPhone: e.target.value})} placeholder="e.g. 0422-257 1234" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Contact Email</label><input value={admissionForm.contactEmail} onChange={e=>setAdmissionForm({...admissionForm, contactEmail: e.target.value})} placeholder="admissions@college.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div>
+                <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><ImageIcon size={12} className="text-[#FAB95B]" /> Brochure Image - Upload or URL</label>
+                <div className="mt-2 flex gap-2">
+                  <input value={admissionForm.brochureImage} onChange={e=>setAdmissionForm({...admissionForm, brochureImage: e.target.value})} placeholder="Paste brochure image URL or upload" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+                  <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleAdmissionBrochureUpload} /></label>
+                </div>
+              </div>
+              {admissionForm.brochureImage && (
+                <div className="md:col-span-2">
+                  <div className="rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-[#E8E2DB]/30 p-2">
+                    <img src={admissionForm.brochureImage} className="h-[200px] w-full rounded-[10px] object-cover" alt="Brochure preview" />
+                    <div className="text-[11px] text-[#547792] mt-2 text-center">Brochure preview - will show on website</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <button onClick={handleSaveAdmissions} className="h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Save size={18} /> Save Admissions - Real-time Website Update</button>
+
+          {customData.admissions && (
+            <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
+              <div className="font-bold text-[#1A3263] text-[13px]">Current Saved - {customData.admissions.title} • {customData.admissions.status} • {customData.admissions.academicYear}</div>
+              <div className="text-[11px] text-[#547792] mt-1">Real-time la college website la theriyum - students can see admissions open</div>
+            </div>
+          )}
+        </div>
+       </div>
+      </div>
+     )}
+
+     {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics','management','principal','research','accreditation','campus','library','sports','events','announcements','admissions'].includes(activeSection) && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-12 text-center">
        <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center mx-auto text-2xl">🚧</div>
        <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} - Coming Soon - Your Own {activeSection}</h3>
