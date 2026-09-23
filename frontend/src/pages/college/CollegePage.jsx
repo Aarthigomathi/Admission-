@@ -679,16 +679,6 @@ function CustomCollegePage({ college, customData }) {
                       </div>
                       <div className="flex-1 h-[1px] bg-[#E8E2DB] ml-4"></div>
                     </div>
-                    {cat==='Social / Awareness Events' && (
-                      <div className="mb-4 rounded-[12px] bg-[#1A3263] text-white p-4">
-                        <div className="font-bold text-[#FAB95B] text-[12px]">🌱 Social / Awareness - Examples you can add:</div>
-                        <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-[#E8E2DB]/70">
-                          {["Teachers' Day","Women's Day","World Environment Day","Energy Conservation Day","Plastic Bag Free Day","Education Development Day","Blood Donation Camps","Tree Planting","Coastal Cleaning","NCC/NSS Awareness"].map(t=>(
-                            <span key={t} className="px-2 py-1 rounded-full bg-white/10 border border-white/10">{t}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                     <div className="grid md:grid-cols-2 gap-6">
                       {catEvents.map(ev=>(
                         <div key={ev.id} className="rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white hover:border-[#FAB95B]/40 transition-colors shadow-sm">

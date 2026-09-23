@@ -1751,14 +1751,6 @@ export default function AdminDashboard() {
         <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Calendar className="text-[#FAB95B]" /> Events - 5 Categories with Images</h3>
         <p className="text-[12px] text-[#547792] mt-2">Add events category-wise: Cultural / Arts, Technical / Academic, Sports, College / Student, Social / Awareness - images odd pantra mathiri, details neenga odd pannalam</p>
 
-        <div className="mt-4 rounded-[12px] bg-[#1A3263] text-white p-4 text-[11px] leading-[1.6]">
-          <div className="font-bold text-[#FAB95B]">🌱 Social / Awareness Events Example:</div>
-          <div className="mt-2 grid grid-cols-2 gap-1 text-[#E8E2DB]/80">
-            <span>• Teachers' Day Celebration</span><span>• Women's Day Celebration</span><span>• World Environment Day</span><span>• National Energy Conservation Day</span><span>• International Plastic Bag Free Day</span><span>• Education Development Day</span><span>• Blood Donation Camps</span><span>• Tree Planting Activities</span><span>• Coastal Cleaning Drives</span><span>• NCC / NSS Awareness Programmes</span>
-          </div>
-          <div className="text-[10px] text-white/50 mt-2">Ithu maathiri thani thani category la events add pannalam - details ellam college neenga odd pannalam</div>
-        </div>
-
         <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
          <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add New Event - Category + Image</h4>
          <div className="mt-6 space-y-5">
