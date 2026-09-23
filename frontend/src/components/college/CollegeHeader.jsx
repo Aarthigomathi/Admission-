@@ -29,16 +29,16 @@ export default function CollegeHeader({ college }) {
 
   return (
     <div className="sticky top-0 z-40 w-full">
-      {/* Top Bar - Real official info only */}
+            {/* Top Bar - Real official info only - safe for custom colleges */}
       <div className="hidden lg:block bg-[#1a3263] text-white text-[12px] border-b-2 border-[#fab95b]">
         <div className="mx-auto max-w-[1600px] px-8 h-9 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2 opacity-90"><Phone size={12} />{college.contact.phone.split('/')[0]}</span>
-            <span className="flex items-center gap-2 opacity-90"><Mail size={12} />{college.contact.email.split('/')[0].trim()}</span>
-            <span className="flex items-center gap-2 opacity-90 hidden xl:flex"><MapPin size={12} />{college.location.city} • 8km Railway • 5km Airport</span>
+            <span className="flex items-center gap-2 opacity-90"><Phone size={12} />{(college.contact?.phone || college.phone || '').split('/')[0] || 'Contact'}</span>
+            <span className="flex items-center gap-2 opacity-90"><Mail size={12} />{(college.contact?.email || college.email || '').split('/')[0].trim() || 'Email'}</span>
+            <span className="flex items-center gap-2 opacity-90 hidden xl:flex"><MapPin size={12} />{college.location?.city || college.city || college.district || 'Location'} • {college.district || ''}</span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="opacity-80">{college.affiliation} | {college.accreditation.split('•')[0]}</span>
+            <span className="opacity-80">{college.affiliation || college.university || ''} {college.accreditation ? `| ${(college.accreditation || '').split('•')[0]}` : ''}</span>
           </div>
         </div>
       </div>
@@ -48,7 +48,7 @@ export default function CollegeHeader({ college }) {
           <div className="flex h-[76px] items-center justify-between gap-6">
             <Link to={`/college/${college.slug}`} className="flex items-center gap-3 min-w-0">
               <div className="h-[52px] w-[52px] rounded-[14px] overflow-hidden border-2 border-[#e8e2db] bg-[#e8e2db] shadow-sm shrink-0">
-                <img src={college.branding.logo} alt={college.name} className="h-full w-full object-cover" />
+                {college.branding?.logo ? <img src={college.branding.logo} alt={college.name} className="h-full w-full object-cover" /> : <div className="h-full w-full grid place-items-center bg-[#1A3263] text-[#FAB95B] font-bold text-[18px]">{college.name?.[0] || 'C'}</div>}
               </div>
               <div className="min-w-0 leading-tight">
                 <div className="flex items-center gap-2">
