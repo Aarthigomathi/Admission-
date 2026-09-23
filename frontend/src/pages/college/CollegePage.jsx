@@ -147,6 +147,8 @@ function CustomCollegePage({ college, customData }) {
   const library = customData.library || null
   const sports = customData.sports || []
   const admissions = customData.admissions || null
+  const contactDetails = customData.contactDetails || customData.contacts || null
+  const settings = customData.settings || null
 
   const hasContent = (arr) => arr && arr.length > 0
 
@@ -811,14 +813,50 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-        {/* Contact */}
+        {/* Contact - Real-time Working */}
         <section className="rounded-[24px] bg-[#1A3263] text-white p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#FAB95B]">Contact {college.name}</h2>
-          <div className="mt-6 grid md:grid-cols-3 gap-6 text-[13px]">
-            <div className="flex gap-3"><MapPin size={18} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B]">Address</div><div className="text-[#E8E2DB]/80 mt-1">{college.address}, {college.city}, {college.district} - {college.pincode}</div></div></div>
-            <div className="flex gap-3"><Phone size={18} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B]">Phone</div><div className="text-[#E8E2DB]/80 mt-1">{college.phone}</div></div></div>
-            <div className="flex gap-3"><Mail size={18} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B]">Email</div><div className="text-[#E8E2DB]/80 mt-1">{college.email}</div><div className="text-[#E8E2DB]/60 text-[11px] mt-1">{college.website}</div></div></div>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h2 className="font-display text-[26px] font-bold text-[#FAB95B]">Contact {settings?.name || college.name}</h2>
+            {contactDetails?.mapLink && <a href={contactDetails.mapLink} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[12px]">View on Map →</a>}
           </div>
+
+          {contactDetails ? (
+            <div className="mt-8 space-y-8">
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="rounded-[16px] bg-white/10 border border-white/20 p-5">
+                  <div className="flex gap-3"><MapPin size={20} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B] text-[12px] uppercase">Address</div><div className="text-[#E8E2DB]/90 text-[13px] mt-2 leading-[1.6]">{contactDetails.address}{contactDetails.city ? `, ${contactDetails.city}` : ''}{contactDetails.district ? `, ${contactDetails.district}` : ''}{contactDetails.pincode ? ` - ${contactDetails.pincode}` : ''}</div>{contactDetails.officeHours && <div className="text-[11px] text-[#E8E2DB]/60 mt-3">🕒 {contactDetails.officeHours}</div>}</div></div>
+                </div>
+                <div className="rounded-[16px] bg-white/10 border border-white/20 p-5">
+                  <div className="flex gap-3"><Phone size={20} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B] text-[12px] uppercase">Phone</div><div className="text-[#E8E2DB]/90 text-[13px] mt-2 space-y-1"><div>{contactDetails.phone}</div>{contactDetails.phone2 && <div>{contactDetails.phone2}</div>}{contactDetails.tollFree && <div className="text-[#FAB95B]">Toll Free: {contactDetails.tollFree}</div>}{contactDetails.fax && <div className="text-[#E8E2DB]/60 text-[11px]">Fax: {contactDetails.fax}</div>}</div></div></div>
+                </div>
+                <div className="rounded-[16px] bg-white/10 border border-white/20 p-5">
+                  <div className="flex gap-3"><Mail size={20} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B] text-[12px] uppercase">Email & Web</div><div className="text-[#E8E2DB]/90 text-[13px] mt-2 space-y-1"><div>{contactDetails.email}</div>{contactDetails.admissionsEmail && <div className="text-[#FAB95B] text-[12px]">{contactDetails.admissionsEmail}</div>}<div className="text-[#E8E2DB]/60 text-[11px] mt-2">{contactDetails.website}</div></div></div></div>
+                </div>
+              </div>
+
+              {(contactDetails.contactPerson || contactDetails.enquiryPhone || contactDetails.enquiryEmail) && (
+                <div className="rounded-[16px] bg-white p-6 text-[#1A3263]">
+                  <div className="font-bold text-[14px]">Enquiry & Contact Person</div>
+                  <div className="mt-4 grid md:grid-cols-3 gap-6 text-[13px]">
+                    {contactDetails.contactPerson && <div><div className="text-[11px] font-bold uppercase text-[#547792]">Contact Person</div><div className="font-bold text-[14px] mt-1">{contactDetails.contactPerson}</div>{contactDetails.contactDesignation && <div className="text-[12px] text-[#547792]">{contactDetails.contactDesignation}</div>}{contactDetails.contactPhone && <div className="text-[12px] mt-1">📞 {contactDetails.contactPhone}</div>}</div>}
+                    {contactDetails.enquiryPhone && <div><div className="text-[11px] font-bold uppercase text-[#547792]">Enquiry Phone</div><div className="font-bold mt-1">{contactDetails.enquiryPhone}</div>{contactDetails.supportHours && <div className="text-[11px] text-[#547792] mt-1">{contactDetails.supportHours}</div>}</div>}
+                    {contactDetails.enquiryEmail && <div><div className="text-[11px] font-bold uppercase text-[#547792]">Enquiry Email</div><div className="font-bold mt-1">{contactDetails.enquiryEmail}</div></div>}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-wrap gap-3">
+                <span className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-[#E8E2DB]/70 text-[11px]">ID {college.id} • {settings?.established || college.established} • {settings?.accreditation || college.accreditation || ''}</span>
+                {contactDetails.mapLink && <a href={contactDetails.mapLink} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-full bg-[#FAB95B]/20 border border-[#FAB95B]/30 text-[#FAB95B] text-[11px] font-bold">📍 Open in Google Maps</a>}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 grid md:grid-cols-3 gap-6 text-[13px]">
+              <div className="flex gap-3"><MapPin size={18} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B]">Address</div><div className="text-[#E8E2DB]/80 mt-1">{college.address}, {college.city}, {college.district} - {college.pincode}</div></div></div>
+              <div className="flex gap-3"><Phone size={18} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B]">Phone</div><div className="text-[#E8E2DB]/80 mt-1">{college.phone}</div></div></div>
+              <div className="flex gap-3"><Mail size={18} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B]">Email</div><div className="text-[#E8E2DB]/80 mt-1">{college.email}</div><div className="text-[#E8E2DB]/60 text-[11px] mt-1">{college.website}</div></div></div>
+            </div>
+          )}
         </section>
       </div>
 

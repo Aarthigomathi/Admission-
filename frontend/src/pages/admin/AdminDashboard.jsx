@@ -39,6 +39,8 @@ export default function AdminDashboard() {
  const [brandingForm, setBrandingForm] = useState({ logo: '', heroImage: '', tagline: '', collegeImages: [], primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' })
  const [newCollegeImageUrl, setNewCollegeImageUrl] = useState('')
  const [admissionForm, setAdmissionForm] = useState({ status: 'Open', academicYear: '2026-27', title: '', description: '', eligibility: '', process: '', applicationStart: '', applicationEnd: '', counsellingDate: '', lastDate: '', entranceExam: '', cutoff: '', fees: '', totalSeats: '', documents: '', quota: '', scholarships: '', applicationLink: '', brochureImage: '', contactPhone: '', contactEmail: '' })
+ const [contactForm, setContactForm] = useState({ address: '', city: '', district: '', pincode: '', phone: '', phone2: '', email: '', admissionsEmail: '', website: '', officeHours: '', mapLink: '', contactPerson: '', contactDesignation: '', contactPhone: '', enquiryPhone: '', enquiryEmail: '', supportHours: '', fax: '', tollFree: '' })
+ const [settingsForm, setSettingsForm] = useState({ name: '', shortName: '', tagline: '', type: '', collegeType: '', university: '', affiliation: '', established: '', accreditation: '', email: '', phone: '', website: '', verificationStatus: '', maintenanceMode: false, showAdmissions: true, showPlacements: true, showEvents: true })
 
  useEffect(() => {
   const stored = localStorage.getItem('tn_current_college')
@@ -82,6 +84,75 @@ export default function AdminDashboard() {
    }
    if (custom.admissions) {
      setAdmissionForm({ status: custom.admissions.status || 'Open', academicYear: custom.admissions.academicYear || '2026-27', title: custom.admissions.title || '', description: custom.admissions.description || '', eligibility: custom.admissions.eligibility || '', process: custom.admissions.process || '', applicationStart: custom.admissions.applicationStart || '', applicationEnd: custom.admissions.applicationEnd || '', counsellingDate: custom.admissions.counsellingDate || '', lastDate: custom.admissions.lastDate || '', entranceExam: custom.admissions.entranceExam || '', cutoff: custom.admissions.cutoff || '', fees: custom.admissions.fees || '', totalSeats: custom.admissions.totalSeats || '', documents: custom.admissions.documents || '', quota: custom.admissions.quota || '', scholarships: custom.admissions.scholarships || '', applicationLink: custom.admissions.applicationLink || '', brochureImage: custom.admissions.brochureImage || '', contactPhone: custom.admissions.contactPhone || '', contactEmail: custom.admissions.contactEmail || '' })
+   }
+   if (custom.contactDetails || custom.contacts) {
+     const cd = custom.contactDetails || custom.contacts || {}
+     setContactForm({
+       address: cd.address || fullCollege.address || '',
+       city: cd.city || fullCollege.city || '',
+       district: cd.district || fullCollege.district || '',
+       pincode: cd.pincode || fullCollege.pincode || '',
+       phone: cd.phone || fullCollege.phone || '',
+       phone2: cd.phone2 || '',
+       email: cd.email || fullCollege.email || '',
+       admissionsEmail: cd.admissionsEmail || '',
+       website: cd.website || fullCollege.website || '',
+       officeHours: cd.officeHours || '',
+       mapLink: cd.mapLink || '',
+       contactPerson: cd.contactPerson || '',
+       contactDesignation: cd.contactDesignation || '',
+       contactPhone: cd.contactPhone || '',
+       enquiryPhone: cd.enquiryPhone || '',
+       enquiryEmail: cd.enquiryEmail || '',
+       supportHours: cd.supportHours || '',
+       fax: cd.fax || '',
+       tollFree: cd.tollFree || ''
+     })
+   } else {
+     setContactForm({
+       address: fullCollege.address || '',
+       city: fullCollege.city || '',
+       district: fullCollege.district || '',
+       pincode: fullCollege.pincode || '',
+       phone: fullCollege.phone || '',
+       phone2: '',
+       email: fullCollege.email || '',
+       admissionsEmail: '',
+       website: fullCollege.website || '',
+       officeHours: '',
+       mapLink: '',
+       contactPerson: '',
+       contactDesignation: '',
+       contactPhone: '',
+       enquiryPhone: '',
+       enquiryEmail: '',
+       supportHours: '',
+       fax: '',
+       tollFree: ''
+     })
+   }
+   if (custom.settings) {
+     setSettingsForm({ ...settingsForm, ...custom.settings })
+   } else {
+     setSettingsForm({
+       name: fullCollege.name || '',
+       shortName: fullCollege.shortName || '',
+       tagline: custom.tagline || fullCollege.tagline || '',
+       type: fullCollege.type || '',
+       collegeType: fullCollege.collegeType || '',
+       university: fullCollege.university || '',
+       affiliation: fullCollege.affiliation || '',
+       established: fullCollege.established || '',
+       accreditation: fullCollege.accreditation || '',
+       email: fullCollege.email || '',
+       phone: fullCollege.phone || '',
+       website: fullCollege.website || '',
+       verificationStatus: fullCollege.verificationStatus || 'PENDING',
+       maintenanceMode: false,
+       showAdmissions: true,
+       showPlacements: true,
+       showEvents: true
+     })
    }
    setIsLoggedIn(true)
   }
@@ -325,6 +396,35 @@ export default function AdminDashboard() {
   reader.onload = (ev) => setAdmissionForm({ ...admissionForm, brochureImage: ev.target.result })
   reader.readAsDataURL(file)
  }
+
+ const handleSaveContact = () => {
+  if (!contactForm.address && !contactForm.phone && !contactForm.email) return alert("Add at least address or phone or email")
+  saveCollegeData(selectedCollegeId, 'contactDetails', contactForm)
+  saveCollegeData(selectedCollegeId, 'contacts', contactForm)
+  setCustomData({ ...customData, contactDetails: contactForm, contacts: contactForm })
+  alert("Contact details saved! Real-time website updated - " + contactForm.phone)
+ }
+
+ const handleSaveSettings = () => {
+  if (!settingsForm.name) return alert("College name required")
+  saveCollegeData(selectedCollegeId, 'settings', settingsForm)
+  // Also update tagline and basic info in registered colleges
+  const registered = JSON.parse(localStorage.getItem('tn_registered_colleges') || '[]')
+  const idx = registered.findIndex(c => String(c.id) === String(selectedCollegeId))
+  if (idx >= 0) {
+    registered[idx] = { ...registered[idx], name: settingsForm.name, shortName: settingsForm.shortName, tagline: settingsForm.tagline, type: settingsForm.type, collegeType: settingsForm.collegeType, university: settingsForm.university, affiliation: settingsForm.affiliation, established: settingsForm.established, accreditation: settingsForm.accreditation, email: settingsForm.email, phone: settingsForm.phone, website: settingsForm.website, settings: settingsForm }
+    localStorage.setItem('tn_registered_colleges', JSON.stringify(registered))
+  }
+  const current = JSON.parse(localStorage.getItem('tn_current_college') || '{}')
+  if (String(current.id) === String(selectedCollegeId)) {
+    const updatedCurrent = { ...current, name: settingsForm.name, shortName: settingsForm.shortName, tagline: settingsForm.tagline, type: settingsForm.type, collegeType: settingsForm.collegeType, university: settingsForm.university, affiliation: settingsForm.affiliation, established: settingsForm.established, accreditation: settingsForm.accreditation, email: settingsForm.email, phone: settingsForm.phone, website: settingsForm.website }
+    localStorage.setItem('tn_current_college', JSON.stringify(updatedCurrent))
+    setCurrentCollege(updatedCurrent)
+  }
+  setCustomData({ ...customData, settings: settingsForm, tagline: settingsForm.tagline })
+  alert("Settings saved! Real-time website updated - " + settingsForm.name)
+ }
+
 
 
  const handleSportsImageUpload = (e) => {
@@ -1963,7 +2063,131 @@ export default function AdminDashboard() {
       </div>
      )}
 
-     {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics','management','principal','research','accreditation','campus','library','sports','events','announcements','admissions'].includes(activeSection) && (
+     {activeSection==='contact' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Contact className="text-[#FAB95B]" /> Contact - Real-Time Working</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add contact details - address, phone, email, office hours, map link, enquiry - website Contact section la real-time update aagum</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm space-y-8">
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">1</span> Address & Location</h4>
+            <div className="mt-4 grid md:grid-cols-2 gap-4">
+              <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Full Address *</label><input value={contactForm.address} onChange={e=>setContactForm({...contactForm, address: e.target.value})} placeholder="e.g. Peelamedu, Coimbatore - Main Campus Road" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">City</label><input value={contactForm.city} onChange={e=>setContactForm({...contactForm, city: e.target.value})} placeholder="e.g. Coimbatore" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">District</label><input value={contactForm.district} onChange={e=>setContactForm({...contactForm, district: e.target.value})} placeholder="e.g. Coimbatore" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Pincode</label><input value={contactForm.pincode} onChange={e=>setContactForm({...contactForm, pincode: e.target.value})} placeholder="e.g. 641004" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Google Map Link</label><input value={contactForm.mapLink} onChange={e=>setContactForm({...contactForm, mapLink: e.target.value})} placeholder="https://maps.google.com/?q=your college" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#FAB95B] text-[#1A3263] grid place-items-center text-[12px]">2</span> Phone & Email</h4>
+            <div className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone *</label><input value={contactForm.phone} onChange={e=>setContactForm({...contactForm, phone: e.target.value})} placeholder="e.g. 0422-257 1234" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone 2</label><input value={contactForm.phone2} onChange={e=>setContactForm({...contactForm, phone2: e.target.value})} placeholder="e.g. 0422-257 5678" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Toll Free</label><input value={contactForm.tollFree} onChange={e=>setContactForm({...contactForm, tollFree: e.target.value})} placeholder="e.g. 1800-123-4567" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Email *</label><input value={contactForm.email} onChange={e=>setContactForm({...contactForm, email: e.target.value})} placeholder="info@college.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Admissions Email</label><input value={contactForm.admissionsEmail} onChange={e=>setContactForm({...contactForm, admissionsEmail: e.target.value})} placeholder="admissions@college.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Website</label><input value={contactForm.website} onChange={e=>setContactForm({...contactForm, website: e.target.value})} placeholder="https://yourcollege.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Fax</label><input value={contactForm.fax} onChange={e=>setContactForm({...contactForm, fax: e.target.value})} placeholder="e.g. 0422-257 3833" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#547792] text-white grid place-items-center text-[12px]">3</span> Office Hours & Enquiry</h4>
+            <div className="mt-4 grid md:grid-cols-2 gap-4">
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Office Hours</label><input value={contactForm.officeHours} onChange={e=>setContactForm({...contactForm, officeHours: e.target.value})} placeholder="e.g. Mon-Sat 9AM-5PM" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Support Hours</label><input value={contactForm.supportHours} onChange={e=>setContactForm({...contactForm, supportHours: e.target.value})} placeholder="e.g. 24/7 Enquiry Support" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Contact Person</label><input value={contactForm.contactPerson} onChange={e=>setContactForm({...contactForm, contactPerson: e.target.value})} placeholder="e.g. Dr. Admin Officer" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Designation</label><input value={contactForm.contactDesignation} onChange={e=>setContactForm({...contactForm, contactDesignation: e.target.value})} placeholder="e.g. Administrative Officer" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Contact Person Phone</label><input value={contactForm.contactPhone} onChange={e=>setContactForm({...contactForm, contactPhone: e.target.value})} placeholder="e.g. 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Enquiry Phone</label><input value={contactForm.enquiryPhone} onChange={e=>setContactForm({...contactForm, enquiryPhone: e.target.value})} placeholder="e.g. 0422-434 1234" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Enquiry Email</label><input value={contactForm.enquiryEmail} onChange={e=>setContactForm({...contactForm, enquiryEmail: e.target.value})} placeholder="enquiry@college.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+            </div>
+          </div>
+
+          <button onClick={handleSaveContact} className="h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Save size={18} /> Save Contact - Real-time Website Update</button>
+
+          {customData.contactDetails && (
+            <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
+              <div className="font-bold text-[#1A3263] text-[13px]">Current Saved - {customData.contactDetails.phone} • {customData.contactDetails.email}</div>
+              <div className="text-[11px] text-[#547792] mt-1">Real-time la college website Contact section la theriyum</div>
+            </div>
+          )}
+        </div>
+       </div>
+      </div>
+     )}
+
+     {activeSection==='settings' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Settings className="text-[#FAB95B]" /> Settings - Real-Time Working</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Manage college profile, website settings, verification status - real-time update aagum</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm space-y-8">
+          <div className="rounded-[16px] bg-[#1A3263] text-white p-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div className="font-bold text-[#FAB95B] text-[14px]">College ID {college.id} • {settingsForm.verificationStatus}</div>
+              <div className="text-[12px] text-[#E8E2DB]/70 mt-1">Profile completion real-time tracking</div>
+            </div>
+            <div className="px-4 py-2 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[12px]">{settingsForm.verificationStatus} • Est. {settingsForm.established}</div>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">1</span> College Profile - Basic Info</h4>
+            <div className="mt-4 grid md:grid-cols-2 gap-4">
+              <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">College Name *</label><input value={settingsForm.name} onChange={e=>setSettingsForm({...settingsForm, name: e.target.value})} placeholder="Your College Name" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[13px] font-bold" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Short Name</label><input value={settingsForm.shortName} onChange={e=>setSettingsForm({...settingsForm, shortName: e.target.value})} placeholder="e.g. PSG Tech" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Established Year</label><input value={settingsForm.established} onChange={e=>setSettingsForm({...settingsForm, established: e.target.value})} placeholder="e.g. 1951" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Tagline</label><input value={settingsForm.tagline} onChange={e=>setSettingsForm({...settingsForm, tagline: e.target.value})} placeholder="Excellence in Education" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">College Type</label><select value={settingsForm.type} onChange={e=>setSettingsForm({...settingsForm, type: e.target.value})} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]"><option>Engineering</option><option>Arts & Science</option><option>Medical</option><option>Management</option><option>Polytechnic</option><option>University</option><option>Other</option></select></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Management Type</label><select value={settingsForm.collegeType} onChange={e=>setSettingsForm({...settingsForm, collegeType: e.target.value})} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]"><option>Private</option><option>Government</option><option>Government Aided</option><option>Deemed University</option><option>Autonomous</option></select></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">University / Affiliation</label><input value={settingsForm.university} onChange={e=>setSettingsForm({...settingsForm, university: e.target.value})} placeholder="e.g. Anna University" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Accreditation</label><input value={settingsForm.accreditation} onChange={e=>setSettingsForm({...settingsForm, accreditation: e.target.value})} placeholder="e.g. NAAC A++ • NBA Accredited" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#FAB95B] text-[#1A3263] grid place-items-center text-[12px]">2</span> Contact & Website</h4>
+            <div className="mt-4 grid md:grid-cols-2 gap-4">
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Official Email</label><input value={settingsForm.email} onChange={e=>setSettingsForm({...settingsForm, email: e.target.value})} placeholder="info@college.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone</label><input value={settingsForm.phone} onChange={e=>setSettingsForm({...settingsForm, phone: e.target.value})} placeholder="0422-257 1234" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Website URL</label><input value={settingsForm.website} onChange={e=>setSettingsForm({...settingsForm, website: e.target.value})} placeholder="https://yourcollege.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#547792] text-white grid place-items-center text-[12px]">3</span> Website Display Settings</h4>
+            <div className="mt-4 grid md:grid-cols-3 gap-4">
+              <label className="flex items-center justify-between p-4 rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] cursor-pointer">
+                <div><div className="font-bold text-[12px] text-[#1A3263]">Show Admissions</div><div className="text-[11px] text-[#547792]">Display admissions section</div></div>
+                <input type="checkbox" checked={settingsForm.showAdmissions} onChange={e=>setSettingsForm({...settingsForm, showAdmissions: e.target.checked})} className="h-5 w-5 accent-[#1A3263]" />
+              </label>
+              <label className="flex items-center justify-between p-4 rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] cursor-pointer">
+                <div><div className="font-bold text-[12px] text-[#1A3263]">Show Placements</div><div className="text-[11px] text-[#547792]">Display placements</div></div>
+                <input type="checkbox" checked={settingsForm.showPlacements} onChange={e=>setSettingsForm({...settingsForm, showPlacements: e.target.checked})} className="h-5 w-5 accent-[#1A3263]" />
+              </label>
+              <label className="flex items-center justify-between p-4 rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] cursor-pointer">
+                <div><div className="font-bold text-[12px] text-[#1A3263]">Show Events</div><div className="text-[11px] text-[#547792]">Display events</div></div>
+                <input type="checkbox" checked={settingsForm.showEvents} onChange={e=>setSettingsForm({...settingsForm, showEvents: e.target.checked})} className="h-5 w-5 accent-[#1A3263]" />
+              </label>
+            </div>
+          </div>
+
+          <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/30 p-5">
+            <div className="font-bold text-[13px] text-[#1A3263]">⚠️ Verification Status - Read Only</div>
+            <div className="text-[12px] text-[#547792] mt-2">Your college verification status is <span className="font-bold text-[#1A3263]">{settingsForm.verificationStatus}</span> - Only Platform Admin can change this. Contact support if needed.</div>
+          </div>
+
+          <button onClick={handleSaveSettings} className="h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Save size={18} /> Save Settings - Real-time Website Update</button>
+        </div>
+       </div>
+      </div>
+     )}
+
+     {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics','management','principal','research','accreditation','campus','library','sports','events','announcements','admissions','contact','settings'].includes(activeSection) && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-12 text-center">
        <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center mx-auto text-2xl">🚧</div>
        <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} - Coming Soon - Your Own {activeSection}</h3>
