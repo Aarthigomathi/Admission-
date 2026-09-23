@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusConnect - College Events & Admission Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { jakarta: ['Plus Jakarta Sans','sans-serif'], outfit: ['Outfit','sans-serif'] },
+      colors: {
+        primary: '#4F46E5',
+        secondary: '#0EA5E9',
+        accent: '#10B981'
+      }
+    }
+  }
+}
+</script>
+<style>
+* { font-family: 'Plus Jakarta Sans', sans-serif; }
+.outfit { font-family: 'Outfit', sans-serif; }
+.glass { backdrop-filter: blur(16px); background: rgba(255,255,255,0.85); }
+.card-hover { transition: all .3s cubic-bezier(.4,0,.2,1); }
+.card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -10px rgba(0,0,0,.15); }
+.category-active { background: #4F46E5 !important; color: white !important; border-color: #4F46E5 !important; }
+.scrollbar-hide::-webkit-scrollbar { display:none; }
+.scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.float { animation: float 4s ease-in-out infinite; }
+</style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800">
+
+<!-- Header -->
+<header class="sticky top-0 z-50 glass border-b border-slate-200/60">
+  <div class="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-[72px]">
+      <div class="flex items-center gap-8">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-lg outfit">C</div>
+          <div>
+            <h1 class="outfit font-bold text-[18px] leading-none">CampusConnect</h1>
+            <p class="text-[11px] text-slate-500 tracking-widest uppercase font-semibold">Events & Admission</p>
+          </div>
+        </div>
+        <nav class="hidden lg:flex items-center gap-1 bg-slate-100 p-1 rounded-full">
+          <button onclick="setView('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-full text-sm font-semibold bg-white shadow-sm">Home</button>
+          <button onclick="setView('events')" id="nav-events" class="nav-btn px-4 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-slate-900">All Events</button>
+          <button onclick="setView('colleges')" id="nav-colleges" class="nav-btn px-4 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-slate-900">Colleges</button>
+          <button onclick="setView('admission')" id="nav-admission" class="nav-btn px-4 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-slate-900">Admission</button>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-2 md:gap-3">
+        <div class="hidden md:flex items-center gap-2 bg-white border border-slate-200 rounded-full px-3 py-2 w-[280px]">
+          <i class="fa-solid fa-magnifying-glass text-slate-400 text-sm"></i>
+          <input id="globalSearch" oninput="handleSearch(this.value)" placeholder="Search events, college, category..." class="w-full bg-transparent outline-none text-sm placeholder:text-slate-400">
+        </div>
+        <button onclick="openAddModal()" class="hidden md:flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:bg-black transition">
+          <i class="fa-solid fa-plus"></i> Add Event
+        </button>
+        <button onclick="toggleAdmin()" id="adminToggle" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50">
+          <i class="fa-solid fa-user-shield text-slate-600"></i>
+        </button>
+        <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="lg:hidden w-10 h-10 rounded-full bg-white border flex items-center justify-center">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="hidden lg:hidden border-t bg-white px-4 py-4 space-y-3">
+    <input oninput="handleSearch(this.value)" placeholder="Search..." class="w-full border rounded-full px-4 py-2.5 text-sm">
+    <div class="grid grid-cols-2 gap-2">
+      <button onclick="setView('home')" class="py-2.5 rounded-full bg-slate-900 text-white text-sm font-semibold">Home</button>
+      <button onclick="setView('events')" class="py-2.5 rounded-full bg-slate-100 text-sm font-semibold">All Events</button>
+      <button onclick="setView('colleges')" class="py-2.5 rounded-full bg-slate-100 text-sm font-semibold">Colleges</button>
+      <button onclick="openAddModal()" class="py-2.5 rounded-full bg-indigo-600 text-white text-sm font-semibold"><i class="fa-solid fa-plus mr-1"></i> Add Event</button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero Section -->
+<section id="hero" class="relative overflow-hidden">
+  <div class="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8 py-8 md:py-12">
+    <div class="grid lg:grid-cols-[1.2fr_0.8fr] gap-6 items-start">
+      <!-- Left -->
+      <div class="bg-gradient-to-br from-indigo-600 via-violet-600 to-indigo-700 rounded-[24px] md:rounded-[32px] p-6 md:p-10 text-white relative overflow-hidden min-h-[480px] flex flex-col">
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3"></div>
+        <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-violet-300/20 rounded-full blur-[60px] translate-y-1/3 -translate-x-1/4"></div>
+        
+        <div class="relative z-10 flex-1 flex flex-col">
+          <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-1.5 w-fit text-xs font-semibold">
+            <span class="w-2 h-2 bg-emerald-300 rounded-full animate-pulse"></span> LIVE EVENTS PORTAL • 2025-26
+          </div>
+          
+          <h2 class="outfit text-[32px] md:text-[52px] font-bold leading-[0.95] mt-6 tracking-tight">
+            College Events,<br>
+            <span class="text-violet-200">Organized by</span><br>
+            Category
+          </h2>
+          <p class="text-indigo-100 mt-4 max-w-[420px] text-[15px] leading-relaxed">
+            Ithu maathiri thani thani category la events add pannalam. Details ellam college neenga customize pannalam. Social, Technical, Cultural ellam separate-a manage pannunga!
+          </p>
+
+          <div class="mt-8 grid grid-cols-3 gap-3 max-w-[420px]">
+            <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3">
+              <div class="text-2xl font-bold outfit" id="stat-total">0</div>
+              <div class="text-[11px] uppercase tracking-widest opacity-80 font-semibold mt-1">Total Events</div>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3">
+              <div class="text-2xl font-bold outfit" id="stat-colleges">0</div>
+              <div class="text-[11px] uppercase tracking-widest opacity-80 font-semibold mt-1">Colleges</div>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3">
+              <div class="text-2xl font-bold outfit" id="stat-categories">6</div>
+              <div class="text-[11px] uppercase tracking-widest opacity-80 font-semibold mt-1">Categories</div>
+            </div>
+          </div>
+
+          <div class="mt-auto pt-8 flex flex-wrap gap-3">
+            <button onclick="setView('events')" class="bg-white text-indigo-700 px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-indigo-50 transition">
+              Explore Events <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <button onclick="openAddModal()" class="bg-slate-900/40 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-slate-900/60 transition">
+              + Add New Event
+            </button>
+          </div>
+        </div>
+
+        <!-- Floating cards -->
+        <div class="hidden md:block absolute right-6 top-[46%] -translate-y-1/2 space-y-3 w-[220px]">
+          <div class="float bg-white rounded-2xl p-3 shadow-xl text-slate-800">
+            <div class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-emerald-600"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Social • Today</div>
+            <div class="font-bold text-sm mt-1 leading-tight">Blood Donation Camp - NSS Unit</div>
+            <div class="flex items-center gap-1 mt-2 text-[11px] text-slate-500"><i class="fa-solid fa-location-dot"></i> Main Auditorium • 150+ joined</div>
+          </div>
+          <div class="float bg-white rounded-2xl p-3 shadow-xl text-slate-800" style="animation-delay:.6s">
+            <div class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-violet-600"><span class="w-1.5 h-1.5 bg-violet-500 rounded-full"></span> Environment • Tomorrow</div>
+            <div class="font-bold text-sm mt-1 leading-tight">Coastal Cleaning Drive</div>
+            <div class="flex items-center gap-1 mt-2 text-[11px] text-slate-500"><i class="fa-solid fa-users"></i> 80 Volunteers • Marina Beach</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right - Categories -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="outfit font-bold text-[20px]">Browse by Category</h3>
+          <button onclick="openCategoryManager()" class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full hover:bg-indigo-100"><i class="fa-solid fa-gear mr-1"></i> Manage</button>
+        </div>
+        <div id="categoryGrid" class="grid grid-cols-1 gap-3"></div>
+        
+        <!-- College Quick Add -->
+        <div class="bg-white border border-slate-200 rounded-[20px] p-5">
+          <h4 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-building-columns text-indigo-600"></i> College-wise Events</h4>
+          <p class="text-xs text-slate-500 mt-1">Add college name, details ellam neenga odd pannalam</p>
+          <div class="mt-4 space-y-2" id="collegeList"></div>
+          <button onclick="openCollegeModal()" class="mt-3 w-full py-2.5 rounded-full border-2 border-dashed border-slate-200 text-sm font-semibold text-slate-600 hover:border-indigo-300 hover:text-indigo-600 transition">
+            + Add New College
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Category Filter Bar -->
+<div class="sticky top-[72px] z-40 bg-[#F8FAFC]/80 backdrop-blur-xl border-y border-slate-200/60">
+  <div class="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8">
+    <div class="flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide">
+      <button onclick="filterCategory('all')" data-cat="all" class="category-pill whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold border bg-slate-900 text-white border-slate-900 category-active">
+        All Events <span class="ml-1 bg-white/20 px-1.5 py-0.5 rounded-full text-xs" id="count-all">0</span>
+      </button>
+      <div id="filterPills" class="flex items-center gap-2"></div>
+      <div class="ml-auto hidden md:flex items-center gap-2">
+        <select id="collegeFilter" onchange="applyFilters()" class="text-sm border border-slate-200 rounded-full px-3 py-2 bg-white outline-none">
+          <option value="all">All Colleges</option>
+        </select>
+        <select id="sortBy" onchange="applyFilters()" class="text-sm border border-slate-200 rounded-full px-3 py-2 bg-white outline-none">
+          <option value="latest">Latest First</option>
+          <option value="date">Date Wise</option>
+          <option value="popular">Most Participants</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8">
+  <!-- View: Home Events -->
+  <div id="view-home">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="outfit text-2xl font-bold" id="currentCategoryTitle">🌱 Social / Awareness Events</h2>
+        <p class="text-sm text-slate-500 mt-1" id="currentCategoryDesc">Teachers Day, Womens Day, Environment Day, Blood Donation, Tree Planting, NCC/NSS programmes...</p>
+      </div>
+      <div class="hidden md:flex items-center gap-2 text-xs text-slate-500">
+        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> <span id="liveCount">0 events live</span>
+      </div>
+    </div>
+    <div id="eventsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"></div>
+    <div id="emptyState" class="hidden text-center py-20 bg-white rounded-[24px] border border-dashed border-slate-200">
+      <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-2xl">🌱</div>
+      <h3 class="font-bold mt-4">No events in this category yet</h3>
+      <p class="text-sm text-slate-500 mt-1 max-w-[320px] mx-auto">College admin can add events here. Click Add Event to create your first event in this category.</p>
+      <button onclick="openAddModal()" class="mt-4 bg-indigo-600 text-white px-5 py-2.5 rounded-full text-sm font-semibold">+ Add Event Now</button>
+    </div>
+  </div>
+
+  <!-- View: All Events Table -->
+  <div id="view-events" class="hidden">
+    <div class="bg-white rounded-[20px] border border-slate-200 overflow-hidden">
+      <div class="p-5 border-b flex items-center justify-between">
+        <h3 class="font-bold outfit text-lg">All Events - Admin View</h3>
+        <div class="flex gap-2">
+          <button onclick="exportData()" class="px-3 py-1.5 bg-slate-100 rounded-full text-xs font-semibold"><i class="fa-solid fa-download mr-1"></i> Export JSON</button>
+          <label class="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-full text-xs font-semibold cursor-pointer"><i class="fa-solid fa-upload mr-1"></i> Import <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)"></label>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-[11px] uppercase tracking-widest text-slate-500 font-semibold">
+            <tr><th class="text-left px-5 py-3">Event</th><th class="text-left px-5 py-3">Category</th><th class="text-left px-5 py-3">College</th><th class="text-left px-5 py-3">Date</th><th class="text-left px-5 py-3">Status</th><th class="text-right px-5 py-3">Actions</th></tr>
+          </thead>
+          <tbody id="eventsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- View: Colleges -->
+  <div id="view-colleges" class="hidden">
+    <div class="grid md:grid-cols-3 gap-5" id="collegesGrid"></div>
+  </div>
+
+  <!-- View: Admission -->
+  <div id="view-admission" class="hidden">
+    <div class="grid lg:grid-cols-[1fr_380px] gap-6">
+      <div class="bg-white rounded-[24px] border p-6 md:p-8">
+        <div class="inline-flex px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase tracking-widest">Admission Open 2025-26</div>
+        <h2 class="outfit text-3xl font-bold mt-4">College Admission Portal</h2>
+        <p class="text-slate-500 mt-2 text-sm leading-relaxed">Manage admission enquiries along with events. Each college can add their own admission details, cutoffs, courses, and link events to admission campaigns.</p>
+        
+        <div class="grid md:grid-cols-2 gap-4 mt-8">
+          <div class="border rounded-2xl p-5">
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center"><i class="fa-solid fa-graduation-cap"></i></div>
+            <h4 class="font-bold mt-3">Courses Offered</h4>
+            <p class="text-xs text-slate-500 mt-1">B.E, B.Tech, Arts, Science, MBA - college can customize</p>
+            <div class="flex flex-wrap gap-1.5 mt-3" id="coursesTags"></div>
+          </div>
+          <div class="border rounded-2xl p-5">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-calendar-check"></i></div>
+            <h4 class="font-bold mt-3">Admission Events</h4>
+            <p class="text-xs text-slate-500 mt-1">Open House, Counselling, Campus Tour linked to events</p>
+            <button onclick="filterCategory('Academic')" class="mt-3 text-xs font-semibold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full">View Academic Events →</button>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <h4 class="font-bold">Recent Admission Enquiries</h4>
+          <div class="mt-3 space-y-2" id="enquiryList"></div>
+          <div class="mt-4 p-4 bg-slate-50 rounded-2xl border border-dashed">
+            <h5 class="font-semibold text-sm">Add Enquiry (Demo)</h5>
+            <div class="grid grid-cols-2 gap-2 mt-3">
+              <input id="enqName" placeholder="Student Name" class="border rounded-full px-4 py-2 text-sm">
+              <input id="enqCourse" placeholder="Interested Course" class="border rounded-full px-4 py-2 text-sm">
+              <input id="enqPhone" placeholder="Phone" class="border rounded-full px-4 py-2 text-sm col-span-2">
+            </div>
+            <button onclick="addEnquiry()" class="mt-3 w-full bg-slate-900 text-white py-2.5 rounded-full text-sm font-semibold">Submit Enquiry</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="bg-slate-900 text-white rounded-[24px] p-6">
+          <h4 class="outfit font-bold text-lg">How to add college details?</h4>
+          <ol class="mt-4 space-y-3 text-sm text-slate-300 list-decimal pl-5">
+            <li>Go to Colleges → Add New College</li>
+            <li>Fill college name, location, courses, contact</li>
+            <li>Then add events category-wise for that college</li>
+            <li>Details ellam neenga odd pannalam - fully customizable!</li>
+          </ol>
+          <div class="mt-6 p-3 bg-white/10 rounded-xl border border-white/10">
+            <div class="text-xs uppercase tracking-widest font-bold opacity-60">Tamil Note</div>
+            <p class="text-sm mt-1 leading-relaxed">Ithu maathiri thani thani category la events add pannalam. College wise filter panni paakalam. Admin mattum edit pannalam.</p>
+          </div>
+        </div>
+        <div class="bg-white border rounded-[24px] p-6">
+          <h4 class="font-bold">Quick Stats</h4>
+          <div class="mt-4 space-y-3 text-sm">
+            <div class="flex justify-between"><span class="text-slate-500">Total Enquiries</span><span class="font-bold" id="stat-enq">0</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">Admission Events</span><span class="font-bold" id="stat-adm-events">0</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">Active Colleges</span><span class="font-bold" id="stat-active-colleges">0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Add/Edit Event Modal -->
+<div id="eventModal" class="fixed inset-0 z-[100] hidden">
+  <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeAddModal()"></div>
+  <div class="relative max-w-[720px] mx-auto mt-[4vh] md:mt-[6vh] bg-white rounded-[24px] md:rounded-[28px] shadow-2xl max-h-[92vh] overflow-hidden flex flex-col">
+    <div class="px-6 md:px-8 py-5 border-b flex items-center justify-between bg-gradient-to-r from-indigo-50 to-violet-50">
+      <div>
+        <h3 class="outfit font-bold text-xl" id="modalTitle">Add New Event</h3>
+        <p class="text-xs text-slate-500 mt-1">Tani thani category la event add pannalam • College details customizable</p>
+      </div>
+      <button onclick="closeAddModal()" class="w-9 h-9 rounded-full bg-white border flex items-center justify-center hover:bg-slate-50"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-6 md:p-8">
+      <form id="eventForm" onsubmit="saveEvent(event)" class="space-y-5">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">College Name *</label>
+            <div class="flex gap-2 mt-1.5">
+              <select id="fCollege" class="flex-1 border border-slate-200 rounded-full px-4 py-3 text-sm bg-white outline-none focus:border-indigo-400" required>
+                <option value="">Select College</option>
+              </select>
+              <button type="button" onclick="openCollegeModal()" class="px-4 py-3 bg-slate-100 rounded-full text-xs font-bold hover:bg-slate-200">+ New</button>
+            </div>
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Category *</label>
+            <select id="fCategory" class="w-full mt-1.5 border border-slate-200 rounded-full px-4 py-3 text-sm bg-white outline-none focus:border-indigo-400" required></select>
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Event Status</label>
+            <select id="fStatus" class="w-full mt-1.5 border border-slate-200 rounded-full px-4 py-3 text-sm bg-white outline-none">
+              <option value="upcoming">Upcoming</option>
+              <option value="ongoing">Ongoing / Live</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Event Title *</label>
+            <input id="fTitle" required placeholder="e.g., Teachers' Day Celebration" class="w-full mt-1.5 border border-slate-200 rounded-full px-4 py-3 text-sm outline-none focus:border-indigo-400">
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Description</label>
+            <textarea id="fDesc" rows="3" placeholder="Event details, agenda, chief guest..." class="w-full mt-1.5 border border-slate-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-indigo-400 resize-none"></textarea>
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Date *</label>
+            <input id="fDate" type="date" required class="w-full mt-1.5 border border-slate-200 rounded-full px-4 py-3 text-sm outline-none">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Time</label>
+            <input id="fTime" type="time" class="w-full mt-1.5 border border-slate-200 rounded-full px-4 py-3 text-sm outline-none">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Venue</label>
+            <input id="fVenue" placeholder="e.g., Main Auditorium" class="w-full mt-1.5 border border-slate-200 rounded-full px-4 py-3 text-sm outline-none">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Organizer</label>
+            <input id="fOrganizer" placeholder="e.g., NCC / NSS / Dept" class="w-full mt-1.5 border border-slate-200 rounded-full px-4 py-3 text-sm outline-none">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Expected Participants</label>
+            <input id="fParticipants" type="number" placeholder="e.g., 150" class="w-full mt-1.5 border border-slate-200 rounded-full px-4 py-3 text-sm outline-none">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Contact / Registration Link</label>
+            <input id="fContact" placeholder="Phone or link" class="w-full mt-1.5 border border-slate-200 rounded-full px-4 py-3 text-sm outline-none">
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Image URL (optional)</label>
+            <input id="fImage" placeholder="https://..." class="w-full mt-1.5 border border-slate-200 rounded-full px-4 py-3 text-sm outline-none">
+            <p class="text-[11px] text-slate-400 mt-1">Leave empty for auto category icon</p>
+          </div>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeAddModal()" class="flex-1 py-3 rounded-full border border-slate-200 font-semibold text-sm">Cancel</button>
+          <button type="submit" class="flex-1 py-3 rounded-full bg-slate-900 text-white font-bold text-sm hover:bg-black transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-floppy-disk"></i> <span id="saveBtnText">Save Event</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- College Modal -->
+<div id="collegeModal" class="fixed inset-0 z-[101] hidden">
+  <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeCollegeModal()"></div>
+  <div class="relative max-w-[520px] mx-auto mt-[10vh] bg-white rounded-[24px] shadow-2xl overflow-hidden">
+    <div class="px-6 py-5 border-b flex items-center justify-between">
+      <h3 class="outfit font-bold text-lg">Add / Edit College</h3>
+      <button onclick="closeCollegeModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark text-sm"></i></button>
+    </div>
+    <form onsubmit="saveCollege(event)" class="p-6 space-y-4">
+      <input type="hidden" id="cId">
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">College Name *</label>
+        <input id="cName" required placeholder="e.g., Anna University" class="w-full mt-1.5 border rounded-full px-4 py-3 text-sm outline-none focus:border-indigo-400">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Location</label>
+          <input id="cLocation" placeholder="Chennai" class="w-full mt-1.5 border rounded-full px-4 py-3 text-sm outline-none">
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Type</label>
+          <select id="cType" class="w-full mt-1.5 border rounded-full px-4 py-3 text-sm bg-white">
+            <option>Engineering</option><option>Arts & Science</option><option>Medical</option><option>Management</option><option>Polytechnic</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Courses (comma separated)</label>
+        <input id="cCourses" placeholder="B.E CSE, B.Tech IT, MBA..." class="w-full mt-1.5 border rounded-full px-4 py-3 text-sm outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Contact Email / Phone</label>
+        <input id="cContact" placeholder="admission@college.edu" class="w-full mt-1.5 border rounded-full px-4 py-3 text-sm outline-none">
+      </div>
+      <button type="submit" class="w-full py-3 rounded-full bg-indigo-600 text-white font-bold text-sm">Save College</button>
+    </form>
+  </div>
+</div>
+
+<!-- Category Manager Modal -->
+<div id="catModal" class="fixed inset-0 z-[101] hidden">
+  <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeCategoryManager()"></div>
+  <div class="relative max-w-[560px] mx-auto mt-[8vh] bg-white rounded-[24px] shadow-2xl overflow-hidden">
+    <div class="px-6 py-5 border-b flex items-center justify-between">
+      <div><h3 class="outfit font-bold text-lg">Manage Categories</h3><p class="text-xs text-slate-500">Tani thani category add pannalam • Color & icon customize</p></div>
+      <button onclick="closeCategoryManager()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark text-sm"></i></button>
+    </div>
+    <div class="p-6">
+      <div id="catManagerList" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
+      <form onsubmit="addCategory(event)" class="mt-6 p-4 bg-slate-50 rounded-2xl border border-dashed flex gap-2 items-end">
+        <div class="flex-1">
+          <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">New Category Name</label>
+          <input id="newCatName" required placeholder="e.g., Alumni Events" class="w-full mt-1 border rounded-full px-4 py-2.5 text-sm">
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Icon</label>
+          <input id="newCatIcon" placeholder="🎓" class="w-16 mt-1 border rounded-full px-3 py-2.5 text-sm text-center">
+        </div>
+        <button class="px-5 py-2.5 bg-slate-900 text-white rounded-full text-sm font-bold">Add</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] hidden">
+  <div class="bg-slate-900 text-white px-5 py-3 rounded-full text-sm font-medium shadow-xl flex items-center gap-2">
+    <i class="fa-solid fa-check text-emerald-400"></i> <span id="toastMsg">Saved!</span>
+  </div>
+</div>
+
+<script>
+// ---------- DATA ----------
+const defaultCategories = [
+  { id: 'social', name: 'Social / Awareness', icon: '🌱', color: '#10B981', bg: 'bg-emerald-50', text: 'text-emerald-700', desc: "Teachers' Day, Women's Day, Environment Day, Blood Donation..." },
+  { id: 'technical', name: 'Technical', icon: '💻', color: '#4F46E5', bg: 'bg-indigo-50', text: 'text-indigo-700', desc: 'Hackathons, Workshops, Symposium, Coding Contests' },
+  { id: 'cultural', name: 'Cultural', icon: '🎭', color: '#EC4899', bg: 'bg-pink-50', text: 'text-pink-700', desc: 'Music, Dance, Drama, College Day, Fest' },
+  { id: 'sports', name: 'Sports', icon: '⚽', color: '#F59E0B', bg: 'bg-amber-50', text: 'text-amber-700', desc: 'Inter-college tournaments, Annual Sports Meet' },
+  { id: 'academic', name: 'Academic', icon: '📚', color: '#0EA5E9', bg: 'bg-sky-50', text: 'text-sky-700', desc: 'Seminars, Guest Lectures, Education Development Day' },
+  { id: 'placement', name: 'Placement & Career', icon: '💼', color: '#8B5CF6', bg: 'bg-violet-50', text: 'text-violet-700', desc: 'Placement drives, Career guidance, Internships' },
+];
+
+const defaultColleges = [
+  { id: 'c1', name: 'Anna University - CEG', location: 'Chennai', type: 'Engineering', courses: ['B.E CSE','B.Tech IT','M.E','MBA'], contact: 'admission@annauniv.edu' },
+  { id: 'c2', name: 'Madras Christian College', location: 'Chennai', type: 'Arts & Science', courses: ['B.Sc','B.A','M.Sc','B.Com'], contact: 'info@mcc.edu.in' },
+  { id: 'c3', name: 'PSG College of Technology', location: 'Coimbatore', type: 'Engineering', courses: ['B.E','B.Tech','MBA','MCA'], contact: 'admission@psgtech.ac.in' },
+];
+
+const defaultEvents = [
+  // Social / Awareness - as per user example
+  { id: 'e1', collegeId: 'c1', collegeName: 'Anna University - CEG', category: 'social', title: "Teachers' Day Celebration", desc: "Honoring our beloved teachers with cultural performances, awards, and gratitude ceremony. All departments participate.", date: '2025-09-05', time: '10:00', venue: 'Main Auditorium', organizer: 'Student Council', participants: 500, status: 'upcoming', contact: 'council@annauniv.edu', image: '' },
+  { id: 'e2', collegeId: 'c1', collegeName: 'Anna University - CEG', category: 'social', title: "Women's Day Celebration", desc: "Empowering women - panel discussion with women achievers, self-defense workshop, and cultural events.", date: '2025-03-08', time: '09:30', venue: 'Seminar Hall', organizer: 'Women Empowerment Cell', participants: 350, status: 'completed', contact: 'wec@annauniv.edu', image: '' },
+  { id: 'e3', collegeId: 'c2', collegeName: 'Madras Christian College', category: 'social', title: "World Environment Day", desc: "Tree planting, awareness rally, and pledge ceremony. Theme: Beat Plastic Pollution.", date: '2025-06-05', time: '08:00', venue: 'Campus Grounds', organizer: 'Eco Club', participants: 200, status: 'completed', contact: 'ecoclub@mcc.edu', image: '' },
+  { id: 'e4', collegeId: 'c3', collegeName: 'PSG College of Technology', category: 'social', title: "National Energy Conservation Day", desc: "Workshop on energy saving, poster making competition, and exhibition on renewable energy models.", date: '2025-12-14', time: '10:00', venue: 'EEE Dept', organizer: 'EEE Association', participants: 180, status: 'upcoming', contact: 'eee@psgtech.ac.in', image: '' },
+  { id: 'e5', collegeId: 'c1', collegeName: 'Anna University - CEG', category: 'social', title: "International Plastic Bag Free Day", desc: "Campus-wide campaign to avoid single-use plastic. Cloth bag distribution and awareness skit.", date: '2025-07-03', time: '09:00', venue: 'Campus Entrance', organizer: 'NSS Unit', participants: 300, status: 'upcoming', contact: 'nss@annauniv.edu', image: '' },
+  { id: 'e6', collegeId: 'c2', collegeName: 'Madras Christian College', category: 'social', title: "Education Development Day", desc: "Celebrating Kamarajar birthday - educational exhibition, book donation drive, and scholarship distribution.", date: '2025-07-15', time: '10:30', venue: 'Library Hall', organizer: 'Academic Council', participants: 250, status: 'upcoming', contact: 'library@mcc.edu', image: '' },
+  { id: 'e7', collegeId: 'c1', collegeName: 'Anna University - CEG', category: 'social', title: "Blood Donation Camp", desc: "Mega blood donation camp in collaboration with Government Hospital. Donate blood, save life!", date: '2025-09-20', time: '08:30', venue: 'Medical Center', organizer: 'NSS & Youth Red Cross', participants: 400, status: 'ongoing', contact: 'yrc@annauniv.edu', image: '' },
+  { id: 'e8', collegeId: 'c3', collegeName: 'PSG College of Technology', category: 'social', title: "Tree Planting Activities", desc: "500 saplings plantation drive inside campus and nearby villages as part of Green Campus initiative.", date: '2025-08-15', time: '07:00', venue: 'Hostel Grounds', organizer: 'NCC Unit', participants: 120, status: 'upcoming', contact: 'ncc@psgtech.ac.in', image: '' },
+  { id: 'e9', collegeId: 'c2', collegeName: 'Madras Christian College', category: 'social', title: "Coastal Cleaning Drive", desc: "Beach cleaning at Marina - 2km stretch. Jointly organized with Environmental Foundation.", date: '2025-09-25', time: '06:00', venue: 'Marina Beach', organizer: 'NSS Awareness Programme', participants: 80, status: 'upcoming', contact: 'nss@mcc.edu', image: '' },
+  { id: 'e10', collegeId: 'c1', collegeName: 'Anna University - CEG', category: 'social', title: "NCC / NSS Awareness Programmes", desc: "Orientation for first years about NCC/NSS benefits, enrollment drive, and social service pledge.", date: '2025-08-10', time: '11:00', venue: 'Open Air Theatre', organizer: 'NCC & NSS', participants: 600, status: 'completed', contact: 'nccnss@annauniv.edu', image: '' },
+  // Other categories samples
+  { id: 'e11', collegeId: 'c1', collegeName: 'Anna University - CEG', category: 'technical', title: "Smart India Hackathon 2025", desc: "36-hour national level hackathon. Problem statements from govt & industry.", date: '2025-10-10', time: '09:00', venue: 'CS Block', organizer: 'CSE Dept', participants: 300, status: 'upcoming', contact: 'hack@annauniv.edu', image: '' },
+  { id: 'e12', collegeId: 'c3', collegeName: 'PSG College of Technology', category: 'cultural', title: "Cultural Fest - Kriya 2025", desc: "Inter-college cultural extravaganza with dance, music, drama and fashion show.", date: '2025-11-05', time: '18:00', venue: 'Main Ground', organizer: 'Cultural Committee', participants: 2000, status: 'upcoming', contact: 'cultural@psgtech.ac.in', image: '' },
+  { id: 'e13', collegeId: 'c2', collegeName: 'Madras Christian College', category: 'sports', title: "Annual Sports Meet", desc: "Track and field events, football, basketball championships.", date: '2025-12-01', time: '08:00', venue: 'Sports Complex', organizer: 'Physical Education Dept', participants: 800, status: 'upcoming', contact: 'sports@mcc.edu', image: '' },
+  { id: 'e14', collegeId: 'c1', collegeName: 'Anna University - CEG', category: 'academic', title: "International Conference on AI", desc: "Keynote by industry leaders, paper presentations, research expo.", date: '2025-10-20', time: '09:00', venue: 'Convention Center', organizer: 'CSE & IT Dept', participants: 400, status: 'upcoming', contact: 'conf@annauniv.edu', image: '' },
+  { id: 'e15', collegeId: 'c3', collegeName: 'PSG College of Technology', category: 'placement', title: "Mega Placement Drive - TCS, Infosys", desc: "On-campus drive for final year. Aptitude, technical, HR rounds.", date: '2025-09-15', time: '08:30', venue: 'Placement Cell', organizer: 'Placement Office', participants: 600, status: 'ongoing', contact: 'placement@psgtech.ac.in', image: '' },
+];
+
+let categories = JSON.parse(localStorage.getItem('cc_categories') || 'null') || defaultCategories;
+let colleges = JSON.parse(localStorage.getItem('cc_colleges') || 'null') || defaultColleges;
+let events = JSON.parse(localStorage.getItem('cc_events') || 'null') || defaultEvents;
+let enquiries = JSON.parse(localStorage.getItem('cc_enquiries') || '[]');
+
+let currentFilter = 'social'; // default to social as per user request
+let currentSearch = '';
+let editingEventId = null;
+let isAdmin = localStorage.getItem('cc_admin') === 'true';
+
+// ---------- INIT ----------
+function init() {
+  renderCategories();
+  renderCollegeOptions();
+  renderCollegeList();
+  renderFilterPills();
+  applyFilters();
+  renderCollegesPage();
+  renderAdmissionPage();
+  updateStats();
+  // set default active pill
+  document.querySelectorAll('.category-pill').forEach(p => {
+    if(p.dataset.cat === currentFilter) p.classList.add('category-active');
+    else p.classList.remove('category-active');
+  });
+  // set hero to social
+  const socialCat = categories.find(c=>c.id==='social');
+  if(socialCat) {
+    document.getElementById('currentCategoryTitle').innerHTML = `${socialCat.icon} ${socialCat.name} Events`;
+    document.getElementById('currentCategoryDesc').textContent = socialCat.desc + ' • College can add custom details';
+  }
+}
+
+function saveToStorage() {
+  localStorage.setItem('cc_categories', JSON.stringify(categories));
+  localStorage.setItem('cc_colleges', JSON.stringify(colleges));
+  localStorage.setItem('cc_events', JSON.stringify(events));
+  localStorage.setItem('cc_enquiries', JSON.stringify(enquiries));
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = events.length;
+  document.getElementById('stat-colleges').textContent = colleges.length;
+  document.getElementById('stat-categories').textContent = categories.length;
+  document.getElementById('count-all').textContent = events.length;
+  document.getElementById('liveCount').textContent = events.filter(e=>e.status!=='completed').length + ' events live';
+  // per category counts
+  categories.forEach(cat => {
+    const el = document.getElementById('count-'+cat.id);
+    if(el) el.textContent = events.filter(e=>e.category===cat.id).length;
+  });
+  // admission stats
+  document.getElementById('stat-enq').textContent = enquiries.length;
+  document.getElementById('stat-adm-events').textContent = events.filter(e=>e.category==='academic' || e.category==='placement').length;
+  document.getElementById('stat-active-colleges').textContent = colleges.length;
+}
+
+// ---------- CATEGORIES ----------
+function renderCategories() {
+  const grid = document.getElementById('categoryGrid');
+  grid.innerHTML = categories.map(cat => {
+    const count = events.filter(e=>e.category===cat.id).length;
+    return `
+    <button onclick="filterCategory('${cat.id}')" class="group text-left bg-white border border-slate-200 rounded-[18px] p-4 flex items-center gap-4 hover:border-indigo-200 hover:shadow-md transition card-hover">
+      <div class="w-12 h-12 rounded-xl ${cat.bg} flex items-center justify-center text-xl">${cat.icon}</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-bold text-[14px] leading-tight truncate">${cat.name}</div>
+        <div class="text-[11px] text-slate-500 mt-0.5 line-clamp-1">${cat.desc}</div>
+        <div class="flex items-center gap-2 mt-2">
+          <span class="text-[11px] font-bold ${cat.text} bg-slate-50 px-2 py-0.5 rounded-full border">${count} events</span>
+          <span class="text-[11px] text-slate-400 hidden group-hover:inline">View →</span>
+        </div>
+      </div>
+      <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-slate-500 text-xs"></i>
+    </button>`;
+  }).join('');
+}
+
+function renderFilterPills() {
+  const container = document.getElementById('filterPills');
+  container.innerHTML = categories.map(cat => {
+    const count = events.filter(e=>e.category===cat.id).length;
+    return `<button onclick="filterCategory('${cat.id}')" data-cat="${cat.id}" class="category-pill whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium border bg-white border-slate-200 hover:border-slate-300 transition">
+      <span class="mr-1">${cat.icon}</span> ${cat.name} <span class="ml-1 bg-slate-100 px-1.5 py-0.5 rounded-full text-xs" id="count-${cat.id}">${count}</span>
+    </button>`;
+  }).join('');
+
+  // category dropdown in modal
+  const sel = document.getElementById('fCategory');
+  sel.innerHTML = categories.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+}
+
+function filterCategory(catId) {
+  currentFilter = catId;
+  document.querySelectorAll('.category-pill').forEach(p=>{
+    if(p.dataset.cat===catId) { p.classList.add('category-active','bg-slate-900','text-white','border-slate-900'); p.classList.remove('bg-white'); }
+    else { p.classList.remove('category-active','bg-slate-900','text-white','border-slate-900'); p.classList.add('bg-white'); }
+  });
+  const titleEl = document.getElementById('currentCategoryTitle');
+  const descEl = document.getElementById('currentCategoryDesc');
+  if(catId==='all') {
+    titleEl.innerHTML = `🎉 All Events`;
+    descEl.textContent = `Showing all ${events.length} events across ${categories.length} categories • Filter by college or search`;
+  } else {
+    const cat = categories.find(c=>c.id===catId);
+    titleEl.innerHTML = `${cat.icon} ${cat.name} Events`;
+    descEl.textContent = cat.desc + ' • College can customize details';
+  }
+  applyFilters();
+  setView('home');
+  window.scrollTo({top: document.getElementById('hero').offsetHeight + 80, behavior: 'smooth'});
+}
+
+function openCategoryManager() {
+  document.getElementById('catModal').classList.remove('hidden');
+  renderCatManager();
+}
+function closeCategoryManager(){ document.getElementById('catModal').classList.add('hidden'); }
+function renderCatManager(){
+  document.getElementById('catManagerList').innerHTML = categories.map(cat=>`
+    <div class="flex items-center justify-between p-3 border rounded-xl bg-white">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg ${cat.bg} flex items-center justify-center">${cat.icon}</div>
+        <div><div class="font-semibold text-sm">${cat.name}</div><div class="text-[11px] text-slate-500">${cat.desc}</div></div>
+      </div>
+      <button onclick="deleteCategory('${cat.id}')" class="w-8 h-8 rounded-full bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100"><i class="fa-solid fa-trash text-xs"></i></button>
+    </div>
+  `).join('');
+}
+function addCategory(e){
+  e.preventDefault();
+  const name = document.getElementById('newCatName').value.trim();
+  const icon = document.getElementById('newCatIcon').value.trim() || '📌';
+  if(!name) return;
+  const id = name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  if(categories.find(c=>c.id===id)) { toast('Category already exists!'); return; }
+  categories.push({ id, name, icon, color:'#4F46E5', bg:'bg-slate-50', text:'text-slate-700', desc:'Custom category - college can add details' });
+  saveToStorage();
+  renderCategories(); renderFilterPills(); renderCatManager(); updateStats();
+  document.getElementById('newCatName').value=''; document.getElementById('newCatIcon').value='';
+  toast('Category added!');
+}
+function deleteCategory(id){
+  if(categories.length<=1) { toast('At least one category required'); return; }
+  if(!confirm('Delete this category? Events will remain but become uncategorized.')) return;
+  categories = categories.filter(c=>c.id!==id);
+  events = events.map(ev=> ev.category===id ? {...ev, category:'social'} : ev);
+  saveToStorage(); renderCategories(); renderFilterPills(); renderCatManager(); applyFilters(); updateStats();
+  toast('Category deleted');
+}
+
+// ---------- COLLEGES ----------
+function renderCollegeOptions(){
+  const sel = document.getElementById('fCollege');
+  const filterSel = document.getElementById('collegeFilter');
+  sel.innerHTML = '<option value="">Select College</option>' + colleges.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  filterSel.innerHTML = '<option value="all">All Colleges</option>' + colleges.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+}
+function renderCollegeList(){
+  document.getElementById('collegeList').innerHTML = colleges.slice(0,4).map(c=>`
+    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-8 h-8 rounded-full bg-white border flex items-center justify-center text-[11px] font-bold">${c.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+        <div class="min-w-0"><div class="font-semibold text-xs truncate max-w-[140px]">${c.name}</div><div class="text-[10px] text-slate-500">${c.location} • ${events.filter(e=>e.collegeId===c.id).length} events</div></div>
+      </div>
+      <button onclick="filterByCollege('${c.id}')" class="text-[11px] font-bold text-indigo-600 hover:underline">View</button>
+    </div>
+  `).join('');
+}
+function filterByCollege(id){
+  document.getElementById('collegeFilter').value=id;
+  applyFilters();
+  setView('home');
+}
+function openCollegeModal(collegeId=null){
+  document.getElementById('collegeModal').classList.remove('hidden');
+  if(collegeId){
+    const c = colleges.find(x=>x.id===collegeId);
+    document.getElementById('cId').value=c.id;
+    document.getElementById('cName').value=c.name;
+    document.getElementById('cLocation').value=c.location;
+    document.getElementById('cType').value=c.type;
+    document.getElementById('cCourses').value=c.courses.join(', ');
+    document.getElementById('cContact').value=c.contact;
+  } else {
+    document.getElementById('cId').value='';
+    document.getElementById('cName').value='';
+    document.getElementById('cLocation').value='';
+    document.getElementById('cType').value='Engineering';
+    document.getElementById('cCourses').value='';
+    document.getElementById('cContact').value='';
+  }
+}
+function closeCollegeModal(){ document.getElementById('collegeModal').classList.add('hidden'); }
+function saveCollege(e){
+  e.preventDefault();
+  const id = document.getElementById('cId').value || 'c'+Date.now();
+  const college = {
+    id,
+    name: document.getElementById('cName').value.trim(),
+    location: document.getElementById('cLocation').value.trim() || 'Tamil Nadu',
+    type: document.getElementById('cType').value,
+    courses: document.getElementById('cCourses').value.split(',').map(s=>s.trim()).filter(Boolean),
+    contact: document.getElementById('cContact').value.trim()
+  };
+  const idx = colleges.findIndex(c=>c.id===id);
+  if(idx>=0) colleges[idx]=college; else colleges.push(college);
+  saveToStorage(); renderCollegeOptions(); renderCollegeList(); renderCollegesPage(); updateStats();
+  closeCollegeModal(); toast('College saved! Details customizable');
+}
+function renderCollegesPage(){
+  document.getElementById('collegesGrid').innerHTML = colleges.map(c=>`
+    <div class="bg-white border rounded-[20px] p-5 card-hover">
+      <div class="flex items-start justify-between">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white flex items-center justify-center font-bold outfit">${c.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+        <div class="flex gap-1">
+          <button onclick="openCollegeModal('${c.id}')" class="w-8 h-8 rounded-full bg-slate-50 border flex items-center justify-center hover:bg-slate-100"><i class="fa-solid fa-pen text-xs"></i></button>
+          <button onclick="deleteCollege('${c.id}')" class="w-8 h-8 rounded-full bg-red-50 border border-red-100 text-red-600 flex items-center justify-center hover:bg-red-100"><i class="fa-solid fa-trash text-xs"></i></button>
+        </div>
+      </div>
+      <h3 class="font-bold mt-4 leading-tight">${c.name}</h3>
+      <div class="flex items-center gap-2 mt-1 text-xs text-slate-500"><i class="fa-solid fa-location-dot"></i> ${c.location} • ${c.type}</div>
+      <div class="mt-3 flex flex-wrap gap-1.5">${c.courses.map(course=>`<span class="text-[10px] bg-slate-100 border px-2 py-1 rounded-full font-medium">${course}</span>`).join('')}</div>
+      <div class="mt-4 pt-4 border-t flex items-center justify-between">
+        <div class="text-xs"><span class="font-bold text-sm">${events.filter(e=>e.collegeId===c.id).length}</span> <span class="text-slate-500">events</span></div>
+        <div class="flex gap-2">
+          <button onclick="document.getElementById('collegeFilter').value='${c.id}'; applyFilters(); setView('home')" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-full">View Events</button>
+        </div>
+      </div>
+      <div class="mt-3 text-[11px] text-slate-400 truncate"><i class="fa-solid fa-envelope mr-1"></i>${c.contact}</div>
+    </div>
+  `).join('');
+
+  // courses tags for admission
+  const allCourses = [...new Set(colleges.flatMap(c=>c.courses))].slice(0,12);
+  document.getElementById('coursesTags').innerHTML = allCourses.map(cs=>`<span class="text-[11px] bg-indigo-50 text-indigo-700 border border-indigo-100 px-2.5 py-1 rounded-full font-medium">${cs}</span>`).join('');
+}
+function deleteCollege(id){
+  if(!confirm('Delete college and its events?')) return;
+  colleges = colleges.filter(c=>c.id!==id);
+  events = events.filter(e=>e.collegeId!==id);
+  saveToStorage(); renderCollegeOptions(); renderCollegeList(); renderCollegesPage(); applyFilters(); updateStats();
+  toast('College deleted');
+}
+
+// ---------- EVENTS ----------
+function handleSearch(val){ currentSearch = val.toLowerCase(); applyFilters(); }
+
+function applyFilters(){
+  let filtered = [...events];
+  if(currentFilter!=='all') filtered = filtered.filter(e=>e.category===currentFilter);
+  const collegeFilter = document.getElementById('collegeFilter').value;
+  if(collegeFilter!=='all') filtered = filtered.filter(e=>e.collegeId===collegeFilter);
+  if(currentSearch) {
+    filtered = filtered.filter(e=> 
+      e.title.toLowerCase().includes(currentSearch) ||
+      e.desc.toLowerCase().includes(currentSearch) ||
+      e.collegeName.toLowerCase().includes(currentSearch) ||
+      e.category.toLowerCase().includes(currentSearch) ||
+      e.venue.toLowerCase().includes(currentSearch) ||
+      e.organizer.toLowerCase().includes(currentSearch)
+    );
+  }
+  const sortBy = document.getElementById('sortBy').value;
+  if(sortBy==='latest') filtered.sort((a,b)=> new Date(b.date)-new Date(a.date));
+  else if(sortBy==='date') filtered.sort((a,b)=> new Date(a.date)-new Date(b.date));
+  else if(sortBy==='popular') filtered.sort((a,b)=> b.participants - a.participants);
+
+  renderEventsGrid(filtered);
+  renderEventsTable(filtered);
+}
+
+function renderEventsGrid(list){
+  const grid = document.getElementById('eventsGrid');
+  const empty = document.getElementById('emptyState');
+  if(list.length===0){ grid.innerHTML=''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  grid.innerHTML = list.map(ev=>{
+    const cat = categories.find(c=>c.id===ev.category) || categories[0];
+    const statusColor = ev.status==='ongoing' ? 'bg-emerald-500' : ev.status==='upcoming' ? 'bg-amber-500' : ev.status==='completed' ? 'bg-slate-400' : 'bg-red-500';
+    const statusText = ev.status==='ongoing' ? 'LIVE' : ev.status.toUpperCase();
+    const dateObj = new Date(ev.date);
+    const dateStr = dateObj.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+    return `
+    <div class="bg-white border border-slate-200 rounded-[20px] overflow-hidden card-hover group flex flex-col">
+      <div class="relative h-[160px] bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden">
+        ${ev.image ? `<img src="${ev.image}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">` : `
+          <div class="w-full h-full flex items-center justify-center relative">
+            <div class="absolute inset-0 opacity-10" style="background: radial-gradient(circle at 30% 20%, ${cat.color}, transparent 60%)"></div>
+            <div class="text-[64px]">${cat.icon}</div>
+          </div>`}
+        <div class="absolute top-3 left-3 flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-white/90 backdrop-blur-md border shadow-sm ${cat.text}">${cat.icon} ${cat.name}</span>
+          <span class="px-2 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase text-white ${statusColor} flex items-center gap-1"><span class="w-1.5 h-1.5 bg-white rounded-full ${ev.status==='ongoing'?'animate-pulse':''}"></span>${statusText}</span>
+        </div>
+        <div class="absolute top-3 right-3 flex gap-1.5">
+          <button onclick="editEvent('${ev.id}')" class="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md border shadow-sm flex items-center justify-center hover:bg-white transition"><i class="fa-solid fa-pen text-[11px]"></i></button>
+          <button onclick="deleteEvent('${ev.id}')" class="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md border shadow-sm flex items-center justify-center hover:bg-red-50 text-red-600 transition"><i class="fa-solid fa-trash text-[11px]"></i></button>
+        </div>
+        <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+          <div class="bg-slate-900/80 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[11px] font-medium flex items-center gap-1.5"><i class="fa-solid fa-calendar"></i> ${dateStr} ${ev.time? '• '+ev.time : ''}</div>
+          <div class="bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-users text-slate-500"></i> ${ev.participants || 0}</div>
+        </div>
+      </div>
+      <div class="p-4 flex-1 flex flex-col">
+        <h3 class="font-bold text-[15px] leading-tight line-clamp-2">${ev.title}</h3>
+        <p class="text-[13px] text-slate-500 mt-2 line-clamp-2 leading-relaxed">${ev.desc || 'No description added. College can customize details.'}</p>
+        <div class="mt-3 space-y-1.5">
+          <div class="flex items-center gap-2 text-[11px] text-slate-600"><i class="fa-solid fa-building-columns w-3 text-slate-400"></i> <span class="truncate font-medium">${ev.collegeName}</span></div>
+          <div class="flex items-center gap-2 text-[11px] text-slate-600"><i class="fa-solid fa-location-dot w-3 text-slate-400"></i> ${ev.venue || 'Venue TBD'} • ${ev.organizer || 'Organizer TBD'}</div>
+        </div>
+        <div class="mt-auto pt-4 flex items-center gap-2">
+          <button onclick="viewEvent('${ev.id}')" class="flex-1 py-2.5 rounded-full bg-slate-900 text-white text-xs font-bold hover:bg-black transition">View Details</button>
+          <button onclick="duplicateEvent('${ev.id}')" class="px-3 py-2.5 rounded-full bg-slate-100 border text-xs font-semibold hover:bg-slate-200 transition"><i class="fa-solid fa-copy"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderEventsTable(list){
+  document.getElementById('eventsTableBody').innerHTML = list.map(ev=>{
+    const cat = categories.find(c=>c.id===ev.category);
+    return `<tr class="border-b hover:bg-slate-50">
+      <td class="px-5 py-3"><div class="font-semibold text-sm line-clamp-1">${ev.title}</div><div class="text-[11px] text-slate-500">${ev.venue}</div></td>
+      <td class="px-5 py-3"><span class="px-2 py-1 rounded-full text-[11px] font-bold border ${cat?.bg} ${cat?.text}">${cat?.icon||''} ${cat?.name||ev.category}</span></td>
+      <td class="px-5 py-3 text-xs">${ev.collegeName}</td>
+      <td class="px-5 py-3 text-xs">${ev.date}</td>
+      <td class="px-5 py-3"><span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${ev.status==='ongoing'?'bg-emerald-100 text-emerald-700': ev.status==='upcoming'?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-600'}">${ev.status}</span></td>
+      <td class="px-5 py-3 text-right"><div class="flex justify-end gap-1"><button onclick="editEvent('${ev.id}')" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200"><i class="fa-solid fa-pen text-[10px]"></i></button><button onclick="deleteEvent('${ev.id}')" class="w-7 h-7 rounded-full bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100"><i class="fa-solid fa-trash text-[10px]"></i></button></div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ---------- MODAL LOGIC ----------
+function openAddModal(eventId=null){
+  document.getElementById('eventModal').classList.remove('hidden');
+  if(eventId){
+    editingEventId = eventId;
+    const ev = events.find(e=>e.id===eventId);
+    document.getElementById('modalTitle').textContent='Edit Event';
+    document.getElementById('saveBtnText').textContent='Update Event';
+    document.getElementById('fCollege').value=ev.collegeId;
+    document.getElementById('fCategory').value=ev.category;
+    document.getElementById('fStatus').value=ev.status;
+    document.getElementById('fTitle').value=ev.title;
+    document.getElementById('fDesc').value=ev.desc;
+    document.getElementById('fDate').value=ev.date;
+    document.getElementById('fTime').value=ev.time;
+    document.getElementById('fVenue').value=ev.venue;
+    document.getElementById('fOrganizer').value=ev.organizer;
+    document.getElementById('fParticipants').value=ev.participants;
+    document.getElementById('fContact').value=ev.contact;
+    document.getElementById('fImage').value=ev.image;
+  } else {
+    editingEventId=null;
+    document.getElementById('modalTitle').textContent='Add New Event';
+    document.getElementById('saveBtnText').textContent='Save Event';
+    document.getElementById('eventForm').reset();
+    document.getElementById('fCategory').value=currentFilter!=='all'? currentFilter : 'social';
+    document.getElementById('fDate').valueAsDate = new Date();
+  }
+}
+function closeAddModal(){ document.getElementById('eventModal').classList.add('hidden'); }
+function saveEvent(e){
+  e.preventDefault();
+  const collegeId = document.getElementById('fCollege').value;
+  if(!collegeId){ toast('Select college first'); return; }
+  const college = colleges.find(c=>c.id===collegeId);
+  const evData = {
+    id: editingEventId || 'e'+Date.now(),
+    collegeId,
+    collegeName: college.name,
+    category: document.getElementById('fCategory').value,
+    title: document.getElementById('fTitle').value.trim(),
+    desc: document.getElementById('fDesc').value.trim(),
+    date: document.getElementById('fDate').value,
+    time: document.getElementById('fTime').value,
+    venue: document.getElementById('fVenue').value.trim(),
+    organizer: document.getElementById('fOrganizer').value.trim(),
+    participants: parseInt(document.getElementById('fParticipants').value) || 0,
+    status: document.getElementById('fStatus').value,
+    contact: document.getElementById('fContact').value.trim(),
+    image: document.getElementById('fImage').value.trim()
+  };
+  if(editingEventId){
+    const idx = events.findIndex(x=>x.id===editingEventId);
+    events[idx]=evData;
+  } else {
+    events.unshift(evData);
+  }
+  saveToStorage(); applyFilters(); renderCollegeList(); renderCollegesPage(); updateStats();
+  closeAddModal(); toast(editingEventId ? 'Event updated!' : 'Event added successfully!');
+}
+function editEvent(id){ openAddModal(id); }
+function deleteEvent(id){
+  if(!isAdmin && !confirm('Delete this event? (Admin mode recommended)')) return;
+  if(isAdmin || confirm('Are you sure to delete?')) {
+    events = events.filter(e=>e.id!==id);
+    saveToStorage(); applyFilters(); renderCollegeList(); renderCollegesPage(); updateStats();
+    toast('Event deleted');
+  }
+}
+function duplicateEvent(id){
+  const ev = events.find(e=>e.id===id);
+  const copy = {...ev, id:'e'+Date.now(), title: ev.title+' (Copy)', date: new Date().toISOString().split('T')[0], status:'upcoming'};
+  events.unshift(copy);
+  saveToStorage(); applyFilters(); updateStats(); toast('Event duplicated!');
+}
+function viewEvent(id){
+  const ev = events.find(e=>e.id===id);
+  const cat = categories.find(c=>c.id===ev.category);
+  alert(`📅 ${ev.title}\n\n${cat.icon} ${cat.name} • ${ev.collegeName}\n📍 ${ev.venue} • ${ev.date} ${ev.time}\n👥 ${ev.participants} participants • Organizer: ${ev.organizer}\n\n${ev.desc}\n\nContact: ${ev.contact}\nStatus: ${ev.status.toUpperCase()}`);
+}
+
+// ---------- VIEWS ----------
+function setView(view){
+  document.getElementById('view-home').classList.add('hidden');
+  document.getElementById('view-events').classList.add('hidden');
+  document.getElementById('view-colleges').classList.add('hidden');
+  document.getElementById('view-admission').classList.add('hidden');
+  document.getElementById('view-'+view).classList.remove('hidden');
+  document.getElementById('hero').style.display = view==='home' ? 'block' : 'none';
+  document.querySelectorAll('.nav-btn').forEach(b=>{ b.classList.remove('bg-white','shadow-sm'); b.classList.add('text-slate-600'); });
+  const active = document.getElementById('nav-'+view);
+  if(active){ active.classList.add('bg-white','shadow-sm'); active.classList.remove('text-slate-600'); }
+  document.getElementById('mobileMenu').classList.add('hidden');
+}
+
+// ---------- ADMIN ----------
+function toggleAdmin(){
+  if(isAdmin){
+    isAdmin=false; localStorage.setItem('cc_admin','false');
+    document.getElementById('adminToggle').innerHTML='<i class="fa-solid fa-user-shield text-slate-600"></i>';
+    document.getElementById('adminToggle').classList.remove('bg-indigo-600','text-white');
+    toast('Admin mode off');
+  } else {
+    const pwd = prompt('Enter admin password (hint: admin123)');
+    if(pwd==='admin123'){
+      isAdmin=true; localStorage.setItem('cc_admin','true');
+      document.getElementById('adminToggle').innerHTML='<i class="fa-solid fa-user-shield"></i>';
+      document.getElementById('adminToggle').classList.add('bg-indigo-600','text-white');
+      toast('Admin mode on - you can edit all');
+    } else if(pwd!==null) toast('Wrong password');
+  }
+}
+if(isAdmin){
+  document.getElementById('adminToggle').innerHTML='<i class="fa-solid fa-user-shield"></i>';
+  document.getElementById('adminToggle').classList.add('bg-indigo-600','text-white');
+}
+
+// ---------- ADMISSION ----------
+function renderAdmissionPage(){
+  document.getElementById('enquiryList').innerHTML = enquiries.slice(0,5).map(en=>`
+    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border">
+      <div><div class="font-semibold text-sm">${en.name}</div><div class="text-[11px] text-slate-500">${en.course} • ${en.phone}</div></div>
+      <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-bold">${en.date}</span>
+    </div>
+  `).join('') || '<div class="text-xs text-slate-400 p-3">No enquiries yet</div>';
+}
+function addEnquiry(){
+  const name = document.getElementById('enqName').value.trim();
+  const course = document.getElementById('enqCourse').value.trim();
+  const phone = document.getElementById('enqPhone').value.trim();
+  if(!name||!course) { toast('Fill name & course'); return; }
+  enquiries.unshift({ name, course, phone, date: new Date().toLocaleDateString() });
+  saveToStorage(); renderAdmissionPage(); updateStats();
+  document.getElementById('enqName').value=''; document.getElementById('enqCourse').value=''; document.getElementById('enqPhone').value='';
+  toast('Enquiry added!');
+}
+
+// ---------- UTILS ----------
+function exportData(){
+  const data = { categories, colleges, events, enquiries, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=`campus-events-${new Date().toISOString().split('T')[0]}.json`; a.click();
+  toast('Exported JSON!');
+}
+function importData(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(data.categories) categories=data.categories;
+      if(data.colleges) colleges=data.colleges;
+      if(data.events) events=data.events;
+      if(data.enquiries) enquiries=data.enquiries;
+      saveToStorage(); init(); toast('Imported successfully!');
+    }catch(err){ toast('Invalid file'); }
+  };
+  reader.readAsText(file);
+}
+function toast(msg){
+  document.getElementById('toastMsg').textContent=msg;
+  const t = document.getElementById('toast');
+  t.classList.remove('hidden');
+  setTimeout(()=>t.classList.add('hidden'), 3000);
+}
+
+// Init
+init();
+</script>
+</body>
+</html>
