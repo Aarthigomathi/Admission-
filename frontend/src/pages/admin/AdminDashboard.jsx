@@ -2176,11 +2176,6 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/30 p-5">
-            <div className="font-bold text-[13px] text-[#1A3263]">⚠️ Verification Status - Read Only</div>
-            <div className="text-[12px] text-[#547792] mt-2">Your college verification status is <span className="font-bold text-[#1A3263]">{settingsForm.verificationStatus}</span> - Only Platform Admin can change this. Contact support if needed.</div>
-          </div>
-
           <button onClick={handleSaveSettings} className="h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Save size={18} /> Save Settings - Real-time Website Update</button>
         </div>
        </div>
