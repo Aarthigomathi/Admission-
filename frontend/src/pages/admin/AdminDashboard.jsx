@@ -1469,64 +1469,59 @@ export default function AdminDashboard() {
      {activeSection==='management' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Users size={22} className="text-[#FAB95B]" /> Management & Trustees</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add management and trustee information</p>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Users size={22} className="text-[#FAB95B]" /> Management & Trustees - Real-Time Working</h3>
+            <p className="text-[12px] text-[#547792] mt-2">Add management members - Chairman, Secretary, Trustees, Correspondent - image odu real-time website la theriyum</p>
+          </div>
+          <span className="px-3 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">{(allCustomData.management||[]).length} Members</span>
+        </div>
 
-        <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
-         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add New Management Member</h4>
-         <div className="mt-4 grid md:grid-cols-2 gap-4">
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add New Management Member - Image + Details</h4>
+         <div className="mt-6 grid md:grid-cols-2 gap-5">
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Name *</label><input value={managementForm.name} onChange={e=>setManagementForm({...managementForm, name: e.target.value})} placeholder="e.g. Dr. R. Kumar" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-bold" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Designation * - Chairman / Secretary / Trustee</label><input value={managementForm.designation} onChange={e=>setManagementForm({...managementForm, designation: e.target.value})} placeholder="e.g. Chairman, Secretary, Correspondent, Trustee" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] font-bold" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Email</label><input value={managementForm.email} onChange={e=>setManagementForm({...managementForm, email: e.target.value})} placeholder="chairman@yourcollege.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone</label><input value={managementForm.phone} onChange={e=>setManagementForm({...managementForm, phone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
           <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Name *</label>
-           <input value={managementForm.name} onChange={e=>setManagementForm({...managementForm, name: e.target.value})} placeholder="e.g. Dr. R. Kumar - Chairman" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Designation *</label>
-           <input value={managementForm.designation} onChange={e=>setManagementForm({...managementForm, designation: e.target.value})} placeholder="e.g. Chairman, Secretary, Trustee" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Email</label>
-           <input value={managementForm.email} onChange={e=>setManagementForm({...managementForm, email: e.target.value})} placeholder="chairman@yourcollege.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone</label>
-           <input value={managementForm.phone} onChange={e=>setManagementForm({...managementForm, phone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Image - Upload or URL</label>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><ImageIcon size={12} className="text-[#FAB95B]" /> Image - Upload or URL - Real-time</label>
            <div className="mt-2 flex gap-2">
-            <input value={managementForm.image} onChange={e=>setManagementForm({...managementForm, image: e.target.value})} placeholder="Paste image URL" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-            <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
-              <Upload size={12} /> Upload
-              <input type="file" accept="image/*" className="hidden" onChange={handleManagementImageUpload} />
-            </label>
+            <input value={managementForm.image} onChange={e=>setManagementForm({...managementForm, image: e.target.value})} placeholder="Paste image URL or upload" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleManagementImageUpload} /></label>
            </div>
           </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label>
-           <input value={managementForm.description} onChange={e=>setManagementForm({...managementForm, description: e.target.value})} placeholder="Short bio, achievements" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Bio, Achievements</label><textarea value={managementForm.description} onChange={e=>setManagementForm({...managementForm, description: e.target.value})} placeholder="Short bio, education, achievements, message..." rows={3} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y min-h-[80px]" /></div>
+          {managementForm.image && (
+            <div className="md:col-span-2">
+              <div className="rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-[#E8E2DB]/30 p-2 flex gap-4 items-center">
+                <img src={managementForm.image} className="h-20 w-20 rounded-[12px] object-cover border-2 border-white shadow" alt="Preview" />
+                <div><div className="font-bold text-[13px] text-[#1A3263]">{managementForm.name || 'Preview'} - {managementForm.designation || 'Designation'}</div><div className="text-[11px] text-[#547792]">Image preview - will show on website Management section</div></div>
+              </div>
+            </div>
+          )}
          </div>
-         <button onClick={handleAddManagement} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Management Member</button>
+         <button onClick={handleAddManagement} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2 shadow hover:bg-[#1A3263]/90"><Plus size={18} /> Add Management Member - Real-time</button>
         </div>
 
         <div className="mt-8">
-         <h4 className="font-bold text-[#1A3263]">Management - {(allCustomData.management||[]).length}</h4>
+         <h4 className="font-bold text-[#1A3263]">Management - {(allCustomData.management||[]).length} Members Added</h4>
          {(allCustomData.management||[]).length===0 ? (
           <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
            <div className="text-3xl">👥</div>
            <div className="font-bold text-[#1A3263] mt-3">No management members added yet</div>
-           <div className="text-[12px] text-[#547792] mt-2">Add management details for your college</div>
+           <div className="text-[12px] text-[#547792] mt-2">Add Chairman, Secretary, Trustees - image odu - real-time website la theriyum</div>
           </div>
          ) : (
           <div className="mt-4 grid md:grid-cols-2 gap-4">
            {allCustomData.management.map(member=>(
             <div key={member.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-5 flex gap-4 hover:border-[#FAB95B]/40 transition-colors">
-             {member.image ? <img src={member.image} className="h-16 w-16 rounded-[12px] object-cover border-2 border-[#E8E2DB] shrink-0" alt={member.name} /> : <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] grid place-items-center text-[#1A3263] font-bold text-[20px]">{member.name[0]}</div>}
+             {member.image ? <img src={member.image} className="h-20 w-20 rounded-[12px] object-cover border-2 border-[#E8E2DB] shrink-0" alt={member.name} /> : <div className="h-20 w-20 rounded-[12px] bg-[#E8E2DB] grid place-items-center text-[#1A3263] font-bold text-[20px]">{member.name[0]}</div>}
              <div className="flex-1 min-w-0">
-              <div className="font-bold text-[13px] text-[#1A3263]">{member.name}</div>
+              <div className="font-bold text-[14px] text-[#1A3263]">{member.name}</div>
               <div className="mt-1 inline-flex px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{member.designation}</div>
-              <div className="text-[11px] text-[#547792] mt-2">{member.email} • {member.phone}</div>
-              <div className="text-[11px] text-[#1A3263]/60 mt-1">{member.description}</div>
+              <div className="text-[11px] text-[#547792] mt-2">{member.email} {member.phone ? `• ${member.phone}` : ''}</div>
+              <div className="text-[11px] text-[#1A3263]/60 mt-1 line-clamp-2">{member.description}</div>
              </div>
              <button onClick={()=>handleDelete('management', member.id)} className="h-8 w-8 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center text-[#547792] hover:border-red-200 hover:text-red-600 shrink-0"><Trash2 size={12} /></button>
             </div>
