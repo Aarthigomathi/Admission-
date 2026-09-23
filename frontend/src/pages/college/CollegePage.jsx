@@ -141,7 +141,11 @@ function CustomCollegePage({ college, customData }) {
   const about = customData.about || college.about || {}
   const management = customData.management || []
   const principal = customData.principal || customData.principalDetails || college.principal || null
-  const principalFromStorage = customData.principalDetails || customData.principal
+  const researchCentres = customData.researchCentres || customData.research || []
+  const accreditations = customData.accreditations || []
+  const campusEnv = customData.campusEnvironment || customData.campus || []
+  const library = customData.library || null
+  const sports = customData.sports || []
 
   const hasContent = (arr) => arr && arr.length > 0
 
@@ -417,6 +421,136 @@ function CustomCollegePage({ college, customData }) {
             </div>
           ) : (
             <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Facilities information will be updated soon</div>
+          )}
+        </section>
+
+        {/* Research & Centres */}
+        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🔬 Research & Centres - {researchCentres.length}</h2>
+          {hasContent(researchCentres) ? (
+            <div className="mt-6 grid md:grid-cols-2 gap-6">
+              {researchCentres.map(rc=>(
+                <div key={rc.id} className="rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white hover:border-[#FAB95B]/40 transition-colors">
+                  {rc.image && <img src={rc.image} className="h-[180px] w-full object-cover" alt={rc.name} />}
+                  <div className="p-5">
+                    <div className="font-bold text-[16px] text-[#1A3263]">{rc.name}</div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <span className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{rc.type}</span>
+                      {rc.year && <span className="px-3 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[11px]">{rc.year}</span>}
+                      {rc.funding && <span className="px-3 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px]">{rc.funding}</span>}
+                    </div>
+                    {rc.coordinator && <div className="text-[12px] text-[#547792] mt-3"><span className="font-bold text-[#1A3263]">Coordinator:</span> {rc.coordinator}</div>}
+                    {rc.description && <div className="text-[12px] text-[#1A3263]/80 mt-3 leading-[1.6]">{rc.description}</div>}
+                    {rc.facilities && <div className="mt-3 rounded-[10px] bg-[#E8E2DB]/50 border border-[#E8E2DB] p-3 text-[11px] text-[#547792]"><span className="font-bold text-[#1A3263]">Facilities:</span> {rc.facilities}</div>}
+                    {rc.achievements && <div className="mt-2 rounded-[10px] bg-[#1A3263] text-white p-3 text-[11px]"><span className="font-bold text-[#FAB95B]">Achievements:</span> <span className="text-[#E8E2DB]/80">{rc.achievements}</span></div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Research centres information will be updated soon</div>
+          )}
+        </section>
+
+        {/* Accreditation */}
+        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🏅 Accreditation - {accreditations.length}</h2>
+          {hasContent(accreditations) ? (
+            <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {accreditations.map(acc=>(
+                <div key={acc.id} className="rounded-[16px] border-2 border-[#FAB95B]/30 bg-[#FAB95B]/10 p-5 hover:border-[#FAB95B]/60 transition-colors">
+                  <div className="flex gap-3">
+                    {acc.image ? <img src={acc.image} className="h-16 w-16 rounded-[10px] object-cover border-2 border-white bg-white shadow" alt={acc.name} /> : <div className="h-16 w-16 rounded-[10px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold text-[20px]">{acc.name[0]}</div>}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-[14px] text-[#1A3263]">{acc.name}</div>
+                      <div className="mt-1 inline-flex px-3 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">{acc.grade}</div>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-1 text-[11px] text-[#1A3263]/80">
+                    {acc.agency && <div><span className="font-bold">Agency:</span> {acc.agency}</div>}
+                    <div><span className="font-bold">Year:</span> {acc.year} {acc.validTill && `• Valid till ${acc.validTill}`}</div>
+                    {acc.description && <div className="mt-2 text-[11px] leading-[1.5]">{acc.description}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Accreditation information will be updated soon</div>
+          )}
+        </section>
+
+        {/* Campus & Environment */}
+        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🌳 Campus & Environment - {campusEnv.length}</h2>
+          {hasContent(campusEnv) ? (
+            <div className="mt-6 space-y-6">
+              {campusEnv.map(c=>(
+                <div key={c.id} className="rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white">
+                  {c.images && c.images.length>0 && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-1 p-1 bg-[#E8E2DB]">
+                      {c.images.slice(0,4).map((img,i)=><img key={i} src={img.url||img} className="h-[140px] w-full object-cover rounded-[8px]" alt={c.title} />)}
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <div className="font-bold text-[18px] text-[#1A3263]">{c.title} {c.area && <span className="text-[#FAB95B]">• {c.area}</span>}</div>
+                    {c.description && <div className="text-[13px] text-[#1A3263]/80 mt-3 leading-[1.7]">{c.description}</div>}
+                    <div className="mt-4 grid md:grid-cols-2 gap-4">
+                      {c.environment && <div className="rounded-[12px] bg-[#1A3263] text-white p-4"><div className="font-bold text-[#FAB95B] text-[12px]">Environment</div><div className="text-[12px] text-[#E8E2DB]/80 mt-2 leading-[1.6]">{c.environment}</div></div>}
+                      {c.greenInitiatives && <div className="rounded-[12px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4"><div className="font-bold text-[#1A3263] text-[12px]">Green Initiatives</div><div className="text-[12px] text-[#1A3263]/80 mt-2 leading-[1.6]">{c.greenInitiatives}</div></div>}
+                    </div>
+                    {c.facilities && <div className="mt-4 text-[12px] text-[#547792]"><span className="font-bold text-[#1A3263]">Facilities:</span> {c.facilities}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Campus & Environment information will be updated soon</div>
+          )}
+        </section>
+
+        {/* Library */}
+        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">📚 Library</h2>
+          {library ? (
+            <div className="mt-6 rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white">
+              <div className="grid md:grid-cols-[320px_1fr] gap-0">
+                {library.image && <img src={library.image} className="h-[280px] md:h-full w-full object-cover" alt="Library" />}
+                <div className="p-6">
+                  <div className="grid grid-cols-2 gap-3">
+                    {library.totalBooks && <div className="rounded-[12px] bg-[#1A3263] text-white p-4 text-center"><div className="font-bold text-[20px] text-[#FAB95B]">{library.totalBooks}</div><div className="text-[11px] text-white/70 uppercase">Books</div></div>}
+                    {library.journals && <div className="rounded-[12px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4 text-center"><div className="font-bold text-[14px] text-[#1A3263]">{library.journals}</div><div className="text-[11px] text-[#547792] uppercase">Journals</div></div>}
+                  </div>
+                  {library.digitalResources && <div className="mt-4 rounded-[10px] bg-[#E8E2DB]/50 p-3 text-[12px]"><span className="font-bold text-[#1A3263]">Digital:</span> {library.digitalResources}</div>}
+                  {library.timings && <div className="mt-2 text-[12px] text-[#547792]"><span className="font-bold text-[#1A3263]">Timings:</span> {library.timings} {library.librarian && `• Librarian: ${library.librarian}`}</div>}
+                  {library.description && <div className="text-[13px] text-[#1A3263]/80 mt-4 leading-[1.7]">{library.description}</div>}
+                  {library.facilities && <div className="mt-3 rounded-[10px] bg-[#1A3263]/5 border border-[#E8E2DB] p-3 text-[11px] text-[#547792]"><span className="font-bold text-[#1A3263]">Facilities:</span> {library.facilities}</div>}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Library information will be updated soon</div>
+          )}
+        </section>
+
+        {/* Sports */}
+        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">⚽ Sports - {sports.length}</h2>
+          {hasContent(sports) ? (
+            <div className="mt-6 grid md:grid-cols-2 gap-4">
+              {sports.map(s=>(
+                <div key={s.id} className="rounded-[16px] border-2 border-[#E8E2DB] overflow-hidden bg-white hover:border-[#FAB95B]/40">
+                  {s.image && <img src={s.image} className="h-[160px] w-full object-cover" alt={s.name} />}
+                  <div className="p-4">
+                    <div className="font-bold text-[14px] text-[#1A3263]">{s.name} {s.coach && <span className="text-[#547792] font-normal">• Coach {s.coach}</span>}</div>
+                    {s.description && <div className="text-[12px] text-[#1A3263]/70 mt-2 leading-[1.6]">{s.description}</div>}
+                    {s.facilities && <div className="mt-2 text-[11px] text-[#547792]"><span className="font-bold">Facilities:</span> {s.facilities}</div>}
+                    {s.achievements && <div className="mt-2 rounded-[8px] bg-[#FAB95B]/20 p-2 text-[11px] text-[#1A3263]"><span className="font-bold">Achievements:</span> {s.achievements}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Sports information will be updated soon</div>
           )}
         </section>
 

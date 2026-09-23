@@ -26,7 +26,12 @@ export default function AdminDashboard() {
  const [announcementForm, setAnnouncementForm] = useState({ title: '', date: '', category: '', description: '' })
  const [hostelForm, setHostelForm] = useState({ name: '', type: 'Boys', capacity: '', fees: '', facilities: '', description: '', images: [] })
  const [newHostelImageUrl, setNewHostelImageUrl] = useState('')
- const [accreditationForm, setAccreditationForm] = useState({ name: '', grade: '', year: '', validTill: '' })
+ const [accreditationForm, setAccreditationForm] = useState({ name: '', grade: '', year: '', validTill: '', agency: '', description: '', image: '' })
+ const [researchForm, setResearchForm] = useState({ name: '', type: 'Centre of Excellence', funding: '', year: '', coordinator: '', description: '', facilities: '', achievements: '', image: '' })
+ const [campusForm, setCampusForm] = useState({ title: '', area: '', description: '', environment: '', greenInitiatives: '', facilities: '', images: [] })
+ const [newCampusImageUrl, setNewCampusImageUrl] = useState('')
+ const [libraryForm, setLibraryForm] = useState({ totalBooks: '', journals: '', digitalResources: '', timings: '', librarian: '', description: '', facilities: '', image: '' })
+ const [sportsForm, setSportsForm] = useState({ name: '', coach: '', description: '', facilities: '', achievements: '', image: '' })
  const [managementForm, setManagementForm] = useState({ name: '', designation: '', image: '', email: '', phone: '', description: '' })
  const [principalForm, setPrincipalForm] = useState({ name: '', designation: 'Principal', qualification: '', experience: '', image: '', message: '', detailedBio: '', email: '', phone: '', bio: '', research: '', publications: '', awards: '' })
  const [aboutForm, setAboutForm] = useState({ fullText: '', vision: '', mission: '' })
@@ -69,6 +74,9 @@ export default function AdminDashboard() {
      })
    } else if (fullCollege.principalName) {
      setPrincipalForm(prev => ({ ...prev, name: fullCollege.principalName }))
+   }
+   if (custom.library) {
+     setLibraryForm(custom.library)
    }
    setIsLoggedIn(true)
   }
@@ -197,7 +205,104 @@ export default function AdminDashboard() {
   const updated = [...list, { id: Date.now(), ...accreditationForm }]
   saveCollegeData(selectedCollegeId, 'accreditations', updated)
   setCustomData({ ...customData, accreditations: updated })
-  setAccreditationForm({ name: '', grade: '', year: '', validTill: '' })
+  setAccreditationForm({ name: '', grade: '', year: '', validTill: '', agency: '', description: '', image: '' })
+ }
+
+ const handleAccreditationImageUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setAccreditationForm({ ...accreditationForm, image: ev.target.result })
+  reader.readAsDataURL(file)
+ }
+
+ const handleAddResearch = () => {
+  if (!researchForm.name) return alert("Research Centre name required")
+  const list = customData.researchCentres || customData.research || []
+  const updated = [...list, { id: Date.now(), ...researchForm, createdAt: new Date().toISOString() }]
+  saveCollegeData(selectedCollegeId, 'researchCentres', updated)
+  saveCollegeData(selectedCollegeId, 'research', updated)
+  setCustomData({ ...customData, researchCentres: updated, research: updated })
+  setResearchForm({ name: '', type: 'Centre of Excellence', funding: '', year: '', coordinator: '', description: '', facilities: '', achievements: '', image: '' })
+  alert(`Research Centre ${researchForm.name} added!`)
+ }
+
+ const handleResearchImageUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setResearchForm({ ...researchForm, image: ev.target.result })
+  reader.readAsDataURL(file)
+ }
+
+ const handleAddCampus = () => {
+  if (!campusForm.title) return alert("Campus title required")
+  const list = customData.campusEnvironment || customData.campus || []
+  const updated = [...list, { id: Date.now(), ...campusForm, createdAt: new Date().toISOString() }]
+  saveCollegeData(selectedCollegeId, 'campusEnvironment', updated)
+  saveCollegeData(selectedCollegeId, 'campus', updated)
+  setCustomData({ ...customData, campusEnvironment: updated, campus: updated })
+  setCampusForm({ title: '', area: '', description: '', environment: '', greenInitiatives: '', facilities: '', images: [] })
+  setNewCampusImageUrl('')
+  alert(`Campus ${campusForm.title} added!`)
+ }
+
+ const handleAddCampusImage = () => {
+  if (!newCampusImageUrl) return alert("Enter image URL")
+  setCampusForm({ ...campusForm, images: [...(campusForm.images||[]), { id: Date.now(), url: newCampusImageUrl }] })
+  setNewCampusImageUrl('')
+ }
+
+ const handleRemoveCampusImage = (id) => {
+  setCampusForm({ ...campusForm, images: (campusForm.images||[]).filter(img => img.id !== id) })
+ }
+
+ const handleCampusImageUpload = (e) => {
+  const files = Array.from(e.target.files || [])
+  if ((campusForm.images||[]).length + files.length > 10) return alert("Maximum 10 images allowed per campus entry")
+  files.forEach(file => {
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      setCampusForm(prev => {
+        if ((prev.images||[]).length >= 10) return prev
+        return { ...prev, images: [...(prev.images||[]), { id: Date.now()+Math.random(), url: ev.target.result }] }
+      })
+    }
+    reader.readAsDataURL(file)
+  })
+ }
+
+ const handleSaveLibrary = () => {
+  if (!libraryForm.totalBooks && !libraryForm.description) return alert("Add at least books count or description")
+  saveCollegeData(selectedCollegeId, 'library', libraryForm)
+  setCustomData({ ...customData, library: libraryForm })
+  alert("Library details saved! Your college website updated")
+ }
+
+ const handleLibraryImageUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setLibraryForm({ ...libraryForm, image: ev.target.result })
+  reader.readAsDataURL(file)
+ }
+
+ const handleSaveSports = () => {
+  if (!sportsForm.name && !sportsForm.description) return alert("Add sports name or description")
+  const list = customData.sports || []
+  const updated = [...list, { id: Date.now(), ...sportsForm, createdAt: new Date().toISOString() }]
+  saveCollegeData(selectedCollegeId, 'sports', updated)
+  setCustomData({ ...customData, sports: updated })
+  setSportsForm({ name: '', coach: '', description: '', facilities: '', achievements: '', image: '' })
+  alert(`Sports ${sportsForm.name || 'details'} added!`)
+ }
+
+ const handleSportsImageUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setSportsForm({ ...sportsForm, image: ev.target.result })
+  reader.readAsDataURL(file)
  }
 
  const handleAddManagement = () => {
@@ -408,11 +513,11 @@ export default function AdminDashboard() {
   { id: 'facilities', label: 'Facilities', icon: Layers, count: `${(allCustomData.customFacilities||[]).length}` },
   { id: 'hostel', label: 'Hostel', icon: Home, count: `${(allCustomData.hostels||[]).length}` },
   { id: 'placements', label: 'Placements', icon: Briefcase, count: `${(allCustomData.placements||[]).length} Records`, highlight: true },
-  { id: 'research', label: 'Research & Centres', icon: Microscope },
+  { id: 'research', label: 'Research & Centres', icon: Microscope, count: `${(allCustomData.researchCentres||allCustomData.research||[]).length}` },
   { id: 'accreditation', label: 'Accreditation', icon: Award, count: `${(allCustomData.accreditations||[]).length}` },
-  { id: 'campus', label: 'Campus & Environment', icon: MapPin },
-  { id: 'library', label: 'Library', icon: Library },
-  { id: 'sports', label: 'Sports', icon: Heart },
+  { id: 'campus', label: 'Campus & Environment', icon: MapPin, count: `${(allCustomData.campusEnvironment||allCustomData.campus||[]).length}` },
+  { id: 'library', label: 'Library', icon: Library, count: allCustomData.library ? 'Added' : '' },
+  { id: 'sports', label: 'Sports', icon: Heart, count: `${(allCustomData.sports||[]).length}` },
   { id: 'events', label: 'Events', icon: Calendar, count: `${(allCustomData.events||[]).length}`, highlight: true },
   { id: 'gallery', label: 'Gallery', icon: Camera, count: `${(allCustomData.gallery||[]).length} Images`, highlight: true },
   { id: 'announcements', label: 'Announcements', icon: Bell, count: `${(allCustomData.announcements||[]).length}` },
@@ -1380,28 +1485,303 @@ export default function AdminDashboard() {
       </div>
      )}
 
-     {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics','management','principal'].includes(activeSection) && (
+     {activeSection==='research' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Microscope className="text-[#FAB95B]" /> Research & Centres</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add Research Centres, Centres of Excellence, Labs - with images real-time working</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add Research Centre / Centre of Excellence</h4>
+         <div className="mt-8 space-y-6">
+          <div className="grid md:grid-cols-2 gap-5">
+           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Centre Name *</label><input value={researchForm.name} onChange={e=>setResearchForm({...researchForm, name: e.target.value})} placeholder="e.g. Centre for AI & Robotics, PSG-STEIN Centre" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
+           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Type</label><select value={researchForm.type} onChange={e=>setResearchForm({...researchForm, type: e.target.value})} className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px]"><option>Centre of Excellence</option><option>Research Centre</option><option>Advanced Lab</option><option>Innovation Centre</option><option>Incubation Centre</option></select></div>
+           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Funding / Sponsor</label><input value={researchForm.funding} onChange={e=>setResearchForm({...researchForm, funding: e.target.value})} placeholder="e.g. DST 50L, Industry sponsored" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Year Established</label><input value={researchForm.year} onChange={e=>setResearchForm({...researchForm, year: e.target.value})} placeholder="e.g. 2020" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+           <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Coordinator</label><input value={researchForm.coordinator} onChange={e=>setResearchForm({...researchForm, coordinator: e.target.value})} placeholder="e.g. Dr. Coordinator Name" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Centre Image - Upload or URL</label>
+           <div className="mt-2 flex gap-3">
+            <input value={researchForm.image} onChange={e=>setResearchForm({...researchForm, image: e.target.value})} placeholder="Paste centre image URL" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-12 px-5 rounded-[14px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-2 cursor-pointer"><Upload size={14} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleResearchImageUpload} /></label>
+           </div>
+           {researchForm.image && <div className="mt-3"><img src={researchForm.image} className="h-24 w-full rounded-[12px] object-cover border-2 border-[#E8E2DB]" alt="Research preview" /></div>}
+          </div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Large Field</label><textarea value={researchForm.description} onChange={e=>setResearchForm({...researchForm, description: e.target.value})} placeholder="Enter detailed description: objectives, focus areas, research domains, collaboration with industries, projects..." rows={6} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[140px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label><textarea value={researchForm.facilities} onChange={e=>setResearchForm({...researchForm, facilities: e.target.value})} placeholder="Lab equipments, software, hardware, instruments..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Achievements</label><textarea value={researchForm.achievements} onChange={e=>setResearchForm({...researchForm, achievements: e.target.value})} placeholder="Projects completed, patents, publications, products developed, funding received..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+         </div>
+         <button onClick={handleAddResearch} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Plus size={18} /> Add Research Centre</button>
+        </div>
+
+        <div className="mt-8">
+         <h4 className="font-bold text-[#1A3263]">Research Centres - {(allCustomData.researchCentres||allCustomData.research||[]).length}</h4>
+         {((allCustomData.researchCentres||allCustomData.research||[]).length===0) ? (
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20"><div className="text-3xl">🔬</div><div className="font-bold text-[#1A3263] mt-3">No research centres added yet</div><div className="text-[12px] text-[#547792] mt-2">Add your research centres with images</div></div>
+         ) : (
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+           {(allCustomData.researchCentres||allCustomData.research||[]).map(r=>(
+            <div key={r.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] overflow-hidden hover:border-[#FAB95B]/40">
+             {r.image && <img src={r.image} className="h-[140px] w-full object-cover" alt={r.name} />}
+             <div className="p-4">
+              <div className="flex justify-between"><div className="font-bold text-[13px] text-[#1A3263]">{r.name}</div><button onClick={()=>handleDelete('researchCentres', r.id)} className="h-7 w-7 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={10} /></button></div>
+              <div className="mt-1 flex gap-1.5 flex-wrap"><span className="px-2 py-0.5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[10px] font-bold">{r.type}</span>{r.year && <span className="px-2 py-0.5 rounded-full bg-[#E8E2DB] text-[10px]">{r.year}</span>}{r.funding && <span className="px-2 py-0.5 rounded-full bg-white border text-[10px]">{r.funding}</span>}</div>
+              <div className="text-[11px] text-[#547792] mt-2 line-clamp-3">{r.description}</div>
+             </div>
+            </div>
+           ))}
+          </div>
+         )}
+        </div>
+       </div>
+      </div>
+     )}
+
+     {activeSection==='accreditation' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Award className="text-[#FAB95B]" /> Accreditation</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add NAAC, NBA, NIRF, UGC, AICTE accreditation details with certificate image</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add Accreditation</h4>
+         <div className="mt-6 grid md:grid-cols-2 gap-5">
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Accreditation Name *</label><input value={accreditationForm.name} onChange={e=>setAccreditationForm({...accreditationForm, name: e.target.value})} placeholder="e.g. NAAC, NBA, NIRF Ranking, ISO" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Grade / Rank</label><input value={accreditationForm.grade} onChange={e=>setAccreditationForm({...accreditationForm, grade: e.target.value})} placeholder="e.g. A++, Rank 45, Tier 1" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Agency</label><input value={accreditationForm.agency} onChange={e=>setAccreditationForm({...accreditationForm, agency: e.target.value})} placeholder="e.g. UGC, AICTE, NBA" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Year</label><input value={accreditationForm.year} onChange={e=>setAccreditationForm({...accreditationForm, year: e.target.value})} placeholder="e.g. 2023" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Valid Till</label><input value={accreditationForm.validTill} onChange={e=>setAccreditationForm({...accreditationForm, validTill: e.target.value})} placeholder="e.g. 2028" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div className="md:col-span-1">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Certificate Image</label>
+           <div className="mt-2 flex gap-2">
+            <input value={accreditationForm.image} onChange={e=>setAccreditationForm({...accreditationForm, image: e.target.value})} placeholder="Certificate URL" className="flex-1 h-12 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-12 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleAccreditationImageUpload} /></label>
+           </div>
+          </div>
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={accreditationForm.description} onChange={e=>setAccreditationForm({...accreditationForm, description: e.target.value})} placeholder="Details about accreditation, score, CGPA, validity..." rows={3} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+         </div>
+         <button onClick={handleAddAccreditation} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Accreditation</button>
+        </div>
+
+        <div className="mt-8">
+         <h4 className="font-bold text-[#1A3263]">Accreditations - {(allCustomData.accreditations||[]).length}</h4>
+         {(allCustomData.accreditations||[]).length===0 ? (
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🏅</div><div className="font-bold text-[#1A3263] mt-3">No accreditations added yet</div></div>
+         ) : (
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+           {(allCustomData.accreditations||[]).map(a=>(
+            <div key={a.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-4 flex gap-3">
+             {a.image ? <img src={a.image} className="h-16 w-16 rounded-[10px] object-cover border-2 border-[#E8E2DB]" alt={a.name} /> : <div className="h-16 w-16 rounded-[10px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold">{a.name[0]}</div>}
+             <div className="flex-1"><div className="font-bold text-[13px] text-[#1A3263]">{a.name} - {a.grade}</div><div className="text-[11px] text-[#547792] mt-1">{a.agency} • {a.year} - {a.validTill}</div><div className="text-[11px] text-[#1A3263]/60 mt-1">{a.description?.slice(0,80)}</div></div>
+             <button onClick={()=>handleDelete('accreditations', a.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button>
+            </div>
+           ))}
+          </div>
+         )}
+        </div>
+       </div>
+      </div>
+     )}
+
+     {activeSection==='campus' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><MapPin className="text-[#FAB95B]" /> Campus & Environment</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add campus details, green campus, environment initiatives with images real-time</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add Campus & Environment</h4>
+         <div className="mt-6 space-y-5">
+          <div className="grid md:grid-cols-2 gap-5">
+           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Campus Title *</label><input value={campusForm.title} onChange={e=>setCampusForm({...campusForm, title: e.target.value})} placeholder="e.g. Green Campus, Main Campus 45 Acres" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
+           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Area</label><input value={campusForm.area} onChange={e=>setCampusForm({...campusForm, area: e.target.value})} placeholder="e.g. 45 Acres, 10 Acres" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          </div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Large Field</label><textarea value={campusForm.description} onChange={e=>setCampusForm({...campusForm, description: e.target.value})} placeholder="Campus description - buildings, infrastructure, location, connectivity..." rows={5} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[120px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Environment & Green Campus</label><textarea value={campusForm.environment} onChange={e=>setCampusForm({...campusForm, environment: e.target.value})} placeholder="Green initiatives - tree plantation, rain water harvesting, solar power, waste management, plastic free campus..." rows={4} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Green Initiatives</label><textarea value={campusForm.greenInitiatives} onChange={e=>setCampusForm({...campusForm, greenInitiatives: e.target.value})} placeholder="Solar panels 100KW, 1000+ trees, STP plant, e-vehicles, paperless office..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities in Campus</label><input value={campusForm.facilities} onChange={e=>setCampusForm({...campusForm, facilities: e.target.value})} placeholder="Canteen, Bank, ATM, Post Office, Dispensary, Transport..." className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+
+          <div className="space-y-4">
+           <h5 className="font-bold text-[13px] uppercase tracking-wide text-[#1A3263] border-b-2 border-[#E8E2DB] pb-2 flex items-center gap-2"><Camera size={14} className="text-[#FAB95B]" /> Campus Images - Multiple</h5>
+           <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/30 p-5">
+            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Add Campus Images - URL or Upload (Up to 10)</label>
+            <div className="mt-3 flex gap-2">
+             <input value={newCampusImageUrl} onChange={e=>setNewCampusImageUrl(e.target.value)} placeholder="Paste campus image URL" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+             <button onClick={handleAddCampusImage} className="h-12 px-5 rounded-[14px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-1.5"><Plus size={14} /> Add</button>
+            </div>
+            <div className="mt-3">
+             <label className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 text-[#1A3263] font-bold text-[12px] flex items-center justify-center gap-2 cursor-pointer hover:border-[#FAB95B]">
+               <Upload size={14} /> Upload Multiple ({(campusForm.images||[]).length}/10)
+               <input type="file" accept="image/*" multiple className="hidden" onChange={handleCampusImageUpload} />
+             </label>
+            </div>
+            {(campusForm.images||[]).length>0 && (
+             <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
+               {(campusForm.images||[]).map((img, idx)=>(
+                 <div key={img.id} className="relative rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-white"><img src={img.url} className="h-[100px] w-full object-cover" alt={`Campus ${idx+1}`} /><button onClick={()=>handleRemoveCampusImage(img.id)} className="absolute top-1 right-1 h-6 w-6 rounded-full bg-red-500 text-white grid place-items-center"><Trash2 size={10} /></button></div>
+               ))}
+             </div>
+            )}
+           </div>
+          </div>
+         </div>
+         <button onClick={handleAddCampus} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Plus size={18} /> Add Campus</button>
+        </div>
+
+        <div className="mt-8">
+         <h4 className="font-bold text-[#1A3263]">Campus & Environment - {(allCustomData.campusEnvironment||allCustomData.campus||[]).length}</h4>
+         {((allCustomData.campusEnvironment||allCustomData.campus||[]).length===0) ? (
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🌳</div><div className="font-bold text-[#1A3263] mt-3">No campus details added yet</div></div>
+         ) : (
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+           {(allCustomData.campusEnvironment||allCustomData.campus||[]).map(c=>(
+            <div key={c.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] overflow-hidden">
+             {c.images && c.images.length>0 && <div className="grid grid-cols-3 gap-1 p-1 bg-[#E8E2DB]">{c.images.slice(0,3).map((img,i)=><img key={i} src={img.url||img} className="h-[70px] w-full object-cover rounded-[8px]" alt="Campus" />)}</div>}
+             <div className="p-4 flex justify-between gap-3"><div className="flex-1"><div className="font-bold text-[13px] text-[#1A3263]">{c.title} {c.area && `• ${c.area}`}</div><div className="text-[11px] text-[#547792] mt-2 line-clamp-3">{c.description}</div><div className="text-[10px] text-[#1A3263]/60 mt-2">{c.facilities}</div></div><button onClick={()=>handleDelete('campusEnvironment', c.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button></div>
+            </div>
+           ))}
+          </div>
+         )}
+        </div>
+       </div>
+      </div>
+     )}
+
+     {activeSection==='library' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Library className="text-[#FAB95B]" /> Library</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add library details with image - real-time working</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><BookOpen size={18} /> Library Information</h4>
+         <div className="mt-6 grid md:grid-cols-2 gap-5">
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Total Books</label><input value={libraryForm.totalBooks} onChange={e=>setLibraryForm({...libraryForm, totalBooks: e.target.value})} placeholder="e.g. 50000, 2.6 Lakhs" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Journals</label><input value={libraryForm.journals} onChange={e=>setLibraryForm({...libraryForm, journals: e.target.value})} placeholder="e.g. 200 Journals, 1000 e-journals" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Digital Resources</label><input value={libraryForm.digitalResources} onChange={e=>setLibraryForm({...libraryForm, digitalResources: e.target.value})} placeholder="e.g. KOHA, Digital Library 100 systems" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Timings</label><input value={libraryForm.timings} onChange={e=>setLibraryForm({...libraryForm, timings: e.target.value})} placeholder="e.g. 8AM - 8PM" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Librarian</label><input value={libraryForm.librarian} onChange={e=>setLibraryForm({...libraryForm, librarian: e.target.value})} placeholder="Librarian name" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div className="md:col-span-2">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Library Image</label>
+           <div className="mt-2 flex gap-2">
+            <input value={libraryForm.image} onChange={e=>setLibraryForm({...libraryForm, image: e.target.value})} placeholder="Library image URL" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-12 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleLibraryImageUpload} /></label>
+           </div>
+           {libraryForm.image && <img src={libraryForm.image} className="mt-3 h-32 w-full rounded-[12px] object-cover border-2 border-[#E8E2DB]" alt="Library" />}
+          </div>
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Large Field</label><textarea value={libraryForm.description} onChange={e=>setLibraryForm({...libraryForm, description: e.target.value})} placeholder="Library description - sections, book bank, SWAYAM, digital learning, reference section, etc" rows={6} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[140px]" /></div>
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label><textarea value={libraryForm.facilities} onChange={e=>setLibraryForm({...libraryForm, facilities: e.target.value})} placeholder="Reading halls, digital library, OPAC, reprography, internet, discussion rooms..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+         </div>
+         <button onClick={handleSaveLibrary} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Save size={16} /> Save Library Details</button>
+
+         {allCustomData.library && (
+          <div className="mt-8 rounded-[16px] bg-[#1A3263] text-white p-5">
+           <div className="font-bold text-[#FAB95B]">Preview</div>
+           <div className="mt-3 flex gap-4">
+            {allCustomData.library.image && <img src={allCustomData.library.image} className="h-20 w-20 rounded-[10px] object-cover border-2 border-[#FAB95B]/30" alt="Library" />}
+            <div><div className="font-bold text-[13px]">{allCustomData.library.totalBooks} Books • {allCustomData.library.journals}</div><div className="text-[11px] text-white/70 mt-1">{allCustomData.library.description?.slice(0,120)}</div></div>
+           </div>
+          </div>
+         )}
+        </div>
+       </div>
+      </div>
+     )}
+
+     {activeSection==='sports' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Heart className="text-[#FAB95B]" /> Sports</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add sports facilities with images - real-time working</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add Sports / Game</h4>
+         <div className="mt-6 grid md:grid-cols-2 gap-5">
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Sports Name *</label><input value={sportsForm.name} onChange={e=>setSportsForm({...sportsForm, name: e.target.value})} placeholder="e.g. Cricket, Football, Basketball, Indoor Games" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Coach</label><input value={sportsForm.coach} onChange={e=>setSportsForm({...sportsForm, coach: e.target.value})} placeholder="Coach name" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div className="md:col-span-2">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Sports Image</label>
+           <div className="mt-2 flex gap-2">
+            <input value={sportsForm.image} onChange={e=>setSportsForm({...sportsForm, image: e.target.value})} placeholder="Sports image URL" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-12 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleSportsImageUpload} /></label>
+           </div>
+           {sportsForm.image && <img src={sportsForm.image} className="mt-3 h-32 w-full rounded-[12px] object-cover border-2 border-[#E8E2DB]" alt="Sports" />}
+          </div>
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={sportsForm.description} onChange={e=>setSportsForm({...sportsForm, description: e.target.value})} placeholder="Sports description, ground details, indoor stadium..." rows={4} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label><input value={sportsForm.facilities} onChange={e=>setSportsForm({...sportsForm, facilities: e.target.value})} placeholder="Ground, equipment, gym, coaching..." className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Achievements</label><textarea value={sportsForm.achievements} onChange={e=>setSportsForm({...sportsForm, achievements: e.target.value})} placeholder="Tournaments won, university champions, players selected for state/national..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+         </div>
+         <button onClick={handleSaveSports} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Sports</button>
+        </div>
+
+        <div className="mt-8">
+         <h4 className="font-bold text-[#1A3263]">Sports - {(allCustomData.sports||[]).length}</h4>
+         {(allCustomData.sports||[]).length===0 ? (
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">⚽</div><div className="font-bold text-[#1A3263] mt-3">No sports added yet</div></div>
+         ) : (
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+           {(allCustomData.sports||[]).map(s=>(
+            <div key={s.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] overflow-hidden">
+             {s.image && <img src={s.image} className="h-[120px] w-full object-cover" alt={s.name} />}
+             <div className="p-4 flex justify-between gap-3"><div className="flex-1"><div className="font-bold text-[13px] text-[#1A3263]">{s.name} {s.coach && `• Coach ${s.coach}`}</div><div className="text-[11px] text-[#547792] mt-1">{s.description?.slice(0,100)}</div></div><button onClick={()=>handleDelete('sports', s.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button></div>
+            </div>
+           ))}
+          </div>
+         )}
+        </div>
+       </div>
+      </div>
+     )}
+
+     {activeSection==='events' && (
+      <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+       <h3 className="font-bold text-[18px] text-[#1A3263]">Events</h3>
+       <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
+        <div className="grid md:grid-cols-2 gap-4">
+         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Title *</label><input value={eventForm.title} onChange={e=>setEventForm({...eventForm, title: e.target.value})} placeholder="Event title" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Date</label><input value={eventForm.date} onChange={e=>setEventForm({...eventForm, date: e.target.value})} placeholder="e.g. 2026-03-15" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+         <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={eventForm.description} onChange={e=>setEventForm({...eventForm, description: e.target.value})} placeholder="Event description" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px] resize-none" /></div>
+        </div>
+        <button onClick={handleAddEvent} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Event</button>
+       </div>
+       <div className="mt-6 space-y-3">
+        {(allCustomData.events||[]).map(ev=>(
+         <div key={ev.id} className="rounded-[12px] border-2 border-[#E8E2DB] p-4 flex justify-between"><div><div className="font-bold text-[13px] text-[#1A3263]">{ev.title}</div><div className="text-[11px] text-[#547792]">{ev.date} • {ev.description?.slice(0,80)}</div></div><button onClick={()=>handleDelete('events', ev.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button></div>
+        ))}
+       </div>
+      </div>
+     )}
+
+     {activeSection==='announcements' && (
+      <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+       <h3 className="font-bold text-[18px] text-[#1A3263]">Announcements</h3>
+       <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
+        <div className="grid md:grid-cols-2 gap-4">
+         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Title *</label><input value={announcementForm.title} onChange={e=>setAnnouncementForm({...announcementForm, title: e.target.value})} placeholder="Announcement title" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Date</label><input value={announcementForm.date} onChange={e=>setAnnouncementForm({...announcementForm, date: e.target.value})} placeholder="Date" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
+         <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={announcementForm.description} onChange={e=>setAnnouncementForm({...announcementForm, description: e.target.value})} placeholder="Announcement details" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px] resize-none" /></div>
+        </div>
+        <button onClick={handleAddAnnouncement} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Announcement</button>
+       </div>
+       <div className="mt-6 space-y-3">
+        {(allCustomData.announcements||[]).map(an=>(
+         <div key={an.id} className="rounded-[12px] border-2 border-[#E8E2DB] p-4 flex justify-between"><div><div className="font-bold text-[13px] text-[#1A3263]">{an.title}</div><div className="text-[11px] text-[#547792]">{an.date} • {an.description?.slice(0,80)}</div></div><button onClick={()=>handleDelete('announcements', an.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button></div>
+        ))}
+       </div>
+      </div>
+     )}
+
+     {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics','management','principal','research','accreditation','campus','library','sports','events','announcements'].includes(activeSection) && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-12 text-center">
        <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center mx-auto text-2xl">🚧</div>
-       <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} - Add Your {activeSection} - Your Own {activeSection} - A to Z You Add</h3>
+       <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} - Coming Soon - Your Own {activeSection}</h3>
        <p className="text-[13px] text-[#547792] mt-3 max-w-[600px] mx-auto leading-[1.6]">
-        This section is for your college - {college.name} - ID {college.id}. Add your {activeSection} information - Complete management with Add, Edit, Delete, Upload, Draft, Publish - Secure college data isolation.
+        This section is for your college - {college.name} - ID {college.id}. Add your {activeSection} information.
        </p>
        <div className="mt-6 flex justify-center gap-2">
-        <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[13px] font-bold">+ Add New {activeSection} - Your Own - </button>
-        <button className="h-10 px-5 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-bold text-[#1A3263]">College ID {college.id} - Your Own Data</button>
-       </div>
-       <div className="mt-8 grid md:grid-cols-3 gap-3 text-left max-w-[800px] mx-auto">
-        {[
-         { title: "Platform Layout", desc: "Official academic layout" },
-         { title: "College Content", desc: `Your ${activeSection} - You add yourself - Logo, Images, Departments, Courses, Facilities, Placements, Exams - Whatever you need - All sections!` },
-         { title: "Your College - Official", desc: `College ID ${college.id} - ${college.name} - Your own ${activeSection}, not PSG Tech - After signup your college empty, you add A to Z yourself` },
-        ].map(f=>(
-         <div key={f.title} className="rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4">
-          <div className="font-bold text-[12px] text-[#1A3263]">{f.title}</div>
-          <div className="text-[11px] text-[#547792] mt-1 leading-[1.4]">{f.desc}</div>
-         </div>
-        ))}
+        <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[13px] font-bold">College ID {college.id}</button>
        </div>
       </div>
      )}
