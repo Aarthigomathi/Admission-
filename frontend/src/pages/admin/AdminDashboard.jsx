@@ -1129,7 +1129,7 @@ export default function AdminDashboard() {
             </div>
             <div className="md:col-span-2">
              <label className="text-[11px] font-bold uppercase text-[#1A3263]">Hostel Description - Large Field</label>
-             <textarea value={hostelForm.description} onChange={e=>setHostelForm({...hostelForm, description: e.target.value})} placeholder="Enter detailed hostel description:&#10;&#10;• Rooms: Well-furnished rooms with cot, table, chair, cupboard&#10;• Mess: Hygienic vegetarian & non-veg mess, 3 times food&#10;• Facilities: 24/7 WiFi, library, gym, indoor games, medical facility&#10;• Security: 24/7 security, CCTV, warden&#10;• Rules, timings, etc&#10;&#10;Large field supports long text" rows={6} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[140px]" />
+             <textarea value={hostelForm.description} onChange={e=>setHostelForm({...hostelForm, description: e.target.value})} placeholder="Enter detailed hostel description:&#10;&#10;• Rooms: Well-furnished rooms with cot, table, chair, cupboard&#10;• Mess: Hygienic vegetarian & non-veg mess, 3 times food&#10;• Facilities: 24/7 WiFi, library, gym, indoor games, medical facility&#10;• Security: 24/7 security, CCTV, warden&#10;• Rules, timings, etc" rows={8} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[180px]" />
             </div>
            </div>
           </div>

@@ -447,7 +447,23 @@ function CustomCollegePage({ college, customData }) {
                       {h.fees && <span className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{h.fees}</span>}
                     </div>
                     {h.facilities && <div className="mt-3 text-[12px] text-[#547792]"><span className="font-bold text-[#1A3263]">Facilities:</span> {h.facilities}</div>}
-                    {h.description && <div className="mt-3 text-[12px] leading-[1.6] text-[#1A3263]/70 whitespace-pre-wrap">{h.description}</div>}
+                    {h.description && (
+                      <div className="mt-4 rounded-[12px] bg-[#E8E2DB]/50 border border-[#E8E2DB] p-4">
+                        <div className="font-bold text-[11px] uppercase tracking-wide text-[#1A3263] mb-2">Hostel Details:</div>
+                        <div className="space-y-2">
+                          {h.description.split('\n').filter(l=>l.trim()).map((line, idx)=>{
+                            const clean = line.replace(/^[•\-\*]\s*/, '').trim()
+                            if (!clean) return null
+                            return (
+                              <div key={idx} className="flex gap-2.5 text-[12px] leading-[1.6] text-[#1A3263]/80">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#547792] mt-[7px] shrink-0"></span>
+                                <span>{clean}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
