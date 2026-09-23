@@ -140,10 +140,19 @@ export default function AdminDashboard() {
  const handleAddEvent = () => {
   if (!eventForm.title) return alert("Event title required")
   const list = customData.events || []
-  const updated = [...list, { id: Date.now(), ...eventForm }]
+  const updated = [...list, { id: Date.now(), ...eventForm, createdAt: new Date().toISOString() }]
   saveCollegeData(selectedCollegeId, 'events', updated)
   setCustomData({ ...customData, events: updated })
   setEventForm({ title: '', date: '', category: '', description: '', image: '' })
+  alert(`Event ${eventForm.title} added with image!`)
+ }
+
+ const handleEventImageUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setEventForm({ ...eventForm, image: ev.target.result })
+  reader.readAsDataURL(file)
  }
 
  const handleAddGallery = () => {
@@ -1736,20 +1745,61 @@ export default function AdminDashboard() {
      )}
 
      {activeSection==='events' && (
-      <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Events</h3>
-       <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
-        <div className="grid md:grid-cols-2 gap-4">
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Title *</label><input value={eventForm.title} onChange={e=>setEventForm({...eventForm, title: e.target.value})} placeholder="Event title" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Date</label><input value={eventForm.date} onChange={e=>setEventForm({...eventForm, date: e.target.value})} placeholder="e.g. 2026-03-15" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={eventForm.description} onChange={e=>setEventForm({...eventForm, description: e.target.value})} placeholder="Event description" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px] resize-none" /></div>
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Calendar className="text-[#FAB95B]" /> Events with Images</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add events with images - hostel/placement maathiri images odd pantra mathiri venum</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add New Event - With Image</h4>
+         <div className="mt-6 space-y-5">
+          <div className="grid md:grid-cols-2 gap-5">
+           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Event Title *</label><input value={eventForm.title} onChange={e=>setEventForm({...eventForm, title: e.target.value})} placeholder="e.g. Tech Fest 2026, Orientation Day" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
+           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Date</label><input value={eventForm.date} onChange={e=>setEventForm({...eventForm, date: e.target.value})} placeholder="e.g. 2026-03-15" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Category</label><input value={eventForm.category} onChange={e=>setEventForm({...eventForm, category: e.target.value})} placeholder="e.g. Technical, Cultural, Workshop, Symposium" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+           <div>
+            <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><ImageIcon size={12} className="text-[#FAB95B]" /> Event Image - Upload or URL</label>
+            <div className="mt-2 flex gap-2">
+             <input value={eventForm.image} onChange={e=>setEventForm({...eventForm, image: e.target.value})} placeholder="Paste image URL or upload" className="flex-1 h-12 px-4 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+             <label className="h-12 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleEventImageUpload} /></label>
+            </div>
+           </div>
+           <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Large Field</label><textarea value={eventForm.description} onChange={e=>setEventForm({...eventForm, description: e.target.value})} placeholder="Event description - chief guest, schedule, venue, activities, registration link..." rows={5} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[120px]" /></div>
+           {eventForm.image && (
+             <div className="md:col-span-2">
+               <div className="rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-[#E8E2DB]/30 p-2">
+                 <img src={eventForm.image} className="h-[180px] w-full rounded-[10px] object-cover" alt="Event preview" />
+                 <div className="text-[11px] text-[#547792] mt-2 text-center">Preview - will show on college website</div>
+               </div>
+             </div>
+           )}
+          </div>
+         </div>
+         <button onClick={handleAddEvent} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Plus size={18} /> Add Event with Image</button>
         </div>
-        <button onClick={handleAddEvent} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Event</button>
-       </div>
-       <div className="mt-6 space-y-3">
-        {(allCustomData.events||[]).map(ev=>(
-         <div key={ev.id} className="rounded-[12px] border-2 border-[#E8E2DB] p-4 flex justify-between"><div><div className="font-bold text-[13px] text-[#1A3263]">{ev.title}</div><div className="text-[11px] text-[#547792]">{ev.date} • {ev.description?.slice(0,80)}</div></div><button onClick={()=>handleDelete('events', ev.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button></div>
-        ))}
+
+        <div className="mt-8">
+         <h4 className="font-bold text-[#1A3263]">Events - {(allCustomData.events||[]).length}</h4>
+         {(allCustomData.events||[]).length===0 ? (
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">📅</div><div className="font-bold text-[#1A3263] mt-3">No events added yet</div><div className="text-[12px] text-[#547792] mt-2">Add events with images - will show on website</div></div>
+         ) : (
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+           {(allCustomData.events||[]).map(ev=>(
+            <div key={ev.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] overflow-hidden hover:border-[#FAB95B]/40 transition-colors">
+             {ev.image && <img src={ev.image} className="h-[160px] w-full object-cover" alt={ev.title} />}
+             <div className="p-4 flex justify-between gap-3">
+              <div className="flex-1 min-w-0">
+               <div className="font-bold text-[13px] text-[#1A3263]">{ev.title}</div>
+               <div className="mt-1 flex gap-1.5 flex-wrap"><span className="px-2 py-0.5 rounded-full bg-[#E8E2DB] text-[10px]">{ev.date}</span>{ev.category && <span className="px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[10px] font-bold">{ev.category}</span>}</div>
+               <div className="text-[11px] text-[#547792] mt-2 line-clamp-2">{ev.description}</div>
+              </div>
+              <button onClick={()=>handleDelete('events', ev.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center shrink-0"><Trash2 size={12} /></button>
+             </div>
+            </div>
+           ))}
+          </div>
+         )}
+        </div>
        </div>
       </div>
      )}

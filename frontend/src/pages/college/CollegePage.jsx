@@ -653,6 +653,30 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
+        {/* Events with Images - hostel maathiri */}
+        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">📅 Events - {events.length}</h2>
+          {hasContent(events) ? (
+            <div className="mt-6 grid md:grid-cols-2 gap-6">
+              {events.map(ev=>(
+                <div key={ev.id} className="rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white hover:border-[#FAB95B]/40 transition-colors">
+                  {ev.image && <img src={ev.image} className="h-[200px] w-full object-cover" alt={ev.title} />}
+                  <div className="p-5">
+                    <div className="font-bold text-[16px] text-[#1A3263]">{ev.title}</div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {ev.date && <span className="px-3 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[11px] font-bold">📅 {ev.date}</span>}
+                      {ev.category && <span className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{ev.category}</span>}
+                    </div>
+                    {ev.description && <div className="text-[12px] text-[#1A3263]/80 mt-3 leading-[1.6]">{ev.description}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Events information will be updated soon</div>
+          )}
+        </section>
+
         {/* Contact */}
         <section className="rounded-[24px] bg-[#1A3263] text-white p-8">
           <h2 className="font-display text-[24px] font-bold text-[#FAB95B]">Contact {college.name}</h2>
