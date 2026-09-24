@@ -198,7 +198,7 @@ function AlumniCarousel({ alumni }) {
   const [idx, setIdx] = useState(0)
   useEffect(() => {
     if (alumni.length <= 1) return
-    const t = setInterval(() => setIdx(i => (i + 1) % alumni.length), 4000)
+    const t = setInterval(() => setIdx(i => (i + 1) % alumni.length), 5000)
     return () => clearInterval(t)
   }, [alumni.length])
   const n = alumni.length
@@ -219,21 +219,38 @@ function AlumniCarousel({ alumni }) {
       </div>
     )
   }
-  const offsets = [-2, -1, 0, 1, 2]
-  const sizes = { '-2': 'w-[185px] h-[265px]', '-1': 'w-[240px] h-[345px]', '0': 'w-[300px] h-[425px]', '1': 'w-[240px] h-[345px]', '2': 'w-[185px] h-[265px]' }
+  const offsets = [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+  const sizes = {
+    '-4': 'w-[148px] h-[212px]', '-3': 'w-[176px] h-[252px]', '-2': 'w-[206px] h-[298px]', '-1': 'w-[246px] h-[358px]',
+    '0': 'w-[300px] h-[430px]',
+    '1': 'w-[246px] h-[358px]', '2': 'w-[206px] h-[298px]', '3': 'w-[176px] h-[252px]', '4': 'w-[148px] h-[212px]',
+  }
+  const margs = {
+    '-4': 'mr-[-64px]', '-3': 'mr-[-56px]', '-2': 'mr-[-46px]', '-1': 'mr-[-36px]',
+    '0': 'mx-[-8px]',
+    '1': 'ml-[-36px]', '2': 'ml-[-46px]', '3': 'ml-[-56px]', '4': 'ml-[-64px]',
+  }
+  const zix = { '-4': 'z-0', '-3': 'z-10', '-2': 'z-20', '-1': 'z-20', '0': 'z-30', '1': 'z-20', '2': 'z-20', '3': 'z-10', '4': 'z-0' }
+  const fade = {
+    '-4': 'grayscale opacity-40', '-3': 'grayscale opacity-55', '-2': 'grayscale opacity-70', '-1': 'grayscale opacity-90',
+    '0': '',
+    '1': 'grayscale opacity-90', '2': 'grayscale opacity-70', '3': 'grayscale opacity-55', '4': 'grayscale opacity-40',
+  }
+  const nameSize = { '-4': 'text-[9px]', '-3': 'text-[10px]', '-2': 'text-[11px]', '-1': 'text-[13px]', '0': 'text-[18px]', '1': 'text-[13px]', '2': 'text-[11px]', '3': 'text-[10px]', '4': 'text-[9px]' }
+  const subSize = { '-4': 'text-[8px]', '-3': 'text-[9px]', '-2': 'text-[9.5px]', '-1': 'text-[10.5px]', '0': 'text-[12.5px]', '1': 'text-[10.5px]', '2': 'text-[9.5px]', '3': 'text-[9px]', '4': 'text-[8px]' }
   return (
-    <div className="mt-14 flex items-end justify-center pb-2 select-none">
+    <div className="mt-14 flex items-end justify-center pb-2 select-none overflow-x-clip">
       {offsets.map(off => {
-        const a = alumni[(idx + off + n * 3) % n]
+        const a = alumni[(idx + off + n * 5) % n]
         const isCenter = off === 0
         return (
-          <div key={off} onClick={() => { if (!isCenter) setIdx((idx + off + n) % n) }} className={`relative text-center transition-all duration-500 ${isCenter ? 'z-30 mx-[-14px]' : off === -1 ? 'z-20 mr-[-42px]' : off === 1 ? 'z-20 ml-[-42px]' : off === -2 ? 'z-10 mr-[-64px] cursor-pointer' : 'z-10 ml-[-64px] cursor-pointer'}`}>
-            <div className={`${sizes[String(off)]} rounded-[20px] overflow-hidden shadow-2xl bg-white relative ${isCenter ? '' : 'grayscale opacity-90'} ${Math.abs(off) === 2 ? 'opacity-55' : ''}`}>
+          <div key={off} onClick={() => { if (!isCenter) setIdx((idx + off + n) % n) }} className={`relative text-center transition-all duration-700 ${zix[String(off)]} ${margs[String(off)]} ${!isCenter ? 'cursor-pointer' : ''} ${Math.abs(off) >= 3 ? 'hidden lg:block' : ''}`}>
+            <div className={`${sizes[String(off)]} rounded-[20px] overflow-hidden shadow-2xl bg-white relative ${fade[String(off)]}`}>
               {a.image ? <img src={a.image} className="h-full w-full object-cover object-top" alt={a.name} /> : <div className="h-full w-full bg-[#E8E2DB] grid place-items-center text-[#547792] font-extrabold text-[34px]">{a.name ? a.name[0] : ''}</div>}
               <CompanyMark logo={a.companyLogo} company={a.company} />
             </div>
-            <div className={`mt-3.5 font-extrabold text-[#FAB95B] ${isCenter ? 'text-[18px]' : Math.abs(off) === 1 ? 'text-[13.5px]' : 'text-[11px]'}`}>{a.name}</div>
-            <div className={`text-[#547792] font-semibold mt-0.5 ${isCenter ? 'text-[12.5px]' : 'text-[10px]'}`}>{a.designation}{a.company ? ' ' + a.company : ''}</div>
+            <div className={`mt-3.5 font-extrabold text-[#FAB95B] ${nameSize[String(off)]}`}>{a.name}</div>
+            <div className={`text-[#547792] font-semibold mt-0.5 ${subSize[String(off)]}`}>{a.designation}{a.company ? ' ' + a.company : ''}</div>
           </div>
         )
       })}
