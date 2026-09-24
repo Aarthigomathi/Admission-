@@ -411,20 +411,41 @@ export default function AdminDashboard() {
   alert(`Sports ${sportsForm.name || 'details'} added!`)
  }
 
+ // Compress uploaded images (canvas) so localStorage never hits quota - saves reliably
+ const readImageCompressed = (file, cb, maxDim = 900, quality = 0.85) => {
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const dataUrl = e.target.result
+    const img = new Image()
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, maxDim / Math.max(img.width || 1, img.height || 1))
+        if (scale === 1 && file.size < 250 * 1024) { cb(dataUrl); return }
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.max(1, Math.round((img.width || maxDim) * scale))
+        canvas.height = Math.max(1, Math.round((img.height || maxDim) * scale))
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+        cb(canvas.toDataURL('image/jpeg', quality))
+      } catch { cb(dataUrl) }
+    }
+    img.onerror = () => cb(dataUrl)
+    img.src = dataUrl
+  }
+  reader.readAsDataURL(file)
+ }
+
  const handleAlumniImageUpload = (ev) => {
   const file = ev.target.files?.[0]
   if (!file) return
-  const reader = new FileReader()
-  reader.onload = (e) => setAlumniForm(prev => ({ ...prev, image: e.target.result }))
-  reader.readAsDataURL(file)
+  readImageCompressed(file, (d) => setAlumniForm(prev => ({ ...prev, image: d })), 700)
+  ev.target.value = ''
  }
 
  const handleAlumniLogoUpload = (ev) => {
   const file = ev.target.files?.[0]
   if (!file) return
-  const reader = new FileReader()
-  reader.onload = (e) => setAlumniForm(prev => ({ ...prev, companyLogo: e.target.result }))
-  reader.readAsDataURL(file)
+  readImageCompressed(file, (d) => setAlumniForm(prev => ({ ...prev, companyLogo: d })), 300)
+  ev.target.value = ''
  }
 
  const handleAchievementImageUpload = (ev) => {
@@ -436,13 +457,19 @@ export default function AdminDashboard() {
  }
 
  const handleSaveAlumni = () => {
-  if (!alumniForm.name) return alert("Alumni name add pannunga")
-  const list = customData.alumni || []
-  const updated = [...list, { id: Date.now(), ...alumniForm, createdAt: new Date().toISOString() }]
-  saveCollegeData(selectedCollegeId, 'alumni', updated)
+  if (!alumniForm.name || !alumniForm.name.trim()) return alert("Alumni name add pannunga")
+  if (!selectedCollegeId) return alert("College login first - pakkathula Login / college account select pannunga")
+  const list = Array.isArray(customData.alumni) ? customData.alumni : []
+  const entry = { id: Date.now(), name: alumniForm.name.trim(), designation: alumniForm.designation || '', company: alumniForm.company || '', companyLogo: alumniForm.companyLogo || '', batch: alumniForm.batch || '', image: alumniForm.image || '' }
+  const updated = [...list, entry]
+  try {
+    saveCollegeData(selectedCollegeId, 'alumni', updated)
+  } catch (err) {
+    return alert("Save aagala - storage full aagiduchu. Photo-ku URL use pannunga (upload vendam), apram try pannunga.")
+  }
   setCustomData({ ...customData, alumni: updated })
   setAlumniForm({ name: '', designation: '', company: '', companyLogo: '', batch: '', image: '' })
-  alert(`${alumniForm.name} added to Alumni Success Stories - website la real-time aagum!`)
+  alert(`${entry.name} added to Alumni Success Stories - website la real-time aagum!`)
  }
 
  const handleSaveAchievement = () => {
