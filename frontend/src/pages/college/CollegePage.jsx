@@ -180,6 +180,20 @@ function KceHero({ college, branding, homePage, plStats, shortName, campusImages
   )
 }
 
+function CompanyMark({ logo, company }) {
+  const [failed, setFailed] = useState(false)
+  if (!logo && !company) return null
+  return (
+    <div className="absolute top-3 right-3 min-h-[36px] px-2.5 rounded-[8px] bg-white/95 shadow flex items-center justify-center overflow-hidden">
+      {logo && !failed ? (
+        <img src={logo} onError={() => setFailed(true)} className="h-5 max-w-[70px] object-contain" alt={company || 'company'} />
+      ) : (
+        <span className="text-[10px] font-extrabold uppercase tracking-wide text-[#1A3263]">{company}</span>
+      )}
+    </div>
+  )
+}
+
 function AlumniCarousel({ alumni }) {
   const [idx, setIdx] = useState(0)
   useEffect(() => {
@@ -196,7 +210,7 @@ function AlumniCarousel({ alumni }) {
           <div key={a.id || i} className="text-center">
             <div className="h-[300px] w-[220px] rounded-[20px] overflow-hidden shadow-xl bg-white relative">
               {a.image ? <img src={a.image} className="h-full w-full object-cover object-top" alt={a.name} /> : <div className="h-full w-full bg-[#E8E2DB] grid place-items-center text-[#547792] font-extrabold text-[30px]">{a.name ? a.name[0] : ''}</div>}
-              {a.companyLogo ? <div className="absolute top-3 right-3 h-9 px-2.5 rounded-[8px] bg-white/95 shadow flex items-center justify-center overflow-hidden"><img src={a.companyLogo} className="h-5 max-w-[64px] object-contain" alt="" /></div> : null}
+              <CompanyMark logo={a.companyLogo} company={a.company} />
             </div>
             <div className="mt-3 text-[15px] font-extrabold text-[#FAB95B]">{a.name}</div>
             <div className="text-[11.5px] text-[#547792] font-semibold mt-0.5">{a.designation}{a.company ? ' ' + a.company : ''}</div>
@@ -216,7 +230,7 @@ function AlumniCarousel({ alumni }) {
           <div key={off} onClick={() => { if (!isCenter) setIdx((idx + off + n) % n) }} className={`relative text-center transition-all duration-500 ${isCenter ? 'z-30 mx-[-14px]' : off === -1 ? 'z-20 mr-[-42px]' : off === 1 ? 'z-20 ml-[-42px]' : off === -2 ? 'z-10 mr-[-64px] cursor-pointer' : 'z-10 ml-[-64px] cursor-pointer'}`}>
             <div className={`${sizes[String(off)]} rounded-[20px] overflow-hidden shadow-2xl bg-white relative ${isCenter ? '' : 'grayscale opacity-90'} ${Math.abs(off) === 2 ? 'opacity-55' : ''}`}>
               {a.image ? <img src={a.image} className="h-full w-full object-cover object-top" alt={a.name} /> : <div className="h-full w-full bg-[#E8E2DB] grid place-items-center text-[#547792] font-extrabold text-[34px]">{a.name ? a.name[0] : ''}</div>}
-              {a.companyLogo ? <div className="absolute top-3 right-3 h-9 px-2.5 rounded-[8px] bg-white/95 shadow flex items-center justify-center overflow-hidden"><img src={a.companyLogo} className="h-5 max-w-[64px] object-contain" alt="" /></div> : null}
+              <CompanyMark logo={a.companyLogo} company={a.company} />
             </div>
             <div className={`mt-3.5 font-extrabold text-[#FAB95B] ${isCenter ? 'text-[18px]' : Math.abs(off) === 1 ? 'text-[13.5px]' : 'text-[11px]'}`}>{a.name}</div>
             <div className={`text-[#547792] font-semibold mt-0.5 ${isCenter ? 'text-[12.5px]' : 'text-[10px]'}`}>{a.designation}{a.company ? ' ' + a.company : ''}</div>
@@ -285,7 +299,7 @@ function CustomCollegePage({ college, customData }) {
   const admissions = customData.admissions || null
   const contactDetails = customData.contactDetails || customData.contacts || null
   const settings = customData.settings || null
-  const alumni = customData.alumni || []
+  const alumni = customData.alumni || college.alumni || []
   const achievements = customData.achievements || []
   const homePage = customData.homePage || college.homePage || {}
   const aboutPages = customData.aboutPages || college.aboutPages || {}

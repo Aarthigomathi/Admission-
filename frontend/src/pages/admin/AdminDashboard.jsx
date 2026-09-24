@@ -36,7 +36,7 @@ export default function AdminDashboard() {
  const [newCampusImageUrl, setNewCampusImageUrl] = useState('')
  const [libraryForm, setLibraryForm] = useState({ totalBooks: '', journals: '', digitalResources: '', timings: '', librarian: '', description: '', facilities: '', image: '' })
  const [sportsForm, setSportsForm] = useState({ name: '', coach: '', description: '', facilities: '', achievements: '', image: '' })
- const [alumniForm, setAlumniForm] = useState({ name: '', designation: '', company: '', batch: '', image: '', description: '' })
+ const [alumniForm, setAlumniForm] = useState({ name: '', designation: '', company: '', companyLogo: '', batch: '', image: '', description: '' })
  const [achievementForm, setAchievementForm] = useState({ title: '', image: '', description: '' })
  const [managementForm, setManagementForm] = useState({ name: '', designation: '', image: '', email: '', phone: '', description: '' })
  const [principalForm, setPrincipalForm] = useState({ name: '', designation: 'Principal', qualification: '', experience: '', image: '', message: '', detailedBio: '', email: '', phone: '', bio: '', research: '', publications: '', awards: '' })
@@ -419,6 +419,14 @@ export default function AdminDashboard() {
   reader.readAsDataURL(file)
  }
 
+ const handleAlumniLogoUpload = (ev) => {
+  const file = ev.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (e) => setAlumniForm(prev => ({ ...prev, companyLogo: e.target.result }))
+  reader.readAsDataURL(file)
+ }
+
  const handleAchievementImageUpload = (ev) => {
   const file = ev.target.files?.[0]
   if (!file) return
@@ -433,7 +441,7 @@ export default function AdminDashboard() {
   const updated = [...list, { id: Date.now(), ...alumniForm, createdAt: new Date().toISOString() }]
   saveCollegeData(selectedCollegeId, 'alumni', updated)
   setCustomData({ ...customData, alumni: updated })
-  setAlumniForm({ name: '', designation: '', company: '', batch: '', image: '', description: '' })
+  setAlumniForm({ name: '', designation: '', company: '', companyLogo: '', batch: '', image: '', description: '' })
   alert(`${alumniForm.name} added to Alumni Success Stories - website la real-time aagum!`)
  }
 
@@ -1965,6 +1973,13 @@ export default function AdminDashboard() {
           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Alumni Name *</label><input value={alumniForm.name} onChange={e=>setAlumniForm({...alumniForm, name: e.target.value})} placeholder="e.g. J Vijay Shankar" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Designation / Role</label><input value={alumniForm.designation} onChange={e=>setAlumniForm({...alumniForm, designation: e.target.value})} placeholder="e.g. Engineering Manager" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Company</label><input value={alumniForm.company} onChange={e=>setAlumniForm({...alumniForm, company: e.target.value})} placeholder="e.g. Oracle, Microsoft, Apple" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Company Logo (shows on top of photo)</label>
+           <div className="mt-2 flex gap-2">
+            <input value={alumniForm.companyLogo} onChange={e=>setAlumniForm({...alumniForm, companyLogo: e.target.value})} placeholder="Logo URL (or upload)" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-12 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleAlumniLogoUpload} /></label>
+           </div>
+           {alumniForm.companyLogo && <img src={alumniForm.companyLogo} className="mt-3 h-8 w-auto object-contain" alt="Company logo" />}
+          </div>
           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Batch / Year</label><input value={alumniForm.batch} onChange={e=>setAlumniForm({...alumniForm, batch: e.target.value})} placeholder="e.g. 2019, ECE" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
           <div className="md:col-span-2">
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Alumni Photo</label>
