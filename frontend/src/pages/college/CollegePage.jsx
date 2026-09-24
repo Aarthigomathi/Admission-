@@ -5,121 +5,132 @@ import CollegeHeader from '../../components/college/CollegeHeader'
 import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase } from 'lucide-react'
 
 
-function CollegeHeroCarousel({ branding, college, customData }) {
+function placementStats(placements) {
+  const total = (placements || []).reduce((a, p) => a + (parseInt(p.students, 10) || 0), 0)
+  const companies = (placements || []).length
+  let highest = ''
+  let highestNum = 0
+  ;(placements || []).forEach(p => {
+    const m = String(p.package || '').match(/[\d.]+/)
+    if (m && parseFloat(m[0]) > highestNum) { highestNum = parseFloat(m[0]); highest = String(p.package) }
+  })
+  return { total, companies, highest, highestNum }
+}
+
+function scrollId(id) {
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  else window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function CollegeHero({ branding, college, placements, departments, courses, facilities }) {
   const [currentIdx, setCurrentIdx] = useState(0)
-  // Collect all college images: collegeImages array (up to 10) + heroImage fallback + gallery
   const collegeImages = branding.collegeImages || college.branding?.collegeImages || []
   const allImages = []
-  // If collegeImages array exists, use it
-  if (collegeImages.length > 0) {
-    collegeImages.forEach(img => {
-      if (img.url) allImages.push(img.url)
-      else if (typeof img === 'string') allImages.push(img)
-    })
-  }
-  // Fallback to heroImage if no collegeImages
-  if (allImages.length === 0 && branding.heroImage) {
-    allImages.push(branding.heroImage)
-  }
-  if (allImages.length === 0 && college.branding?.heroImage) {
-    allImages.push(college.branding.heroImage)
-  }
+  collegeImages.forEach(img => {
+    if (img.url) allImages.push(img.url)
+    else if (typeof img === 'string') allImages.push(img)
+  })
+  if (allImages.length === 0 && branding.heroImage) allImages.push(branding.heroImage)
+  if (allImages.length === 0 && college.branding?.heroImage) allImages.push(college.branding.heroImage)
 
   useEffect(() => {
     if (allImages.length <= 1) return
-    const interval = setInterval(() => {
-      setCurrentIdx(prev => (prev + 1) % allImages.length)
-    }, 5000) // 5 sec oru time oru image auto swipe
+    const interval = setInterval(() => setCurrentIdx(prev => (prev + 1) % allImages.length), 5000)
     return () => clearInterval(interval)
   }, [allImages.length])
 
-  if (allImages.length === 0) {
-    return (
-      <div  id="home" className="relative h-[460px] overflow-hidden bg-[#1A3263]">
-        <div className="h-full w-full bg-gradient-to-br from-[#1A3263] via-[#547792] to-[#1A3263] grid place-items-center">
-          <div className="text-center text-white p-8">
-            <div className="font-display text-[36px] font-bold">{college.name}</div>
-            <div className="text-[14px] text-[#FAB95B] mt-2">{college.district} • {college.city} • Established {college.established}</div>
-            <div className="text-[12px] text-white/60 mt-4 max-w-[500px]">{college.name} - Official Website</div>
-          </div>
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A3263]/90 via-[#1A3263]/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-12">
-          <div className="mx-auto max-w-[1400px] flex gap-6 items-end">
-            {branding.logo ? (
-              <img src={branding.logo} className="h-20 w-20 rounded-[16px] object-cover border-4 border-[#FAB95B] bg-white shadow-xl" alt={`${college.name} Logo`} />
-            ) : (
-              <div className="h-20 w-20 rounded-[16px] bg-white border-4 border-[#FAB95B] grid place-items-center text-[#1A3263] font-bold text-[28px] shadow-xl">{college.name[0]}</div>
-            )}
-            <div className="text-white">
-              <h1 className="font-display text-[32px] lg:text-[48px] font-bold leading-[0.9]">{college.name}</h1>
-              <div className="text-[14px] text-[#FAB95B] mt-3 flex items-center gap-3 flex-wrap">
-                <span className="flex items-center gap-1"><MapPin size={14} /> {college.district} • {college.city}</span>
-                <span className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[11px]">{college.verificationStatus} • Est. {college.established}</span>
-              </div>
-              <div className="text-[13px] text-white/80 mt-2">{customData.tagline || college.tagline || ''}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const stats = placementStats(placements)
+  const heroStats = [
+    { label: 'Departments', value: departments.length },
+    { label: 'Programmes', value: courses.length },
+    { label: 'Facilities', value: facilities.length },
+    ...(stats.companies > 0 ? [{ label: 'Placements', value: stats.total || stats.companies }] : []),
+  ]
 
   return (
-    <div  id="home" className="relative h-[460px] sm:h-[500px] lg:h-[520px] overflow-hidden bg-[#1A3263] group">
-      {/* Images with fade transition */}
-      {allImages.map((img, idx) => (
+    <div id="home" className="relative h-[540px] sm:h-[600px] lg:h-[660px] overflow-hidden bg-[#1A3263] group">
+      {allImages.length > 0 ? allImages.map((img, idx) => (
         <img
           key={idx}
           src={img}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${idx === currentIdx ? 'opacity-100' : 'opacity-0'}`}
           alt={`${college.name} Campus ${idx+1}`}
         />
-      ))}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1A3263]/90 via-[#1A3263]/30 to-transparent" />
-      
-      {/* Swipe indicators - dots */}
-      {allImages.length > 1 && (
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-          {allImages.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentIdx(idx)}
-              className={`h-2 rounded-full transition-all ${idx === currentIdx ? 'w-8 bg-[#FAB95B]' : 'w-2 bg-white/50 hover:bg-white/80'}`}
-            />
-          ))}
+      )) : (
+        <div className="h-full w-full bg-gradient-to-br from-[#1A3263] via-[#547792] to-[#1A3263]" />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#1A3263]/95 via-[#1A3263]/35 to-[#1A3263]/40" />
+
+      {/* Top-right: placement stat tiles */}
+      {stats.companies > 0 && (
+        <div className="absolute top-5 right-4 sm:right-8 z-20 hidden md:flex gap-3">
+          <div className="rounded-[14px] bg-[#1A3263]/85 backdrop-blur border border-white/15 px-5 py-4 text-center w-[150px]">
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#FAB95B]">Placements</div>
+            <div className="text-[30px] font-extrabold text-white leading-none mt-2">{stats.total || stats.companies}+</div>
+            <div className="text-[10px] font-bold text-white/60 mt-2 uppercase">{stats.companies} companies</div>
+          </div>
+          <div className="rounded-[14px] bg-[#FAB95B] px-5 py-4 text-center w-[150px] shadow-xl">
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#1A3263]/70">Companies</div>
+            <div className="text-[30px] font-extrabold text-[#1A3263] leading-none mt-2">{stats.companies}+</div>
+            <div className="text-[10px] font-bold text-[#1A3263]/60 mt-2 uppercase">Visited campus</div>
+          </div>
+          {stats.highestNum > 0 && (
+            <div className="rounded-[14px] bg-white px-5 py-4 text-center w-[150px] shadow-xl">
+              <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#547792]">Highest Offer</div>
+              <div className="text-[30px] font-extrabold text-[#1A3263] leading-none mt-2">{stats.highestNum}</div>
+              <div className="text-[10px] font-bold text-[#547792]/80 mt-2 uppercase">LPA max</div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Image counter */}
-      {allImages.length > 1 && (
-        <div className="absolute top-6 right-6 px-3 py-1 rounded-full bg-black/40 backdrop-blur text-white text-[11px] font-bold border border-white/20 z-20">
-          {currentIdx+1} / {allImages.length}
-        </div>
-      )}
-
-      {/* College info overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-12 z-10">
-        <div className="mx-auto max-w-[1400px] flex gap-4 sm:gap-6 items-end">
+      {/* Branding top-left */}
+      <div className="absolute top-5 left-4 sm:left-8 z-20 max-w-[440px]">
+        <div className="flex items-center gap-4">
           {branding.logo ? (
             <img src={branding.logo} className="h-16 w-16 sm:h-20 sm:w-20 rounded-[16px] object-cover border-4 border-[#FAB95B] bg-white shadow-xl shrink-0" alt={`${college.name} Logo`} />
           ) : (
-            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-[16px] bg-white border-4 border-[#FAB95B] grid place-items-center text-[#1A3263] font-bold text-[24px] sm:text-[28px] shadow-xl shrink-0">{college.name[0]}</div>
+            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-[16px] bg-white border-4 border-[#FAB95B] grid place-items-center text-[#1A3263] font-extrabold text-[28px] shadow-xl shrink-0">{college.name?.[0] || 'C'}</div>
           )}
-          <div className="text-white min-w-0 flex-1">
-            <h1 className="font-display text-[24px] sm:text-[32px] lg:text-[48px] font-bold leading-[0.9] truncate sm:text-wrap">{college.name}</h1>
-            <div className="text-[12px] sm:text-[14px] text-[#FAB95B] mt-2 sm:mt-3 flex items-center gap-2 sm:gap-3 flex-wrap">
-              <span className="flex items-center gap-1"><MapPin size={12} className="sm:hidden" /><MapPin size={14} className="hidden sm:block" /> {college.district} • {college.city}</span>
-              <span className="px-2 sm:px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[10px] sm:text-[11px]">{college.verificationStatus} • Est. {college.established}</span>
+          <div className="min-w-0">
+            <div className="text-white font-extrabold text-[22px] sm:text-[28px] leading-tight">{college.name}</div>
+            <div className="text-[11px] sm:text-[12px] font-bold mt-1.5 flex items-center gap-2 flex-wrap">
+              <span className="text-[#FAB95B]">{college.district} • {college.city}</span>
+              <span className="px-2 py-0.5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[10px] font-extrabold">Est. {college.established}</span>
             </div>
-            <div className="text-[11px] sm:text-[13px] text-white/80 mt-1 sm:mt-2 truncate">{customData.tagline || college.tagline || ''}</div>
           </div>
         </div>
       </div>
 
-      {/* Navigation arrows - visible on hover */}
+      {/* Bottom-left: white stat card */}
+      <div className="absolute bottom-0 left-4 sm:left-8 z-20 w-[calc(100%-2rem)] sm:w-auto sm:max-w-[560px]">
+        <div className="rounded-t-[20px] bg-white shadow-2xl px-4 sm:px-6 py-5 grid grid-cols-3 sm:grid-cols-4 divide-x divide-[#E8E2DB]">
+          {heroStats.map((st, i) => (
+            <div key={i} className="px-3 sm:px-4 text-center first:pl-0 last:pr-0">
+              <div className="text-[24px] sm:text-[30px] font-extrabold text-[#1A3263] leading-none">{st.value}+</div>
+              <div className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#547792] mt-2">{st.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom-right: CTA buttons */}
+      <div className="absolute bottom-0 right-0 z-20 hidden lg:flex items-end gap-2 pr-8">
+        {stats.companies > 0 && <button onClick={() => scrollId('placements')} className="h-11 px-5 rounded-t-[14px] bg-[#FAB95B] text-[#1A3263] text-[11px] font-extrabold uppercase tracking-wide shadow-xl hover:bg-[#FAB95B]/90 transition-colors">Placement</button>}
+        <button onClick={() => scrollId('campus')} className="h-11 px-5 rounded-t-[14px] bg-[#1A3263]/80 backdrop-blur border border-white/15 text-white text-[11px] font-extrabold uppercase tracking-wide shadow-xl hover:bg-[#1A3263] transition-colors">Campus Life</button>
+        <button onClick={() => scrollId('events')} className="h-11 px-5 rounded-t-[14px] bg-[#1A3263]/80 backdrop-blur border border-white/15 text-white text-[11px] font-extrabold uppercase tracking-wide shadow-xl hover:bg-[#1A3263] transition-colors">Events</button>
+        <button onClick={() => scrollId('gallery')} className="h-11 px-5 rounded-t-[14px] bg-[#1A3263]/80 backdrop-blur border border-white/15 text-white text-[11px] font-extrabold uppercase tracking-wide shadow-xl hover:bg-[#1A3263] transition-colors">Gallery</button>
+      </div>
+
+      {/* carousel dots + arrows */}
       {allImages.length > 1 && (
         <>
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+            {allImages.map((_, idx) => (
+              <button key={idx} onClick={() => setCurrentIdx(idx)} className={`h-1.5 rounded-full transition-all ${idx === currentIdx ? 'w-7 bg-[#FAB95B]' : 'w-1.5 bg-white/50 hover:bg-white/80'}`} />
+            ))}
+          </div>
           <button onClick={() => setCurrentIdx(prev => (prev - 1 + allImages.length) % allImages.length)} className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/30 backdrop-blur border border-white/20 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/50 z-20">‹</button>
           <button onClick={() => setCurrentIdx(prev => (prev + 1) % allImages.length)} className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/30 backdrop-blur border border-white/20 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/50 z-20">›</button>
         </>
@@ -130,6 +141,8 @@ function CollegeHeroCarousel({ branding, college, customData }) {
 
 function CustomCollegePage({ college, customData }) {
   const [hodProfile, setHodProfile] = useState(null)
+  const [progTab, setProgTab] = useState('All')
+  const [selCourse, setSelCourse] = useState(null)
   const branding = customData.branding || college.branding || {}
   const departments = customData.departments || college.departments || []
   const courses = customData.courses || college.courses || []
@@ -153,6 +166,15 @@ function CustomCollegePage({ college, customData }) {
 
   const hasContent = (arr) => arr && arr.length > 0
 
+  // KCE-style page helpers
+  const plStats = placementStats(placements)
+  const isPGCourse = (c) => /(^|[^A-Z])M\.|mtech|m\.?sc\b|mba|mca|phd|m\.e/i.test(String(c.degree || ''))
+  const ugcourses = courses.filter(c => !isPGCourse(c))
+  const pgcourses = courses.filter(isPGCourse)
+  const campusImages = (campusEnv[0]?.images || []).map(im => (typeof im === 'string' ? im : im.url)).filter(Boolean)
+  const progBg = campusImages[0] || branding.heroImage || college.branding?.heroImage || ''
+  const shortName = settings?.shortName || college.shortName || college.name?.split(' ')[0] || ''
+
   // HOD profile modal - close on Escape, lock body scroll while open
   useEffect(() => {
     if (!hodProfile) return
@@ -170,64 +192,57 @@ function CustomCollegePage({ college, customData }) {
       <CollegeHeader college={{ ...college, branding: { ...college.branding, ...branding, logo: branding.logo || college.branding?.logo, heroImage: branding.heroImage || college.branding?.heroImage } }} />
 
       {/* Hero */}
-      <CollegeHeroCarousel branding={branding} college={college} customData={customData} />
-
-      {/* Quick Stats */}
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-8 -mt-8 relative z-10">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: "Departments", value: departments.length, sub: "With HOD", icon: Building2 },
-            { label: "Courses", value: courses.length, sub: "Programs", icon: GraduationCap },
-            { label: "Facilities", value: facilities.length, sub: "Campus Facilities", icon: Award },
-            { label: "Placements", value: placements.length, sub: "Records", icon: Users },
-          ].map((stat,i)=>(
-            <div key={i} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-5 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-[10px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center text-[#1A3263]"><stat.icon size={18} /></div>
-                <div>
-                  <div className="font-display text-[22px] font-bold text-[#1A3263]">{stat.value}</div>
-                  <div className="text-[10px] font-bold uppercase text-[#547792]">{stat.label}</div>
-                  <div className="text-[11px] text-[#547792]/70">{stat.sub}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <CollegeHero branding={branding} college={college} placements={placements} departments={departments} courses={courses} facilities={facilities} />
 
       <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-12 space-y-12">
-        {/* About */}
-        <section  id="about" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[28px] font-bold text-[#1A3263]">About {college.name}</h2>
-          {about.fullText ? (
-            <p className="mt-4 text-[14px] leading-[1.7] text-[#1A3263]/80">{about.fullText}</p>
-          ) : (
-            <div className="mt-6 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-              <div className="text-3xl">📝</div>
-              <div className="font-bold text-[#1A3263] mt-3">About section not added yet</div>
-              <div className="text-[12px] text-[#547792] mt-2">College admin can add about, vision, mission in Admin → About</div>
+        {/* About - KCE style */}
+        <section id="about" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
+          <h2 className="text-[30px] sm:text-[36px] font-extrabold uppercase tracking-tight text-[#1A3263]">About Us</h2>
+          <div className="mt-8 grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-12 items-start">
+            <div>
+              {about.fullText ? (
+                <p className="text-[14px] sm:text-[15px] leading-[1.9] text-[#1A3263]/80 whitespace-pre-wrap">{about.fullText}</p>
+              ) : (
+                <div className="py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
+                  <div className="text-3xl">📝</div>
+                  <div className="font-bold text-[#1A3263] mt-3">About section not added yet</div>
+                  <div className="text-[12px] text-[#547792] mt-2">College admin can add about, vision, mission in Admin → About</div>
+                </div>
+              )}
+              {about.vision && (
+                <div className="mt-6 rounded-[16px] bg-[#1A3263] text-white p-6">
+                  <div className="font-extrabold text-[#FAB95B] uppercase text-[12px] tracking-[0.14em]">Vision</div>
+                  <div className="text-[13px] text-[#E8E2DB]/85 mt-2 leading-[1.7]">{about.vision}</div>
+                </div>
+              )}
+              {about.mission && about.mission.length>0 && (
+                <div className="mt-4 rounded-[16px] bg-[#FAB95B]/15 border-2 border-[#FAB95B]/30 p-6">
+                  <div className="font-extrabold text-[#1A3263] uppercase text-[12px] tracking-[0.14em]">Mission</div>
+                  <div className="mt-3 space-y-2">
+                    {about.mission.map((m,i)=><div key={i} className="flex gap-2.5 text-[13px] text-[#1A3263]"><span className="h-5 w-5 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[10px] font-bold shrink-0">{i+1}</span>{m}</div>)}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-          {about.vision && (
-            <div className="mt-8 rounded-[16px] bg-[#1A3263] text-white p-6">
-              <div className="font-bold text-[#FAB95B]">Vision</div>
-              <div className="text-[13px] text-[#E8E2DB]/80 mt-2">{about.vision}</div>
+            <div className="space-y-4">
+              {campusImages[0] && <img src={campusImages[0]} className="w-full h-[280px] lg:h-[340px] object-cover rounded-[20px] border-2 border-[#E8E2DB]" alt={`${college.name} Campus`} />}
+              {accreditations.length > 0 && (
+                <div className="grid grid-cols-3 gap-3">
+                  {accreditations.slice(0,6).map(acc => (
+                    <div key={acc.id} className="rounded-[14px] border-2 border-[#E8E2DB] bg-white p-3 grid place-items-center h-[92px]">
+                      {acc.image ? <img src={acc.image} className="max-h-[64px] max-w-full object-contain" alt={acc.name} /> : <div className="text-[10px] font-extrabold text-[#1A3263] text-center px-1 leading-tight">{acc.name}</div>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-          {about.mission && about.mission.length>0 && (
-            <div className="mt-4 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-6">
-              <div className="font-bold text-[#1A3263]">Mission</div>
-              <div className="mt-3 space-y-2">
-                {about.mission.map((m,i)=><div key={i} className="flex gap-2 text-[13px] text-[#1A3263]"><span className="h-5 w-5 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[10px] font-bold shrink-0">{i+1}</span>{m}</div>)}
-              </div>
-            </div>
-          )}
+          </div>
         </section>
 
         {/* Admissions - Real-time Working */}
         <section  id="admissions" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <h2 className="font-display text-[26px] font-bold text-[#1A3263] flex items-center gap-3">🎓 Admissions {admissions ? `- ${admissions.academicYear}` : ''}</h2>
+            <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Admissions {admissions ? `- ${admissions.academicYear}` : ''}</h2>
             {admissions && (
               <div className="flex gap-2">
                 <span className={`px-4 py-1.5 rounded-full text-[12px] font-bold border-2 ${admissions.status==='Open' ? 'bg-green-100 text-green-700 border-green-200' : admissions.status==='Closed' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-[#FAB95B]/20 text-[#1A3263] border-[#FAB95B]/30'}`}>{admissions.status} • {admissions.academicYear}</span>
@@ -331,7 +346,7 @@ function CustomCollegePage({ college, customData }) {
         <section  id="principal" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-[#1A3263] border-2 border-[#1A3263] overflow-hidden">
           <div className="p-8">
             <div className="text-center mb-8">
-              <h2 className="font-display text-[28px] font-bold text-white inline-block relative">
+              <h2 className="text-[28px] font-extrabold uppercase tracking-tight text-white inline-block relative">
                 Principal
                 <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 w-12 bg-[#FAB95B] rounded-full"></span>
               </h2>
@@ -392,7 +407,7 @@ function CustomCollegePage({ college, customData }) {
 
         {/* Management Section */}
         <section  id="management" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Users className="text-[#FAB95B]" /> Management & Trustees - {management.length}</h2>
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"><Users className="text-[#FAB95B]" /> Management & Trustees - {management.length}</h2>
           {hasContent(management) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-4">
               {management.map(member=>(
@@ -415,7 +430,7 @@ function CustomCollegePage({ college, customData }) {
         {/* Departments */}
         <section  id="departments" className="scroll-mt-[100px] lg:scroll-mt-[150px] space-y-6">
           <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6">
-            <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Building2 className="text-[#FAB95B]" /> Departments</h2>
+            <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"><Building2 className="text-[#FAB95B]" /> Departments</h2>
           </div>
 
           {hasContent(departments) ? (
@@ -504,34 +519,81 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-        {/* Courses */}
-        <section  id="programmes" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><GraduationCap className="text-[#FAB95B]" /> Courses - {courses.length}</h2>
+      </div>
+
+      {/* Programmes for You - KCE dark section */}
+      <section id="programmes" className="scroll-mt-[100px] lg:scroll-mt-[150px] relative bg-[#1A3263] py-14 sm:py-20 overflow-hidden">
+        {progBg && <img src={progBg} className="absolute inset-0 h-full w-full object-cover opacity-25" alt="" />}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1A3263]/85 via-[#1A3263]/60 to-[#1A3263]/95" />
+        <div className="relative mx-auto max-w-[1400px] px-6 lg:px-8">
+          <h2 className="text-[30px] sm:text-[38px] font-extrabold uppercase tracking-tight text-white">Programmes <span className="text-[#FAB95B]">for You</span></h2>
           {hasContent(courses) ? (
-            <div className="mt-6 grid md:grid-cols-2 gap-4">
-              {courses.map(course=>(
-                <div key={course.id} className="rounded-[16px] border-2 border-[#E8E2DB] p-5 hover:border-[#FAB95B]/40 transition-colors">
-                  <div className="font-bold text-[#1A3263]">{course.degree} - {course.name}</div>
-                  <div className="text-[12px] text-[#547792] mt-2 flex flex-wrap gap-2">
-                    <span className="px-2 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[11px]">{course.duration}</span>
-                    <span className="px-2 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[11px] font-bold">{course.fees}</span>
-                    <span className="px-2 py-1 rounded-full bg-white border text-[11px]">Intake {course.intake}</span>
+            <div className="mt-10 grid lg:grid-cols-[360px_1fr] gap-6 lg:gap-10 items-start">
+              <div className="rounded-[20px] bg-[#FAB95B] p-6 lg:p-7">
+                {[['All', 'All Programmes'], ['UG', 'UG Programmes'], ['PG', 'PG Programmes']].map(([key, label]) => (
+                  <button key={key} onClick={() => { setProgTab(key); setSelCourse(null) }} className={`block w-full text-left px-4 py-3 rounded-[12px] text-[15px] transition-colors ${progTab === key ? 'font-extrabold text-[#1A3263] underline underline-offset-4 decoration-2' : 'font-semibold text-[#1A3263]/70 hover:bg-[#1A3263]/5'}`}>
+                    {label}
+                  </button>
+                ))}
+                <p className="text-[12px] text-[#1A3263]/70 mt-4 leading-[1.7] px-2">Explore {shortName}'s programmes that combine academic excellence with practical learning, empowering students to build successful futures.</p>
+              </div>
+              <div className="space-y-8">
+                {(progTab === 'All' || progTab === 'UG') && ugcourses.length > 0 && (
+                  <div>
+                    <h3 className="text-white font-extrabold uppercase text-[14px] tracking-[0.12em] mb-3">UG Programmes</h3>
+                    <div className="space-y-1.5">
+                      {ugcourses.map(c => (
+                        <button key={c.id} onClick={() => setSelCourse(selCourse?.id === c.id ? null : c)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-[14px] text-left transition-colors ${selCourse?.id === c.id ? 'bg-white/15 border border-[#FAB95B]/50' : 'border border-transparent hover:bg-white/10'}`}>
+                          <span className="text-[#FAB95B] font-bold text-[15px]">›</span>
+                          <span className="text-[14px] font-semibold text-white flex-1">{c.degree} {c.name}</span>
+                          {c.duration && <span className="text-[10px] font-bold text-white/50 hidden sm:block">{c.duration}</span>}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="text-[11px] text-[#1A3263]/60 mt-2">Eligibility: {course.eligibility}</div>
-                </div>
-              ))}
+                )}
+                {(progTab === 'All' || progTab === 'PG') && pgcourses.length > 0 && (
+                  <div>
+                    <h3 className="text-white font-extrabold uppercase text-[14px] tracking-[0.12em] mb-3">PG Programmes</h3>
+                    <div className="space-y-1.5">
+                      {pgcourses.map(c => (
+                        <button key={c.id} onClick={() => setSelCourse(selCourse?.id === c.id ? null : c)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-[14px] text-left transition-colors ${selCourse?.id === c.id ? 'bg-white/15 border border-[#FAB95B]/50' : 'border border-transparent hover:bg-white/10'}`}>
+                          <span className="text-[#FAB95B] font-bold text-[15px]">›</span>
+                          <span className="text-[14px] font-semibold text-white flex-1">{c.degree} {c.name}</span>
+                          {c.duration && <span className="text-[10px] font-bold text-white/50 hidden sm:block">{c.duration}</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {selCourse && (
+                  <div className="rounded-[18px] bg-white/10 border border-white/15 p-5 sm:p-6">
+                    <div className="font-extrabold text-[16px] text-white">{selCourse.degree} - {selCourse.name}</div>
+                    <div className="mt-4 grid sm:grid-cols-3 gap-3">
+                      <div className="rounded-[12px] bg-[#1A3263]/70 border border-white/10 p-3.5"><div className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#FAB95B]">Duration</div><div className="text-white/85 mt-1 text-[12.5px] font-semibold">{selCourse.duration || '—'}</div></div>
+                      <div className="rounded-[12px] bg-[#1A3263]/70 border border-white/10 p-3.5"><div className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#FAB95B]">Fees</div><div className="text-white/85 mt-1 text-[12.5px] font-semibold">{selCourse.fees || '—'}</div></div>
+                      <div className="rounded-[12px] bg-[#1A3263]/70 border border-white/10 p-3.5"><div className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#FAB95B]">Intake</div><div className="text-white/85 mt-1 text-[12.5px] font-semibold">{selCourse.intake || '—'}</div></div>
+                    </div>
+                    {selCourse.eligibility && <div className="mt-3.5 text-[12px] text-white/70 leading-[1.6]"><span className="font-extrabold text-[#FAB95B]">Eligibility:</span> {selCourse.eligibility}</div>}
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
-            <div className="mt-6 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
-              <div className="font-bold text-[#1A3263] mt-3">Courses</div>
-              <div className="text-[12px] text-[#547792] mt-2">Courses information will be updated soon</div>
+            <div className="mt-8 py-14 text-center rounded-[20px] bg-white/5 border-2 border-dashed border-white/20">
+              <div className="text-3xl">🎓</div>
+              <div className="font-extrabold text-white mt-3 uppercase tracking-wide">Programmes</div>
+              <div className="text-[12px] text-white/50 mt-2">Programmes information will be updated soon</div>
             </div>
           )}
-        </section>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-12 space-y-12">
 
         {/* Facilities */}
         <section  id="facilities" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263]">Facilities - {facilities.length}</h2>
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263]">Facilities - {facilities.length}</h2>
           {hasContent(facilities) ? (
             <div className="mt-6 grid md:grid-cols-3 gap-4">
               {facilities.map(f=>(
@@ -548,7 +610,7 @@ function CustomCollegePage({ college, customData }) {
 
         {/* Research & Centres */}
         <section  id="centres" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🔬 Research & Centres - {researchCentres.length}</h2>
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Research & Centres - {researchCentres.length}</h2>
           {hasContent(researchCentres) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-6">
               {researchCentres.map(rc=>(
@@ -576,7 +638,7 @@ function CustomCollegePage({ college, customData }) {
 
         {/* Accreditation */}
         <section  id="accreditation" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🏅 Accreditation - {accreditations.length}</h2>
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Accreditation - {accreditations.length}</h2>
           {hasContent(accreditations) ? (
             <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {accreditations.map(acc=>(
@@ -603,7 +665,7 @@ function CustomCollegePage({ college, customData }) {
 
         {/* Campus & Environment */}
         <section  id="campus" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🌳 Campus & Environment - {campusEnv.length}</h2>
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Campus & Environment - {campusEnv.length}</h2>
           {hasContent(campusEnv) ? (
             <div className="mt-6 space-y-6">
               {campusEnv.map(c=>(
@@ -632,7 +694,7 @@ function CustomCollegePage({ college, customData }) {
 
         {/* Library */}
         <section  id="library" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">📚 Library</h2>
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Library</h2>
           {library ? (
             <div className="mt-6 rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white">
               <div className="grid md:grid-cols-[320px_1fr] gap-0">
@@ -656,7 +718,7 @@ function CustomCollegePage({ college, customData }) {
 
         {/* Sports */}
         <section  id="sports" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">⚽ Sports - {sports.length}</h2>
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Sports - {sports.length}</h2>
           {hasContent(sports) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-4">
               {sports.map(s=>(
@@ -678,7 +740,7 @@ function CustomCollegePage({ college, customData }) {
 
         {/* Hostel with Images */}
         <section  id="hostels" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🏠 Hostel - {hostels.length}</h2>
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Hostel - {hostels.length}</h2>
           {hasContent(hostels) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-6">
               {hostels.map(h=>(
@@ -729,35 +791,65 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-        {/* Placements with Company Logo */}
-        <section  id="placements" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-bold text-[20px] text-[#1A3263]">Placements - {placements.length} Records</h2>
-          {hasContent(placements) ? (
-            <div className="mt-6 grid md:grid-cols-2 gap-4">
-              {placements.map(p=>(
-                <div key={p.id} className="flex gap-4 p-4 rounded-[16px] border-2 border-[#E8E2DB] bg-[#E8E2DB]/20 hover:border-[#FAB95B]/40 transition-colors">
-                  {p.logo ? <img src={p.logo} className="h-16 w-16 rounded-[12px] object-contain bg-white border-2 border-[#E8E2DB] p-2 shrink-0" alt={p.company} /> : <div className="h-16 w-16 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold text-[20px] shrink-0">{p.company[0]}</div>}
-                  <div className="flex-1 min-w-0">
-                    <div className="font-bold text-[#1A3263] text-[14px]">{p.company}</div>
-                    <div className="text-[11px] text-[#547792] mt-1 flex flex-wrap gap-1.5 items-center">
-                      {p.year && <span className="px-2 py-0.5 rounded-full bg-white border text-[10px]">{p.year}</span>}
-                      {p.package && <span className="px-2.5 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{p.package}</span>}
-                      {p.students && <span className="px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[10px]">{p.students} students</span>}
-                      {p.department && <span className="px-2 py-0.5 rounded-full bg-[#E8E2DB] text-[10px]">{p.department}</span>}
-                    </div>
-                    {p.description && <div className="text-[11px] text-[#1A3263]/60 mt-2 line-clamp-2">{p.description}</div>}
-                  </div>
+      </div>
+
+      {/* Placement & Training - KCE dark section */}
+      <section id="placements" className="scroll-mt-[100px] lg:scroll-mt-[150px] relative bg-[#1A3263] py-14 sm:py-20 overflow-hidden">
+        {progBg && <img src={progBg} className="absolute inset-0 h-full w-full object-cover opacity-20" alt="" />}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1A3263]/95 via-[#1A3263]/80 to-[#1A3263]/95" />
+        <div className="relative mx-auto max-w-[1400px] px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div>
+              <h2 className="text-[30px] sm:text-[38px] font-extrabold uppercase tracking-tight text-white">Placement & Training</h2>
+              <p className="mt-5 text-[13.5px] leading-[1.9] text-[#E8E2DB]/80 max-w-[560px]">
+                {hasContent(placements) ? `The placement cell of ${college.name} takes immense effort in guiding students for successful careers. The college is visited by ${plStats.companies}+ companies year after year and has a strong placement record with ${plStats.total}+ student placements.` : 'The placement cell takes immense effort in guiding students for their successful careers. Placement records will be updated by the college admin.'}
+              </p>
+              <button onClick={() => scrollId('placement-records')} className="mt-7 h-12 px-7 rounded-full bg-[#FAB95B] text-[#1A3263] text-[12px] font-extrabold uppercase tracking-wide hover:bg-[#FAB95B]/90 transition-colors">View Records →</button>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="rounded-[16px] bg-white/5 border border-white/15 p-5 text-center">
+                <div className="text-[30px] sm:text-[36px] font-extrabold text-white leading-none">{plStats.total || plStats.companies}+</div>
+                <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#E8E2DB]/60 mt-3">Placements</div>
+              </div>
+              <div className="rounded-[16px] bg-white/5 border border-white/15 p-5 text-center">
+                <div className="text-[30px] sm:text-[36px] font-extrabold text-white leading-none">{plStats.companies}+</div>
+                <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#E8E2DB]/60 mt-3">Companies</div>
+              </div>
+              <div className="rounded-[16px] bg-[#FAB95B] p-5 text-center shadow-xl">
+                <div className="text-[30px] sm:text-[36px] font-extrabold text-[#1A3263] leading-none">{plStats.highestNum || '—'}</div>
+                <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#1A3263]/60 mt-3">LPA Max</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Industry & College - KCE logo grid */}
+      {hasContent(placements) && (
+        <section className="bg-white py-14">
+          <div className="mx-auto max-w-[1400px] px-6 lg:px-8">
+            <h2 className="text-center text-[26px] sm:text-[32px] font-extrabold uppercase tracking-tight text-[#1A3263]">Industry & {shortName}</h2>
+            <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2">
+              {placements.map(p => (
+                <div key={p.id} className="h-[84px] rounded-[10px] border-2 border-[#E8E2DB] bg-white grid place-items-center p-3 hover:border-[#FAB95B]/60 transition-colors">
+                  {p.logo ? <img src={p.logo} className="max-h-[52px] max-w-full object-contain" alt={p.company} /> : <div className="text-[11px] font-extrabold text-[#1A3263] text-center leading-tight px-1">{p.company}</div>}
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Placement information will be updated soon</div>
-          )}
+          </div>
+        </section>
+      )}
+
+      <div className="mx-auto max-w-[1400px] px-6 lg:px-8 pt-12 space-y-12">
+        {/* Placement Records */}
+        <section id="placement-records" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-8">
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263]">Placement Records - {placements.length}</h2>
+          {body}
         </section>
 
         {/* Gallery */}
         <section  id="gallery" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-bold text-[20px] text-[#1A3263] flex items-center gap-2"><ImageIcon className="text-[#FAB95B]" /> Gallery - {gallery.length} Images</h2>
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-2"><ImageIcon className="text-[#FAB95B]" /> Gallery - {gallery.length} Images</h2>
           {hasContent(gallery) ? (
             <div className="mt-6 grid md:grid-cols-3 gap-4">
               {gallery.map(img=>(
@@ -777,7 +869,7 @@ function CustomCollegePage({ college, customData }) {
 
         {/* Events with Images - 5 Categories */}
         <section  id="events" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-          <h2 className="font-display text-[26px] font-bold text-[#1A3263] flex items-center gap-3">📅 Events - {events.length} - Category Wise</h2>
+          <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Events - {events.length} - Category Wise</h2>
           <p className="text-[12px] text-[#547792] mt-2">Cultural, Technical, Sports, College Day, Social Awareness - details college neenga add pannalam</p>
           {hasContent(events) ? (
             <div className="mt-8 space-y-10">
@@ -829,8 +921,70 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-        {/* Contact - Real-time Working */}
-        <section  id="contact" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-[#1A3263] text-white p-8">
+        {/* Latest News + Upcoming Events - KCE style */}
+        <section className="grid lg:grid-cols-[1fr_380px] gap-6 lg:gap-8 items-start">
+          <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-8">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <div className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#FAB95B] flex items-center gap-2"><span className="h-[2px] w-6 bg-[#FAB95B]"></span>Discover {shortName}</div>
+                <h2 className="mt-2 text-[26px] sm:text-[30px] font-extrabold uppercase tracking-tight text-[#1A3263]">Latest News</h2>
+              </div>
+              {announcements.length > 0 && <span className="text-[14px] font-extrabold text-[#1A3263]">{String(announcements.length).padStart(2, '0')} News</span>}
+            </div>
+            {hasContent(announcements) ? (
+              <div className="mt-6 grid sm:grid-cols-2 gap-4">
+                {announcements.slice(0, 6).map((an, i) => (
+                  <div key={i} className="rounded-[18px] border-2 border-[#E8E2DB] overflow-hidden hover:border-[#FAB95B]/50 transition-colors">
+                    <div className="h-[110px] bg-gradient-to-br from-[#1A3263] to-[#547792] relative grid place-items-center">
+                      <div className="text-center text-white px-4">
+                        <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#FAB95B]">{an.category || 'Announcement'}</div>
+                        {an.date && <div className="text-[11px] text-white/70 mt-1 font-semibold">{an.date}</div>}
+                      </div>
+                      <div className="absolute bottom-3 left-3 h-9 w-9 rounded-[10px] bg-[#FAB95B] grid place-items-center text-[#1A3263] font-extrabold text-[11px]">{String(i + 1).padStart(2, '0')}</div>
+                    </div>
+                    <div className="p-4">
+                      <div className="font-bold text-[13.5px] text-[#1A3263] leading-snug">{an.title}</div>
+                      {an.description && <div className="text-[11.5px] text-[#547792] mt-2 line-clamp-2 leading-[1.6]">{an.description}</div>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">News & announcements will be updated soon</div>
+            )}
+          </div>
+          <div className="rounded-[24px] bg-[#1A3263] p-6 sm:p-7">
+            <h3 className="text-white font-extrabold uppercase tracking-tight text-[20px]">Upcoming Events</h3>
+            <div className="mt-2 h-[3px] w-12 bg-[#FAB95B] rounded-full"></div>
+            {hasContent(events) ? (
+              <div className="mt-5 space-y-3.5">
+                {events.slice(0, 5).map((ev, i) => {
+                  const d = ev.date ? new Date(ev.date) : null
+                  const valid = d && !isNaN(d.getTime())
+                  return (
+                    <div key={ev.id || i} className="flex gap-3 items-center">
+                      <div className="h-[52px] w-[52px] rounded-[12px] bg-[#FAB95B] text-[#1A3263] grid place-items-center shrink-0 text-center leading-none py-1">
+                        {valid ? (<><div className="text-[9px] font-extrabold uppercase">{d.toLocaleString('en', { month: 'short' })}</div><div className="text-[18px] font-extrabold mt-0.5">{d.getDate()}</div></>) : (<span className="text-[16px]">📅</span>)}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[12.5px] font-bold text-white leading-snug line-clamp-2">{ev.title}</div>
+                        {ev.date && <div className="text-[10.5px] text-[#FAB95B] font-semibold mt-1">{ev.date}</div>}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="mt-5 py-8 text-center rounded-[14px] bg-white/5 border-2 border-dashed border-white/15 text-[12px] text-white/50">Upcoming events will be updated soon</div>
+            )}
+          </div>
+        </section>
+
+      </div>
+
+      {/* Contact - Full-bleed KCE style */}
+      <section id="contact" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-[#1A3263] text-white py-14 border-t-4 border-[#FAB95B]">
+        <div className="mx-auto max-w-[1400px] px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h2 className="font-display text-[26px] font-bold text-[#FAB95B]">Contact {settings?.name || college.name}</h2>
             {contactDetails?.mapLink && <a href={contactDetails.mapLink} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[12px]">View on Map →</a>}
@@ -873,8 +1027,8 @@ function CustomCollegePage({ college, customData }) {
               <div className="flex gap-3"><Mail size={18} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B]">Email</div><div className="text-[#E8E2DB]/80 mt-1">{college.email}</div><div className="text-[#E8E2DB]/60 text-[11px] mt-1">{college.website}</div></div></div>
             </div>
           )}
+          </div>
         </section>
-      </div>
 
       {/* HOD Full Profile Modal - opens when HOD image is tapped */}
       {hodProfile && (
@@ -971,18 +1125,60 @@ function CustomCollegePage({ college, customData }) {
         </div>
       )}
 
-      <footer className="bg-[#1A3263] text-white border-t-4 border-[#FAB95B] mt-12">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-10">
-          <div className="flex flex-wrap justify-between gap-8">
-            <div>
-              <div className="flex gap-3">
-                {branding.logo ? <img src={branding.logo} className="h-12 w-12 rounded-[12px] bg-white object-cover border-2 border-[#FAB95B]" alt="Logo" /> : <div className="h-12 w-12 rounded-[12px] bg-[#FAB95B] text-[#1A3263] grid place-items-center font-bold">{college.name[0]}</div>}
-                <div><div className="font-bold">{college.name}</div><div className="text-[11px] text-[#FAB95B]">Est. {college.established} • {college.district}</div></div>
-              </div>
-              <div className="text-[11px] text-[#E8E2DB]/60 mt-4 max-w-[360px]">{college.name} - {college.district} - Official Website</div>
-            </div>
-            <div className="text-[11px] text-[#E8E2DB]/40">© 2026 {college.name} • All Rights Reserved</div>
+      {/* KCE-style footer */}
+      <footer className="bg-[#1A3263] text-white border-t-4 border-[#FAB95B]">
+        <div className="mx-auto max-w-[1400px] px-6 lg:px-8">
+          <div className="py-8 flex flex-wrap items-center justify-between gap-4 border-b border-white/10">
+            <h3 className="text-[22px] sm:text-[26px] font-extrabold uppercase tracking-tight">Placement Offers</h3>
+            <button onClick={() => scrollId('placements')} className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] text-[12px] font-extrabold uppercase tracking-wide hover:bg-[#FAB95B]/90 transition-colors">Know More →</button>
           </div>
+          <div className="py-12 grid sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1.4fr] gap-10">
+            <div>
+              <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#FAB95B]">Quick Links</div>
+              <div className="mt-5 space-y-3 text-[12.5px]">
+                <a href="#home" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Home</a>
+                <a href="#about" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">About Us</a>
+                <a href="#programmes" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Programmes</a>
+                <a href="#departments" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Departments</a>
+                <a href="#facilities" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Facilities</a>
+                <a href="#gallery" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Gallery</a>
+              </div>
+            </div>
+            <div>
+              <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#FAB95B]">Information About</div>
+              <div className="mt-5 space-y-3 text-[12.5px]">
+                <a href="#admissions" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Admissions</a>
+                <a href="#placements" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Placements</a>
+                <a href="#centres" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Research Centres</a>
+                <a href="#campus" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Campus & Environment</a>
+                <a href="#library" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Library</a>
+                <a href="#hostels" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Hostels</a>
+              </div>
+            </div>
+            <div>
+              <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#FAB95B]">Information For</div>
+              <div className="mt-5 space-y-3 text-[12.5px]">
+                <a href="#contact" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Admission Enquiry</a>
+                <a href="#admissions" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Application</a>
+                <a href="#events" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Events & Activities</a>
+                <a href="#principal" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Principal</a>
+                <a href="#management" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Management & Trustees</a>
+                <a href="#contact" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Contact Person</a>
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-3">
+                {branding.logo ? <img src={branding.logo} className="h-12 w-12 rounded-[12px] bg-white object-cover border-2 border-[#FAB95B]" alt="Logo" /> : <div className="h-12 w-12 rounded-[12px] bg-[#FAB95B] text-[#1A3263] grid place-items-center font-extrabold">{college.name?.[0] || 'C'}</div>}
+                <div><div className="font-extrabold text-[15px]">{college.name}</div><div className="text-[10px] text-[#FAB95B] mt-0.5 font-bold">Est. {college.established} • {college.district}</div></div>
+              </div>
+              <div className="mt-5 space-y-3 text-[12px] text-[#E8E2DB]/75">
+                <div className="flex gap-2.5"><MapPin size={14} className="text-[#FAB95B] shrink-0 mt-0.5" /><span>{(contactDetails?.address || college.address || '')}{(contactDetails?.city || college.city) ? `, ${contactDetails?.city || college.city}` : ''}, {college.district} - {contactDetails?.pincode || college.pincode}</span></div>
+                <div className="flex gap-2.5"><Phone size={14} className="text-[#FAB95B] shrink-0 mt-0.5" /><span>{(contactDetails?.phone || college.phone || '').split('/')[0]}</span></div>
+                <div className="flex gap-2.5"><Mail size={14} className="text-[#FAB95B] shrink-0 mt-0.5" /><span>{contactDetails?.email || college.email}</span></div>
+              </div>
+            </div>
+          </div>
+          <div className="py-5 border-t border-white/10 text-center text-[11px] text-white/40">© 2026 {college.name} • All Rights Reserved</div>
         </div>
       </footer>
     </div>
