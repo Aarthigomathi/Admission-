@@ -19,16 +19,16 @@ export default function Login() {
     } else if (role === 'COLLEGE') {
       const publicColleges = getPublicColleges()
       const registered = getRegisteredColleges()
-      let college = null
-      if (email) {
-        college = publicColleges.find(c => c.email === email) || registered.find(c => c.email === email)
-      }
-      if (!college && publicColleges.length>0) {
-        college = publicColleges[0]
-      }
+      const all = [...registered, ...publicColleges.filter(c => !registered.some(r => String(r.id) === String(c.id)))]
+      const id = email.trim().toLowerCase()
+      const college = all.find(c => (c.loginUsername || '').toLowerCase() === id || (c.email || '').toLowerCase() === id)
       if (!college) {
-        alert('No colleges registered yet! Please first sign up your college via College Sign Up.')
+        alert('College with this username/email not found!\n\nIf you just signed up, use your college email or the username you created. If still not found, please sign up first.')
         navigate('/college/signup')
+        return
+      }
+      if (college.loginPassword && college.loginPassword !== password) {
+        alert('Wrong password for ' + college.name + '! Please try again.')
         return
       }
       localStorage.setItem('tn_current_college', JSON.stringify(college))
@@ -235,14 +235,14 @@ export default function Login() {
             <form onSubmit={handleLogin} className="mt-6 sm:mt-7 space-y-4 sm:space-y-5">
               <div>
                 <label className="text-[10px] sm:text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5">
-                  <Mail size={12} className="text-[#FAB95B]" /> Email
+                  <Mail size={12} className="text-[#FAB95B]" /> {role === 'COLLEGE' ? 'Username or Email' : 'Email'}
                 </label>
                 <input
                   required
-                  type="email"
+                  type={role === 'COLLEGE' ? 'text' : 'email'}
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder={role === 'STUDENT' ? 'student@email.com' : role === 'COLLEGE' ? 'college official email' : 'admin@platform.com'}
+                  placeholder={role === 'STUDENT' ? 'student@email.com' : role === 'COLLEGE' ? 'college username or email' : 'admin@platform.com'}
                   className="mt-2 w-full h-11 sm:h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[13px] sm:text-[14px] transition-colors"
                 />
               </div>

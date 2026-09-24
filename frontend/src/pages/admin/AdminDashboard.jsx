@@ -14,6 +14,8 @@ export default function AdminDashboard() {
  const [activeSection, setActiveSection] = useState('dashboard')
  const [customData, setCustomData] = useState({})
  const [isLoggedIn, setIsLoggedIn] = useState(false)
+ const [loginUser, setLoginUser] = useState('')
+ const [loginPass, setLoginPass] = useState('')
  const [selectedCollegeId, setSelectedCollegeId] = useState(null)
 
  // Forms
@@ -42,7 +44,7 @@ export default function AdminDashboard() {
  const [newCollegeImageUrl, setNewCollegeImageUrl] = useState('')
  const [admissionForm, setAdmissionForm] = useState({ status: 'Open', academicYear: '2026-27', title: '', description: '', eligibility: '', process: '', applicationStart: '', applicationEnd: '', counsellingDate: '', lastDate: '', entranceExam: '', cutoff: '', fees: '', totalSeats: '', documents: '', quota: '', scholarships: '', applicationLink: '', brochureImage: '', contactPhone: '', contactEmail: '' })
  const [contactForm, setContactForm] = useState({ address: '', city: '', district: '', pincode: '', phone: '', phone2: '', email: '', admissionsEmail: '', website: '', officeHours: '', mapLink: '', contactPerson: '', contactDesignation: '', contactPhone: '', enquiryPhone: '', enquiryEmail: '', supportHours: '', fax: '', tollFree: '' })
- const [settingsForm, setSettingsForm] = useState({ name: '', shortName: '', tagline: '', type: '', collegeType: '', university: '', affiliation: '', established: '', accreditation: '', email: '', phone: '', website: '', verificationStatus: '', maintenanceMode: false, showAdmissions: true, showPlacements: true, showEvents: true })
+ const [settingsForm, setSettingsForm] = useState({ name: '', shortName: '', tagline: '', type: '', collegeType: '', university: '', affiliation: '', established: '', accreditation: '', email: '', phone: '', website: '', verificationStatus: '', maintenanceMode: false, showAdmissions: true, showPlacements: true, showEvents: true, loginUsername: '', loginPassword: '' })
 
  useEffect(() => {
   const stored = localStorage.getItem('tn_current_college')
@@ -134,7 +136,7 @@ export default function AdminDashboard() {
      })
    }
    if (custom.settings) {
-     setSettingsForm({ ...settingsForm, ...custom.settings })
+     setSettingsForm({ ...settingsForm, ...custom.settings, loginUsername: fullCollege.loginUsername || settingsForm.loginUsername || '', loginPassword: fullCollege.loginPassword || settingsForm.loginPassword || '' })
    } else {
      setSettingsForm({
        name: fullCollege.name || '',
@@ -153,7 +155,9 @@ export default function AdminDashboard() {
        maintenanceMode: false,
        showAdmissions: true,
        showPlacements: true,
-       showEvents: true
+       showEvents: true,
+      loginUsername: fullCollege.loginUsername || '',
+      loginPassword: fullCollege.loginPassword || ''
      })
    }
    setIsLoggedIn(true)
@@ -450,12 +454,12 @@ export default function AdminDashboard() {
   const registered = JSON.parse(localStorage.getItem('tn_registered_colleges') || '[]')
   const idx = registered.findIndex(c => String(c.id) === String(selectedCollegeId))
   if (idx >= 0) {
-    registered[idx] = { ...registered[idx], name: settingsForm.name, shortName: settingsForm.shortName, tagline: settingsForm.tagline, type: settingsForm.type, collegeType: settingsForm.collegeType, university: settingsForm.university, affiliation: settingsForm.affiliation, established: settingsForm.established, accreditation: settingsForm.accreditation, email: settingsForm.email, phone: settingsForm.phone, website: settingsForm.website, settings: settingsForm }
+    registered[idx] = { ...registered[idx], name: settingsForm.name, shortName: settingsForm.shortName, tagline: settingsForm.tagline, type: settingsForm.type, collegeType: settingsForm.collegeType, university: settingsForm.university, affiliation: settingsForm.affiliation, established: settingsForm.established, accreditation: settingsForm.accreditation, email: settingsForm.email, phone: settingsForm.phone, website: settingsForm.website, loginUsername: settingsForm.loginUsername, loginPassword: settingsForm.loginPassword, settings: settingsForm }
     localStorage.setItem('tn_registered_colleges', JSON.stringify(registered))
   }
   const current = JSON.parse(localStorage.getItem('tn_current_college') || '{}')
   if (String(current.id) === String(selectedCollegeId)) {
-    const updatedCurrent = { ...current, name: settingsForm.name, shortName: settingsForm.shortName, tagline: settingsForm.tagline, type: settingsForm.type, collegeType: settingsForm.collegeType, university: settingsForm.university, affiliation: settingsForm.affiliation, established: settingsForm.established, accreditation: settingsForm.accreditation, email: settingsForm.email, phone: settingsForm.phone, website: settingsForm.website }
+    const updatedCurrent = { ...current, name: settingsForm.name, shortName: settingsForm.shortName, tagline: settingsForm.tagline, type: settingsForm.type, collegeType: settingsForm.collegeType, university: settingsForm.university, affiliation: settingsForm.affiliation, established: settingsForm.established, accreditation: settingsForm.accreditation, email: settingsForm.email, phone: settingsForm.phone, website: settingsForm.website, loginUsername: settingsForm.loginUsername, loginPassword: settingsForm.loginPassword }
     localStorage.setItem('tn_current_college', JSON.stringify(updatedCurrent))
     setCurrentCollege(updatedCurrent)
   }
@@ -593,6 +597,20 @@ export default function AdminDashboard() {
   setCustomData({ ...customData, [section]: updated })
  }
 
+ const handleAdminLogin = () => {
+  const id = (loginUser || '').trim().toLowerCase()
+  if (!id) return alert("Username / email enter pannunga")
+  const all = [...getRegisteredColleges(), ...getPublicColleges()]
+  const college = all.find(c => (c.loginUsername || '').toLowerCase() === id || (c.email || '').toLowerCase() === id)
+  if (!college) return alert("College with this username not found.\n\nJust signed up? Below Quick Select use pannunga.")
+  if (college.loginPassword && college.loginPassword !== loginPass) return alert('Wrong password for ' + college.name + '. Please try again.')
+  localStorage.setItem('tn_current_college', JSON.stringify(college))
+  setCurrentCollege(college)
+  setSelectedCollegeId(college.id)
+  setCustomData(getCollegeCustomData(college.id))
+  setIsLoggedIn(true)
+ }
+
  if (!isLoggedIn) {
   const allColleges = getPublicColleges()
   return (
@@ -614,19 +632,28 @@ export default function AdminDashboard() {
      ) : (
      <div className="mt-8 space-y-4">
       <div>
-       <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Select Your College</label>
-       <select value={selectedCollegeId || ''} onChange={e=>setSelectedCollegeId(e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] font-medium">
-        <option value="">Select your college</option>
-        {allColleges.map(c=>(
-         <option key={c.id} value={c.id}>{c.name} - ID {c.id} - {c.district} - {c.verificationStatus || 'PENDING'} - Added by college itself</option>
-        ))}
-       </select>
+       <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Username or College Email</label>
+       <input value={loginUser} onChange={e=>setLoginUser(e.target.value)} placeholder="Your login username (e.g. thiagarajar_admin)" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" />
       </div>
       <div>
-       <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Password - Demo any works</label>
-       <input type="password" defaultValue="college123" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[14px]" />
+       <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Password</label>
+       <input type="password" value={loginPass} onChange={e=>setLoginPass(e.target.value)} placeholder="Your login password" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px]" />
       </div>
-      <button onClick={()=>{
+      <button onClick={handleAdminLogin} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] font-bold text-[14px]">Login to College Admin</button>
+      <div className="flex items-center gap-3 py-1">
+       <div className="flex-1 h-px bg-[#E8E2DB]"></div>
+       <div className="text-[10px] font-bold uppercase text-[#547792]">or quick select</div>
+       <div className="flex-1 h-px bg-[#E8E2DB]"></div>
+      </div>
+      <div>
+       <label className="text-[11px] font-bold uppercase tracking-wide text-[#547792]">Quick Select (demo)</label>
+       <select value={selectedCollegeId || ''} onChange={e=>setSelectedCollegeId(e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] font-medium">
+        <option value="">Select your college</option>
+        {allColleges.map(c=>(
+         <option key={c.id} value={c.id}>{c.name} - {c.district}</option>
+        ))}
+       </select>
+       <button onClick={()=>{
        if (!selectedCollegeId) return alert("Select your college")
        const college = getCollegeById(selectedCollegeId)
        if (!college) return alert("College not found")
@@ -634,8 +661,9 @@ export default function AdminDashboard() {
        setCurrentCollege(college)
        setCustomData(getCollegeCustomData(college.id))
        setIsLoggedIn(true)
-      }} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] font-bold text-[14px]">Login to College Admin</button>
-      <div className="text-[11px] text-[#547792] text-center leading-[1.5]">If you just signed up, select your college from the list to login</div>
+      }} className="mt-3 w-full h-10 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px]">Quick Login Selected College</button>
+      </div>
+      <div className="text-[11px] text-[#547792] text-center leading-[1.5]">Signup panna create patta username + password la login pannunga. Credentials change panna Settings → Login Credentials</div>
      </div>
      )}
 
@@ -2290,6 +2318,15 @@ export default function AdminDashboard() {
                 <input type="checkbox" checked={settingsForm.showEvents} onChange={e=>setSettingsForm({...settingsForm, showEvents: e.target.checked})} className="h-5 w-5 accent-[#1A3263]" />
               </label>
             </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">4</span> Login Credentials - Username & Password</h4>
+            <div className="mt-4 grid md:grid-cols-2 gap-4">
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Login Username</label><input value={settingsForm.loginUsername} onChange={e=>setSettingsForm({...settingsForm, loginUsername: e.target.value})} placeholder="e.g. thiagarajar_admin" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Login Password</label><input value={settingsForm.loginPassword} onChange={e=>setSettingsForm({...settingsForm, loginPassword: e.target.value})} placeholder="Create / change password" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+            </div>
+            <div className="mt-3 text-[11px] text-[#547792]">Save panna Login page la idha username + password la login aagum. College email um username-oda oru oru login ku work aagum.</div>
           </div>
 
           <button onClick={handleSaveSettings} className="h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Save size={18} /> Save Settings - Real-time Website Update</button>

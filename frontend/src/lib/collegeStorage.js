@@ -165,6 +165,8 @@ export function createNewCollegeFromSignup(formData) {
     university: formData.university,
     established: Number(formData.establishedYear) || new Date().getFullYear(),
     principalName: formData.principalName,
+    loginUsername: (formData.username || '').trim() || formData.email || '',
+    loginPassword: formData.password || '',
     verificationStatus: 'PENDING',
     verified: false,
     role: 'COLLEGE_ADMIN',

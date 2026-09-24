@@ -18,6 +18,7 @@ export default function CollegeSignup() {
     university: 'Anna University',
     establishedYear: '2000',
     principalName: '',
+    username: '',
     password: ''
   })
 
@@ -157,13 +158,17 @@ export default function CollegeSignup() {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><User size={12} className="text-[#FAB95B]" /> Principal Name</label>
                   <input value={formData.principalName} onChange={e=>updateField('principalName', e.target.value)} placeholder="Dr. Principal Name" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]" />
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Lock size={12} className="text-[#FAB95B]" /> Password *</label>
+                  <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><User size={12} className="text-[#FAB95B]" /> Login Username *</label>
+                  <input required value={formData.username} onChange={e=>updateField('username', e.target.value)} placeholder="e.g. thiagarajar_admin" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]" />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Lock size={12} className="text-[#FAB95B]" /> Login Password *</label>
                   <input required type="password" value={formData.password} onChange={e=>updateField('password', e.target.value)} placeholder="Create password" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]" />
                 </div>
               </div>
