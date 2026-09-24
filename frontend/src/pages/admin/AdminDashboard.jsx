@@ -36,7 +36,7 @@ export default function AdminDashboard() {
  const [newCampusImageUrl, setNewCampusImageUrl] = useState('')
  const [libraryForm, setLibraryForm] = useState({ totalBooks: '', journals: '', digitalResources: '', timings: '', librarian: '', description: '', facilities: '', image: '' })
  const [sportsForm, setSportsForm] = useState({ name: '', coach: '', description: '', facilities: '', achievements: '', image: '' })
- const [alumniForm, setAlumniForm] = useState({ name: '', designation: '', company: '', companyLogo: '', batch: '', image: '', description: '' })
+ const [alumniForm, setAlumniForm] = useState({ name: '', designation: '', company: '', companyLogo: '', batch: '', image: '' })
  const [achievementForm, setAchievementForm] = useState({ title: '', image: '', description: '' })
  const [managementForm, setManagementForm] = useState({ name: '', designation: '', image: '', email: '', phone: '', description: '' })
  const [principalForm, setPrincipalForm] = useState({ name: '', designation: 'Principal', qualification: '', experience: '', image: '', message: '', detailedBio: '', email: '', phone: '', bio: '', research: '', publications: '', awards: '' })
@@ -441,7 +441,7 @@ export default function AdminDashboard() {
   const updated = [...list, { id: Date.now(), ...alumniForm, createdAt: new Date().toISOString() }]
   saveCollegeData(selectedCollegeId, 'alumni', updated)
   setCustomData({ ...customData, alumni: updated })
-  setAlumniForm({ name: '', designation: '', company: '', companyLogo: '', batch: '', image: '', description: '' })
+  setAlumniForm({ name: '', designation: '', company: '', companyLogo: '', batch: '', image: '' })
   alert(`${alumniForm.name} added to Alumni Success Stories - website la real-time aagum!`)
  }
 
@@ -1989,7 +1989,6 @@ export default function AdminDashboard() {
            </div>
            {alumniForm.image && <img src={alumniForm.image} className="mt-3 h-28 w-28 rounded-[12px] object-cover object-top border-2 border-[#E8E2DB]" alt="Alumni" />}
           </div>
-          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Story / Description</label><textarea value={alumniForm.description} onChange={e=>setAlumniForm({...alumniForm, description: e.target.value})} placeholder="Short success story..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
          </div>
          <button onClick={handleSaveAlumni} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Alumni</button>
         </div>
