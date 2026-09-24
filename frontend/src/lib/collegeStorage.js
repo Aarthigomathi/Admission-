@@ -239,3 +239,24 @@ export function getProfileCompletion(college) {
   const filled = checks.filter(Boolean).length
   return Math.round((filled / checks.length) * 100)
 }
+
+export function findCollegeByLoginId(id) {
+  const target = (id || '').trim().toLowerCase()
+  if (!target) return null
+  const idsFor = c => {
+    const ids = []
+    const add = v => {
+      if (!v) return
+      String(v).split(/\s*\/\s*|\s*,\s*/).forEach(part => {
+        const clean = part.trim().toLowerCase()
+        if (clean) ids.push(clean)
+      })
+    }
+    add(c.loginUsername)
+    add(c.email)
+    if (c.contact) add(c.contact.email)
+    return ids
+  }
+  const all = [...getRegisteredColleges(), ...getPublicColleges().filter(pc => !getRegisteredColleges().some(r => String(r.id) === String(pc.id)))]
+  return all.find(c => idsFor(c).includes(target)) || null
+}

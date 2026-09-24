@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, getProfileCompletion } from '../../lib/collegeStorage'
+import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, getProfileCompletion, findCollegeByLoginId } from '../../lib/collegeStorage'
 import CollegeAnalytics from '../../components/admin/CollegeAnalytics'
 import { 
  LayoutDashboard, Palette, Building2, GraduationCap, Users, Megaphone, Calendar, Image as ImageIcon, Trophy, Landmark, ShieldCheck, PhoneCall,
@@ -600,8 +600,7 @@ export default function AdminDashboard() {
  const handleAdminLogin = () => {
   const id = (loginUser || '').trim().toLowerCase()
   if (!id) return alert("Username / email enter pannunga")
-  const all = [...getRegisteredColleges(), ...getPublicColleges()]
-  const college = all.find(c => (c.loginUsername || '').toLowerCase() === id || (c.email || '').toLowerCase() === id)
+  const college = findCollegeByLoginId(id)
   if (!college) return alert("College with this username not found.\n\nJust signed up? Below Quick Select use pannunga.")
   if (college.loginPassword && college.loginPassword !== loginPass) return alert('Wrong password for ' + college.name + '. Please try again.')
   localStorage.setItem('tn_current_college', JSON.stringify(college))

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Mail, Lock, ArrowRight, Building2, GraduationCap, Shield, Camera, Award, Users } from 'lucide-react'
-import { getPublicColleges, getRegisteredColleges } from '../../lib/collegeStorage'
+import { findCollegeByLoginId } from '../../lib/collegeStorage'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -17,11 +17,8 @@ export default function Login() {
       localStorage.setItem('tn_current_student', JSON.stringify(student))
       navigate('/student/dashboard')
     } else if (role === 'COLLEGE') {
-      const publicColleges = getPublicColleges()
-      const registered = getRegisteredColleges()
-      const all = [...registered, ...publicColleges.filter(c => !registered.some(r => String(r.id) === String(c.id)))]
       const id = email.trim().toLowerCase()
-      const college = all.find(c => (c.loginUsername || '').toLowerCase() === id || (c.email || '').toLowerCase() === id)
+      const college = findCollegeByLoginId(id)
       if (!college) {
         alert('College with this username/email not found!\n\nIf you just signed up, use your college email or the username you created. If still not found, please sign up first.')
         navigate('/college/signup')
