@@ -204,34 +204,34 @@ function AlumniCarousel({ alumni }) {
   const n = alumni.length
   if (n === 0) return null
   // wheel adapts to any alumni count: 2 alumni = 2-card wheel, 9+ = full ring
-  const vis = Math.min(n, 9)
+  const vis = Math.min(n, 11)
   const startOff = -Math.floor((vis - 1) / 2)
   const offsets = Array.from({ length: vis }, (_, i) => startOff + i)
   const sizes = {
-    '-4': 'w-[148px] h-[212px]', '-3': 'w-[176px] h-[252px]', '-2': 'w-[206px] h-[298px]', '-1': 'w-[246px] h-[358px]',
+    '-5': 'w-[126px] h-[182px]', '-4': 'w-[148px] h-[212px]', '-3': 'w-[176px] h-[252px]', '-2': 'w-[206px] h-[298px]', '-1': 'w-[246px] h-[358px]',
     '0': 'w-[300px] h-[430px]',
-    '1': 'w-[246px] h-[358px]', '2': 'w-[206px] h-[298px]', '3': 'w-[176px] h-[252px]', '4': 'w-[148px] h-[212px]',
+    '1': 'w-[246px] h-[358px]', '2': 'w-[206px] h-[298px]', '3': 'w-[176px] h-[252px]', '4': 'w-[148px] h-[212px]', '5': 'w-[126px] h-[182px]',
   }
   const margs = {
-    '-4': 'mr-[-64px]', '-3': 'mr-[-56px]', '-2': 'mr-[-46px]', '-1': 'mr-[-36px]',
+    '-5': 'mr-[-70px]', '-4': 'mr-[-64px]', '-3': 'mr-[-56px]', '-2': 'mr-[-46px]', '-1': 'mr-[-36px]',
     '0': 'mx-[-8px]',
-    '1': 'ml-[-36px]', '2': 'ml-[-46px]', '3': 'ml-[-56px]', '4': 'ml-[-64px]',
+    '1': 'ml-[-36px]', '2': 'ml-[-46px]', '3': 'ml-[-56px]', '4': 'ml-[-64px]', '5': 'ml-[-70px]',
   }
-  const zix = { '-4': 'z-0', '-3': 'z-10', '-2': 'z-20', '-1': 'z-20', '0': 'z-30', '1': 'z-20', '2': 'z-20', '3': 'z-10', '4': 'z-0' }
+  const zix = { '-5': 'z-0', '-4': 'z-0', '-3': 'z-10', '-2': 'z-20', '-1': 'z-20', '0': 'z-30', '1': 'z-20', '2': 'z-20', '3': 'z-10', '4': 'z-0', '5': 'z-0' }
   const fade = {
-    '-4': 'grayscale opacity-40', '-3': 'grayscale opacity-55', '-2': 'grayscale opacity-70', '-1': 'grayscale opacity-90',
+    '-5': 'grayscale opacity-30', '-4': 'grayscale opacity-40', '-3': 'grayscale opacity-55', '-2': 'grayscale opacity-70', '-1': 'grayscale opacity-90',
     '0': '',
-    '1': 'grayscale opacity-90', '2': 'grayscale opacity-70', '3': 'grayscale opacity-55', '4': 'grayscale opacity-40',
+    '1': 'grayscale opacity-90', '2': 'grayscale opacity-70', '3': 'grayscale opacity-55', '4': 'grayscale opacity-40', '5': 'grayscale opacity-30',
   }
-  const nameSize = { '-4': 'text-[9px]', '-3': 'text-[10px]', '-2': 'text-[11px]', '-1': 'text-[13px]', '0': 'text-[18px]', '1': 'text-[13px]', '2': 'text-[11px]', '3': 'text-[10px]', '4': 'text-[9px]' }
-  const subSize = { '-4': 'text-[8px]', '-3': 'text-[9px]', '-2': 'text-[9.5px]', '-1': 'text-[10.5px]', '0': 'text-[12.5px]', '1': 'text-[10.5px]', '2': 'text-[9.5px]', '3': 'text-[9px]', '4': 'text-[8px]' }
+  const nameSize = { '-5': 'text-[8px]', '-4': 'text-[9px]', '-3': 'text-[10px]', '-2': 'text-[11px]', '-1': 'text-[13px]', '0': 'text-[18px]', '1': 'text-[13px]', '2': 'text-[11px]', '3': 'text-[10px]', '4': 'text-[9px]', '5': 'text-[8px]' }
+  const subSize = { '-5': 'text-[7px]', '-4': 'text-[8px]', '-3': 'text-[9px]', '-2': 'text-[9.5px]', '-1': 'text-[10.5px]', '0': 'text-[12.5px]', '1': 'text-[10.5px]', '2': 'text-[9.5px]', '3': 'text-[9px]', '4': 'text-[8px]', '5': 'text-[7px]' }
   return (
-    <div className="mt-14 flex items-end justify-center pb-2 select-none overflow-x-clip">
+    <div className="mt-12 pb-10 flex items-end justify-center select-none overflow-x-clip w-full">
       {offsets.map(off => {
         const a = alumni[(idx + off + n * 5) % n]
         const isCenter = off === 0
         return (
-          <div key={off} onClick={() => { if (!isCenter) setIdx((idx + off + n) % n) }} className={`relative text-center transition-all duration-700 ${zix[String(off)]} ${margs[String(off)]} ${!isCenter ? 'cursor-pointer' : ''} ${Math.abs(off) >= 3 ? 'hidden lg:block' : ''}`}>
+          <div key={off} onClick={() => { if (!isCenter) setIdx((idx + off + n) % n) }} className={`relative text-center transition-all duration-700 ${zix[String(off)]} ${margs[String(off)]} ${!isCenter ? 'cursor-pointer' : ''} ${Math.abs(off) >= 4 ? 'hidden xl:block' : Math.abs(off) >= 3 ? 'hidden lg:block' : ''}`}>
             <div className={`${sizes[String(off)]} rounded-[20px] overflow-hidden shadow-2xl bg-white relative ${fade[String(off)]}`}>
               {a.image ? <img src={a.image} className="h-full w-full object-cover object-top" alt={a.name} /> : <div className="h-full w-full bg-[#E8E2DB] grid place-items-center text-[#547792] font-extrabold text-[34px]">{a.name ? a.name[0] : ''}</div>}
               <CompanyMark logo={a.companyLogo} company={a.company} />
@@ -467,14 +467,14 @@ function CustomCollegePage({ college, customData }) {
 
       {/* ALUMNI SUCCESS STORIES - KCE overlapping carousel */}
       <section id="alumni" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-[#F4F2EE] overflow-hidden">
-        <div className="mx-auto max-w-[1600px] px-6 lg:px-12 pt-14 sm:pt-16 pb-10">
+        <div className="mx-auto max-w-[1600px] px-6 lg:px-12 pt-14 sm:pt-16">
           <h2 className="text-center text-[28px] sm:text-[34px] font-extrabold uppercase tracking-tight text-[#1A3263]">Alumni Success Stories</h2>
-          {alumni.length > 0 ? (
-            <AlumniCarousel alumni={alumni} />
-          ) : (
-            <div className="mt-12 pb-6 text-center text-[13px] text-[#547792]">Alumni success stories will appear here once the college adds them</div>
-          )}
         </div>
+        {alumni.length > 0 ? (
+          <AlumniCarousel alumni={alumni} />
+        ) : (
+          <div className="mx-auto max-w-[1600px] px-6 pb-10 mt-12 text-center text-[13px] text-[#547792]">Alumni success stories will appear here once the college adds them</div>
+        )}
       </section>
 
       {/* STUDENTS ACHIEVEMENTS - KCE tall cards */}
