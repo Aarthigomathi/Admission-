@@ -844,7 +844,27 @@ function CustomCollegePage({ college, customData }) {
         {/* Placement Records */}
         <section id="placement-records" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-8">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263]">Placement Records - {placements.length}</h2>
-          {body}
+{hasContent(placements) ? (
+            <div className="mt-6 grid md:grid-cols-2 gap-4">
+              {placements.map(p=>(
+                <div key={p.id} className="flex gap-4 p-4 rounded-[16px] border-2 border-[#E8E2DB] bg-[#E8E2DB]/20 hover:border-[#FAB95B]/40 transition-colors">
+                  {p.logo ? <img src={p.logo} className="h-16 w-16 rounded-[12px] object-contain bg-white border-2 border-[#E8E2DB] p-2 shrink-0" alt={p.company} /> : <div className="h-16 w-16 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold text-[20px] shrink-0">{p.company[0]}</div>}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-[#1A3263] text-[14px]">{p.company}</div>
+                    <div className="text-[11px] text-[#547792] mt-1 flex flex-wrap gap-1.5 items-center">
+                      {p.year && <span className="px-2 py-0.5 rounded-full bg-white border text-[10px]">{p.year}</span>}
+                      {p.package && <span className="px-2.5 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{p.package}</span>}
+                      {p.students && <span className="px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[10px]">{p.students} students</span>}
+                      {p.department && <span className="px-2 py-0.5 rounded-full bg-[#E8E2DB] text-[10px]">{p.department}</span>}
+                    </div>
+                    {p.description && <div className="text-[11px] text-[#1A3263]/60 mt-2 line-clamp-2">{p.description}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">Placement information will be updated soon</div>
+          )}
         </section>
 
         {/* Gallery */}
