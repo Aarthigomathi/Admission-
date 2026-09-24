@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { getCollegeBySlug, getCollegeCustomData, getPublicColleges } from '../../lib/collegeStorage'
 import CollegeHeader from '../../components/college/CollegeHeader'
-import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase } from 'lucide-react'
+import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase, Landmark, ShieldCheck, PhoneCall, Trophy } from 'lucide-react'
 
 
 function placementStats(placements) {
@@ -143,6 +143,7 @@ function CustomCollegePage({ college, customData }) {
   const [hodProfile, setHodProfile] = useState(null)
   const [progTab, setProgTab] = useState('All')
   const [selCourse, setSelCourse] = useState(null)
+  const [selAchievement, setSelAchievement] = useState(null)
   const branding = customData.branding || college.branding || {}
   const departments = customData.departments || college.departments || []
   const courses = customData.courses || college.courses || []
@@ -163,6 +164,8 @@ function CustomCollegePage({ college, customData }) {
   const admissions = customData.admissions || null
   const contactDetails = customData.contactDetails || customData.contacts || null
   const settings = customData.settings || null
+  const alumni = customData.alumni || []
+  const achievements = customData.achievements || []
 
   const hasContent = (arr) => arr && arr.length > 0
 
@@ -240,7 +243,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Admissions - Real-time Working */}
-        <section  id="admissions" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="admissions" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Admissions {admissions ? `- ${admissions.academicYear}` : ''}</h2>
             {admissions && (
@@ -344,7 +347,7 @@ function CustomCollegePage({ college, customData }) {
 
         {/* Principal Section */}
         <section  id="principal" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-[#1A3263] border-2 border-[#1A3263] overflow-hidden">
-          <div className="p-8">
+          <div className="p-6 sm:p-10">
             <div className="text-center mb-8">
               <h2 className="text-[28px] font-extrabold uppercase tracking-tight text-white inline-block relative">
                 Principal
@@ -406,7 +409,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Management Section */}
-        <section  id="management" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="management" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"><Users className="text-[#FAB95B]" /> Management & Trustees - {management.length}</h2>
           {hasContent(management) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-4">
@@ -592,7 +595,7 @@ function CustomCollegePage({ college, customData }) {
       <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-12 space-y-12">
 
         {/* Facilities */}
-        <section  id="facilities" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="facilities" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263]">Facilities - {facilities.length}</h2>
           {hasContent(facilities) ? (
             <div className="mt-6 grid md:grid-cols-3 gap-4">
@@ -609,7 +612,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Research & Centres */}
-        <section  id="centres" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="centres" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Research & Centres - {researchCentres.length}</h2>
           {hasContent(researchCentres) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-6">
@@ -637,7 +640,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Accreditation */}
-        <section  id="accreditation" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="accreditation" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Accreditation - {accreditations.length}</h2>
           {hasContent(accreditations) ? (
             <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -664,7 +667,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Campus & Environment */}
-        <section  id="campus" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="campus" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Campus & Environment - {campusEnv.length}</h2>
           {hasContent(campusEnv) ? (
             <div className="mt-6 space-y-6">
@@ -693,7 +696,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Library */}
-        <section  id="library" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="library" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Library</h2>
           {library ? (
             <div className="mt-6 rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white">
@@ -717,7 +720,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Sports */}
-        <section  id="sports" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="sports" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Sports - {sports.length}</h2>
           {hasContent(sports) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-4">
@@ -739,7 +742,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Hostel with Images */}
-        <section  id="hostels" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="hostels" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Hostel - {hostels.length}</h2>
           {hasContent(hostels) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-6">
@@ -868,7 +871,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Gallery */}
-        <section  id="gallery" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="gallery" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-2"><ImageIcon className="text-[#FAB95B]" /> Gallery - {gallery.length} Images</h2>
           {hasContent(gallery) ? (
             <div className="mt-6 grid md:grid-cols-3 gap-4">
@@ -887,8 +890,70 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
+        {/* Alumni Success Stories - KCE style */}
+        <section id="alumni" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10 overflow-hidden">
+          <h2 className="text-center text-[30px] sm:text-[36px] font-extrabold uppercase tracking-tight text-[#1A3263]">Alumni Success Stories</h2>
+          {hasContent(alumni) ? (
+            <div className="mt-10 overflow-x-auto pb-6">
+              <div className="flex justify-center items-center min-w-fit px-4">
+                {alumni.slice(0, 7).map((a, i) => {
+                  const arr = alumni.slice(0, 7)
+                  const mid = Math.floor((arr.length - 1) / 2)
+                  const dist = Math.abs(i - mid)
+                  return (
+                    <div key={a.id} className={`shrink-0 transition-all duration-300 ${i > 0 ? '-ml-4 sm:-ml-8' : ''}`} style={{ transform: `scale(${dist === 0 ? 1 : dist === 1 ? 0.92 : dist === 2 ? 0.84 : 0.76})`, zIndex: 20 - dist }}>
+                      <div className="w-[190px] sm:w-[210px] rounded-[16px] overflow-hidden border-2 border-[#E8E2DB] bg-white shadow-xl hover:shadow-2xl transition-shadow">
+                        <div className="relative h-[230px] sm:h-[270px] bg-[#E8E2DB]">
+                          {a.image ? <img src={a.image} className="h-full w-full object-cover object-top grayscale" alt={a.name} /> : <div className="h-full w-full grid place-items-center bg-gradient-to-br from-[#E8E2DB] to-[#547792] text-[#1A3263] font-extrabold text-[44px]">{a.name?.[0] || 'A'}</div>}
+                          {a.company && <div className="absolute top-3 right-3 px-2.5 py-1 rounded-[10px] bg-white/90 backdrop-blur text-[10px] font-extrabold text-[#1A3263] shadow">{a.company}</div>}
+                        </div>
+                        <div className="p-4 text-center">
+                          <div className="font-extrabold text-[14px] text-[#1A3263] leading-tight">{a.name}</div>
+                          {a.designation && <div className="text-[11px] font-bold text-[#547792] mt-1.5">{a.designation}</div>}
+                          <div className="text-[10.5px] text-[#547792]/80 mt-1">{a.company}{a.batch ? ` • ${a.batch}` : ''}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-8 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
+              <div className="text-3xl">🎓</div>
+              <div className="font-extrabold text-[#1A3263] mt-3 uppercase tracking-wide">Alumni Success Stories</div>
+              <div className="text-[12px] text-[#547792] mt-2">Alumni will be updated soon</div>
+            </div>
+          )}
+        </section>
+
+        {/* Students Achievements - KCE style */}
+        <section id="achievements" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
+          <h2 className="text-[30px] sm:text-[36px] font-extrabold uppercase tracking-tight text-[#1A3263]">Students Achievements</h2>
+          {hasContent(achievements) ? (
+            <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {achievements.slice(0, 8).map(ach => (
+                <div key={ach.id} onClick={() => setSelAchievement(ach)} className="relative rounded-[20px] overflow-hidden border-2 border-[#E8E2DB] h-[360px] group cursor-pointer">
+                  {ach.image ? <img src={ach.image} className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" alt={ach.title} /> : <div className="absolute inset-0 bg-gradient-to-br from-[#1A3263] to-[#547792] grid place-items-center text-[#FAB95B]"><Trophy size={44} /></div>}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1A3263]/95 via-[#1A3263]/30 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <div className="font-extrabold text-white text-[14px] leading-snug">{ach.title}</div>
+                    <button onClick={(e) => { e.stopPropagation(); setSelAchievement(ach) }} className="mt-3 h-9 px-5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-extrabold uppercase tracking-wide hover:bg-[#FAB95B]/90 transition-colors">Know More →</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-8 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
+              <div className="text-3xl">🏆</div>
+              <div className="font-extrabold text-[#1A3263] mt-3 uppercase tracking-wide">Students Achievements</div>
+              <div className="text-[12px] text-[#547792] mt-2">Achievements will be updated soon</div>
+            </div>
+          )}
+        </section>
+
         {/* Events with Images - 5 Categories */}
-        <section  id="events" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="events" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263] flex items-center gap-3"> Events - {events.length} - Category Wise</h2>
           <p className="text-[12px] text-[#547792] mt-2">Cultural, Technical, Sports, College Day, Social Awareness - details college neenga add pannalam</p>
           {hasContent(events) ? (
@@ -1001,6 +1066,28 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
       </div>
+
+      {/* Quick Links - KCE style */}
+      <section className="bg-white border-t-2 border-[#E8E2DB]">
+        <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-9">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-[#E8E2DB] border-2 border-[#E8E2DB] rounded-[16px] overflow-hidden">
+            {[
+              { label: 'Vidya Lakshmi Portal', icon: Landmark, href: 'https://vidyalakshmi.gov.in' },
+              { label: 'National Digital Library', icon: BookOpen, href: 'https://ndl.in' },
+              { label: 'Anna University', icon: GraduationCap, href: 'https://annauniv.edu' },
+              { label: 'Anti Ragging Committee', icon: ShieldCheck, href: 'https://antiraggingccimc.in' },
+              { label: 'Admission Enquiries', icon: PhoneCall, href: '#admissions' },
+            ].map((q, i) => (
+              <a key={i} href={q.href} {...(q.href.startsWith('#') ? {} : { target: '_blank', rel: 'noreferrer' })}
+                 onClick={(e) => { if (q.href.startsWith('#')) { e.preventDefault(); scrollId(q.href.slice(1)) } }}
+                 className="flex flex-col items-center justify-center gap-3 py-6 text-center bg-white hover:bg-[#E8E2DB]/40 transition-colors">
+                 <q.icon size={26} className="text-[#547792]" />
+                 <span className="text-[12.5px] font-bold text-[#1A3263] leading-tight px-2">{q.label}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Contact - Full-bleed KCE style */}
       <section id="contact" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-[#1A3263] text-white py-14 border-t-4 border-[#FAB95B]">
@@ -1145,6 +1232,24 @@ function CustomCollegePage({ college, customData }) {
         </div>
       )}
 
+      {/* Achievement detail modal */}
+      {selAchievement && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6" onClick={() => setSelAchievement(null)} role="dialog" aria-modal="true">
+          <div className="absolute inset-0 bg-[#1A3263]/85 backdrop-blur-sm" />
+          <div onClick={(e) => e.stopPropagation()} className="relative w-full max-w-[640px] max-h-[92vh] overflow-y-auto rounded-[24px] bg-white shadow-2xl border-2 border-[#E8E2DB]">
+            <button onClick={() => setSelAchievement(null)} className="absolute top-4 right-4 z-10 h-10 w-10 grid place-items-center rounded-full bg-[#1A3263]/80 text-[#FAB95B] border border-[#FAB95B]/40 hover:bg-[#1A3263] transition-colors" aria-label="Close">
+              <X size={18} />
+            </button>
+            {selAchievement.image && <img src={selAchievement.image} className="w-full h-[260px] sm:h-[320px] object-cover" alt={selAchievement.title} />}
+            <div className="p-6 sm:p-8">
+              <h3 className="text-[22px] sm:text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263]">{selAchievement.title}</h3>
+              {selAchievement.description && <p className="mt-4 text-[13.5px] leading-[1.85] text-[#1A3263]/80 whitespace-pre-wrap">{selAchievement.description}</p>}
+              <button onClick={() => setSelAchievement(null)} className="mt-6 w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-extrabold text-[14px] hover:bg-[#1A3263]/90 transition-colors">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* KCE-style footer */}
       <footer className="bg-[#1A3263] text-white border-t-4 border-[#FAB95B]">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-8">
@@ -1173,6 +1278,8 @@ function CustomCollegePage({ college, customData }) {
                 <a href="#campus" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Campus & Environment</a>
                 <a href="#library" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Library</a>
                 <a href="#hostels" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Hostels</a>
+                <a href="#alumni" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Alumni Success Stories</a>
+                <a href="#achievements" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Student Achievements</a>
               </div>
             </div>
             <div>

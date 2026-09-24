@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, getProfileCompletion } from '../../lib/collegeStorage'
 import CollegeAnalytics from '../../components/admin/CollegeAnalytics'
 import { 
- LayoutDashboard, Palette, Building2, GraduationCap, Users, Megaphone, Calendar, Image as ImageIcon,
+ LayoutDashboard, Palette, Building2, GraduationCap, Users, Megaphone, Calendar, Image as ImageIcon, Trophy, Landmark, ShieldCheck, PhoneCall,
  FileText, Phone, Settings, Eye, Save, Upload, Plus, Trash2, Edit3, CheckCircle2, BarChart3, ExternalLink,
  Library, Home, Award, Beaker, Microscope, Shield, MapPin, Briefcase, BookOpen, Heart, Camera, Bell, Contact,
  Layers, FileCheck, Globe, UserCheck
@@ -33,6 +33,8 @@ export default function AdminDashboard() {
  const [newCampusImageUrl, setNewCampusImageUrl] = useState('')
  const [libraryForm, setLibraryForm] = useState({ totalBooks: '', journals: '', digitalResources: '', timings: '', librarian: '', description: '', facilities: '', image: '' })
  const [sportsForm, setSportsForm] = useState({ name: '', coach: '', description: '', facilities: '', achievements: '', image: '' })
+ const [alumniForm, setAlumniForm] = useState({ name: '', designation: '', company: '', batch: '', image: '', description: '' })
+ const [achievementForm, setAchievementForm] = useState({ title: '', image: '', description: '' })
  const [managementForm, setManagementForm] = useState({ name: '', designation: '', image: '', email: '', phone: '', description: '' })
  const [principalForm, setPrincipalForm] = useState({ name: '', designation: 'Principal', qualification: '', experience: '', image: '', message: '', detailedBio: '', email: '', phone: '', bio: '', research: '', publications: '', awards: '' })
  const [aboutForm, setAboutForm] = useState({ fullText: '', vision: '', mission: '' })
@@ -382,6 +384,42 @@ export default function AdminDashboard() {
   alert(`Sports ${sportsForm.name || 'details'} added!`)
  }
 
+ const handleAlumniImageUpload = (ev) => {
+  const file = ev.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (e) => setAlumniForm(prev => ({ ...prev, image: e.target.result }))
+  reader.readAsDataURL(file)
+ }
+
+ const handleAchievementImageUpload = (ev) => {
+  const file = ev.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (e) => setAchievementForm(prev => ({ ...prev, image: e.target.result }))
+  reader.readAsDataURL(file)
+ }
+
+ const handleSaveAlumni = () => {
+  if (!alumniForm.name) return alert("Alumni name add pannunga")
+  const list = customData.alumni || []
+  const updated = [...list, { id: Date.now(), ...alumniForm, createdAt: new Date().toISOString() }]
+  saveCollegeData(selectedCollegeId, 'alumni', updated)
+  setCustomData({ ...customData, alumni: updated })
+  setAlumniForm({ name: '', designation: '', company: '', batch: '', image: '', description: '' })
+  alert(`${alumniForm.name} added to Alumni Success Stories - website la real-time aagum!`)
+ }
+
+ const handleSaveAchievement = () => {
+  if (!achievementForm.title) return alert("Achievement title venum")
+  const list = customData.achievements || []
+  const updated = [...list, { id: Date.now(), ...achievementForm, createdAt: new Date().toISOString() }]
+  saveCollegeData(selectedCollegeId, 'achievements', updated)
+  setCustomData({ ...customData, achievements: updated })
+  setAchievementForm({ title: '', image: '', description: '' })
+  alert("Student achievement added - website la real-time aagum!")
+ }
+
  const handleSaveAdmissions = () => {
   if (!admissionForm.title && !admissionForm.description) return alert("Add at least title or description for Admissions")
   saveCollegeData(selectedCollegeId, 'admissions', admissionForm)
@@ -648,6 +686,8 @@ export default function AdminDashboard() {
   { id: 'campus', label: 'Campus & Environment', icon: MapPin, count: `${(allCustomData.campusEnvironment||allCustomData.campus||[]).length}` },
   { id: 'library', label: 'Library', icon: Library, count: allCustomData.library ? 'Added' : '' },
   { id: 'sports', label: 'Sports', icon: Heart, count: `${(allCustomData.sports||[]).length}` },
+  { id: 'alumni', label: 'Alumni Success Stories', icon: Award, count: `${(allCustomData.alumni||[]).length}` },
+  { id: 'achievements', label: 'Student Achievements', icon: Trophy, count: `${(allCustomData.achievements||[]).length}`, highlight: true },
   { id: 'events', label: 'Events', icon: Calendar, count: `${(allCustomData.events||[]).length}`, highlight: true },
   { id: 'gallery', label: 'Gallery', icon: Camera, count: `${(allCustomData.gallery||[]).length} Images`, highlight: true },
   { id: 'announcements', label: 'Announcements', icon: Bell, count: `${(allCustomData.announcements||[]).length}` },
@@ -1860,7 +1900,95 @@ export default function AdminDashboard() {
       </div>
      )}
 
-     {activeSection==='events' && (
+     {activeSection==='alumni' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Award className="text-[#FAB95B]" /> Alumni Success Stories</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add alumni with photo, company, designation - website la KCE style cards ah real-time show aagum</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add Alumni</h4>
+         <div className="mt-6 grid md:grid-cols-2 gap-5">
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Alumni Name *</label><input value={alumniForm.name} onChange={e=>setAlumniForm({...alumniForm, name: e.target.value})} placeholder="e.g. J Vijay Shankar" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Designation / Role</label><input value={alumniForm.designation} onChange={e=>setAlumniForm({...alumniForm, designation: e.target.value})} placeholder="e.g. Engineering Manager" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Company</label><input value={alumniForm.company} onChange={e=>setAlumniForm({...alumniForm, company: e.target.value})} placeholder="e.g. Oracle, Microsoft, Apple" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Batch / Year</label><input value={alumniForm.batch} onChange={e=>setAlumniForm({...alumniForm, batch: e.target.value})} placeholder="e.g. 2019, ECE" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div className="md:col-span-2">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Alumni Photo</label>
+           <div className="mt-2 flex gap-2">
+            <input value={alumniForm.image} onChange={e=>setAlumniForm({...alumniForm, image: e.target.value})} placeholder="Photo URL" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-12 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleAlumniImageUpload} /></label>
+           </div>
+           {alumniForm.image && <img src={alumniForm.image} className="mt-3 h-28 w-28 rounded-[12px] object-cover object-top border-2 border-[#E8E2DB]" alt="Alumni" />}
+          </div>
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Story / Description</label><textarea value={alumniForm.description} onChange={e=>setAlumniForm({...alumniForm, description: e.target.value})} placeholder="Short success story..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+         </div>
+         <button onClick={handleSaveAlumni} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Alumni</button>
+        </div>
+
+        <div className="mt-8">
+         <h4 className="font-bold text-[#1A3263]">Alumni - {(customData.alumni||[]).length}</h4>
+         {(customData.alumni||[]).length===0 ? (
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🎓</div><div className="font-bold text-[#1A3263] mt-3">No alumni added yet</div></div>
+         ) : (
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+           {(customData.alumni||[]).map(a=>(
+            <div key={a.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-4 flex gap-4">
+             {a.image ? <img src={a.image} className="h-16 w-16 rounded-[12px] object-cover object-top border-2 border-[#E8E2DB]" alt={a.name} /> : <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] grid place-items-center text-[#1A3263] font-extrabold text-[20px]">{a.name?.[0]}</div>}
+             <div className="flex-1 min-w-0"><div className="font-bold text-[13px] text-[#1A3263]">{a.name}</div><div className="text-[11px] text-[#547792] mt-1">{a.designation} {a.company ? `• ${a.company}` : ''}</div></div>
+             <button onClick={()=>handleDelete('alumni', a.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center shrink-0"><Trash2 size={12} /></button>
+            </div>
+           ))}
+          </div>
+         )}
+        </div>
+       </div>
+      </div>
+     )}
+
+    {activeSection==='achievements' && (
+      <div className="space-y-6">
+       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Trophy className="text-[#FAB95B]" /> Student Achievements</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Add student achievements with poster/photo images - website la KCE style image cards ah real-time show aagum</p>
+
+        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
+         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add Achievement</h4>
+         <div className="mt-6 grid md:grid-cols-2 gap-5">
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Achievement Title *</label><input value={achievementForm.title} onChange={e=>setAchievementForm({...achievementForm, title: e.target.value})} placeholder="e.g. Won the 2026 Best AI Awards, Taipei" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
+          <div className="md:col-span-2">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Achievement Poster / Photo</label>
+           <div className="mt-2 flex gap-2">
+            <input value={achievementForm.image} onChange={e=>setAchievementForm({...achievementForm, image: e.target.value})} placeholder="Poster image URL" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-12 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleAchievementImageUpload} /></label>
+           </div>
+           {achievementForm.image && <img src={achievementForm.image} className="mt-3 h-40 w-full rounded-[12px] object-cover border-2 border-[#E8E2DB]" alt="Achievement" />}
+          </div>
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Details</label><textarea value={achievementForm.description} onChange={e=>setAchievementForm({...achievementForm, description: e.target.value})} placeholder="What students achieved, where, when..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
+         </div>
+         <button onClick={handleSaveAchievement} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Achievement</button>
+        </div>
+
+        <div className="mt-8">
+         <h4 className="font-bold text-[#1A3263]">Achievements - {(customData.achievements||[]).length}</h4>
+         {(customData.achievements||[]).length===0 ? (
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🏆</div><div className="font-bold text-[#1A3263] mt-3">No achievements added yet</div></div>
+         ) : (
+          <div className="mt-4 grid md:grid-cols-2 gap-4">
+           {(customData.achievements||[]).map(a=>(
+            <div key={a.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] overflow-hidden">
+             {a.image && <img src={a.image} className="h-[120px] w-full object-cover" alt={a.title} />}
+             <div className="p-4 flex justify-between gap-3"><div className="flex-1 min-w-0"><div className="font-bold text-[13px] text-[#1A3263]">{a.title}</div><div className="text-[11px] text-[#547792] mt-1">{a.description?.slice(0,100)}</div></div><button onClick={()=>handleDelete('achievements', a.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center shrink-0"><Trash2 size={12} /></button></div>
+            </div>
+           ))}
+          </div>
+         )}
+        </div>
+       </div>
+      </div>
+     )}
+
+    {activeSection==='events' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
         <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Calendar className="text-[#FAB95B]" /> Events - 5 Categories with Images</h3>
@@ -2177,7 +2305,7 @@ export default function AdminDashboard() {
       </div>
      )}
 
-     {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics','management','principal','research','accreditation','campus','library','sports','events','announcements','admissions','contact','settings'].includes(activeSection) && (
+     {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics','management','principal','research','accreditation','campus','library','sports','alumni','achievements','events','announcements','admissions','contact','settings'].includes(activeSection) && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-12 text-center">
        <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center mx-auto text-2xl">🚧</div>
        <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} - Coming Soon - Your Own {activeSection}</h3>
