@@ -10,7 +10,7 @@ function Rich({ text, className = '' }) {
   return (
     <span className={className}>
       {parts.map((p, i) => (i % 2 === 1
-        ? <strong key={i} className="font-extrabold text-[#547792]">{p}</strong>
+        ? <strong key={i} className="font-extrabold text-[#FAB95B]">{p}</strong>
         : <span key={i}>{p}</span>))}
     </span>
   )
@@ -162,7 +162,7 @@ function ProfilePage({ d, college, about, campusImages, branding, courses, short
                 const Icon = STAT_ICONS[i % STAT_ICONS.length]
                 return (
                   <div key={i} className="relative overflow-hidden rounded-[14px] bg-white border border-[#E8E2DB] shadow-sm p-5 flex items-center gap-4">
-                    <span className="h-12 w-12 shrink-0 rounded-[12px] bg-[#FAB95B]/15 text-[#B98A2E] grid place-items-center"><Icon size={20} className="text-[#547792]" /></span>
+                    <span className="h-12 w-12 shrink-0 rounded-[12px] bg-[#FAB95B]/20 grid place-items-center"><Icon size={20} className="text-[#FAB95B]" /></span>
                     <div>
                       <div className="text-[26px] leading-none font-extrabold text-[#FAB95B]">{s.value}</div>
                       <div className="mt-1.5 text-[12.5px] font-extrabold text-[#1A3263] leading-snug">{s.label}</div>
@@ -235,7 +235,7 @@ function VisionPage({ d, about }) {
           <div className="mt-6 space-y-4">
             {bullets.map((b, i) => (
               <div key={i} className="flex gap-3">
-                <ChevronsRight size={17} className="shrink-0 mt-1 text-[#547792]" />
+                <ChevronsRight size={17} className="shrink-0 mt-1 text-[#FAB95B]" />
                 <p className="text-[14px] leading-[1.9] text-[#547792]">{b}</p>
               </div>
             ))}
