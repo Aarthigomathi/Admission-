@@ -198,7 +198,7 @@ function AlumniCarousel({ alumni }) {
   const [idx, setIdx] = useState(0)
   useEffect(() => {
     if (alumni.length <= 1) return
-    const t = setInterval(() => setIdx(i => (i + 1) % alumni.length), 5000)
+    const t = setInterval(() => setIdx(i => (i + 1) % alumni.length), 6000)
     return () => clearInterval(t)
   }, [alumni.length])
   const n = alumni.length
@@ -231,7 +231,7 @@ function AlumniCarousel({ alumni }) {
         const a = alumni[(idx + off + n * 5) % n]
         const isCenter = off === 0
         return (
-          <div key={off} onClick={() => { if (!isCenter) setIdx((idx + off + n) % n) }} className={`relative text-center transition-all duration-700 ${zix[String(off)]} ${margs[String(off)]} ${!isCenter ? 'cursor-pointer' : ''} ${Math.abs(off) >= 4 ? 'hidden xl:block' : Math.abs(off) >= 3 ? 'hidden lg:block' : ''}`}>
+          <div key={off} onClick={() => { if (!isCenter) setIdx((idx + off + n) % n) }} className={`relative text-center transition-all duration-[1600ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] ${zix[String(off)]} ${margs[String(off)]} ${!isCenter ? 'cursor-pointer' : ''} ${Math.abs(off) >= 4 ? 'hidden xl:block' : Math.abs(off) >= 3 ? 'hidden lg:block' : ''}`}>
             <div className={`${sizes[String(off)]} rounded-[20px] overflow-hidden shadow-2xl bg-white relative ${fade[String(off)]}`}>
               {a.image ? <img src={a.image} className="h-full w-full object-cover object-top" alt={a.name} /> : <div className="h-full w-full bg-[#E8E2DB] grid place-items-center text-[#547792] font-extrabold text-[34px]">{a.name ? a.name[0] : ''}</div>}
               <CompanyMark logo={a.companyLogo} company={a.company} />
