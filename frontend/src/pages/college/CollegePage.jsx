@@ -203,23 +203,10 @@ function AlumniCarousel({ alumni }) {
   }, [alumni.length])
   const n = alumni.length
   if (n === 0) return null
-  if (n < 5) {
-    return (
-      <div className="mt-12 flex flex-wrap items-end justify-center gap-5 pb-4">
-        {alumni.map((a, i) => (
-          <div key={a.id || i} className="text-center">
-            <div className="h-[300px] w-[220px] rounded-[20px] overflow-hidden shadow-xl bg-white relative">
-              {a.image ? <img src={a.image} className="h-full w-full object-cover object-top" alt={a.name} /> : <div className="h-full w-full bg-[#E8E2DB] grid place-items-center text-[#547792] font-extrabold text-[30px]">{a.name ? a.name[0] : ''}</div>}
-              <CompanyMark logo={a.companyLogo} company={a.company} />
-            </div>
-            <div className="mt-3 text-[15px] font-extrabold text-[#FAB95B]">{a.name}</div>
-            <div className="text-[11.5px] text-[#547792] font-semibold mt-0.5">{a.designation}{a.company ? ' ' + a.company : ''}</div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-  const offsets = [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+  // wheel adapts to any alumni count: 2 alumni = 2-card wheel, 9+ = full ring
+  const vis = Math.min(n, 9)
+  const startOff = -Math.floor((vis - 1) / 2)
+  const offsets = Array.from({ length: vis }, (_, i) => startOff + i)
   const sizes = {
     '-4': 'w-[148px] h-[212px]', '-3': 'w-[176px] h-[252px]', '-2': 'w-[206px] h-[298px]', '-1': 'w-[246px] h-[358px]',
     '0': 'w-[300px] h-[430px]',
