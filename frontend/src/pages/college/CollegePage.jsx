@@ -2,19 +2,28 @@ import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { getCollegeBySlug, getCollegeCustomData, getPublicColleges } from '../../lib/collegeStorage'
 import CollegeHeader from '../../components/college/CollegeHeader'
-import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf } from 'lucide-react'
+import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, User, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf, ChevronLeft, ChevronRight } from 'lucide-react'
 
 
 function placementStats(placements) {
-  const total = (placements || []).reduce((a, p) => a + (parseInt(p.students, 10) || 0), 0)
-  const companies = (placements || []).length
-  let highest = ''
-  let highestNum = 0
-  ;(placements || []).forEach(p => {
-    const m = String(p.package || '').match(/[\d.]+/)
-    if (m && parseFloat(m[0]) > highestNum) { highestNum = parseFloat(m[0]); highest = String(p.package) }
-  })
-  return { total, companies, highest, highestNum }
+  if (Array.isArray(placements) && placements.length) {
+    const total = placements.reduce((a, p) => a + (parseInt(p.students, 10) || 0), 0)
+    const companies = placements.length
+    let highest = ''
+    let highestNum = 0
+    placements.forEach(p => {
+      const m = String(p.package || '').match(/[\d.]+/)
+      if (m && parseFloat(m[0]) > highestNum) { highestNum = parseFloat(m[0]); highest = String(p.package) }
+    })
+    const recruiters = placements.map(p => p.company).filter(Boolean)
+    return { total, companies, highest, highestNum, recruiters }
+  }
+  if (placements && typeof placements === 'object') {
+    const recruiters = Array.isArray(placements.recruiters) ? placements.recruiters : []
+    const m = String(placements.highest || '').match(/([\d.]+)/)
+    return { total: placements.total || '', companies: recruiters.length, highest: placements.highest || '', highestNum: m ? parseFloat(m[1]) : 0, recruiters }
+  }
+  return { total: 0, companies: 0, highest: '', highestNum: 0, recruiters: [] }
 }
 
 function scrollId(id) {
@@ -23,118 +32,209 @@ function scrollId(id) {
   else window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-function CollegeHero({ branding, college, placements, departments, courses, facilities }) {
-  const [currentIdx, setCurrentIdx] = useState(0)
-  const collegeImages = branding.collegeImages || college.branding?.collegeImages || []
-  const allImages = []
-  collegeImages.forEach(img => {
-    if (img.url) allImages.push(img.url)
-    else if (typeof img === 'string') allImages.push(img)
-  })
-  if (allImages.length === 0 && branding.heroImage) allImages.push(branding.heroImage)
-  if (allImages.length === 0 && college.branding?.heroImage) allImages.push(college.branding.heroImage)
+function BrandIcon({ name, size = 15, className = '' }) {
+  const paths = {
+    facebook: 'M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z',
+    instagram: 'M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.72 3.72 0 0 1-1.38-.9 3.72 3.72 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.3-1.46.72-2.13 1.38A5.88 5.88 0 0 0 .63 4.14C.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13a5.88 5.88 0 0 0 2.13 1.38c.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.88 5.88 0 0 0 2.13-1.38 5.88 5.88 0 0 0 1.38-2.13c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.88 5.88 0 0 0-1.38-2.13A5.88 5.88 0 0 0 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zM12 16a4 4 0 1 1 4-4 4 4 0 0 1-4 4zm6.4-10.85a1.44 1.44 0 1 0 1.44 1.44 1.44 1.44 0 0 0-1.44-1.44z',
+    x: 'M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82L5 21.75H1.68l7.73-8.84L1.25 2.25h6.83l4.71 6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z',
+    youtube: 'M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12z',
+    linkedin: 'M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05a3.74 3.74 0 0 1 3.37-1.85c3.6 0 4.27 2.37 4.27 5.46zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0z'
+  }
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true"><path d={paths[name]} /></svg>
+}
 
-  useEffect(() => {
-    if (allImages.length <= 1) return
-    const interval = setInterval(() => setCurrentIdx(prev => (prev + 1) % allImages.length), 5000)
-    return () => clearInterval(interval)
-  }, [allImages.length])
-
-  const stats = placementStats(placements)
-  const heroStats = [
-    { label: 'Departments', value: departments.length },
-    { label: 'Programmes', value: courses.length },
-    { label: 'Facilities', value: facilities.length },
-    ...(stats.companies > 0 ? [{ label: 'Placements', value: stats.total || stats.companies }] : []),
+function KceHero({ college, branding, homePage, plStats, shortName, campusImages }) {
+  const banner = homePage.bannerImage || branding.heroImage || college.branding?.heroImage || campusImages[0] || ''
+  const statPl = homePage.statPlacements || plStats.total || ''
+  const statCo = homePage.statCompanies || plStats.companies || ''
+  const statLpa = homePage.statMaxLpa || (plStats.highestNum ? String(plStats.highestNum) : String(plStats.highest || '').replace(/[^\d.]/g, ''))
+  const coord = (homePage.coordinators || []).slice(0, 4)
+  const conv = (homePage.convenors || []).slice(0, 4)
+  const partners = (homePage.partnerLogos || []).slice(0, 6)
+  const dateParts = (homePage.eventDate || '').split(' ')
+  const cta = [
+    { label: 'Placement', id: 'placements' },
+    { label: 'Campus Tour', id: 'campus' },
+    { label: 'Campus Life', id: 'events' },
+    { label: 'Center of Excellence', id: 'centres' },
   ]
-
   return (
-    <div id="home" className="relative h-[540px] sm:h-[600px] lg:h-[660px] overflow-hidden bg-[#1A3263] group">
-      {allImages.length > 0 ? allImages.map((img, idx) => (
-        <img
-          key={idx}
-          src={img}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${idx === currentIdx ? 'opacity-100' : 'opacity-0'}`}
-          alt={`${college.name} Campus ${idx+1}`}
-        />
-      )) : (
-        <div className="h-full w-full bg-gradient-to-br from-[#1A3263] via-[#547792] to-[#1A3263]" />
-      )}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1A3263]/95 via-[#1A3263]/35 to-[#1A3263]/40" />
+    <div id="home" className="relative bg-[#1A3263]">
+      {/* Event banner */}
+      <div className="relative h-[400px] sm:h-[500px] lg:h-[600px] overflow-hidden">
+        {banner ? (
+          <img src={banner} className="absolute inset-0 h-full w-full object-cover object-center" alt={college.name + ' banner'} />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1A3263] via-[#547792] to-[#1A3263]"></div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1A3263]/60 via-transparent to-[#1A3263]/20"></div>
 
-      {/* Top-right: placement stat tiles */}
-      {stats.companies > 0 && (
-        <div className="absolute top-5 right-4 sm:right-8 z-20 hidden md:flex gap-3">
-          <div className="rounded-[14px] bg-[#1A3263]/85 backdrop-blur border border-white/15 px-5 py-4 text-center w-[150px]">
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#FAB95B]">Placements</div>
-            <div className="text-[30px] font-extrabold text-white leading-none mt-2">{stats.total || stats.companies}+</div>
-            <div className="text-[10px] font-bold text-white/60 mt-2 uppercase">{stats.companies} companies</div>
-          </div>
-          <div className="rounded-[14px] bg-[#FAB95B] px-5 py-4 text-center w-[150px] shadow-xl">
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#1A3263]/70">Companies</div>
-            <div className="text-[30px] font-extrabold text-[#1A3263] leading-none mt-2">{stats.companies}+</div>
-            <div className="text-[10px] font-bold text-[#1A3263]/60 mt-2 uppercase">Visited campus</div>
-          </div>
-          {stats.highestNum > 0 && (
-            <div className="rounded-[14px] bg-white px-5 py-4 text-center w-[150px] shadow-xl">
-              <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#547792]">Highest Offer</div>
-              <div className="text-[30px] font-extrabold text-[#1A3263] leading-none mt-2">{stats.highestNum}</div>
-              <div className="text-[10px] font-bold text-[#547792]/80 mt-2 uppercase">LPA max</div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Branding top-left */}
-      <div className="absolute top-5 left-4 sm:left-8 z-20 max-w-[440px]">
-        <div className="flex items-center gap-4">
-          {branding.logo ? (
-            <img src={branding.logo} className="h-16 w-16 sm:h-20 sm:w-20 rounded-[16px] object-cover border-4 border-[#FAB95B] bg-white shadow-xl shrink-0" alt={`${college.name} Logo`} />
-          ) : (
-            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-[16px] bg-white border-4 border-[#FAB95B] grid place-items-center text-[#1A3263] font-extrabold text-[28px] shadow-xl shrink-0">{college.name?.[0] || 'C'}</div>
-          )}
-          <div className="min-w-0">
-            <div className="text-white font-extrabold text-[22px] sm:text-[28px] leading-tight">{college.name}</div>
-            <div className="text-[11px] sm:text-[12px] font-bold mt-1.5 flex items-center gap-2 flex-wrap">
-              <span className="text-[#FAB95B]">{college.district} • {college.city}</span>
-              <span className="px-2 py-0.5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[10px] font-extrabold">Est. {college.established}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom-left: white stat card */}
-      <div className="absolute bottom-0 left-4 sm:left-8 z-20 w-[calc(100%-2rem)] sm:w-auto sm:max-w-[560px]">
-        <div className="rounded-t-[20px] bg-white shadow-2xl px-4 sm:px-6 py-5 grid grid-cols-3 sm:grid-cols-4 divide-x divide-[#E8E2DB]">
-          {heroStats.map((st, i) => (
-            <div key={i} className="px-3 sm:px-4 text-center first:pl-0 last:pr-0">
-              <div className="text-[24px] sm:text-[30px] font-extrabold text-[#1A3263] leading-none">{st.value}+</div>
-              <div className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#547792] mt-2">{st.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Bottom-right: CTA buttons */}
-      <div className="absolute bottom-0 right-0 z-20 hidden lg:flex items-end gap-2 pr-8">
-        {stats.companies > 0 && <button onClick={() => scrollId('placements')} className="h-11 px-5 rounded-t-[14px] bg-[#FAB95B] text-[#1A3263] text-[11px] font-extrabold uppercase tracking-wide shadow-xl hover:bg-[#FAB95B]/90 transition-colors">Placement</button>}
-        <button onClick={() => scrollId('campus')} className="h-11 px-5 rounded-t-[14px] bg-[#1A3263]/80 backdrop-blur border border-white/15 text-white text-[11px] font-extrabold uppercase tracking-wide shadow-xl hover:bg-[#1A3263] transition-colors">Campus Life</button>
-        <button onClick={() => scrollId('events')} className="h-11 px-5 rounded-t-[14px] bg-[#1A3263]/80 backdrop-blur border border-white/15 text-white text-[11px] font-extrabold uppercase tracking-wide shadow-xl hover:bg-[#1A3263] transition-colors">Events</button>
-        <button onClick={() => scrollId('gallery')} className="h-11 px-5 rounded-t-[14px] bg-[#1A3263]/80 backdrop-blur border border-white/15 text-white text-[11px] font-extrabold uppercase tracking-wide shadow-xl hover:bg-[#1A3263] transition-colors">Gallery</button>
-      </div>
-
-      {/* carousel dots + arrows */}
-      {allImages.length > 1 && (
-        <>
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-            {allImages.map((_, idx) => (
-              <button key={idx} onClick={() => setCurrentIdx(idx)} className={`h-1.5 rounded-full transition-all ${idx === currentIdx ? 'w-7 bg-[#FAB95B]' : 'w-1.5 bg-white/50 hover:bg-white/80'}`} />
+        {/* Partner logos - top right */}
+        {partners.length > 0 && (
+          <div className="absolute top-4 right-4 sm:right-10 z-20 flex flex-wrap justify-end gap-2 max-w-[600px]">
+            {partners.map((p, i) => (
+              <div key={i} className="h-11 min-w-[60px] px-3 rounded-[8px] bg-white/95 shadow-md flex items-center justify-center overflow-hidden">
+                <img src={p} className="h-8 max-w-[92px] object-contain" alt="" />
+              </div>
             ))}
           </div>
-          <button onClick={() => setCurrentIdx(prev => (prev - 1 + allImages.length) % allImages.length)} className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/30 backdrop-blur border border-white/20 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/50 z-20">‹</button>
-          <button onClick={() => setCurrentIdx(prev => (prev + 1) % allImages.length)} className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/30 backdrop-blur border border-white/20 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/50 z-20">›</button>
-        </>
-      )}
+        )}
+
+        {/* Date card - bottom left */}
+        {homePage.eventDate && (
+          <div className="absolute bottom-6 left-4 sm:left-10 z-20">
+            <div className="rounded-[16px] bg-white shadow-2xl px-6 py-4 text-center min-w-[170px]">
+              <div className="text-[36px] sm:text-[42px] font-extrabold text-[#1A3263] leading-none">{dateParts[0] || ''}</div>
+              <div className="text-[15px] font-extrabold text-[#1A3263] mt-0.5">{dateParts.slice(1).join(' ')}</div>
+              {homePage.eventTime ? <div className="mt-2 text-[12px] font-extrabold text-[#FAB95B] tracking-wide">TIME : {homePage.eventTime}</div> : null}
+            </div>
+          </div>
+        )}
+
+        {/* Chief guest card */}
+        {homePage.chiefGuestName && (
+          <div className="absolute bottom-6 left-[240px] sm:left-[calc(50%-260px)] z-20 hidden md:block">
+            <div className="rounded-[16px] bg-white shadow-2xl p-4 w-[195px] text-center">
+              <div className="h-[125px] w-full rounded-[10px] overflow-hidden bg-[#E8E2DB]">
+                {homePage.chiefGuestPhoto ? (
+                  <img src={homePage.chiefGuestPhoto} className="h-full w-full object-cover object-top" alt={homePage.chiefGuestName} />
+                ) : (
+                  <div className="h-full w-full grid place-items-center text-[#547792] font-extrabold text-[30px]">{homePage.chiefGuestName[0]}</div>
+                )}
+              </div>
+              <div className="mt-3 inline-block px-3.5 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[9px] font-extrabold uppercase tracking-[0.08em]">Chief Guest</div>
+              <div className="mt-2 text-[13px] font-extrabold text-[#1A3263] leading-tight">{homePage.chiefGuestName}</div>
+              {homePage.chiefGuestTitle ? <div className="mt-1 text-[10.5px] text-[#547792] font-semibold leading-tight">{homePage.chiefGuestTitle}</div> : null}
+            </div>
+          </div>
+        )}
+
+        {/* Coordinators / Convenors card - bottom right */}
+        {(coord.length > 0 || conv.length > 0) && (
+          <div className="absolute bottom-6 right-4 sm:right-10 z-20 hidden xl:block">
+            <div className="rounded-[16px] bg-white/95 backdrop-blur shadow-2xl p-5 w-[420px] grid grid-cols-2 gap-5">
+              {coord.length > 0 && (
+                <div>
+                  <div className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#FAB95B]">Coordinators</div>
+                  <div className="mt-2.5 space-y-2.5">
+                    {coord.map((c, i) => (
+                      <div key={i}>
+                        <div className="text-[12px] font-extrabold text-[#1A3263] leading-tight">{c.split(' - ')[0]}</div>
+                        {c.split(' - ')[1] ? <div className="text-[10px] text-[#547792] font-semibold">{c.split(' - ')[1]}</div> : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {conv.length > 0 && (
+                <div>
+                  <div className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#FAB95B]">Convenors</div>
+                  <div className="mt-2.5 space-y-2.5">
+                    {conv.map((c, i) => (
+                      <div key={i}>
+                        <div className="text-[12px] font-extrabold text-[#1A3263] leading-tight">{c.split(' - ')[0]}</div>
+                        {c.split(' - ')[1] ? <div className="text-[10px] text-[#547792] font-semibold">{c.split(' - ')[1]}</div> : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* White stats strip + navy CTA buttons */}
+      <div className="bg-white border-b border-[#E8E2DB]">
+        <div className="mx-auto max-w-[1600px] px-4 sm:px-8 py-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <div className="flex items-center divide-x divide-[#E8E2DB]">
+            {statPl !== '' && (
+              <div className="px-5 sm:px-8 first:pl-0 text-center">
+                <div className="text-[26px] sm:text-[34px] font-extrabold text-[#FAB95B] leading-none">{statPl}+</div>
+                <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#547792] mt-1.5">Placements</div>
+              </div>
+            )}
+            {statCo !== '' && (
+              <div className="px-5 sm:px-8 text-center">
+                <div className="text-[26px] sm:text-[34px] font-extrabold text-[#FAB95B] leading-none">{statCo}+</div>
+                <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#547792] mt-1.5">Companies</div>
+              </div>
+            )}
+            {statLpa !== '' && (
+              <div className="px-5 sm:px-8 last:pr-0 text-center">
+                <div className="text-[26px] sm:text-[34px] font-extrabold text-[#FAB95B] leading-none">{statLpa}</div>
+                <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#547792] mt-1.5">LPA - Max Salary</div>
+              </div>
+            )}
+          </div>
+          <div className="flex-1"></div>
+          <div className="flex flex-wrap gap-2">
+            {cta.map(b => (
+              <button key={b.label} onClick={() => scrollId(b.id)} className="h-10 px-4 sm:px-5 rounded-[10px] bg-[#1A3263] text-white text-[10.5px] sm:text-[11px] font-extrabold uppercase tracking-[0.08em] hover:bg-[#1A3263]/85 transition-colors">{b.label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function AlumniCarousel({ alumni }) {
+  const [idx, setIdx] = useState(0)
+  useEffect(() => {
+    if (alumni.length <= 1) return
+    const t = setInterval(() => setIdx(i => (i + 1) % alumni.length), 4000)
+    return () => clearInterval(t)
+  }, [alumni.length])
+  const n = alumni.length
+  if (n === 0) return null
+  if (n < 5) {
+    return (
+      <div className="mt-12 flex flex-wrap items-end justify-center gap-5 pb-4">
+        {alumni.map((a, i) => (
+          <div key={a.id || i} className="text-center">
+            <div className="h-[300px] w-[220px] rounded-[20px] overflow-hidden shadow-xl bg-white relative">
+              {a.image ? <img src={a.image} className="h-full w-full object-cover object-top" alt={a.name} /> : <div className="h-full w-full bg-[#E8E2DB] grid place-items-center text-[#547792] font-extrabold text-[30px]">{a.name ? a.name[0] : ''}</div>}
+              {a.companyLogo ? <div className="absolute top-3 right-3 h-9 px-2.5 rounded-[8px] bg-white/95 shadow flex items-center justify-center overflow-hidden"><img src={a.companyLogo} className="h-5 max-w-[64px] object-contain" alt="" /></div> : null}
+            </div>
+            <div className="mt-3 text-[15px] font-extrabold text-[#FAB95B]">{a.name}</div>
+            <div className="text-[11.5px] text-[#547792] font-semibold mt-0.5">{a.designation}{a.company ? ' ' + a.company : ''}</div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+  const offsets = [-2, -1, 0, 1, 2]
+  const sizes = { '-2': 'w-[185px] h-[265px]', '-1': 'w-[240px] h-[345px]', '0': 'w-[300px] h-[425px]', '1': 'w-[240px] h-[345px]', '2': 'w-[185px] h-[265px]' }
+  return (
+    <div className="mt-14 flex items-end justify-center pb-2 select-none">
+      {offsets.map(off => {
+        const a = alumni[(idx + off + n * 3) % n]
+        const isCenter = off === 0
+        return (
+          <div key={off} onClick={() => { if (!isCenter) setIdx((idx + off + n) % n) }} className={`relative text-center transition-all duration-500 ${isCenter ? 'z-30 mx-[-14px]' : off === -1 ? 'z-20 mr-[-42px]' : off === 1 ? 'z-20 ml-[-42px]' : off === -2 ? 'z-10 mr-[-64px] cursor-pointer' : 'z-10 ml-[-64px] cursor-pointer'}`}>
+            <div className={`${sizes[String(off)]} rounded-[20px] overflow-hidden shadow-2xl bg-white relative ${isCenter ? '' : 'grayscale opacity-90'} ${Math.abs(off) === 2 ? 'opacity-55' : ''}`}>
+              {a.image ? <img src={a.image} className="h-full w-full object-cover object-top" alt={a.name} /> : <div className="h-full w-full bg-[#E8E2DB] grid place-items-center text-[#547792] font-extrabold text-[34px]">{a.name ? a.name[0] : ''}</div>}
+              {a.companyLogo ? <div className="absolute top-3 right-3 h-9 px-2.5 rounded-[8px] bg-white/95 shadow flex items-center justify-center overflow-hidden"><img src={a.companyLogo} className="h-5 max-w-[64px] object-contain" alt="" /></div> : null}
+            </div>
+            <div className={`mt-3.5 font-extrabold text-[#FAB95B] ${isCenter ? 'text-[18px]' : Math.abs(off) === 1 ? 'text-[13.5px]' : 'text-[11px]'}`}>{a.name}</div>
+            <div className={`text-[#547792] font-semibold mt-0.5 ${isCenter ? 'text-[12.5px]' : 'text-[10px]'}`}>{a.designation}{a.company ? ' ' + a.company : ''}</div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function FooterLinkCol({ title, links }) {
+  return (
+    <div>
+      <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#FAB95B]">{title}</div>
+      <div className="mt-5 space-y-3 text-[12.5px]">
+        {links.map((l, i) => (
+          <a key={i} href="#" onClick={e => e.preventDefault()} className="block text-white/70 hover:text-[#FAB95B] transition-colors">{l}</a>
+        ))}
+      </div>
     </div>
   )
 }
@@ -144,11 +244,13 @@ function CustomCollegePage({ college, customData }) {
   const [progTab, setProgTab] = useState('All')
   const [selCourse, setSelCourse] = useState(null)
   const [selAchievement, setSelAchievement] = useState(null)
+  const [achPage, setAchPage] = useState(0)
+  const [newsPage, setNewsPage] = useState(0)
   const branding = customData.branding || college.branding || {}
   const departments = customData.departments || college.departments || []
   const courses = customData.courses || college.courses || []
   const facilities = customData.customFacilities || []
-  const placements = customData.placements || []
+  const placements = customData.placements || college.placements || []
   const gallery = customData.gallery || []
   const events = customData.events || []
   const announcements = customData.announcements || []
@@ -166,6 +268,9 @@ function CustomCollegePage({ college, customData }) {
   const settings = customData.settings || null
   const alumni = customData.alumni || []
   const achievements = customData.achievements || []
+  const homePage = customData.homePage || college.homePage || {}
+  const newsList = (Array.isArray(customData.news) && customData.news.length > 0 ? customData.news : (events.length > 0 ? events : announcements)).map(n => ({ title: n.title || '', date: n.date || '', image: n.image || '', link: n.link || '' }))
+  const footerLinksData = customData.footerLinks || college.footerLinks || null
 
   const hasContent = (arr) => arr && arr.length > 0
 
@@ -177,6 +282,24 @@ function CustomCollegePage({ college, customData }) {
   const campusImages = (campusEnv[0]?.images || []).map(im => (typeof im === 'string' ? im : im.url)).filter(Boolean)
   const progBg = campusImages[0] || branding.heroImage || college.branding?.heroImage || ''
   const shortName = settings?.shortName || college.shortName || college.name?.split(' ')[0] || ''
+
+  // KCE home layout derived data
+  const aboutImg = homePage.aboutImage || branding.aboutImage || campusImages[0] || branding.heroImage || college.branding?.heroImage || ''
+  const statPl = homePage.statPlacements || plStats.total || ''
+  const statCo = homePage.statCompanies || plStats.companies || ''
+  const statLpa = homePage.statMaxLpa || (plStats.highestNum ? String(plStats.highestNum) : String(plStats.highest || '').replace(/[^\d.]/g, ''))
+  const industryItems = (Array.isArray(customData.industryLogos) && customData.industryLogos.length > 0 ? customData.industryLogos.map(l => (typeof l === 'string' ? { name: '', url: l } : l)) : (plStats.recruiters || []).map(n => ({ name: n, url: '' })))
+  const quickLinks = [
+    { label: 'Vidya Lakshmi Portal', icon: 'user', href: 'https://vidyalakshmi.gov.in' },
+    { label: 'National Digital Library', icon: 'book', href: 'https://ndl.in' },
+    { label: 'Student Alumni', icon: 'cap', href: '#alumni' },
+    { label: 'Anti Ragging Committee', icon: 'users', href: 'https://antiraggingccimc.in' },
+    { label: 'Admission Enquiries', icon: 'landmark', href: '#admissions' },
+  ]
+
+  const achPages = Math.max(1, Math.ceil(achievements.length / 4))
+  const newsPages = Math.max(1, Math.ceil(newsList.length / 2))
+  const upcomingList = [...(events.length > 0 ? events : announcements)].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 4)
 
   // HOD profile modal - close on Escape, lock body scroll while open
   useEffect(() => {
@@ -192,56 +315,278 @@ function CustomCollegePage({ college, customData }) {
 
   return (
     <div className="min-h-screen bg-[#E8E2DB]">
-      <CollegeHeader college={{ ...college, branding: { ...college.branding, ...branding, logo: branding.logo || college.branding?.logo, heroImage: branding.heroImage || college.branding?.heroImage } }} />
+      <CollegeHeader college={{ ...college, settings: settings, branding: { ...college.branding, ...branding, logo: branding.logo || college.branding?.logo, heroImage: branding.heroImage || college.branding?.heroImage } }} homePage={homePage} />
 
-      {/* Hero */}
-      <CollegeHero branding={branding} college={college} placements={placements} departments={departments} courses={courses} facilities={facilities} />
+      {/* Hero - KCE event banner */}
+      <KceHero college={college} branding={branding} homePage={homePage} plStats={plStats} shortName={shortName} campusImages={campusImages} />
 
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-12 space-y-12">
-        {/* About - KCE style */}
-        <section id="about" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
-          <h2 className="text-[30px] sm:text-[36px] font-extrabold uppercase tracking-tight text-[#1A3263]">About Us</h2>
-          <div className="mt-8 grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-12 items-start">
+      {/* ABOUT US - KCE layout */}
+      <section id="about" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-white">
+        <div className="mx-auto max-w-[1600px] px-6 lg:px-12 py-14 sm:py-20">
+          <h2 className="text-[30px] sm:text-[38px] font-extrabold uppercase tracking-tight text-[#1A3263]">About Us</h2>
+          <div className="mt-8 grid lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-16 items-start">
             <div>
-              {about.fullText ? (
-                <p className="text-[14px] sm:text-[15px] leading-[1.9] text-[#1A3263]/80 whitespace-pre-wrap">{about.fullText}</p>
-              ) : (
-                <div className="py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-                  <FileText size={34} className="mx-auto text-[#547792]" />
-                  <div className="font-bold text-[#1A3263] mt-3">About section not added yet</div>
-                  <div className="text-[12px] text-[#547792] mt-2">College admin can add about, vision, mission in Admin → About</div>
-                </div>
-              )}
-              {about.vision && (
-                <div className="mt-6 rounded-[16px] bg-[#1A3263] text-white p-6">
-                  <div className="font-extrabold text-[#FAB95B] uppercase text-[12px] tracking-[0.14em]">Vision</div>
-                  <div className="text-[13px] text-[#E8E2DB]/85 mt-2 leading-[1.7]">{about.vision}</div>
-                </div>
-              )}
-              {about.mission && about.mission.length>0 && (
-                <div className="mt-4 rounded-[16px] bg-[#FAB95B]/15 border-2 border-[#FAB95B]/30 p-6">
-                  <div className="font-extrabold text-[#1A3263] uppercase text-[12px] tracking-[0.14em]">Mission</div>
-                  <div className="mt-3 space-y-2">
-                    {about.mission.map((m,i)=><div key={i} className="flex gap-2.5 text-[13px] text-[#1A3263]"><span className="h-5 w-5 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[10px] font-bold shrink-0">{i+1}</span>{m}</div>)}
+              <p className="text-[14.5px] sm:text-[15px] leading-[1.95] text-[#547792]">{about.fullText || 'College introduction will appear here once the college adds it from the dashboard.'}</p>
+              <div className="mt-9 flex flex-wrap gap-x-7 gap-y-4 items-center">
+                {(homePage.accreditationLogos || []).length > 0 ? (
+                  homePage.accreditationLogos.slice(0, 8).map((l, i) => (
+                    <img key={i} src={l} className="h-12 sm:h-14 w-auto object-contain grayscale opacity-80" alt={'Accreditation ' + (i + 1)} />
+                  ))
+                ) : (
+                  (settings?.accreditation || college.accreditation || 'NAAC • NBA • ISO 9001:2015').split('•').map(t => t.trim()).filter(Boolean).slice(0, 8).map((t, i) => (
+                    <div key={i} className="h-12 px-5 flex items-center rounded-full border-2 border-[#E8E2DB] text-[11px] font-extrabold uppercase tracking-wide text-[#547792]">{t}</div>
+                  ))
+                )}
+              </div>
+              <button onClick={() => scrollId('management')} className="mt-10 h-11 px-8 rounded-full bg-[#FAB95B] text-[#1A3263] text-[13px] font-extrabold inline-flex items-center gap-2 hover:bg-[#FAB95B]/90 transition-colors">Read More <span>→</span></button>
+            </div>
+            <div className="relative lg:mt-4">
+              <div className="rounded-[28px] overflow-hidden shadow-xl aspect-[4/3] bg-[#E8E2DB]">
+                {aboutImg ? <img src={aboutImg} className="h-full w-full object-cover" alt={college.name + ' campus'} /> : null}
+              </div>
+              <div className="absolute -bottom-5 -left-5 h-24 w-24 rounded-[20px] bg-white shadow-xl grid place-items-center border border-[#E8E2DB]">
+                <span className="text-[30px] font-extrabold text-[#1A3263]">{(shortName || college.name || 'C')[0]}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PROGRAMMES FOR YOU - KCE dark layout */}
+      <section id="programmes" className="scroll-mt-[100px] lg:scroll-mt-[150px] relative bg-[#1A3263] overflow-hidden">
+        {progBg ? <img src={progBg} className="absolute inset-0 h-full w-full object-cover opacity-15" alt="" /> : null}
+        <div className="absolute inset-0 bg-[#1A3263]/90"></div>
+        <div className="relative mx-auto max-w-[1600px] px-6 lg:px-12 pt-14 sm:pt-20 pb-28 sm:pb-36">
+          <h2 className="text-[30px] sm:text-[38px] font-extrabold uppercase tracking-tight text-white">Programmes For You</h2>
+          <div className="mt-10 grid lg:grid-cols-[0.85fr_1.15fr] gap-8 lg:gap-14 items-start">
+            <div className="relative rounded-[20px] bg-[#FAB95B] p-6 sm:p-8 shadow-2xl min-h-[380px]">
+              <button onClick={() => { setProgTab('All'); setSelCourse(null) }} className={`block w-full text-left px-4 py-3 rounded-[12px] text-[15px] transition-colors ${progTab === 'All' ? 'font-extrabold text-white underline underline-offset-4 decoration-2' : 'font-bold text-[#1A3263]/75 hover:bg-[#1A3263]/5'}`}>› All Programmes</button>
+              <div className="mt-3">
+                <button onClick={() => { setProgTab('UG'); setSelCourse(null) }} className={`block w-full text-left px-4 py-2 rounded-[12px] text-[15px] transition-colors ${progTab === 'UG' ? 'font-extrabold text-white underline underline-offset-4 decoration-2' : 'font-bold text-[#1A3263]/75 hover:bg-[#1A3263]/5'}`}>› UG Programmes</button>
+                {progTab !== 'PG' ? (
+                  <p className="mt-2.5 px-4 text-[12.5px] leading-[1.75] text-[#1A3263]/75">{homePage.ugDesc || ('Explore ' + shortName + ' undergraduate programmes that combine academic excellence with practical learning, empowering students to build successful futures.')}</p>
+                ) : null}
+              </div>
+              <div className="mt-5">
+                <button onClick={() => { setProgTab('PG'); setSelCourse(null) }} className={`block w-full text-left px-4 py-2 rounded-[12px] text-[15px] transition-colors ${progTab === 'PG' ? 'font-extrabold text-white underline underline-offset-4 decoration-2' : 'font-bold text-[#1A3263]/75 hover:bg-[#1A3263]/5'}`}>› PG Programmes</button>
+                {progTab === 'PG' || progTab === 'All' ? (
+                  <p className="mt-2.5 px-4 text-[12.5px] leading-[1.75] text-[#1A3263]/75">{homePage.pgDesc || ('At ' + shortName + ', our postgraduate programmes are crafted to foster intellectual growth, research excellence, and professional advancement.')}</p>
+                ) : null}
+              </div>
+              <div className="mt-10 px-4 text-[44px] font-extrabold text-white/15 select-none">{(shortName || 'C')[0]}</div>
+            </div>
+            <div className="space-y-9">
+              {(progTab === 'All' || progTab === 'UG') && (
+                <div>
+                  <h3 className="text-white font-extrabold text-[19px]">UG Programmes</h3>
+                  <div className="mt-4 space-y-2.5">
+                    {ugcourses.length > 0 ? ugcourses.map(c => (
+                      <div key={c.id} className="flex items-center gap-3 text-[14.5px] text-white/90">
+                        <span className="text-[#FAB95B] font-bold">›</span>
+                        <span className="font-semibold">{c.degree}{c.name ? ' ' + c.name : ''}{c.nba ? ' *' : ''}</span>
+                      </div>
+                    )) : <div className="text-white/50 text-[13px]">UG programmes will appear here once added</div>}
                   </div>
                 </div>
               )}
-            </div>
-            <div className="space-y-4">
-              {campusImages[0] && <img src={campusImages[0]} className="w-full h-[280px] lg:h-[340px] object-cover rounded-[20px] border-2 border-[#E8E2DB]" alt={`${college.name} Campus`} />}
-              {accreditations.length > 0 && (
-                <div className="grid grid-cols-3 gap-3">
-                  {accreditations.slice(0,6).map(acc => (
-                    <div key={acc.id} className="rounded-[14px] border-2 border-[#E8E2DB] bg-white p-3 grid place-items-center h-[92px]">
-                      {acc.image ? <img src={acc.image} className="max-h-[64px] max-w-full object-contain" alt={acc.name} /> : <div className="text-[10px] font-extrabold text-[#1A3263] text-center px-1 leading-tight">{acc.name}</div>}
-                    </div>
-                  ))}
+              {(progTab === 'All' || progTab === 'PG') && (
+                <div>
+                  <h3 className="text-white font-extrabold text-[19px]">PG Programmes</h3>
+                  <div className="mt-4 space-y-2.5">
+                    {pgcourses.length > 0 ? pgcourses.map(c => (
+                      <div key={c.id} className="flex items-center gap-3 text-[14.5px] text-white/90">
+                        <span className="text-[#FAB95B] font-bold">›</span>
+                        <span className="font-semibold">{c.degree}{c.name ? ' ' + c.name : ''}{c.nba ? ' *' : ''}</span>
+                      </div>
+                    )) : <div className="text-white/50 text-[13px]">PG programmes will appear here once added</div>}
+                  </div>
                 </div>
               )}
+              <div className="text-white/50 text-[12px] font-semibold">* Accredited by NBA</div>
+            </div>
+          </div>
+        </div>
+        <svg className="absolute bottom-0 left-0 w-full h-[64px] block" viewBox="0 0 1440 64" preserveAspectRatio="none"><path d="M0,64 L0,8 Q720,76 1440,8 L1440,64 Z" fill="#ffffff" /></svg>
+      </section>
+
+      {/* ALUMNI SUCCESS STORIES - KCE overlapping carousel */}
+      <section id="alumni" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-[#F4F2EE] overflow-hidden">
+        <div className="mx-auto max-w-[1600px] px-6 lg:px-12 pt-14 sm:pt-16 pb-10">
+          <h2 className="text-center text-[28px] sm:text-[34px] font-extrabold uppercase tracking-tight text-[#1A3263]">Alumni Success Stories</h2>
+          {alumni.length > 0 ? (
+            <AlumniCarousel alumni={alumni} />
+          ) : (
+            <div className="mt-12 pb-6 text-center text-[13px] text-[#547792]">Alumni success stories will appear here once the college adds them</div>
+          )}
+        </div>
+      </section>
+
+      {/* STUDENTS ACHIEVEMENTS - KCE tall cards */}
+      <section id="achievements" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-white">
+        <div className="mx-auto max-w-[1600px] px-6 lg:px-12 py-14 sm:py-16">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h2 className="text-[28px] sm:text-[34px] font-extrabold uppercase tracking-tight text-[#1A3263]">Students Achievements</h2>
+            {achievements.length > 1 && (
+              <div className="flex gap-2.5">
+                <button onClick={() => setAchPage(p => (p - 1 + achPages) % achPages)} className="h-11 w-11 rounded-full border-2 border-[#E8E2DB] text-[#1A3263] grid place-items-center hover:border-[#FAB95B] hover:text-[#FAB95B] transition-colors" aria-label="Previous"><ChevronLeft size={18} /></button>
+                <button onClick={() => setAchPage(p => (p + 1) % achPages)} className="h-11 w-11 rounded-full border-2 border-[#E8E2DB] text-[#1A3263] grid place-items-center hover:border-[#FAB95B] hover:text-[#FAB95B] transition-colors" aria-label="Next"><ChevronRight size={18} /></button>
+              </div>
+            )}
+          </div>
+          {achievements.length > 0 ? (
+            <div className="mt-9 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {achievements.slice(achPage * 4, achPage * 4 + 4).map((a, i) => (
+                <div key={a.id || i} className="relative h-[430px] rounded-[20px] overflow-hidden shadow-lg group">
+                  {a.image ? (
+                    <img src={a.image} className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" alt={a.title} />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#1A3263] to-[#547792]"></div>
+                  )}
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent pt-24"></div>
+                  <div className="absolute inset-x-0 bottom-0 p-5">
+                    <div className="text-white font-extrabold text-[16px] leading-snug min-h-[48px]">{a.title}</div>
+                    <button onClick={() => setSelAchievement(a)} className="mt-4 w-full h-11 rounded-full bg-[#FAB95B] text-[#1A3263] text-[12px] font-extrabold flex items-center justify-center gap-2 hover:bg-[#FAB95B]/90 transition-colors">Know More <span>→</span></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-10 py-12 text-center text-[13px] text-[#547792]">Student achievements will appear here once the college adds them</div>
+          )}
+        </div>
+      </section>
+
+      {/* LATEST NEWS + UPCOMING EVENTS - KCE layout */}
+      <section id="news" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-white border-t border-[#E8E2DB]">
+        <div className="mx-auto max-w-[1600px] px-6 lg:px-12 py-14 sm:py-16">
+          <div className="grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-10 items-start">
+            <div>
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <div className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#FAB95B] flex items-center gap-2.5"><span className="h-[3px] w-8 bg-[#FAB95B] inline-block"></span>Discover {shortName || 'College'}</div>
+                  <h2 className="mt-2 text-[28px] sm:text-[34px] font-extrabold uppercase tracking-tight text-[#1A3263]">Latest News</h2>
+                </div>
+                {newsList.length > 0 && (
+                  <div className="flex items-center gap-4">
+                    <span className="text-[15px] font-extrabold text-[#1A3263]">{String(newsPage + 1).padStart(2, '0')} <span className="text-[#547792]/60">/ {String(newsList.length).padStart(2, '0')}</span></span>
+                    <button onClick={() => setNewsPage(p => (p - 1 + newsPages) % newsPages)} className="h-10 w-10 rounded-full border-2 border-[#E8E2DB] text-[#1A3263] grid place-items-center hover:border-[#FAB95B] hover:text-[#FAB95B] transition-colors" aria-label="Previous"><ChevronLeft size={16} /></button>
+                    <button onClick={() => setNewsPage(p => (p + 1) % newsPages)} className="h-10 w-10 rounded-full border-2 border-[#E8E2DB] text-[#1A3263] grid place-items-center hover:border-[#FAB95B] hover:text-[#FAB95B] transition-colors" aria-label="Next"><ChevronRight size={16} /></button>
+                  </div>
+                )}
+              </div>
+              {newsList.length > 0 ? (
+                <div className="mt-8 grid sm:grid-cols-2 gap-6">
+                  {newsList.slice(newsPage * 2, newsPage * 2 + 2).map((n, i) => {
+                    const d = new Date(n.date)
+                    const day = isNaN(d.getTime()) ? '' : String(d.getDate()).padStart(2, '0')
+                    const mon = isNaN(d.getTime()) ? '' : d.toLocaleString('en', { month: 'short' }).toUpperCase()
+                    return (
+                      <div key={n.id || i} className="rounded-[16px] bg-white border border-[#E8E2DB] shadow-md overflow-hidden">
+                        <div className="relative h-[225px] bg-[#E8E2DB]">
+                          {n.image ? <img src={n.image} className="h-full w-full object-cover" alt={n.title} /> : <div className="h-full w-full bg-gradient-to-br from-[#1A3263] to-[#547792]"></div>}
+                          {day && (
+                            <div className="absolute bottom-3 left-3 rounded-[10px] bg-[#1A3263] px-3.5 py-2 text-center shadow-lg">
+                              <div className="text-[16px] font-extrabold text-white leading-none">{day}</div>
+                              <div className="text-[8.5px] font-extrabold text-[#FAB95B] tracking-[0.1em] mt-0.5">{mon}</div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-5">
+                          <div className="text-[16px] font-extrabold text-[#1A3263] leading-snug">{n.title}</div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div className="mt-10 py-14 text-center text-[13px] text-[#547792]">News will appear here once the college adds it</div>
+              )}
+              <button onClick={() => scrollId('events')} className="mt-8 h-12 px-8 rounded-full bg-[#FAB95B] text-[#1A3263] text-[13px] font-extrabold inline-flex items-center gap-2 hover:bg-[#FAB95B]/90 transition-colors">View All News <span>→</span></button>
+            </div>
+            <div className="rounded-[20px] bg-[#1A3263] p-6 sm:p-7 shadow-xl">
+              <h3 className="text-white font-extrabold text-[21px]">Upcoming Events</h3>
+              <div className="mt-5 space-y-0">
+                {upcomingList.length > 0 ? upcomingList.map((e, i) => {
+                  const d = new Date(e.date)
+                  const day = isNaN(d.getTime()) ? '' : String(d.getDate()).padStart(2, '0')
+                  const mon = isNaN(d.getTime()) ? '' : d.toLocaleString('en', { month: 'short' }).toUpperCase()
+                  return (
+                    <div key={e.id || i} className="flex items-start gap-3.5 py-4 border-b border-white/10 last:border-0">
+                      <div className="w-[46px] h-[46px] rounded-[10px] bg-white/10 grid place-items-center text-center shrink-0">
+                        <div><div className="text-[8.5px] font-extrabold text-[#FAB95B] tracking-[0.1em] leading-none">{mon}</div><div className="text-[16px] font-extrabold text-white leading-tight">{day}</div></div>
+                      </div>
+                      <div className="text-[12.5px] font-semibold text-white/85 leading-snug pt-1">{e.title}</div>
+                    </div>
+                  )
+                }) : <div className="py-8 text-center text-[12px] text-white/50">Upcoming events will appear here</div>}
+              </div>
+              <button onClick={() => scrollId('events')} className="mt-5 w-full h-11 rounded-full bg-[#FAB95B] text-[#1A3263] text-[12px] font-extrabold flex items-center justify-center gap-2 hover:bg-[#FAB95B]/90 transition-colors">More News <span>→</span></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PLACEMENT & TRAINING - KCE dark layout */}
+      <section id="placements" className="scroll-mt-[100px] lg:scroll-mt-[150px] relative bg-[#1A3263] overflow-hidden">
+        {progBg ? <img src={progBg} className="absolute inset-0 h-full w-full object-cover opacity-15" alt="" /> : null}
+        <div className="absolute inset-0 bg-[#1A3263]/92"></div>
+        <div className="relative mx-auto max-w-[1600px] px-6 lg:px-12 py-14 sm:py-20 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div>
+            <h2 className="text-[28px] sm:text-[34px] font-extrabold text-white">Placement &amp; Training</h2>
+            <p className="mt-5 text-[14px] leading-[1.95] text-white/75 max-w-[540px]">{homePage.placementText || 'The placement cell takes immense effort in guiding the students for their successful career. The college has active MoUs & Centers of Excellence with various industries. The college is visited by multinational companies year after year and has a strong placement record.'}</p>
+            <button onClick={() => scrollId('placement-records')} className="mt-8 h-11 px-8 rounded-full bg-[#FAB95B] text-[#1A3263] text-[13px] font-extrabold inline-flex items-center gap-2 hover:bg-[#FAB95B]/90 transition-colors">Know More <span>→</span></button>
+          </div>
+          <div className="rounded-[20px] bg-white/5 border border-white/15 backdrop-blur-sm p-4 grid grid-cols-3 gap-4">
+            <div className="rounded-[14px] bg-[#1A3263] border border-white/10 py-7 sm:py-9 text-center">
+              <div className="text-[30px] sm:text-[40px] font-extrabold text-white leading-none">{statPl}<span className="text-[20px] sm:text-[24px]">+</span></div>
+              <div className="mt-3 text-[9.5px] font-extrabold uppercase tracking-[0.14em] text-white/60">Placements</div>
+            </div>
+            <div className="rounded-[14px] bg-[#1A3263] border border-white/10 py-7 sm:py-9 text-center">
+              <div className="text-[30px] sm:text-[40px] font-extrabold text-white leading-none">{statCo}<span className="text-[20px] sm:text-[24px]">+</span></div>
+              <div className="mt-3 text-[9.5px] font-extrabold uppercase tracking-[0.14em] text-white/60">Companies</div>
+            </div>
+            <div className="rounded-[14px] bg-[#FAB95B] py-7 sm:py-9 text-center">
+              <div className="text-[30px] sm:text-[40px] font-extrabold text-[#1A3263] leading-none">{statLpa}</div>
+              <div className="mt-3 text-[9.5px] font-extrabold uppercase tracking-[0.14em] text-[#1A3263]/60">LPA - Max Salary</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* INDUSTRY & COLLEGE - KCE logo grid */}
+      {industryItems.length > 0 && (
+        <section id="industry" className="bg-white py-14 sm:py-16">
+          <div className="mx-auto max-w-[1600px] px-6 lg:px-12">
+            <h2 className="text-center text-[28px] sm:text-[32px] font-extrabold uppercase tracking-tight text-[#1A3263]">Industry &amp; {shortName || 'College'}</h2>
+            <div className="mt-9 grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-9 gap-2.5">
+              {industryItems.slice(0, 54).map((it, i) => (
+                <div key={i} className="h-[74px] rounded-[10px] border border-[#E8E2DB] bg-white grid place-items-center p-3 overflow-hidden hover:border-[#FAB95B]/60 transition-colors">
+                  {it.url ? <img src={it.url} className="max-h-full max-w-full object-contain" alt={it.name || ('Industry ' + (i + 1))} /> : <span className="text-[10.5px] font-extrabold text-[#1A3263]/60 text-center leading-tight">{it.name}</span>}
+                </div>
+              ))}
             </div>
           </div>
         </section>
+      )}
 
+      {/* QUICK LINKS ROW - KCE style */}
+      <section className="bg-white border-t border-[#E8E2DB]">
+        <div className="mx-auto max-w-[1250px] px-4 sm:px-6 py-7">
+          <div className="flex flex-wrap items-stretch justify-center divide-x divide-[#E8E2DB]">
+            {quickLinks.map(q => {
+              const Icon = q.icon === 'user' ? User : q.icon === 'book' ? BookOpen : q.icon === 'cap' ? GraduationCap : q.icon === 'users' ? Users : Landmark
+              return (
+                <a key={q.label} href={q.href} target={q.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" onClick={e => { if (!q.href.startsWith('http')) { e.preventDefault(); scrollId(q.href.replace('#', '')) } }} className="flex flex-col items-center gap-2.5 px-5 sm:px-10 py-2 group">
+                  <Icon size={27} className="text-[#1A3263] group-hover:text-[#FAB95B] transition-colors" strokeWidth={1.8} />
+                  <span className="text-[12.5px] font-bold text-[#1A3263] whitespace-nowrap group-hover:text-[#FAB95B] transition-colors">{q.label}</span>
+                </a>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-12 space-y-12">
         {/* Admissions - Real-time Working */}
         <section  id="admissions" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -522,78 +867,6 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-      </div>
-
-      {/* Programmes for You - KCE dark section */}
-      <section id="programmes" className="scroll-mt-[100px] lg:scroll-mt-[150px] relative bg-[#1A3263] py-14 sm:py-20 overflow-hidden">
-        {progBg && <img src={progBg} className="absolute inset-0 h-full w-full object-cover opacity-25" alt="" />}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1A3263]/85 via-[#1A3263]/60 to-[#1A3263]/95" />
-        <div className="relative mx-auto max-w-[1400px] px-6 lg:px-8">
-          <h2 className="text-[30px] sm:text-[38px] font-extrabold uppercase tracking-tight text-white">Programmes <span className="text-[#FAB95B]">for You</span></h2>
-          {hasContent(courses) ? (
-            <div className="mt-10 grid lg:grid-cols-[360px_1fr] gap-6 lg:gap-10 items-start">
-              <div className="rounded-[20px] bg-[#FAB95B] p-6 lg:p-7">
-                {[['All', 'All Programmes'], ['UG', 'UG Programmes'], ['PG', 'PG Programmes']].map(([key, label]) => (
-                  <button key={key} onClick={() => { setProgTab(key); setSelCourse(null) }} className={`block w-full text-left px-4 py-3 rounded-[12px] text-[15px] transition-colors ${progTab === key ? 'font-extrabold text-[#1A3263] underline underline-offset-4 decoration-2' : 'font-semibold text-[#1A3263]/70 hover:bg-[#1A3263]/5'}`}>
-                    {label}
-                  </button>
-                ))}
-                <p className="text-[12px] text-[#1A3263]/70 mt-4 leading-[1.7] px-2">Explore {shortName}'s programmes that combine academic excellence with practical learning, empowering students to build successful futures.</p>
-              </div>
-              <div className="space-y-8">
-                {(progTab === 'All' || progTab === 'UG') && ugcourses.length > 0 && (
-                  <div>
-                    <h3 className="text-white font-extrabold uppercase text-[14px] tracking-[0.12em] mb-3">UG Programmes</h3>
-                    <div className="space-y-1.5">
-                      {ugcourses.map(c => (
-                        <button key={c.id} onClick={() => setSelCourse(selCourse?.id === c.id ? null : c)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-[14px] text-left transition-colors ${selCourse?.id === c.id ? 'bg-white/15 border border-[#FAB95B]/50' : 'border border-transparent hover:bg-white/10'}`}>
-                          <span className="text-[#FAB95B] font-bold text-[15px]">›</span>
-                          <span className="text-[14px] font-semibold text-white flex-1">{c.degree} {c.name}</span>
-                          {c.duration && <span className="text-[10px] font-bold text-white/50 hidden sm:block">{c.duration}</span>}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {(progTab === 'All' || progTab === 'PG') && pgcourses.length > 0 && (
-                  <div>
-                    <h3 className="text-white font-extrabold uppercase text-[14px] tracking-[0.12em] mb-3">PG Programmes</h3>
-                    <div className="space-y-1.5">
-                      {pgcourses.map(c => (
-                        <button key={c.id} onClick={() => setSelCourse(selCourse?.id === c.id ? null : c)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-[14px] text-left transition-colors ${selCourse?.id === c.id ? 'bg-white/15 border border-[#FAB95B]/50' : 'border border-transparent hover:bg-white/10'}`}>
-                          <span className="text-[#FAB95B] font-bold text-[15px]">›</span>
-                          <span className="text-[14px] font-semibold text-white flex-1">{c.degree} {c.name}</span>
-                          {c.duration && <span className="text-[10px] font-bold text-white/50 hidden sm:block">{c.duration}</span>}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {selCourse && (
-                  <div className="rounded-[18px] bg-white/10 border border-white/15 p-5 sm:p-6">
-                    <div className="font-extrabold text-[16px] text-white">{selCourse.degree} - {selCourse.name}</div>
-                    <div className="mt-4 grid sm:grid-cols-3 gap-3">
-                      <div className="rounded-[12px] bg-[#1A3263]/70 border border-white/10 p-3.5"><div className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#FAB95B]">Duration</div><div className="text-white/85 mt-1 text-[12.5px] font-semibold">{selCourse.duration || '—'}</div></div>
-                      <div className="rounded-[12px] bg-[#1A3263]/70 border border-white/10 p-3.5"><div className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#FAB95B]">Fees</div><div className="text-white/85 mt-1 text-[12.5px] font-semibold">{selCourse.fees || '—'}</div></div>
-                      <div className="rounded-[12px] bg-[#1A3263]/70 border border-white/10 p-3.5"><div className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#FAB95B]">Intake</div><div className="text-white/85 mt-1 text-[12.5px] font-semibold">{selCourse.intake || '—'}</div></div>
-                    </div>
-                    {selCourse.eligibility && <div className="mt-3.5 text-[12px] text-white/70 leading-[1.6]"><span className="font-extrabold text-[#FAB95B]">Eligibility:</span> {selCourse.eligibility}</div>}
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="mt-8 py-14 text-center rounded-[20px] bg-white/5 border-2 border-dashed border-white/20">
-              <GraduationCap size={34} className="mx-auto text-white/40" />
-              <div className="font-extrabold text-white mt-3 uppercase tracking-wide">Programmes</div>
-              <div className="text-[12px] text-white/50 mt-2">Programmes information will be updated soon</div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-12 space-y-12">
-
         {/* Facilities */}
         <section  id="facilities" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263]">Facilities - {facilities.length}</h2>
@@ -794,56 +1067,6 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-      </div>
-
-      {/* Placement & Training - KCE dark section */}
-      <section id="placements" className="scroll-mt-[100px] lg:scroll-mt-[150px] relative bg-[#1A3263] py-14 sm:py-20 overflow-hidden">
-        {progBg && <img src={progBg} className="absolute inset-0 h-full w-full object-cover opacity-20" alt="" />}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1A3263]/95 via-[#1A3263]/80 to-[#1A3263]/95" />
-        <div className="relative mx-auto max-w-[1400px] px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <h2 className="text-[30px] sm:text-[38px] font-extrabold uppercase tracking-tight text-white">Placement & Training</h2>
-              <p className="mt-5 text-[13.5px] leading-[1.9] text-[#E8E2DB]/80 max-w-[560px]">
-                {hasContent(placements) ? `The placement cell of ${college.name} takes immense effort in guiding students for successful careers. The college is visited by ${plStats.companies}+ companies year after year and has a strong placement record with ${plStats.total}+ student placements.` : 'The placement cell takes immense effort in guiding students for their successful careers. Placement records will be updated by the college admin.'}
-              </p>
-              <button onClick={() => scrollId('placement-records')} className="mt-7 h-12 px-7 rounded-full bg-[#FAB95B] text-[#1A3263] text-[12px] font-extrabold uppercase tracking-wide hover:bg-[#FAB95B]/90 transition-colors">View Records →</button>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-[16px] bg-white/5 border border-white/15 p-5 text-center">
-                <div className="text-[30px] sm:text-[36px] font-extrabold text-white leading-none">{plStats.total || plStats.companies}+</div>
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#E8E2DB]/60 mt-3">Placements</div>
-              </div>
-              <div className="rounded-[16px] bg-white/5 border border-white/15 p-5 text-center">
-                <div className="text-[30px] sm:text-[36px] font-extrabold text-white leading-none">{plStats.companies}+</div>
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#E8E2DB]/60 mt-3">Companies</div>
-              </div>
-              <div className="rounded-[16px] bg-[#FAB95B] p-5 text-center shadow-xl">
-                <div className="text-[30px] sm:text-[36px] font-extrabold text-[#1A3263] leading-none">{plStats.highestNum || '—'}</div>
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#1A3263]/60 mt-3">LPA Max</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Industry & College - KCE logo grid */}
-      {hasContent(placements) && (
-        <section className="bg-white py-14">
-          <div className="mx-auto max-w-[1400px] px-6 lg:px-8">
-            <h2 className="text-center text-[26px] sm:text-[32px] font-extrabold uppercase tracking-tight text-[#1A3263]">Industry & {shortName}</h2>
-            <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2">
-              {placements.map(p => (
-                <div key={p.id} className="h-[84px] rounded-[10px] border-2 border-[#E8E2DB] bg-white grid place-items-center p-3 hover:border-[#FAB95B]/60 transition-colors">
-                  {p.logo ? <img src={p.logo} className="max-h-[52px] max-w-full object-contain" alt={p.company} /> : <div className="text-[11px] font-extrabold text-[#1A3263] text-center leading-tight px-1">{p.company}</div>}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-8 pt-12 space-y-12">
         {/* Placement Records */}
         <section id="placement-records" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-8">
           <h2 className="text-[26px] font-extrabold uppercase tracking-tight text-[#1A3263]">Placement Records - {placements.length}</h2>
@@ -886,68 +1109,6 @@ function CustomCollegePage({ college, customData }) {
             <div className="mt-6 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
               <div className="font-bold text-[#1A3263] mt-3">Gallery</div>
               <div className="text-[11px] text-[#547792] mt-1">Gallery will be updated soon</div>
-            </div>
-          )}
-        </section>
-
-        {/* Alumni Success Stories - KCE style */}
-        <section id="alumni" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10 overflow-hidden">
-          <h2 className="text-center text-[30px] sm:text-[36px] font-extrabold uppercase tracking-tight text-[#1A3263]">Alumni Success Stories</h2>
-          {hasContent(alumni) ? (
-            <div className="mt-10 overflow-x-auto pb-6">
-              <div className="flex justify-center items-center min-w-fit px-4">
-                {alumni.slice(0, 7).map((a, i) => {
-                  const arr = alumni.slice(0, 7)
-                  const mid = Math.floor((arr.length - 1) / 2)
-                  const dist = Math.abs(i - mid)
-                  return (
-                    <div key={a.id} className={`shrink-0 transition-all duration-300 ${i > 0 ? '-ml-4 sm:-ml-8' : ''}`} style={{ transform: `scale(${dist === 0 ? 1 : dist === 1 ? 0.92 : dist === 2 ? 0.84 : 0.76})`, zIndex: 20 - dist }}>
-                      <div className="w-[190px] sm:w-[210px] rounded-[16px] overflow-hidden border-2 border-[#E8E2DB] bg-white shadow-xl hover:shadow-2xl transition-shadow">
-                        <div className="relative h-[230px] sm:h-[270px] bg-[#E8E2DB]">
-                          {a.image ? <img src={a.image} className="h-full w-full object-cover object-top grayscale" alt={a.name} /> : <div className="h-full w-full grid place-items-center bg-gradient-to-br from-[#E8E2DB] to-[#547792] text-[#1A3263] font-extrabold text-[44px]">{a.name?.[0] || 'A'}</div>}
-                          {a.company && <div className="absolute top-3 right-3 px-2.5 py-1 rounded-[10px] bg-white/90 backdrop-blur text-[10px] font-extrabold text-[#1A3263] shadow">{a.company}</div>}
-                        </div>
-                        <div className="p-4 text-center">
-                          <div className="font-extrabold text-[14px] text-[#1A3263] leading-tight">{a.name}</div>
-                          {a.designation && <div className="text-[11px] font-bold text-[#547792] mt-1.5">{a.designation}</div>}
-                          <div className="text-[10.5px] text-[#547792]/80 mt-1">{a.company}{a.batch ? ` • ${a.batch}` : ''}</div>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          ) : (
-            <div className="mt-8 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
-              <GraduationCap size={34} className="mx-auto text-[#547792]" />
-              <div className="font-extrabold text-[#1A3263] mt-3 uppercase tracking-wide">Alumni Success Stories</div>
-              <div className="text-[12px] text-[#547792] mt-2">Alumni will be updated soon</div>
-            </div>
-          )}
-        </section>
-
-        {/* Students Achievements - KCE style */}
-        <section id="achievements" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-10">
-          <h2 className="text-[30px] sm:text-[36px] font-extrabold uppercase tracking-tight text-[#1A3263]">Students Achievements</h2>
-          {hasContent(achievements) ? (
-            <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {achievements.slice(0, 8).map(ach => (
-                <div key={ach.id} onClick={() => setSelAchievement(ach)} className="relative rounded-[20px] overflow-hidden border-2 border-[#E8E2DB] h-[360px] group cursor-pointer">
-                  {ach.image ? <img src={ach.image} className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" alt={ach.title} /> : <div className="absolute inset-0 bg-gradient-to-br from-[#1A3263] to-[#547792] grid place-items-center text-[#FAB95B]"><Trophy size={44} /></div>}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1A3263]/95 via-[#1A3263]/30 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <div className="font-extrabold text-white text-[14px] leading-snug">{ach.title}</div>
-                    <button onClick={(e) => { e.stopPropagation(); setSelAchievement(ach) }} className="mt-3 h-9 px-5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-extrabold uppercase tracking-wide hover:bg-[#FAB95B]/90 transition-colors">Know More →</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="mt-8 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
-              <Trophy size={34} className="mx-auto text-[#547792]" />
-              <div className="font-extrabold text-[#1A3263] mt-3 uppercase tracking-wide">Students Achievements</div>
-              <div className="text-[12px] text-[#547792] mt-2">Achievements will be updated soon</div>
             </div>
           )}
         </section>
@@ -1007,88 +1168,7 @@ function CustomCollegePage({ college, customData }) {
           )}
         </section>
 
-        {/* Latest News + Upcoming Events - KCE style */}
-        <section className="grid lg:grid-cols-[1fr_380px] gap-6 lg:gap-8 items-start">
-          <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sm:p-8">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <div className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#FAB95B] flex items-center gap-2"><span className="h-[2px] w-6 bg-[#FAB95B]"></span>Discover {shortName}</div>
-                <h2 className="mt-2 text-[26px] sm:text-[30px] font-extrabold uppercase tracking-tight text-[#1A3263]">Latest News</h2>
-              </div>
-              {announcements.length > 0 && <span className="text-[14px] font-extrabold text-[#1A3263]">{String(announcements.length).padStart(2, '0')} News</span>}
-            </div>
-            {hasContent(announcements) ? (
-              <div className="mt-6 grid sm:grid-cols-2 gap-4">
-                {announcements.slice(0, 6).map((an, i) => (
-                  <div key={i} className="rounded-[18px] border-2 border-[#E8E2DB] overflow-hidden hover:border-[#FAB95B]/50 transition-colors">
-                    <div className="h-[110px] bg-gradient-to-br from-[#1A3263] to-[#547792] relative grid place-items-center">
-                      <div className="text-center text-white px-4">
-                        <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#FAB95B]">{an.category || 'Announcement'}</div>
-                        {an.date && <div className="text-[11px] text-white/70 mt-1 font-semibold">{an.date}</div>}
-                      </div>
-                      <div className="absolute bottom-3 left-3 h-9 w-9 rounded-[10px] bg-[#FAB95B] grid place-items-center text-[#1A3263] font-extrabold text-[11px]">{String(i + 1).padStart(2, '0')}</div>
-                    </div>
-                    <div className="p-4">
-                      <div className="font-bold text-[13.5px] text-[#1A3263] leading-snug">{an.title}</div>
-                      {an.description && <div className="text-[11.5px] text-[#547792] mt-2 line-clamp-2 leading-[1.6]">{an.description}</div>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">News & announcements will be updated soon</div>
-            )}
-          </div>
-          <div className="rounded-[24px] bg-[#1A3263] p-6 sm:p-7">
-            <h3 className="text-white font-extrabold uppercase tracking-tight text-[20px]">Upcoming Events</h3>
-            <div className="mt-2 h-[3px] w-12 bg-[#FAB95B] rounded-full"></div>
-            {hasContent(events) ? (
-              <div className="mt-5 space-y-3.5">
-                {events.slice(0, 5).map((ev, i) => {
-                  const d = ev.date ? new Date(ev.date) : null
-                  const valid = d && !isNaN(d.getTime())
-                  return (
-                    <div key={ev.id || i} className="flex gap-3 items-center">
-                      <div className="h-[52px] w-[52px] rounded-[12px] bg-[#FAB95B] text-[#1A3263] grid place-items-center shrink-0 text-center leading-none py-1">
-                        {valid ? (<><div className="text-[9px] font-extrabold uppercase">{d.toLocaleString('en', { month: 'short' })}</div><div className="text-[18px] font-extrabold mt-0.5">{d.getDate()}</div></>) : (<Calendar size={20} />)}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-[12.5px] font-bold text-white leading-snug line-clamp-2">{ev.title}</div>
-                        {ev.date && <div className="text-[10.5px] text-[#FAB95B] font-semibold mt-1">{ev.date}</div>}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <div className="mt-5 py-8 text-center rounded-[14px] bg-white/5 border-2 border-dashed border-white/15 text-[12px] text-white/50">Upcoming events will be updated soon</div>
-            )}
-          </div>
-        </section>
-
       </div>
-
-      {/* Quick Links - KCE style */}
-      <section className="bg-white border-t-2 border-[#E8E2DB]">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-9">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-[#E8E2DB] border-2 border-[#E8E2DB] rounded-[16px] overflow-hidden">
-            {[
-              { label: 'Vidya Lakshmi Portal', icon: Landmark, href: 'https://vidyalakshmi.gov.in' },
-              { label: 'National Digital Library', icon: BookOpen, href: 'https://ndl.in' },
-              { label: 'Anna University', icon: GraduationCap, href: 'https://annauniv.edu' },
-              { label: 'Anti Ragging Committee', icon: ShieldCheck, href: 'https://antiraggingccimc.in' },
-              { label: 'Admission Enquiries', icon: PhoneCall, href: '#admissions' },
-            ].map((q, i) => (
-              <a key={i} href={q.href} {...(q.href.startsWith('#') ? {} : { target: '_blank', rel: 'noreferrer' })}
-                 onClick={(e) => { if (q.href.startsWith('#')) { e.preventDefault(); scrollId(q.href.slice(1)) } }}
-                 className="flex flex-col items-center justify-center gap-3 py-6 text-center bg-white hover:bg-[#E8E2DB]/40 transition-colors">
-                 <q.icon size={26} className="text-[#547792]" />
-                 <span className="text-[12.5px] font-bold text-[#1A3263] leading-tight px-2">{q.label}</span>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Contact - Full-bleed KCE style */}
       <section id="contact" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-[#1A3263] text-white py-14 border-t-4 border-[#FAB95B]">
@@ -1252,63 +1332,51 @@ function CustomCollegePage({ college, customData }) {
       )}
 
       {/* KCE-style footer */}
-      <footer className="bg-[#1A3263] text-white border-t-4 border-[#FAB95B]">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-8">
-          <div className="py-8 flex flex-wrap items-center justify-between gap-4 border-b border-white/10">
-            <h3 className="text-[22px] sm:text-[26px] font-extrabold uppercase tracking-tight">Placement Offers</h3>
-            <button onClick={() => scrollId('placements')} className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] text-[12px] font-extrabold uppercase tracking-wide hover:bg-[#FAB95B]/90 transition-colors">Know More →</button>
+      <footer className="bg-[#1A3263] text-white">
+        <div className="mx-auto max-w-[1600px] px-6 lg:px-12">
+          <div className="py-8 flex flex-wrap items-center justify-between gap-4">
+            <h3 className="text-[24px] sm:text-[28px] font-extrabold">Placement Offers</h3>
+            <button onClick={() => scrollId('placements')} className="h-11 px-7 rounded-full bg-[#FAB95B] text-[#1A3263] text-[12px] font-extrabold uppercase tracking-wide hover:bg-[#FAB95B]/90 transition-colors">Know More <span>→</span></button>
           </div>
-          <div className="py-12 grid sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1.4fr] gap-10">
+          <div className="border-t border-white/10 pt-10 pb-14 grid sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1.5fr] gap-x-10 gap-y-10">
+            <FooterLinkCol title="Quick Links" links={(footerLinksData && footerLinksData.quick) || ['Policies and Regulations', 'AICTE Extension of Approval', 'Anna University Provisional Affiliation', 'Anna University - Permanent Affiliation', 'Mandatory Disclosure', 'Accreditation Status', 'Statutory', 'Non-Statutory', 'Undertaking', 'Institute Strategic Plan', 'Audit Report', 'Handbook on Basics of Cyber Hygiene']} />
+            <FooterLinkCol title="Information About" links={(footerLinksData && footerLinksData.about) || ['Academic Calendar', 'Sports Facilities', 'E-FACILITY', (shortName || 'College') + '-Help Desk', 'Online Feedback 1', 'Online Feedback 2', 'Course End Survey', 'Online Payment']} />
+            <FooterLinkCol title="Information For" links={(footerLinksData && footerLinksData.for) || ['Applications FAQ', 'Hostel', 'Blog', 'Admission Enquiry', 'Careers']} />
             <div>
-              <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#FAB95B]">Quick Links</div>
-              <div className="mt-5 space-y-3 text-[12.5px]">
-                <a href="#home" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Home</a>
-                <a href="#about" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">About Us</a>
-                <a href="#programmes" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Programmes</a>
-                <a href="#departments" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Departments</a>
-                <a href="#facilities" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Facilities</a>
-                <a href="#gallery" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Gallery</a>
+              <div className="flex items-center gap-3.5">
+                {branding.logo ? (
+                  <img src={branding.logo} className="h-14 w-14 rounded-[12px] bg-white object-cover shrink-0" alt={college.name} />
+                ) : (
+                  <div className="h-14 w-14 rounded-[12px] bg-[#FAB95B] text-[#1A3263] grid place-items-center font-extrabold text-[22px] shrink-0">{(college.name || 'C')[0]}</div>
+                )}
+                <div className="min-w-0">
+                  <div className="font-extrabold text-[16px] leading-tight">{college.name}</div>
+                  {settings?.tagline ? <div className="text-[10px] text-[#FAB95B] mt-1 font-semibold tracking-wide">{settings.tagline}</div> : null}
+                </div>
               </div>
-            </div>
-            <div>
-              <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#FAB95B]">Information About</div>
-              <div className="mt-5 space-y-3 text-[12.5px]">
-                <a href="#admissions" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Admissions</a>
-                <a href="#placements" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Placements</a>
-                <a href="#centres" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Research Centres</a>
-                <a href="#campus" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Campus & Environment</a>
-                <a href="#library" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Library</a>
-                <a href="#hostels" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Hostels</a>
-                <a href="#alumni" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Alumni Success Stories</a>
-                <a href="#achievements" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Student Achievements</a>
+              <div className="mt-5 text-[10.5px] leading-[1.75] text-white/60 whitespace-pre-line">{homePage.footerAbout || ('Approved by AICTE and Affiliated to ' + (college.affiliation || college.university || 'Anna University') + '\n' + (college.accreditation || 'Accredited Institution') + '\n(An ISO 9001:2015 and ISO 14001:2015 Certified Institution)')}</div>
+              <div className="mt-6 space-y-3.5 text-[12.5px] text-white/80">
+                <div className="flex gap-3"><MapPin size={15} className="text-[#FAB95B] shrink-0 mt-0.5" /><span>{(contactDetails?.address || college.address || '') + (contactDetails?.city || college.city ? ', ' + (contactDetails?.city || college.city) : '')}{college.district ? ', ' + college.district : ''} - {(contactDetails?.pincode || college.pincode || '')}{(contactDetails?.state || '') ? ', ' + contactDetails.state + ', India' : ', India'}</span></div>
+                <div className="flex gap-3"><Phone size={15} className="text-[#FAB95B] shrink-0 mt-0.5" /><span>{(contactDetails?.phone || college.phone || '').split('/')[0].trim()}{(contactDetails?.phone2 || '') ? ', ' + contactDetails.phone2 : ''}</span></div>
+                <div className="flex gap-3"><Mail size={15} className="text-[#FAB95B] shrink-0 mt-0.5" /><span>{contactDetails?.email || (college.contact && college.contact.email) || college.email}</span></div>
               </div>
-            </div>
-            <div>
-              <div className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#FAB95B]">Information For</div>
-              <div className="mt-5 space-y-3 text-[12.5px]">
-                <a href="#contact" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Admission Enquiry</a>
-                <a href="#admissions" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Application</a>
-                <a href="#events" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Events & Activities</a>
-                <a href="#principal" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Principal</a>
-                <a href="#management" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Management & Trustees</a>
-                <a href="#contact" className="block text-[#E8E2DB]/75 hover:text-[#FAB95B] transition-colors">Contact Person</a>
+              <div className="mt-5 flex gap-4">
+                <a href="#" className="text-[#FAB95B] hover:text-white transition-colors" aria-label="Facebook"><BrandIcon name="facebook" /></a>
+                <a href="#" className="text-[#FAB95B] hover:text-white transition-colors" aria-label="Instagram"><BrandIcon name="instagram" /></a>
+                <a href="#" className="text-[#FAB95B] hover:text-white transition-colors" aria-label="X"><BrandIcon name="x" size={14} /></a>
+                <a href="#" className="text-[#FAB95B] hover:text-white transition-colors" aria-label="YouTube"><BrandIcon name="youtube" /></a>
+                <a href="#" className="text-[#FAB95B] hover:text-white transition-colors" aria-label="LinkedIn"><BrandIcon name="linkedin" /></a>
               </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-3">
-                {branding.logo ? <img src={branding.logo} className="h-12 w-12 rounded-[12px] bg-white object-cover border-2 border-[#FAB95B]" alt="Logo" /> : <div className="h-12 w-12 rounded-[12px] bg-[#FAB95B] text-[#1A3263] grid place-items-center font-extrabold">{college.name?.[0] || 'C'}</div>}
-                <div><div className="font-extrabold text-[15px]">{college.name}</div><div className="text-[10px] text-[#FAB95B] mt-0.5 font-bold">Est. {college.established} • {college.district}</div></div>
-              </div>
-              <div className="mt-5 space-y-3 text-[12px] text-[#E8E2DB]/75">
-                <div className="flex gap-2.5"><MapPin size={14} className="text-[#FAB95B] shrink-0 mt-0.5" /><span>{(contactDetails?.address || college.address || '')}{(contactDetails?.city || college.city) ? `, ${contactDetails?.city || college.city}` : ''}, {college.district} - {contactDetails?.pincode || college.pincode}</span></div>
-                <div className="flex gap-2.5"><Phone size={14} className="text-[#FAB95B] shrink-0 mt-0.5" /><span>{(contactDetails?.phone || college.phone || '').split('/')[0]}</span></div>
-                <div className="flex gap-2.5"><Mail size={14} className="text-[#FAB95B] shrink-0 mt-0.5" /><span>{contactDetails?.email || college.email}</span></div>
-              </div>
+              <div className="mt-5 text-[11px] text-white/50">Copyright {new Date().getFullYear()} © {shortName || college.name}. All Rights Reserved.</div>
             </div>
           </div>
-          <div className="py-5 border-t border-white/10 text-center text-[11px] text-white/40">© 2026 {college.name} • All Rights Reserved</div>
+        </div>
+        {/* College name watermark */}
+        <div className="overflow-hidden leading-none select-none pointer-events-none">
+          <div className="text-center text-[17vw] font-extrabold uppercase tracking-tighter text-[#152B52] -mb-[3.5vw] whitespace-nowrap">{shortName || (college.name || 'COLLEGE').split(' ')[0]}</div>
         </div>
       </footer>
+
     </div>
   )
 }

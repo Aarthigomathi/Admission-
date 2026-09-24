@@ -44,6 +44,7 @@ export default function AdminDashboard() {
  const [newCollegeImageUrl, setNewCollegeImageUrl] = useState('')
  const [admissionForm, setAdmissionForm] = useState({ status: 'Open', academicYear: '2026-27', title: '', description: '', eligibility: '', process: '', applicationStart: '', applicationEnd: '', counsellingDate: '', lastDate: '', entranceExam: '', cutoff: '', fees: '', totalSeats: '', documents: '', quota: '', scholarships: '', applicationLink: '', brochureImage: '', contactPhone: '', contactEmail: '' })
  const [contactForm, setContactForm] = useState({ address: '', city: '', district: '', pincode: '', phone: '', phone2: '', email: '', admissionsEmail: '', website: '', officeHours: '', mapLink: '', contactPerson: '', contactDesignation: '', contactPhone: '', enquiryPhone: '', enquiryEmail: '', supportHours: '', fax: '', tollFree: '' })
+ const [homeForm, setHomeForm] = useState({ tneaCode: '', eventDate: '', eventTime: '', chiefGuestName: '', chiefGuestTitle: '', chiefGuestPhoto: '', coordinators: '', convenors: '', partnerLogos: '', statPlacements: '', statCompanies: '', statMaxLpa: '', aboutImage: '', accreditationLogos: '', industryLogos: '', ugDesc: '', pgDesc: '', placementText: '', footerAbout: '' })
  const [settingsForm, setSettingsForm] = useState({ name: '', shortName: '', tagline: '', type: '', collegeType: '', university: '', affiliation: '', established: '', accreditation: '', email: '', phone: '', website: '', verificationStatus: '', maintenanceMode: false, showAdmissions: true, showPlacements: true, showEvents: true, loginUsername: '', loginPassword: '' })
 
  useEffect(() => {
@@ -63,6 +64,27 @@ export default function AdminDashboard() {
     primary: custom.branding?.colors?.primary || '#1A3263',
     secondary: custom.branding?.colors?.secondary || '#547792',
     accent: custom.branding?.colors?.accent || '#FAB95B'
+   })
+   setHomeForm({
+    tneaCode: custom.homePage?.tneaCode || fullCollege.homePage?.tneaCode || '',
+    eventDate: custom.homePage?.eventDate || fullCollege.homePage?.eventDate || '',
+    eventTime: custom.homePage?.eventTime || fullCollege.homePage?.eventTime || '',
+    chiefGuestName: custom.homePage?.chiefGuestName || fullCollege.homePage?.chiefGuestName || '',
+    chiefGuestTitle: custom.homePage?.chiefGuestTitle || fullCollege.homePage?.chiefGuestTitle || '',
+    chiefGuestPhoto: custom.homePage?.chiefGuestPhoto || fullCollege.homePage?.chiefGuestPhoto || '',
+    coordinators: (custom.homePage?.coordinators || fullCollege.homePage?.coordinators || []).join('\n'),
+    convenors: (custom.homePage?.convenors || fullCollege.homePage?.convenors || []).join('\n'),
+    partnerLogos: (custom.homePage?.partnerLogos || fullCollege.homePage?.partnerLogos || []).join('\n'),
+    statPlacements: custom.homePage?.statPlacements || fullCollege.homePage?.statPlacements || '',
+    statCompanies: custom.homePage?.statCompanies || fullCollege.homePage?.statCompanies || '',
+    statMaxLpa: custom.homePage?.statMaxLpa || fullCollege.homePage?.statMaxLpa || '',
+    aboutImage: custom.homePage?.aboutImage || fullCollege.homePage?.aboutImage || '',
+    accreditationLogos: (custom.homePage?.accreditationLogos || fullCollege.homePage?.accreditationLogos || []).join('\n'),
+    industryLogos: (custom.homePage?.industryLogos || fullCollege.homePage?.industryLogos || []).join('\n'),
+    ugDesc: custom.homePage?.ugDesc || fullCollege.homePage?.ugDesc || '',
+    pgDesc: custom.homePage?.pgDesc || fullCollege.homePage?.pgDesc || '',
+    placementText: custom.homePage?.placementText || fullCollege.homePage?.placementText || '',
+    footerAbout: custom.homePage?.footerAbout || fullCollege.homePage?.footerAbout || ''
    })
    setAboutForm({
     fullText: custom.about?.fullText || fullCollege.about?.fullText || '',
@@ -610,6 +632,14 @@ export default function AdminDashboard() {
   setIsLoggedIn(true)
  }
 
+ const lines = (t) => String(t || '').split('\n').map(x => x.trim()).filter(Boolean)
+ const handleSaveHome = () => {
+  const data = { ...homeForm, coordinators: lines(homeForm.coordinators), convenors: lines(homeForm.convenors), partnerLogos: lines(homeForm.partnerLogos).slice(0, 6), accreditationLogos: lines(homeForm.accreditationLogos).slice(0, 8), industryLogos: lines(homeForm.industryLogos).slice(0, 54) }
+  saveCollegeData(selectedCollegeId, 'homePage', data)
+  setCustomData({ ...customData, homePage: data })
+  alert('Home page setup saved! Website la real-time la update aagiduchu. Preview: college public page open pannunga.')
+ }
+
  if (!isLoggedIn) {
   const allColleges = getPublicColleges()
   return (
@@ -714,6 +744,7 @@ export default function AdminDashboard() {
   { id: 'sports', label: 'Sports', icon: Heart, count: `${(allCustomData.sports||[]).length}` },
   { id: 'alumni', label: 'Alumni Success Stories', icon: Award, count: `${(allCustomData.alumni||[]).length}` },
   { id: 'achievements', label: 'Student Achievements', icon: Trophy, count: `${(allCustomData.achievements||[]).length}`, highlight: true },
+  { id: 'homepage', label: 'Home Page (KCE Layout)', icon: Home, highlight: true },
   { id: 'events', label: 'Events', icon: Calendar, count: `${(allCustomData.events||[]).length}`, highlight: true },
   { id: 'gallery', label: 'Gallery', icon: Camera, count: `${(allCustomData.gallery||[]).length} Images`, highlight: true },
   { id: 'announcements', label: 'Announcements', icon: Bell, count: `${(allCustomData.announcements||[]).length}` },
@@ -2101,7 +2132,64 @@ export default function AdminDashboard() {
       </div>
      )}
 
-     {activeSection==='announcements' && (
+     {activeSection==='homepage' && (
+      <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+       <h3 className="font-bold text-[18px] text-[#1A3263]">Home Page Setup - KCE Layout Fields</h3>
+       <p className="text-[12px] text-[#547792] mt-2 leading-relaxed">Intha fields fill pannunga - college website home page la (KCE layout la) idha exact-a varum. Empty fields hide aagum (empty-safe). Banner image = Branding tab-la irukka Hero Image.</p>
+       <div className="mt-6 space-y-8">
+        <div>
+         <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">1</span> Header - TNEA Code</h4>
+         <div className="mt-4 grid md:grid-cols-2 gap-4">
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">TNEA Code</label><input value={homeForm.tneaCode} onChange={e=>setHomeForm({...homeForm, tneaCode: e.target.value})} placeholder="e.g. 2710 (optional)" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+         </div>
+        </div>
+        <div>
+         <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">2</span> Hero Banner - Event Details</h4>
+         <div className="mt-4 grid md:grid-cols-2 gap-4">
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Event Date</label><input value={homeForm.eventDate} onChange={e=>setHomeForm({...homeForm, eventDate: e.target.value})} placeholder="e.g. 23 SEP 2026" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Event Time</label><input value={homeForm.eventTime} onChange={e=>setHomeForm({...homeForm, eventTime: e.target.value})} placeholder="e.g. 10:00 AM" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Chief Guest Name</label><input value={homeForm.chiefGuestName} onChange={e=>setHomeForm({...homeForm, chiefGuestName: e.target.value})} placeholder="e.g. Mr. Kishore Nair" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Chief Guest Designation</label><input value={homeForm.chiefGuestTitle} onChange={e=>setHomeForm({...homeForm, chiefGuestTitle: e.target.value})} placeholder="e.g. Project Manager, National Inc." className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Chief Guest Photo (URL)</label><input value={homeForm.chiefGuestPhoto} onChange={e=>setHomeForm({...homeForm, chiefGuestPhoto: e.target.value})} placeholder="https://... photo url" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Partner Logos (1 URL per line, max 6)</label><textarea value={homeForm.partnerLogos} onChange={e=>setHomeForm({...homeForm, partnerLogos: e.target.value})} rows={3} placeholder="https://... logo1\nhttps://... logo2" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Coordinators (Name - Role, one per line)</label><textarea value={homeForm.coordinators} onChange={e=>setHomeForm({...homeForm, coordinators: e.target.value})} rows={3} placeholder="Dr. Priya Kalyanasundaram - Prof. / SoMS\nProf. S. R. Ramya - AP / SoMS" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Convenors (Name - Role, one per line)</label><textarea value={homeForm.convenors} onChange={e=>setHomeForm({...homeForm, convenors: e.target.value})} rows={3} placeholder="Dr. P. Karthigaikumar - Principal\nDr. S. Sophia - Dean-Academics" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+         </div>
+        </div>
+        <div>
+         <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">3</span> Home Stats (hero strip + Placement section)</h4>
+         <div className="mt-4 grid md:grid-cols-3 gap-4">
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Placements (e.g. 1544)</label><input value={homeForm.statPlacements} onChange={e=>setHomeForm({...homeForm, statPlacements: e.target.value})} placeholder="e.g. 1544" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Companies (e.g. 232)</label><input value={homeForm.statCompanies} onChange={e=>setHomeForm({...homeForm, statCompanies: e.target.value})} placeholder="e.g. 232" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Max Salary LPA (e.g. 43)</label><input value={homeForm.statMaxLpa} onChange={e=>setHomeForm({...homeForm, statMaxLpa: e.target.value})} placeholder="e.g. 43" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+         </div>
+        </div>
+        <div>
+         <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">4</span> About Us Section</h4>
+         <div className="mt-4 grid md:grid-cols-2 gap-4">
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">About Photo (URL) - right side image</label><input value={homeForm.aboutImage} onChange={e=>setHomeForm({...homeForm, aboutImage: e.target.value})} placeholder="https://... campus building photo" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Accreditation Badges (1 URL per line, max 8)</label><textarea value={homeForm.accreditationLogos} onChange={e=>setHomeForm({...homeForm, accreditationLogos: e.target.value})} rows={3} placeholder="https://... naac logo\nhttps://... nba logo" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">UG Description (Programmes panel)</label><textarea value={homeForm.ugDesc} onChange={e=>setHomeForm({...homeForm, ugDesc: e.target.value})} rows={3} placeholder="Optional - default text will be used if empty" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">PG Description (Programmes panel)</label><textarea value={homeForm.pgDesc} onChange={e=>setHomeForm({...homeForm, pgDesc: e.target.value})} rows={3} placeholder="Optional - default text will be used if empty" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+         </div>
+         <div className="mt-4"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Placement &amp; Training Description</label><textarea value={homeForm.placementText} onChange={e=>setHomeForm({...homeForm, placementText: e.target.value})} rows={2} placeholder="Optional - default text will be used if empty" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+        </div>
+        <div>
+         <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">5</span> Industry Logos (max 54 - 9x6 grid)</h4>
+         <div className="mt-4"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Company Logo URLs (1 per line)</label><textarea value={homeForm.industryLogos} onChange={e=>setHomeForm({...homeForm, industryLogos: e.target.value})} rows={4} placeholder="https://... company1 logo\nhttps://... company2 logo (empty = company names from Placements section will show)" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+        </div>
+        <div>
+         <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">6</span> Footer About Text</h4>
+         <div className="mt-4"><textarea value={homeForm.footerAbout} onChange={e=>setHomeForm({...homeForm, footerAbout: e.target.value})} rows={3} placeholder="Optional - default: AICTE approval + affiliation + accreditation + ISO lines" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+        </div>
+       </div>
+       <div className="mt-8 pt-6 border-t-2 border-[#E8E2DB]">
+        <button onClick={handleSaveHome} className="h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px]">Save Home Page Setup - Real-time Update</button>
+       </div>
+      </div>
+    )}
+
+    {activeSection==='announcements' && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
        <h3 className="font-bold text-[18px] text-[#1A3263]">Announcements</h3>
        <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">

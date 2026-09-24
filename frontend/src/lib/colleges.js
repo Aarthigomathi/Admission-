@@ -99,7 +99,7 @@ export const colleges = [
     placements: {
       highest: "₹54 LPA",
       average: "₹8.5 LPA",
-      recruiters: ["Microsoft", "Amazon", "Google", "TCS", "Infosys", "Zoho", "ABB Limited", "Adobe Systems", "ACC Limited"],
+      recruiters: ["Amazon", "Microsoft", "Google", "TCS", "Infosys", "Wipro", "Tech Mahindra", "Zoho", "ABB Limited", "Adobe Systems", "ACC Limited", "Cadence", "Accenture", "Cognizant", "Capgemini", "Hexaware", "Larsen & Toubro", "Bosch", "ServiceNow", "Mphasis", "EPAM", "HCLTech", "NTT DATA", "Juspay", "Tata Elxsi", "Ashok Leyland", "Schneider Electric", "ValueLabs", "Virtusa", "KONE", "EY", "Springworks", "InforMatica", "ITC Infotech", "BlueYonder", "iLink Digital", "CodingMart", "Brakes India", "Turing", "Hirotec", "UST", "BMC", "Rapid Data1", "embedUR", "Mallow Technologies", "Lifafa", "Trilogy Innovations", "Zoho", "Capco", "Deloitte", "PwC", "KPMG", "LTI Mindtree", "Persistent", "Coforge", "Avaloq"],
       percentage: 96
     },
     announcements: [
@@ -153,6 +153,27 @@ export const colleges = [
       "https://www.youtube.com/watch?v=rnLyerOn7Xg", // How to Create ORCID ID and integration with Scopus
       "https://www.youtube.com/user/nptelhrd", // NPTEL Video Lectures from library
     ],
+    homePage: {
+      tneaCode: "1007",
+      eventDate: "07 FEB 2026",
+      eventTime: "10:00 AM",
+      chiefGuestName: "Shri Shyam Srinivasan",
+      chiefGuestTitle: "Former MD & CEO, Federal Bank - Advisory RBI",
+      chiefGuestPhoto: "",
+      coordinators: ["Dr. M. Kumar - HOD / CSE", "Dr. M. Meena - HoD / BioTech", "Dr. S. Ramesh - HoD / Automobile"],
+      convenors: ["Dr. P. R. Thyla - Principal", "Dr. P. Priya - Dean Academics", "Dr. M. Kumar - HoD / IT"],
+      partnerLogos: [],
+      statPlacements: "1500",
+      statCompanies: "54",
+      statMaxLpa: "54",
+      aboutImage: "https://www.psgtech.edu/images/slider/foundationday_2026.jpg",
+      accreditationLogos: [],
+      industryLogos: [],
+      ugDesc: "",
+      pgDesc: "",
+      placementText: "",
+      footerAbout: ""
+    },
     contact: {
       phone: "0422 2572177 / 4344280 / 2572477",
       email: "principal@psgtech.ac.in / principal@psgtech.edu",
