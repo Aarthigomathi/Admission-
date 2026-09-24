@@ -184,11 +184,11 @@ function CompanyMark({ logo, company }) {
   const [failed, setFailed] = useState(false)
   if (!logo && !company) return null
   return (
-    <div className="absolute top-3 right-3 min-h-[36px] px-2.5 rounded-[8px] bg-white/95 shadow flex items-center justify-center overflow-hidden">
+    <div className="absolute top-3.5 right-3.5 flex items-center justify-center">
       {logo && !failed ? (
-        <img src={logo} onError={() => setFailed(true)} className="h-5 max-w-[70px] object-contain" alt={company || 'company'} />
+        <img src={logo} onError={() => setFailed(true)} className="h-6 max-w-[92px] w-auto object-contain [filter:drop-shadow(0_0_3px_rgba(255,255,255,0.95))_drop-shadow(0_0_6px_rgba(255,255,255,0.7))]" alt={company || 'company'} />
       ) : (
-        <span className="text-[10px] font-extrabold uppercase tracking-wide text-[#1A3263]">{company}</span>
+        <span className="text-[11.5px] font-extrabold tracking-wide text-[#1A3263] [text-shadow:0_0_4px_rgba(255,255,255,0.95),0_0_8px_rgba(255,255,255,0.8)]">{company}</span>
       )}
     </div>
   )
