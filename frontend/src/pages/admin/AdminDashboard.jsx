@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, getProfileCompletion, findCollegeByLoginId } from '../../lib/collegeStorage'
 import CollegeAnalytics from '../../components/admin/CollegeAnalytics'
+import AboutPagesAdmin from '../../components/admin/AboutPagesAdmin.jsx'
 import { 
  LayoutDashboard, Palette, Building2, GraduationCap, Users, Megaphone, Calendar, Image as ImageIcon, Trophy, Landmark, ShieldCheck, PhoneCall,
  FileText, Phone, Settings, Eye, Save, Upload, Plus, Trash2, Edit3, CheckCircle2, BarChart3, ExternalLink,
@@ -745,6 +746,7 @@ export default function AdminDashboard() {
   { id: 'alumni', label: 'Alumni Success Stories', icon: Award, count: `${(allCustomData.alumni||[]).length}` },
   { id: 'achievements', label: 'Student Achievements', icon: Trophy, count: `${(allCustomData.achievements||[]).length}`, highlight: true },
   { id: 'homepage', label: 'Home Page (KCE Layout)', icon: Home, highlight: true },
+  { id: 'aboutpages', label: 'About Pages (KCE Layout)', icon: FileText, highlight: true },
   { id: 'events', label: 'Events', icon: Calendar, count: `${(allCustomData.events||[]).length}`, highlight: true },
   { id: 'gallery', label: 'Gallery', icon: Camera, count: `${(allCustomData.gallery||[]).length} Images`, highlight: true },
   { id: 'announcements', label: 'Announcements', icon: Bell, count: `${(allCustomData.announcements||[]).length}` },
@@ -2130,6 +2132,10 @@ export default function AdminDashboard() {
         </div>
        </div>
       </div>
+     )}
+
+     {activeSection==='aboutpages' && (
+       <AboutPagesAdmin collegeId={selectedCollegeId} customData={customData} setCustomData={setCustomData} fullCollege={currentCollege} />
      )}
 
      {activeSection==='homepage' && (

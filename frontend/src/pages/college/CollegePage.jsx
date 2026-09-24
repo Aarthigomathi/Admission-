@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getCollegeBySlug, getCollegeCustomData, getPublicColleges } from '../../lib/collegeStorage'
 import CollegeHeader from '../../components/college/CollegeHeader'
+import AboutPages from '../../components/college/AboutPages.jsx'
 import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, User, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf, ChevronLeft, ChevronRight } from 'lucide-react'
 
 
@@ -246,6 +247,24 @@ function CustomCollegePage({ college, customData }) {
   const [selAchievement, setSelAchievement] = useState(null)
   const [achPage, setAchPage] = useState(0)
   const [newsPage, setNewsPage] = useState(0)
+  const [sitePage, setSitePage] = useState('home')
+  const pendingAnchor = useRef(null)
+
+  const navigateSite = (page, anchor) => {
+    if (!page || page === 'home') {
+      if (!anchor || anchor === 'home') {
+        pendingAnchor.current = null
+        setSitePage('home')
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } else {
+        pendingAnchor.current = anchor
+        setSitePage('home')
+      }
+    } else {
+      setSitePage(page)
+      window.scrollTo({ top: 0 })
+    }
+  }
   const branding = customData.branding || college.branding || {}
   const departments = customData.departments || college.departments || []
   const courses = customData.courses || college.courses || []
@@ -269,6 +288,12 @@ function CustomCollegePage({ college, customData }) {
   const alumni = customData.alumni || []
   const achievements = customData.achievements || []
   const homePage = customData.homePage || college.homePage || {}
+  const aboutPages = customData.aboutPages || college.aboutPages || {}
+  const leadership = college.leadership || {}
+  const mgmtBase = (Array.isArray(aboutPages.management) && aboutPages.management.length > 0) ? aboutPages.management : [
+    ...(leadership.management || customData.management || []).map(m => ({ role: m.role || '', name: m.name || '', photo: m.photo || '', bio: m.bio || (m.details ? [m.details] : []) })),
+    ...((principal || leadership.principal) ? [{ role: 'Principal', name: (principal || leadership.principal).name || '', photo: (principal || leadership.principal).photo || '', bio: (principal || leadership.principal).message ? [(principal || leadership.principal).message] : [] }] : []),
+  ]
   const newsList = (Array.isArray(customData.news) && customData.news.length > 0 ? customData.news : (events.length > 0 ? events : announcements)).map(n => ({ title: n.title || '', date: n.date || '', image: n.image || '', link: n.link || '' }))
   const footerLinksData = customData.footerLinks || college.footerLinks || null
 
@@ -301,6 +326,18 @@ function CustomCollegePage({ college, customData }) {
   const newsPages = Math.max(1, Math.ceil(newsList.length / 2))
   const upcomingList = [...(events.length > 0 ? events : announcements)].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 4)
 
+  // After returning to home from an about page, scroll to the pending anchor section
+  useEffect(() => {
+    if (sitePage !== 'home' || !pendingAnchor.current) return
+    const id = pendingAnchor.current
+    pendingAnchor.current = null
+    const t = setTimeout(() => {
+      const el = document.getElementById(id)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 90)
+    return () => clearTimeout(t)
+  }, [sitePage])
+
   // HOD profile modal - close on Escape, lock body scroll while open
   useEffect(() => {
     if (!hodProfile) return
@@ -315,8 +352,9 @@ function CustomCollegePage({ college, customData }) {
 
   return (
     <div className="min-h-screen bg-[#E8E2DB]">
-      <CollegeHeader college={{ ...college, settings: settings, branding: { ...college.branding, ...branding, logo: branding.logo || college.branding?.logo, heroImage: branding.heroImage || college.branding?.heroImage } }} homePage={homePage} />
+      <CollegeHeader college={{ ...college, settings: settings, branding: { ...college.branding, ...branding, logo: branding.logo || college.branding?.logo, heroImage: branding.heroImage || college.branding?.heroImage } }} homePage={homePage} currentPage={sitePage} onNavigate={navigateSite} />
 
+      {sitePage === 'home' ? (<>
       {/* Hero - KCE event banner */}
       <KceHero college={college} branding={branding} homePage={homePage} plStats={plStats} shortName={shortName} campusImages={campusImages} />
 
@@ -1329,6 +1367,22 @@ function CustomCollegePage({ college, customData }) {
             </div>
           </div>
         </div>
+      )}
+
+      </>) : (
+        <AboutPages
+          page={sitePage}
+          college={college}
+          branding={branding}
+          homePage={homePage}
+          aboutPages={aboutPages}
+          about={about}
+          managementList={mgmtBase}
+          courses={courses}
+          campusImages={campusImages}
+          shortName={shortName}
+          onNavigate={navigateSite}
+        />
       )}
 
       {/* KCE-style footer */}

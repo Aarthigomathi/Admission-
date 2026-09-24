@@ -174,6 +174,102 @@ export const colleges = [
       placementText: "",
       footerAbout: ""
     },
+    aboutPages: {
+      profile: {
+        heading: '',
+        paragraphs: [
+          "Established in 1951 by the PSG & Sons' Charities Trust, **PSG College of Technology** is one of the foremost engineering institutions in India, founded with a vision to provide cutting-edge technical education and nurture proficient engineers equipped to meet the evolving needs of industry and society.",
+          "PSG Tech is an Autonomous Institution affiliated to Anna University, Chennai, committed to academic excellence, innovation, research, and holistic student development. The institution is **ISO 9001:2015 certified and ranked among the top engineering institutions in India** in the NIRF Rankings. The programmes across Engineering, Technology, Science and Management are **accredited by the National Board of Accreditation (NBA)**.",
+          "The institution currently offers 11 Undergraduate and 20+ Postgraduate and Research programmes, supported by an industry-drafted Choice Based Credit System (CBCS) curriculum and syllabi, enabling students to develop the technical competence and professional skills required for successful careers.",
+          "PSG Tech is accredited and recognized by leading **industry organizations such as TCS, Infosys, Bosch and TVS**, reflecting the institution's strong alignment with industry standards and professional requirements. These associations provide students with valuable opportunities for industry exposure, skill development, internships, projects, certifications, and career advancement.",
+          "PSG Tech provides a stimulating learning environment supported by **state-of-the-art laboratories**, smart classrooms, advanced computing facilities, modern workshops, research facilities, and comprehensive campus infrastructure."
+        ],
+        cardText: [
+          "The institution has established a robust innovation and incubation ecosystem that encourages students and faculty to transform ideas and theoretical knowledge into innovative and commercially viable solutions.",
+          "PSG Tech's extensive international relations and collaboration network provides students with opportunities for global internships, collaborative research, international academic programmes, joint pathway initiatives, and cross-cultural learning experiences.",
+          "With a vibrant **community of 15000+ students and a vast alumni network**, PSG College of Technology has built a strong and dynamic academic community. Our students represent the future, while our alumni serve as ambassadors of the institution **across industries, organizations, and global professional networks**."
+        ],
+        image: 'https://www.psgtech.edu/images/slider/TheConfluence-2026.jpg',
+        highlights: [
+          'Offers 11 Undergraduate & 20+ Postgraduate and Research Programmes',
+          'Industry-Drafted CBCS Curriculum aligned with emerging industry requirements',
+          'Outcome-Based Education (OBE) with experiential and interdisciplinary learning',
+          'Industry Accreditation & Recognition from leading organizations including TCS, Infosys and Bosch',
+          'Strong opportunities for Internships, Industry Projects, Certifications and Career Development',
+          'State-of-the-Art Laboratories and Advanced Research Facilities support experiential learning, innovation, experimentation, and cutting-edge research.',
+          'Smart Classrooms and Advanced Computing Infrastructure for interactive and immersive learning.'
+        ],
+        whyHeading: 'Your Campus. Your Opportunities.',
+        whyText: 'A future-ready learning environment built around innovation, industry exposure, research and vibrant student life.',
+        stats: [
+          { value: '15+', label: 'Centres of Excellence' },
+          { value: '120', label: 'Industrial MoUs' },
+          { value: '40+', label: 'Global University Partnerships' },
+          { value: '100%', label: 'ICT Enabled Classrooms' },
+          { value: '3000+', label: 'Indexed Publications' },
+          { value: '350+', label: 'Patents Published' }
+        ],
+        campusLife: ['Foreign Language Certifications', 'Wi-Fi Enabled Campus', 'Secure Hostel in Campus', '24/7 Lab Access', 'Gym & Courts', 'Food Courts', 'Vibrant Clubs', 'Well Connected Transport']
+      },
+      vision: {
+        visionText: 'To achieve excellence in education and research and nurture engineers with ethics and social responsibility. Mould young men and women capable of assuming leadership of society for betterment of Country.',
+        missionBullets: [
+          'To bring out knowledgeable engineers and professionals in their field of specialization by having qualified and trained faculty members and staff besides necessary infrastructure and to create highly conducive teaching and learning environment.',
+          'To work in close association with stakeholders by way of enhanced industry - institute interaction, to take up need based research and industry specific programmes.',
+          'To organize co-curricular and extracurricular activities for character and personality development to produce highly competent and motivated engineers and professionals to serve and lead the society.'
+        ],
+        coreValues: [
+          { title: 'EXCELLENCE & INNOVATION:', text: 'To foster a culture of excellence and innovation, empowering students to develop cutting edge solutions that address real-world challenges and contribute to technological advancement.' },
+          { title: 'INTEGRITY & ACCOUNTABILITY:', text: 'To instill a strong sense of integrity and accountability in our learners, ensuring they uphold the highest ethical standards in their professional endeavors and take responsibility for their actions.' },
+          { title: 'SUSTAINABILITY & ENVIRONMENTAL STEWARDSHIP:', text: 'To promote sustainability and environmental stewardship, integrating eco-friendly practices into engineering solutions and encouraging students to develop technologies that protect and preserve our planet.' },
+          { title: 'RESPECT & INCLUSIVENESS:', text: 'To cultivate an environment of respect and inclusiveness, embracing diversity and ensuring equal opportunities for all students, fostering a community where every individual is valued and supported.' },
+          { title: 'GLOBAL STANDARDS & SOCIAL RESPONSIBILITY:', text: 'To align with global standards of excellence, preparing students to meet international benchmarks and encouraging them to contribute positively to society through socially responsible engineering practices.' }
+        ]
+      },
+      management: [
+        { role: 'MANAGING TRUSTEE', name: 'Shri L. Gopalakrishnan', photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', bio: ['Shri L. Gopalakrishnan is the Managing Trustee of PSG & Sons Charities Trust (1926), the founding trust behind PSG College of Technology. Under his stewardship, the trust continues to expand world-class educational institutions and philanthropic activities across Coimbatore.'] },
+        { role: 'PRINCIPAL', name: 'Dr. P. R. Thyla (FAC)', photo: 'https://www.psgtech.edu/images/faculty/mech/thyla.jpg', bio: ['Welcome to PSG College of Technology! It is an honor to lead one of India\'s most renowned engineering institutions, founded on the philanthropic vision of the PSG & Sons\' Charities.', 'Our industry-aligned curriculum, 15+ Centres of Excellence like PSG-TI Centre for Medical Electronics, PSG-Intel VLSI, PSG-FANUC CNC & Robotics, PSG-Danfoss Climate & Energy, and world-class research facilities prepare students for global challenges. Ranked NIRF 67 Engineering, 84 Management.'] }
+      ],
+      org: { chartImage: '' },
+      coe: {
+        categories: [
+          { title: 'Computing Sciences', logos: [{ name: 'Oracle Academy', url: '' }, { name: 'HCLTech', url: '' }, { name: 'Cisco', url: '' }, { name: 'NTT Data', url: '' }, { name: 'Tech Mahindra', url: '' }, { name: 'Wipro', url: '' }, { name: 'AWS', url: '' }, { name: 'Azure', url: '' }, { name: 'Intel', url: '' }, { name: 'Zoho', url: '' }] },
+          { title: 'Circuit Engineering', logos: [{ name: 'Texas Instruments', url: '' }, { name: 'Intel VLSI', url: '' }, { name: 'LabVIEW', url: '' }, { name: 'QNX', url: '' }] },
+          { title: 'Core Engineering', logos: [{ name: 'FANUC', url: '' }, { name: 'Danfoss', url: '' }, { name: 'Dassault Systemes', url: '' }, { name: 'Fronius', url: '' }, { name: 'Bosch', url: '' }] }
+        ],
+        innovation: {
+          title: 'PSG Innovation and Skill Development Centre',
+          text: [
+            'The Innovation Centre serves as a dynamic platform for creativity, research and technological advancement. Through this, students receive mentorship, funding guidance, incubation support and exposure to real-world business challenges.',
+            'These collaborations facilitate startup workshops, boot camps, hackathons, investor connect programs, prototype development support and Intellectual Property Rights (IPR) guidance. Industry mentors and successful entrepreneurs regularly interact with students to nurture innovative thinking and business leadership skills.',
+            'By fostering a strong startup culture, the institution empowers students to transform ideas into viable ventures and become job creators rather than job seekers.'
+          ],
+          image: 'https://www.psgtech.edu/images/slider/Interactivesession_jains.jpg'
+        }
+      },
+      acc: {
+        naacLogo: '',
+        naacTitle: 'NAAC (National Assessment And Accreditation Council)',
+        naacText: "PSG College of Technology has been accredited by NAAC with 'A+' Grade.",
+        nbaLogo: '',
+        nbaTitle: 'NBA (National Board Of Accreditation)',
+        nbaText: 'PSG College of Technology is accredited by NBA for the following departments:',
+        nbaItems: ['Computer Science and Engineering', 'Mechanical Engineering', 'Electronics and Communication Engineering', 'Electrical and Electronics Engineering', 'Civil Engineering', 'Information Technology'],
+        companiesHeading: 'The College is accredited by companies like Tata Consultancy Services and Wipro.',
+        mouIntro: 'We also have active MoUs & Centres of Excellence such as',
+        mous: [
+          { name: 'Infosys Campus Connect', caption: 'Infosys Campus Connect', url: '' },
+          { name: 'Microsoft', caption: 'Microsoft Technical Services Lab', url: '' },
+          { name: 'Oracle', caption: 'Oracle Workforce Development Centre', url: '' },
+          { name: 'Tech Mahindra', caption: 'Tech Mahindra for Infrastructure', url: '' },
+          { name: 'MEMS', caption: 'MEMS Centre of Excellence', url: '' },
+          { name: 'National Instruments', caption: 'National Instruments Lab', url: '' }
+        ],
+        electivesTitle: 'Electives',
+        electivesIntro: '35+ Industry collaborated electives in association with',
+        electives: [{ name: 'Zoho', url: '' }, { name: 'Accenture', url: '' }, { name: 'Aspire Systems', url: '' }, { name: 'Data Patterns', url: '' }, { name: 'EMC2', url: '' }, { name: 'HCL', url: '' }, { name: 'Hexaware', url: '' }, { name: 'Infosys', url: '' }, { name: 'Intel', url: '' }, { name: 'KwantumG', url: '' }, { name: 'TCS', url: '' }, { name: 'Wipro', url: '' }, { name: 'Bosch', url: '' }, { name: 'TVS', url: '' }, { name: 'Cognizant', url: '' }]
+      }
+    },
     contact: {
       phone: "0422 2572177 / 4344280 / 2572477",
       email: "principal@psgtech.ac.in / principal@psgtech.edu",

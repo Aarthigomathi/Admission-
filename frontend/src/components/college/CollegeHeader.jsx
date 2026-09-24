@@ -13,7 +13,7 @@ function BrandIcon({ name, size = 15, className = '' }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true"><path d={paths[name]} /></svg>
 }
 
-export default function CollegeHeader({ college, homePage }) {
+export default function CollegeHeader({ college, homePage, currentPage, onNavigate }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null)
 
@@ -23,12 +23,14 @@ export default function CollegeHeader({ college, homePage }) {
   const navigation = [
     { label: 'Home', id: 'home' },
     {
-      label: 'About', id: 'about',
+      label: 'About', id: 'about', isAbout: true,
       children: [
-        { label: 'About College', id: 'about' },
-        { label: 'Vision & Mission', id: 'about' },
-        { label: 'Managing Trustees', id: 'management' },
-        { label: 'Principals', id: 'principal' },
+        { label: 'Profile', page: 'about-profile' },
+        { label: 'Vision And Mission', page: 'about-vision' },
+        { label: 'Management Profile', page: 'about-management' },
+        { label: 'Organizational Structure', page: 'about-org' },
+        { label: 'Center of Excellence', page: 'about-coe' },
+        { label: 'Accreditations', page: 'about-accreditations' },
       ],
     },
     {
@@ -82,6 +84,7 @@ export default function CollegeHeader({ college, homePage }) {
   const goSection = (id) => {
     setMobileOpen(false)
     setActiveDropdown(null)
+    if (currentPage && currentPage !== 'home' && onNavigate) { onNavigate('home', id); return }
     const el = document.getElementById(id)
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -169,7 +172,7 @@ export default function CollegeHeader({ college, homePage }) {
                 <a
                   href={'#' + item.id}
                   onClick={(e) => { e.preventDefault(); goSection(item.id) }}
-                  className={`flex items-center gap-1.5 px-3.5 lg:px-4 h-[46px] text-[12px] lg:text-[12.5px] font-extrabold uppercase tracking-[0.03em] transition-colors ${item.id === 'home' ? 'bg-[#1A3263] text-[#FAB95B]' : 'text-[#1A3263] hover:bg-[#1A3263]/10'}`}
+                  className={`flex items-center gap-1.5 px-3.5 lg:px-4 h-[46px] text-[12px] lg:text-[12.5px] font-extrabold uppercase tracking-[0.03em] transition-colors ${(item.id === 'home' && (!currentPage || currentPage === 'home')) || (item.isAbout && currentPage && currentPage.startsWith('about')) ? 'bg-[#1A3263] text-[#FAB95B]' : 'text-[#1A3263] hover:bg-[#1A3263]/10'}`}
                 >
                   {item.label}
                   {item.children ? <ChevronDown size={12} className={`transition-transform ${activeDropdown === item.label ? 'rotate-180' : ''}`} /> : null}
@@ -177,7 +180,7 @@ export default function CollegeHeader({ college, homePage }) {
                 {item.children && activeDropdown === item.label && (
                   <div className="absolute top-full left-0 mt-0 w-[248px] rounded-b-[14px] bg-white border-2 border-t-0 border-[#E8E2DB] shadow-xl p-2 z-50">
                     {item.children.map(child => (
-                      <a key={child.label} href={'#' + child.id} onClick={(e) => { e.preventDefault(); goSection(child.id) }} className="block px-4 py-2.5 rounded-[10px] text-[12.5px] font-bold text-[#1A3263] hover:bg-[#E8E2DB] transition-colors">
+                      <a key={child.label} href={child.page ? '#about' : '#' + child.id} onClick={(e) => { e.preventDefault(); child.page ? onNavigate(child.page) : goSection(child.id) }} className={`block px-4 py-2.5 rounded-[10px] text-[12.5px] font-bold transition-colors ${child.page && currentPage === child.page ? 'text-[#FAB95B] bg-[#1A3263]/5' : 'text-[#1A3263] hover:bg-[#E8E2DB]'}`}>
                         {child.label}
                       </a>
                     ))}
@@ -194,9 +197,20 @@ export default function CollegeHeader({ college, homePage }) {
         <div className="lg:hidden bg-[#1A3263] border-t border-[#FAB95B]/30 max-h-[70vh] overflow-y-auto">
           <div className="p-4 space-y-1">
             {navigation.map(item => (
-              <a key={item.label} href={'#' + item.id} onClick={(e) => { e.preventDefault(); goSection(item.id) }} className="flex px-4 py-3 rounded-[12px] hover:bg-white/10 font-extrabold text-white text-[13px] uppercase tracking-wide">
-                {item.label}
-              </a>
+              <div key={item.label}>
+                <a href={'#' + item.id} onClick={(e) => { e.preventDefault(); item.isAbout && item.children ? onNavigate(item.children[0].page) : goSection(item.id) }} className="flex px-4 py-3 rounded-[12px] hover:bg-white/10 font-extrabold text-white text-[13px] uppercase tracking-wide">
+                  {item.label}
+                </a>
+                {item.children && (
+                  <div className="pb-1 pl-4 space-y-0.5">
+                    {item.children.map(child => (
+                      <a key={child.label} href={child.page ? '#about' : '#' + child.id} onClick={(e) => { e.preventDefault(); child.page ? onNavigate(child.page) : goSection(child.id) }} className="flex px-4 py-2 rounded-[10px] text-white/70 text-[12px] font-bold hover:bg-white/10">
+                        {child.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
             <Link to="/admin" className="mt-3 flex h-11 items-center justify-center gap-2 rounded-full bg-[#FAB95B] text-[#1A3263] font-extrabold text-[12px]">
               <LayoutDashboard size={15} /> Admin Dashboard
