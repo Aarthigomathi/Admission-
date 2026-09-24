@@ -35,7 +35,7 @@ function CollegeHeroCarousel({ branding, college, customData }) {
 
   if (allImages.length === 0) {
     return (
-      <div className="relative h-[460px] overflow-hidden bg-[#1A3263]">
+      <div  id="home" className="relative h-[460px] overflow-hidden bg-[#1A3263]">
         <div className="h-full w-full bg-gradient-to-br from-[#1A3263] via-[#547792] to-[#1A3263] grid place-items-center">
           <div className="text-center text-white p-8">
             <div className="font-display text-[36px] font-bold">{college.name}</div>
@@ -66,7 +66,7 @@ function CollegeHeroCarousel({ branding, college, customData }) {
   }
 
   return (
-    <div className="relative h-[460px] sm:h-[500px] lg:h-[520px] overflow-hidden bg-[#1A3263] group">
+    <div  id="home" className="relative h-[460px] sm:h-[500px] lg:h-[520px] overflow-hidden bg-[#1A3263] group">
       {/* Images with fade transition */}
       {allImages.map((img, idx) => (
         <img
@@ -184,7 +184,7 @@ function CustomCollegePage({ college, customData }) {
 
       <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-12 space-y-12">
         {/* About */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="about" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[28px] font-bold text-[#1A3263]">About {college.name}</h2>
           {about.fullText ? (
             <p className="mt-4 text-[14px] leading-[1.7] text-[#1A3263]/80">{about.fullText}</p>
@@ -212,7 +212,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Admissions - Real-time Working */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="admissions" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h2 className="font-display text-[26px] font-bold text-[#1A3263] flex items-center gap-3">🎓 Admissions {admissions ? `- ${admissions.academicYear}` : ''}</h2>
             {admissions && (
@@ -315,7 +315,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Principal Section */}
-        <section className="rounded-[24px] bg-[#1A3263] border-2 border-[#1A3263] overflow-hidden">
+        <section  id="principal" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-[#1A3263] border-2 border-[#1A3263] overflow-hidden">
           <div className="p-8">
             <div className="text-center mb-8">
               <h2 className="font-display text-[28px] font-bold text-white inline-block relative">
@@ -378,7 +378,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Management Section */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="management" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Users className="text-[#FAB95B]" /> Management & Trustees - {management.length}</h2>
           {hasContent(management) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-4">
@@ -400,7 +400,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Departments */}
-        <section className="space-y-6">
+        <section  id="departments" className="scroll-mt-[100px] lg:scroll-mt-[150px] space-y-6">
           <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6">
             <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><Building2 className="text-[#FAB95B]" /> Departments</h2>
           </div>
@@ -489,7 +489,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Courses */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="programmes" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3"><GraduationCap className="text-[#FAB95B]" /> Courses - {courses.length}</h2>
           {hasContent(courses) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-4">
@@ -514,7 +514,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Facilities */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="facilities" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[24px] font-bold text-[#1A3263]">Facilities - {facilities.length}</h2>
           {hasContent(facilities) ? (
             <div className="mt-6 grid md:grid-cols-3 gap-4">
@@ -531,7 +531,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Research & Centres */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="centres" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🔬 Research & Centres - {researchCentres.length}</h2>
           {hasContent(researchCentres) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-6">
@@ -559,7 +559,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Accreditation */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="accreditation" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🏅 Accreditation - {accreditations.length}</h2>
           {hasContent(accreditations) ? (
             <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -586,7 +586,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Campus & Environment */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="campus" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🌳 Campus & Environment - {campusEnv.length}</h2>
           {hasContent(campusEnv) ? (
             <div className="mt-6 space-y-6">
@@ -615,7 +615,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Library */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="library" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">📚 Library</h2>
           {library ? (
             <div className="mt-6 rounded-[20px] border-2 border-[#E8E2DB] overflow-hidden bg-white">
@@ -639,7 +639,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Sports */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="sports" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">⚽ Sports - {sports.length}</h2>
           {hasContent(sports) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-4">
@@ -661,7 +661,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Hostel with Images */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="hostels" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-3">🏠 Hostel - {hostels.length}</h2>
           {hasContent(hostels) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-6">
@@ -714,7 +714,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Placements with Company Logo */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="placements" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-bold text-[20px] text-[#1A3263]">Placements - {placements.length} Records</h2>
           {hasContent(placements) ? (
             <div className="mt-6 grid md:grid-cols-2 gap-4">
@@ -740,7 +740,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Gallery */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="gallery" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-bold text-[20px] text-[#1A3263] flex items-center gap-2"><ImageIcon className="text-[#FAB95B]" /> Gallery - {gallery.length} Images</h2>
           {hasContent(gallery) ? (
             <div className="mt-6 grid md:grid-cols-3 gap-4">
@@ -760,7 +760,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Events with Images - 5 Categories */}
-        <section className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
+        <section  id="events" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
           <h2 className="font-display text-[26px] font-bold text-[#1A3263] flex items-center gap-3">📅 Events - {events.length} - Category Wise</h2>
           <p className="text-[12px] text-[#547792] mt-2">Cultural, Technical, Sports, College Day, Social Awareness - details college neenga add pannalam</p>
           {hasContent(events) ? (
@@ -814,7 +814,7 @@ function CustomCollegePage({ college, customData }) {
         </section>
 
         {/* Contact - Real-time Working */}
-        <section className="rounded-[24px] bg-[#1A3263] text-white p-8">
+        <section  id="contact" className="scroll-mt-[100px] lg:scroll-mt-[150px] rounded-[24px] bg-[#1A3263] text-white p-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h2 className="font-display text-[26px] font-bold text-[#FAB95B]">Contact {settings?.name || college.name}</h2>
             {contactDetails?.mapLink && <a href={contactDetails.mapLink} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[12px]">View on Map →</a>}
