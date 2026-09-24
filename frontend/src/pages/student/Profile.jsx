@@ -131,7 +131,7 @@ export default function StudentProfile() {
           <div className="flex items-center gap-3">
             <Link to="/student/dashboard" className="h-10 w-10 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center text-[#1A3263]"><ArrowLeft size={18} /></Link>
             <div>
-              <h1 className="font-display text-[26px] font-bold text-[#1A3263] flex items-center gap-2"><User size={22} className="text-[#FAB95B]" /> {language==='ta' ? 'எனது சுயவிவரம் - Edit Options' : 'My Profile - Edit Options'} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 {language==='ta' ? 'தமிழ் / English - Proper' : 'Tamil / English - Proper'}</span></h1>
+              <h1 className="font-display text-[26px] font-bold text-[#1A3263] flex items-center gap-2"><User size={22} className="text-[#FAB95B]" /> {language==='ta' ? 'எனது சுயவிவரம் - Edit Options' : 'My Profile - Edit Options'} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]"> {language==='ta' ? 'தமிழ் / English - Proper' : 'Tamil / English - Proper'}</span></h1>
               <p className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'உங்கள் விவரங்களை மீண்டும் திருத்தலாம் - City க்கு கீழே Dream Course, District மாற்றினால் அந்த District கல்லூரிகள் முதலில் வரும்' : 'You can edit your details again - Dream Course below City, If you change district to Chennai, Chennai colleges matching your details will show first'}</p>
             </div>
           </div>
@@ -208,7 +208,7 @@ export default function StudentProfile() {
                   <div className="flex justify-between border-b border-[#E8E2DB] pb-2"><span className="text-[#547792]">{t('labelMobile')}:</span><span>{student.mobile}</span></div>
                   <div className="flex justify-between border-b border-[#E8E2DB] pb-2"><span className="text-[#547792]">{t('district')} & {t('city')}:</span><span className="font-bold">{student.district} • {student.city}</span></div>
                   <div className="rounded-[12px] bg-[#FAB95B]/20 border border-[#FAB95B]/30 p-3">
-                    <div className="text-[11px] font-bold text-[#1A3263]">📍 City ({student.city}) → Dream Course Below:</div>
+                    <div className="text-[11px] font-bold text-[#1A3263]"> City ({student.city}) → Dream Course Below:</div>
                     <div className="font-bold text-[#1A3263] mt-1">{student.interestedCourse} - {student.interestedSubject}</div>
                     <div className="text-[11px] text-[#547792] mt-1">{student.careerGoal}</div>
                   </div>
@@ -316,7 +316,7 @@ export default function StudentProfile() {
                     <select value={formData.preferredDistrict} onChange={e=>updateField('preferredDistrict', e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-white border-2 border-[#FAB95B] focus:border-[#1A3263] outline-none text-[13px] font-bold text-[#1A3263]">
                       <option>Coimbatore</option><option>Chennai</option><option>Madurai</option><option>Trichy</option><option>Salem</option><option>Erode</option><option>Tirupur</option><option>Any District</option>
                     </select>
-                    <div className="text-[11px] font-bold text-[#1A3263] mt-2 bg-[#FAB95B]/20 px-3 py-2 rounded-full">📍 {language==='ta' ? `நீங்கள் ${formData.preferredDistrict} தேர்ந்தெடுத்தால் ${formData.preferredDistrict} மாவட்ட கல்லூரிகள் உங்கள் விவரங்களுக்கு ஏற்ப முதலில் காட்டப்படும்` : `If you select ${formData.preferredDistrict}, ${formData.preferredDistrict} district colleges matching your details will show first`}</div>
+                    <div className="text-[11px] font-bold text-[#1A3263] mt-2 bg-[#FAB95B]/20 px-3 py-2 rounded-full"> {language==='ta' ? `நீங்கள் ${formData.preferredDistrict} தேர்ந்தெடுத்தால் ${formData.preferredDistrict} மாவட்ட கல்லூரிகள் உங்கள் விவரங்களுக்கு ஏற்ப முதலில் காட்டப்படும்` : `If you select ${formData.preferredDistrict}, ${formData.preferredDistrict} district colleges matching your details will show first`}</div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
@@ -409,7 +409,7 @@ export default function StudentProfile() {
               </div>
 
               <div className="mt-6 rounded-[12px] bg-[#FAB95B]/20 border border-[#FAB95B]/30 p-3">
-                <div className="text-[11px] font-bold text-[#FAB95B]">🌐 {language==='ta' ? 'Edit Options & Chennai Logic' : 'Edit Options & Chennai Logic'}</div>
+                <div className="text-[11px] font-bold text-[#FAB95B]"> {language==='ta' ? 'Edit Options & Chennai Logic' : 'Edit Options & Chennai Logic'}</div>
                 <div className="text-[10px] text-[#E8E2DB]/80 mt-1 leading-[1.5]">{language==='ta' ? 'Students தங்கள் விவரங்களை மீண்டும் திருத்தலாம் - Basic, Personal, Education, Preferences எல்லாம் Edit பண்ணலாம் - எங்கே கல்லூரி வேண்டும் என்று Chennai என்றால் Chennai மாவட்ட கல்லூரிகள் உங்கள் சதவீதம், பாடம், பட்ஜெட் விவரங்களுக்கு ஏற்ப முதலில் காட்டப்படும் - Real filtering logic' : 'Students can edit their details again - Basic, Personal, Education, Preferences all editable - If you say where college you want as Chennai, Chennai district colleges matching your percentage, course, budget details will show first - Real filtering logic'}</div>
               </div>
 

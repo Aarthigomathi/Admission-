@@ -163,7 +163,7 @@ export default function SearchPage() {
 
             {colleges.length===0 ? (
               <div className="mt-6 rounded-[28px] bg-white border-2 border-[#FAB95B]/30 p-12 text-center shadow-sm">
-                <div className="h-20 w-20 rounded-[24px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center mx-auto text-3xl">🏛️</div>
+                <div className="h-20 w-20 rounded-[24px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center mx-auto text-3xl"></div>
                 <h3 className="font-display text-[22px] font-bold text-[#1A3263] mt-6">No Colleges Yet - Automatic Default College Name Kattama</h3>
                 <p className="text-[13px] text-[#547792] mt-3 max-w-[500px] mx-auto leading-[1.6]">Platform la default PSG or vera college automatic ah kaatathu. College signup panni avunga college details - logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - ellam avangale add pannuvanga. Aprom thaan search la varum.</p>
                 <div className="mt-6 flex justify-center gap-2">
@@ -187,7 +187,7 @@ export default function SearchPage() {
                 </div>
                 {filtered.length===0 && (
                   <div className="mt-6 py-12 text-center rounded-[20px] bg-white border-2 border-[#E8E2DB]">
-                    <div className="text-2xl">🔍</div>
+                    <div className="text-2xl"></div>
                     <div className="font-bold text-[#1A3263] mt-3">No colleges match filters</div>
                     <div className="text-[12px] text-[#547792] mt-1">Try All Districts / All Types - {colleges.length} colleges added by colleges themselves</div>
                   </div>
@@ -210,8 +210,7 @@ export default function SearchPage() {
               <div className="mt-6 space-y-3 max-h-[700px] overflow-auto pr-1">
                 {coursesSearch.length===0 ? (
                   <div className="py-12 text-center text-[#547792]">
-                    <div className="text-3xl">🎓</div>
-                    <div className="text-[13px] mt-3 font-medium text-[#1A3263]">{colleges.length===0 ? 'No colleges yet - colleges signup first' : 'Search for courses like BCA, B.E, MBA'}</div>
+                                        <div className="text-[13px] mt-3 font-medium text-[#1A3263]">{colleges.length===0 ? 'No colleges yet - colleges signup first' : 'Search for courses like BCA, B.E, MBA'}</div>
                     <div className="text-[11px] mt-1">{colleges.length===0 ? 'College signup panni courses add pannina aprom thaan varum' : 'Only courses added by colleges themselves will show'}</div>
                   </div>
                 ) : coursesSearch.map(({ college, course }, i)=>(

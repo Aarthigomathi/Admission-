@@ -138,7 +138,7 @@ export function downloadReportAsPDF(report) {
       </div>
 
       <div class="section" style="background: #1A3263; color: white;">
-        <h3 style="color: #FAB95B; margin: 0 0 12px 0;">🔒 Privacy Note - Important</h3>
+        <h3 style="color: #FAB95B; margin: 0 0 12px 0;"> Privacy Note - Important</h3>
         <p style="font-size: 12px; line-height: 1.6; color: #E8E2DB; margin: 0;">${report.privacyNote} This report shows ONLY aggregated data. Individual student browsing history is NOT shared with colleges. Personal information (name, phone, email) is shared ONLY when student explicitly clicks ENQUIRE NOW and gives consent. Student data belongs to platform and is protected.</p>
       </div>
 

@@ -34,7 +34,7 @@ export default function AdvancedCentresManager() {
               </div>
               <div>
                 <label className="text-[11px] font-bold uppercase tracking-wide">Icon (Emoji)</label>
-                <input placeholder="🔬" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border text-[13px]" />
+                <input placeholder="" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border text-[13px]" />
               </div>
               <div>
                 <label className="text-[11px] font-bold uppercase tracking-wide">Images</label>
@@ -53,7 +53,7 @@ export default function AdvancedCentresManager() {
         {centres.map((centre, i) => (
           <div key={i} className="group rounded-[20px] bg-white border p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all">
             <div className="flex items-start justify-between">
-              <div className="h-12 w-12 rounded-[14px] bg-zinc-50 border grid place-items-center text-[22px]">🏢</div>
+              <div className="h-12 w-12 rounded-[14px] bg-zinc-50 border grid place-items-center text-[22px]"></div>
               <div className="flex gap-1">
                 <button className="h-8 w-8 rounded-full bg-zinc-50 border grid place-items-center hover:bg-zinc-900 hover:text-white"><Edit3 size={14} /></button>
                 <button className="h-8 w-8 rounded-full bg-zinc-50 border grid place-items-center hover:bg-red-50 hover:text-red-600"><Trash2 size={14} /></button>

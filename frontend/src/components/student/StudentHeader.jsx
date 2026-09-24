@@ -17,7 +17,7 @@ export default function StudentHeader() {
         </Link>
         <div className="flex items-center gap-2">
           <div className="hidden md:flex items-center gap-2 text-[10px] font-bold text-[#547792] bg-[#E8E2DB] px-3 py-1 rounded-full">
-            <span>🌐 {language==='ta' ? 'மாணவருக்கு மட்டும் - Edit Options' : 'Only for Student - Edit Options'}</span>
+            <span> {language==='ta' ? 'மாணவருக்கு மட்டும் - Edit Options' : 'Only for Student - Edit Options'}</span>
           </div>
           <StudentLanguageToggleAlways variant="pill" />
           <Link to="/student/profile" className="h-9 px-4 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[11px] flex items-center gap-1.5"><User size={14} /> {language==='ta' ? 'சுயவிவரம் - திருத்து' : 'Profile - Edit'}</Link>

@@ -31,7 +31,7 @@ export default function Compare() {
       <StudentHeader />
       <div className="mx-auto max-w-[1300px] px-6 lg:px-8 py-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><GitCompare className="text-[#FAB95B]" /> {language==='ta' ? `கல்லூரிகளை ஒப்பிடுக - ${compareList.length}/4` : `Compare Colleges - ${compareList.length}/4 Real Table`} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 {language==='ta' ? 'தமிழ் / English' : 'Tamil / English'} - {language==='ta' ? 'மாணவருக்கு மட்டும்' : 'Only Student'}</span></h1>
+          <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><GitCompare className="text-[#FAB95B]" /> {language==='ta' ? `கல்லூரிகளை ஒப்பிடுக - ${compareList.length}/4` : `Compare Colleges - ${compareList.length}/4 Real Table`} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]"> {language==='ta' ? 'தமிழ் / English' : 'Tamil / English'} - {language==='ta' ? 'மாணவருக்கு மட்டும்' : 'Only Student'}</span></h1>
           <div className="flex gap-2">
             {compareList.length>0 && <button onClick={clearAll} className="h-10 px-5 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px]">Clear All</button>}
             <Link to="/search" className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] grid place-items-center">Add More Colleges →</Link>
@@ -40,7 +40,7 @@ export default function Compare() {
 
         {compareList.length===0 ? (
           <div className="mt-12 rounded-[24px] bg-white border-2 border-[#E8E2DB] p-16 text-center">
-            <div className="text-5xl">⚖️</div>
+            <div className="text-5xl"></div>
             <div className="font-bold text-[#1A3263] mt-6 text-[18px]">No colleges to compare - Real</div>
             <div className="text-[13px] text-[#547792] mt-2">Select 2-4 colleges to compare side-by-side - College Type, Location, Courses, Departments, Fees, Eligibility, Hostel, Placement, Accreditation, Facilities. Clean comparison table with premium cards rounded shadows hover animations whitespace.</div>
             <Link to="/search" className="mt-6 inline-flex h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold">Discover Colleges - Real Tamil Nadu</Link>
@@ -129,5 +129,5 @@ export default function Compare() {
 }
 
 function GraduationCapIcon({ size, className }) {
-  return <span className={className} style={{ fontSize: size }}>🎓</span>
+  return <span className={className} style={{ fontSize: size }}></span>
 }

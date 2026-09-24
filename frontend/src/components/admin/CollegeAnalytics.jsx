@@ -82,7 +82,7 @@ export default function CollegeAnalytics({ college }) {
         <div className="flex gap-2 flex-wrap">
           <button onClick={handleDownloadCSV} className="h-10 px-4 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[11px] flex items-center gap-1.5 border-2 border-[#FAB95B]"><Download size={14} /> Download CSV</button>
           <button onClick={handleDownloadDetailedPDF} className="h-10 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[11px] flex items-center gap-1.5"><FileText size={14} /> Download PDF</button>
-          <button onClick={handleDownloadPDF} className="h-10 px-4 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5">📄 PDF Report</button>
+          <button onClick={handleDownloadPDF} className="h-10 px-4 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5"> PDF Report</button>
         </div>
       </div>
 
@@ -140,8 +140,7 @@ export default function CollegeAnalytics({ college }) {
             <tbody className="text-[12px]">
               {filteredVisitors.length===0 ? (
                 <tr><td colSpan={7} className="p-12 text-center">
-                  <div className="text-3xl">👥</div>
-                  <div className="font-bold text-[#1A3263] mt-3">No visitors yet</div>
+                                    <div className="font-bold text-[#1A3263] mt-3">No visitors yet</div>
                   <div className="text-[11px] text-[#547792] mt-2">When students visit your college, their details will appear here</div>
                 </td></tr>
               ) : filteredVisitors.map(visitor=>(

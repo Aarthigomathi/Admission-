@@ -604,8 +604,7 @@ export default function AdminDashboard() {
      
      {allColleges.length===0 ? (
       <div className="mt-8 rounded-[20px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-8 text-center">
-       <div className="text-3xl">🏛️</div>
-       <div className="font-bold text-[#1A3263] mt-4">No Colleges Registered</div>
+              <div className="font-bold text-[#1A3263] mt-4">No Colleges Registered</div>
        <div className="text-[12px] text-[#1A3263]/80 mt-2">Please register your college to get started</div>
        <div className="mt-6 flex gap-2 justify-center">
         <Link to="/college/signup" className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] inline-flex items-center justify-center">College Sign Up</Link>
@@ -915,8 +914,7 @@ export default function AdminDashboard() {
 
            {(brandingForm.collegeImages||[]).length===0 ? (
             <div className="mt-4 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 p-8 text-center">
-              <div className="text-3xl">🖼️</div>
-              <div className="font-bold text-[#1A3263] mt-3 text-[13px]">No campus images yet</div>
+                            <div className="font-bold text-[#1A3263] mt-3 text-[13px]">No campus images yet</div>
               <div className="text-[11px] text-[#547792] mt-2">Add campus images for your college</div>
               <div className="mt-3 grid grid-cols-3 gap-2 max-w-[300px] mx-auto">
                 {[
@@ -1006,7 +1004,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="mt-8 p-6 rounded-[16px] bg-[#1A3263] text-white">
-            <div className="font-bold text-[14px] text-[#FAB95B] flex items-center gap-2">👨‍🏫 HOD Details - Image + Biography</div>
+            <div className="font-bold text-[14px] text-[#FAB95B] flex items-center gap-2"> HOD Details - Image + Biography</div>
             <div className="text-[11px] text-white/70 mt-1">Add HOD information with image and detailed biography - supports long text</div>
           </div>
 
@@ -1077,8 +1075,7 @@ export default function AdminDashboard() {
          <h4 className="font-bold text-[#1A3263]">Departments - {(allCustomData.departments||[]).length}</h4>
          {(allCustomData.departments||[]).length===0 ? (
           <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-           <div className="text-3xl">🏛️</div>
-           <div className="font-bold text-[#1A3263] mt-3">No departments added yet</div>
+                      <div className="font-bold text-[#1A3263] mt-3">No departments added yet</div>
            <div className="text-[12px] text-[#547792] mt-2">Add your departments with HOD information</div>
           </div>
          ) : (
@@ -1168,8 +1165,7 @@ export default function AdminDashboard() {
          <h4 className="font-bold text-[#1A3263]">Courses - {(allCustomData.courses||[]).length} </h4>
          {(allCustomData.courses||[]).length===0 ? (
           <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-           <div className="text-3xl">🎓</div>
-           <div className="font-bold text-[#1A3263] mt-3">No courses added yet</div>
+                      <div className="font-bold text-[#1A3263] mt-3">No courses added yet</div>
            <div className="text-[12px] text-[#547792] mt-2">Add courses for your college</div>
           </div>
          ) : (
@@ -1290,8 +1286,7 @@ export default function AdminDashboard() {
          <h4 className="font-bold text-[#1A3263]">Placements - {(allCustomData.placements||[]).length} Records</h4>
          {(allCustomData.placements||[]).length===0 ? (
           <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-           <div className="text-3xl">💼</div>
-           <div className="font-bold text-[#1A3263] mt-3">No placement records yet</div>
+                      <div className="font-bold text-[#1A3263] mt-3">No placement records yet</div>
            <div className="text-[12px] text-[#547792] mt-2">Add companies with logos - will display on college website with company logo</div>
           </div>
          ) : (
@@ -1361,7 +1356,7 @@ export default function AdminDashboard() {
           <div className="p-3 flex justify-between items-center"><span className="text-[11px] font-medium text-[#1A3263]">{img.caption}</span><button onClick={()=>handleDelete('gallery', img.id)} className="h-7 w-7 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={10} /></button></div>
          </div>
         ))}
-        {(allCustomData.gallery||[]).length===0 && <div className="col-span-3 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🖼️</div><div className="font-bold text-[#1A3263] mt-3">No campus images added yet</div><div className="text-[11px] text-[#547792] mt-1">Add campus images for your college</div></div>}
+        {(allCustomData.gallery||[]).length===0 && <div className="col-span-3 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No campus images added yet</div><div className="text-[11px] text-[#547792] mt-1">Add campus images for your college</div></div>}
        </div>
       </div>
      )}
@@ -1427,7 +1422,7 @@ export default function AdminDashboard() {
 
             {(hostelForm.images||[]).length===0 ? (
              <div className="mt-4 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 p-6 text-center">
-               <div className="text-2xl">🏠</div>
+               <div className="text-2xl"></div>
                <div className="text-[11px] text-[#547792] mt-2">No hostel images added yet - add room, mess, building photos</div>
              </div>
             ) : (
@@ -1452,8 +1447,7 @@ export default function AdminDashboard() {
          <h4 className="font-bold text-[#1A3263]">Hostels - {(allCustomData.hostels||[]).length}</h4>
          {(allCustomData.hostels||[]).length===0 ? (
           <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-           <div className="text-3xl">🏠</div>
-           <div className="font-bold text-[#1A3263] mt-3">No hostels added yet</div>
+                      <div className="font-bold text-[#1A3263] mt-3">No hostels added yet</div>
            <div className="text-[12px] text-[#547792] mt-2">Add hostel with images - will show gallery on college website</div>
           </div>
          ) : (
@@ -1548,8 +1542,7 @@ export default function AdminDashboard() {
          <h4 className="font-bold text-[#1A3263]">Management - {(allCustomData.management||[]).length} Members Added</h4>
          {(allCustomData.management||[]).length===0 ? (
           <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-           <div className="text-3xl">👥</div>
-           <div className="font-bold text-[#1A3263] mt-3">No management members added yet</div>
+                      <div className="font-bold text-[#1A3263] mt-3">No management members added yet</div>
            <div className="text-[12px] text-[#547792] mt-2">Add Chairman, Secretary, Trustees - image odu - real-time website la theriyum</div>
           </div>
          ) : (
@@ -1684,7 +1677,7 @@ export default function AdminDashboard() {
         <div className="mt-8">
          <h4 className="font-bold text-[#1A3263]">Research Centres - {(allCustomData.researchCentres||allCustomData.research||[]).length}</h4>
          {((allCustomData.researchCentres||allCustomData.research||[]).length===0) ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20"><div className="text-3xl">🔬</div><div className="font-bold text-[#1A3263] mt-3">No research centres added yet</div><div className="text-[12px] text-[#547792] mt-2">Add your research centres with images</div></div>
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No research centres added yet</div><div className="text-[12px] text-[#547792] mt-2">Add your research centres with images</div></div>
          ) : (
           <div className="mt-4 grid md:grid-cols-2 gap-4">
            {(allCustomData.researchCentres||allCustomData.research||[]).map(r=>(
@@ -1733,7 +1726,7 @@ export default function AdminDashboard() {
         <div className="mt-8">
          <h4 className="font-bold text-[#1A3263]">Accreditations - {(allCustomData.accreditations||[]).length}</h4>
          {(allCustomData.accreditations||[]).length===0 ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🏅</div><div className="font-bold text-[#1A3263] mt-3">No accreditations added yet</div></div>
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No accreditations added yet</div></div>
          ) : (
           <div className="mt-4 grid md:grid-cols-2 gap-4">
            {(allCustomData.accreditations||[]).map(a=>(
@@ -1798,7 +1791,7 @@ export default function AdminDashboard() {
         <div className="mt-8">
          <h4 className="font-bold text-[#1A3263]">Campus & Environment - {(allCustomData.campusEnvironment||allCustomData.campus||[]).length}</h4>
          {((allCustomData.campusEnvironment||allCustomData.campus||[]).length===0) ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🌳</div><div className="font-bold text-[#1A3263] mt-3">No campus details added yet</div></div>
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No campus details added yet</div></div>
          ) : (
           <div className="mt-4 grid md:grid-cols-2 gap-4">
            {(allCustomData.campusEnvironment||allCustomData.campus||[]).map(c=>(
@@ -1884,7 +1877,7 @@ export default function AdminDashboard() {
         <div className="mt-8">
          <h4 className="font-bold text-[#1A3263]">Sports - {(allCustomData.sports||[]).length}</h4>
          {(allCustomData.sports||[]).length===0 ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">⚽</div><div className="font-bold text-[#1A3263] mt-3">No sports added yet</div></div>
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No sports added yet</div></div>
          ) : (
           <div className="mt-4 grid md:grid-cols-2 gap-4">
            {(allCustomData.sports||[]).map(s=>(
@@ -1929,7 +1922,7 @@ export default function AdminDashboard() {
         <div className="mt-8">
          <h4 className="font-bold text-[#1A3263]">Alumni - {(customData.alumni||[]).length}</h4>
          {(customData.alumni||[]).length===0 ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🎓</div><div className="font-bold text-[#1A3263] mt-3">No alumni added yet</div></div>
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No alumni added yet</div></div>
          ) : (
           <div className="mt-4 grid md:grid-cols-2 gap-4">
            {(customData.alumni||[]).map(a=>(
@@ -1972,7 +1965,7 @@ export default function AdminDashboard() {
         <div className="mt-8">
          <h4 className="font-bold text-[#1A3263]">Achievements - {(customData.achievements||[]).length}</h4>
          {(customData.achievements||[]).length===0 ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">🏆</div><div className="font-bold text-[#1A3263] mt-3">No achievements added yet</div></div>
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No achievements added yet</div></div>
          ) : (
           <div className="mt-4 grid md:grid-cols-2 gap-4">
            {(customData.achievements||[]).map(a=>(
@@ -2043,7 +2036,7 @@ export default function AdminDashboard() {
          </div>
 
          {(allCustomData.events||[]).length===0 ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl">📅</div><div className="font-bold text-[#1A3263] mt-3">No events added yet</div><div className="text-[12px] text-[#547792] mt-2">Add category-wise: Cultural, Technical, Sports, College Day, Social Awareness with images</div></div>
+          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No events added yet</div><div className="text-[12px] text-[#547792] mt-2">Add category-wise: Cultural, Technical, Sports, College Day, Social Awareness with images</div></div>
          ) : (
           <div className="mt-6 space-y-8">
             {['Cultural / Arts Events','Technical / Academic Events','Sports Events','College / Student Events','Social / Awareness Events'].filter(cat=> eventCategoryFilter==='All' || eventCategoryFilter===cat).map(category=>{
@@ -2307,7 +2300,7 @@ export default function AdminDashboard() {
 
      {!['dashboard','branding','departments','courses','facilities','placements','examinations','gallery','hostel','about','analytics','management','principal','research','accreditation','campus','library','sports','alumni','achievements','events','announcements','admissions','contact','settings'].includes(activeSection) && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-12 text-center">
-       <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center mx-auto text-2xl">🚧</div>
+       <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB] grid place-items-center mx-auto text-2xl"></div>
        <h3 className="font-bold text-[18px] mt-6 capitalize text-[#1A3263]">{activeSection} - Coming Soon - Your Own {activeSection}</h3>
        <p className="text-[13px] text-[#547792] mt-3 max-w-[600px] mx-auto leading-[1.6]">
         This section is for your college - {college.name} - ID {college.id}. Add your {activeSection} information.

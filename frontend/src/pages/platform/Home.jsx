@@ -212,7 +212,7 @@ export default function PlatformHome() {
           </div>
 
           <div className="mt-8 rounded-[20px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-6">
-            <div className="font-bold text-[#1A3263] flex items-center gap-2"><Shield size={16} /> 🔒 Privacy & Security - Core Rule - Student Activity Tracking</div>
+            <div className="font-bold text-[#1A3263] flex items-center gap-2"><Shield size={16} />  Privacy & Security - Core Rule - Student Activity Tracking</div>
             <div className="text-[12px] text-[#1A3263]/80 mt-3 leading-[1.6]">Record student_id/college_id/course_id/date/time/activity_type COLLEGE_VIEW/COURSE_VIEW/SAVE/COMPARE/ENQUIRY. If student simply views college page, DO NOT automatically send personal info to college. College should NOT get student name, phone, email, browsing history. Platform stores activity securely. Only when student explicitly clicks ENQUIRE NOW and agrees to share, relevant info sent to college. College analytics shows aggregated only: This month 1245 students viewed your college - NOT Student John viewed 10 times unless enquiry with consent. Student data belongs to platform and must be protected. Implemented in activityTracker.js with personalInfoShared flag and backend StudentActivity.java.</div>
           </div>
         </div>
@@ -228,7 +228,7 @@ export default function PlatformHome() {
 
         {colleges.length===0 ? (
           <div className="rounded-[28px] bg-white border-2 border-[#FAB95B]/30 p-12 text-center shadow-sm">
-            <div className="h-20 w-20 rounded-[24px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center mx-auto text-3xl">🏛️</div>
+            <div className="h-20 w-20 rounded-[24px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center mx-auto text-3xl"></div>
             <h3 className="font-display text-[24px] font-bold text-[#1A3263] mt-6">No Colleges Yet - Automatic Default College Name Kattama</h3>
             <p className="text-[14px] text-[#547792] mt-3 max-w-[600px] mx-auto leading-[1.6]">
               Ippa automatic ah default ah college name kattama - New ah avunga college details college sign up panni avunga details add patra mathiri kette - Done! 

@@ -56,13 +56,13 @@ export default function LanguageToggle({ variant = 'default', className = '' }) 
           onClick={() => setLanguage('en')}
           className={`h-8 px-4 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 ${language === 'en' ? 'bg-[#1A3263] text-[#FAB95B] shadow-sm' : 'text-[#1A3263] hover:bg-white/50'}`}
         >
-          🇬🇧 English
+           English
         </button>
         <button
           onClick={() => setLanguage('ta')}
           className={`h-8 px-4 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 ${language === 'ta' ? 'bg-[#FAB95B] text-[#1A3263] shadow-sm' : 'text-[#1A3263] hover:bg-white/50'}`}
         >
-          🇮🇳 தமிழ்
+           தமிழ்
         </button>
       </div>
     </div>

@@ -57,22 +57,22 @@ export const colleges = [
       ]
     },
     departments: [
-      { id: 1, name: "Computer Science and Engineering", code: "CSE", hod: "Dr. V. Mahesh", courses: 5, faculty: 32, icon: "💻" },
-      { id: 2, name: "CSE (AI & Machine Learning)", code: "CSE-AIML", hod: "Dr. S. Karthik", courses: 2, faculty: 18, icon: "🤖" },
-      { id: 3, name: "Artificial Intelligence & Data Science", code: "AI-DS", hod: "Dr. K. Priya", courses: 3, faculty: 22, icon: "🧠" },
-      { id: 4, name: "Information Technology", code: "IT", hod: "Dr. M. Kumar", courses: 3, faculty: 24, icon: "🌐" },
-      { id: 5, name: "Electronics and Communication", code: "ECE", hod: "Dr. R. Suresh", courses: 4, faculty: 38, icon: "📡" },
-      { id: 6, name: "Electrical and Electronics", code: "EEE", hod: "Dr. M. Kumar", courses: 3, faculty: 28, icon: "⚡" },
-      { id: 7, name: "Mechanical Engineering", code: "MECH", hod: "Dr. P. R. Thyla", courses: 5, faculty: 45, icon: "⚙️" },
-      { id: 8, name: "Civil Engineering", code: "CIVIL", hod: "Dr. A. Sharma", courses: 3, faculty: 25, icon: "🏗️" },
-      { id: 9, name: "Automobile Engineering", code: "AUTO", hod: "Dr. S. Ramesh", courses: 2, faculty: 18, icon: "🚗" },
-      { id: 10, name: "Biomedical Engineering", code: "BME", hod: "Dr. L. Meena", courses: 2, faculty: 16, icon: "🩺" },
-      { id: 11, name: "Biotechnology", code: "BIOTECH", hod: "Dr. K. Suresh", courses: 2, faculty: 15, icon: "🧬" },
-      { id: 12, name: "Robotics and Automation", code: "R&A", hod: "Dr. P. Karthik", courses: 2, faculty: 14, icon: "🦾" },
-      { id: 13, name: "Metallurgical Engineering", code: "META", hod: "Dr. R. Kumar", courses: 2, faculty: 12, icon: "🔩" },
-      { id: 14, name: "Production Engineering", code: "PROD", hod: "Dr. A. Kumar", courses: 3, faculty: 16, icon: "🏭" },
-      { id: 15, name: "Textile Technology", code: "TEX", hod: "Dr. G. Thilagavathi", courses: 2, faculty: 14, icon: "🧵" },
-      { id: 16, name: "Fashion Technology", code: "FT", hod: "Dr. S. Priya", courses: 2, faculty: 12, icon: "👗" },
+      { id: 1, name: "Computer Science and Engineering", code: "CSE", hod: "Dr. V. Mahesh", courses: 5, faculty: 32, icon: "" },
+      { id: 2, name: "CSE (AI & Machine Learning)", code: "CSE-AIML", hod: "Dr. S. Karthik", courses: 2, faculty: 18, icon: "" },
+      { id: 3, name: "Artificial Intelligence & Data Science", code: "AI-DS", hod: "Dr. K. Priya", courses: 3, faculty: 22, icon: "" },
+      { id: 4, name: "Information Technology", code: "IT", hod: "Dr. M. Kumar", courses: 3, faculty: 24, icon: "" },
+      { id: 5, name: "Electronics and Communication", code: "ECE", hod: "Dr. R. Suresh", courses: 4, faculty: 38, icon: "" },
+      { id: 6, name: "Electrical and Electronics", code: "EEE", hod: "Dr. M. Kumar", courses: 3, faculty: 28, icon: "" },
+      { id: 7, name: "Mechanical Engineering", code: "MECH", hod: "Dr. P. R. Thyla", courses: 5, faculty: 45, icon: "" },
+      { id: 8, name: "Civil Engineering", code: "CIVIL", hod: "Dr. A. Sharma", courses: 3, faculty: 25, icon: "" },
+      { id: 9, name: "Automobile Engineering", code: "AUTO", hod: "Dr. S. Ramesh", courses: 2, faculty: 18, icon: "" },
+      { id: 10, name: "Biomedical Engineering", code: "BME", hod: "Dr. L. Meena", courses: 2, faculty: 16, icon: "" },
+      { id: 11, name: "Biotechnology", code: "BIOTECH", hod: "Dr. K. Suresh", courses: 2, faculty: 15, icon: "" },
+      { id: 12, name: "Robotics and Automation", code: "R&A", hod: "Dr. P. Karthik", courses: 2, faculty: 14, icon: "" },
+      { id: 13, name: "Metallurgical Engineering", code: "META", hod: "Dr. R. Kumar", courses: 2, faculty: 12, icon: "" },
+      { id: 14, name: "Production Engineering", code: "PROD", hod: "Dr. A. Kumar", courses: 3, faculty: 16, icon: "" },
+      { id: 15, name: "Textile Technology", code: "TEX", hod: "Dr. G. Thilagavathi", courses: 2, faculty: 14, icon: "" },
+      { id: 16, name: "Fashion Technology", code: "FT", hod: "Dr. S. Priya", courses: 2, faculty: 12, icon: "" },
     ],
     courses: [
       { id: 1, name: "B.E. Computer Science and Engineering", degree: "B.E", dept: "CSE", duration: "4 Years", intake: 240, fees: "₹2,20,000/year", eligibility: "12th 50% PCM via TNEA Single Window Counselling", level: "UG" },
@@ -90,11 +90,11 @@ export const colleges = [
       { id: 13, name: "M.Sc Data Science (Integrated 5 Years)", degree: "M.Sc", dept: "CSE", duration: "5 Years", intake: 60, fees: "₹80,000/year", eligibility: "12th", level: "UG" },
     ],
     facilities: [
-      { name: "Central Library (Est. 1951)", icon: "📚", description: "1 Lakh+ volumes, digital library, e-journals, 24/7 access, established same year as college" },
-      { name: "Hostels", icon: "🏠", description: "Excellent hostel to feel home away from home, separate boys & girls, 3000+ capacity" },
-      { name: "Placement Office", icon: "💼", description: "Facilitating campus recruitment for MNCs & national orgs, 90+ companies, ABB, Adobe, ACC, Microsoft, Amazon" },
-      { name: "Research Centres & CoEs", icon: "🔬", description: "PSG-TI Medical Electronics, PSG-Intel VLSI, PSG-FANUC CNC & Robotics, PSG-Adept Robotics, PSG-Prosun Solar PV, PSG-Danfoss Climate & Energy, 50+ labs" },
-      { name: "Sports & Gym", icon: "⚽", description: "Sports Complex, Gym, Hospital and Medical, Cafeteria, Other Facilities, Labs, Hall Facilities" },
+      { name: "Central Library (Est. 1951)", icon: "", description: "1 Lakh+ volumes, digital library, e-journals, 24/7 access, established same year as college" },
+      { name: "Hostels", icon: "", description: "Excellent hostel to feel home away from home, separate boys & girls, 3000+ capacity" },
+      { name: "Placement Office", icon: "", description: "Facilitating campus recruitment for MNCs & national orgs, 90+ companies, ABB, Adobe, ACC, Microsoft, Amazon" },
+      { name: "Research Centres & CoEs", icon: "", description: "PSG-TI Medical Electronics, PSG-Intel VLSI, PSG-FANUC CNC & Robotics, PSG-Adept Robotics, PSG-Prosun Solar PV, PSG-Danfoss Climate & Energy, 50+ labs" },
+      { name: "Sports & Gym", icon: "", description: "Sports Complex, Gym, Hospital and Medical, Cafeteria, Other Facilities, Labs, Hall Facilities" },
     ],
     placements: {
       highest: "₹54 LPA",
@@ -166,11 +166,11 @@ export const colleges = [
       youtube: "#"
     },
     customSections: [
-      { id: 1, title: "PSG-TI Centre for Medical Electronics", description: "Healthcare technology & high-performance computing", icon: "🩺" },
-      { id: 2, title: "PSG-Intel Centre of Excellence in VLSI System Design", description: "High-performance computing & VLSI", icon: "💾" },
-      { id: 3, title: "PSG-FANUC Centre for Advanced CNC and Robotics", description: "Industry 4.0 initiatives", icon: "🦾" },
-      { id: 4, title: "PSG-Danfoss Centre for Climate and Energy", description: "Sustainable energy solutions", icon: "🌞" },
-      { id: 5, title: "PSG-Prosun Centre for Solar PV Systems", description: "Renewable energy research", icon: "☀️" },
+      { id: 1, title: "PSG-TI Centre for Medical Electronics", description: "Healthcare technology & high-performance computing", icon: "" },
+      { id: 2, title: "PSG-Intel Centre of Excellence in VLSI System Design", description: "High-performance computing & VLSI", icon: "" },
+      { id: 3, title: "PSG-FANUC Centre for Advanced CNC and Robotics", description: "Industry 4.0 initiatives", icon: "" },
+      { id: 4, title: "PSG-Danfoss Centre for Climate and Energy", description: "Sustainable energy solutions", icon: "" },
+      { id: 5, title: "PSG-Prosun Centre for Solar PV Systems", description: "Renewable energy research", icon: "" },
     ]
   },
   {
@@ -227,18 +227,18 @@ export const colleges = [
       ]
     },
     departments: [
-      { id: 1, name: "Computer Science", code: "CSE", hod: "Dr. S. Karthik", courses: 3, faculty: 22, icon: "💻" },
-      { id: 2, name: "Mechanical", code: "MECH", hod: "Dr. R. Kumar", courses: 3, faculty: 30, icon: "⚙️" },
-      { id: 3, name: "Civil Engineering", code: "CIVIL", hod: "Dr. L. Meena", courses: 2, faculty: 18, icon: "🏗️" },
+      { id: 1, name: "Computer Science", code: "CSE", hod: "Dr. S. Karthik", courses: 3, faculty: 22, icon: "" },
+      { id: 2, name: "Mechanical", code: "MECH", hod: "Dr. R. Kumar", courses: 3, faculty: 30, icon: "" },
+      { id: 3, name: "Civil Engineering", code: "CIVIL", hod: "Dr. L. Meena", courses: 2, faculty: 18, icon: "" },
     ],
     courses: [
       { id: 1, name: "B.E. Computer Science", degree: "B.E", dept: "CSE", duration: "4 Years", intake: 120, fees: "₹85,000/year", eligibility: "TNEA", level: "UG" },
       { id: 2, name: "B.E. Mechanical", degree: "B.E", dept: "MECH", duration: "4 Years", intake: 120, fees: "₹85,000/year", eligibility: "TNEA", level: "UG" },
     ],
     facilities: [
-      { name: "Library", icon: "📚", description: "1.2 Lakh books, e-journals" },
-      { name: "Hostel", icon: "🏠", description: "Govt aided hostel facilities" },
-      { name: "Sports", icon: "🏏", description: "Large playground, indoor games" },
+      { name: "Library", icon: "", description: "1.2 Lakh books, e-journals" },
+      { name: "Hostel", icon: "", description: "Govt aided hostel facilities" },
+      { name: "Sports", icon: "", description: "Large playground, indoor games" },
     ],
     placements: {
       highest: "₹28 LPA",
@@ -319,18 +319,18 @@ export const colleges = [
       ]
     },
     departments: [
-      { id: 1, name: "Computer Science", code: "CSE", hod: "Dr. R. Deepa", courses: 4, faculty: 35, icon: "💻" },
-      { id: 2, name: "Biotechnology", code: "BIO", hod: "Dr. K. Suresh", courses: 2, faculty: 18, icon: "🧬" },
-      { id: 3, name: "Aeronautical", code: "AERO", hod: "Dr. P. Karthik", courses: 2, faculty: 20, icon: "✈️" },
+      { id: 1, name: "Computer Science", code: "CSE", hod: "Dr. R. Deepa", courses: 4, faculty: 35, icon: "" },
+      { id: 2, name: "Biotechnology", code: "BIO", hod: "Dr. K. Suresh", courses: 2, faculty: 18, icon: "" },
+      { id: 3, name: "Aeronautical", code: "AERO", hod: "Dr. P. Karthik", courses: 2, faculty: 20, icon: "" },
     ],
     courses: [
       { id: 1, name: "B.E. CSE", degree: "B.E", dept: "CSE", duration: "4 Years", intake: 180, fees: "₹1,80,000/year", eligibility: "12th 60%", level: "UG" },
       { id: 2, name: "B.Tech Biotechnology", degree: "B.Tech", dept: "BIO", duration: "4 Years", intake: 60, fees: "₹1,80,000/year", eligibility: "12th 60%", level: "UG" },
     ],
     facilities: [
-      { name: "KCT Library", icon: "📚", description: "Modern library with 1.8 lakh volumes" },
-      { name: "Green Campus", icon: "🌳", description: "150 acres lush green, carbon neutral initiatives" },
-      { name: "Garage", icon: "🏎️", description: "Student racing team, SAE clubs" },
+      { name: "KCT Library", icon: "", description: "Modern library with 1.8 lakh volumes" },
+      { name: "Green Campus", icon: "", description: "150 acres lush green, carbon neutral initiatives" },
+      { name: "Garage", icon: "", description: "Student racing team, SAE clubs" },
     ],
     placements: {
       highest: "₹42 LPA",
@@ -356,8 +356,8 @@ export const colleges = [
     },
     social: { website: "https://kct.ac.in", linkedin: "#", instagram: "#", youtube: "#" },
     customSections: [
-      { id: 1, title: "KCT Garage", description: "Award winning student racing team", icon: "🏁" },
-      { id: 2, title: "I-Cell", description: "Innovation & Entrepreneurship Cell", icon: "💡" }
+      { id: 1, title: "KCT Garage", description: "Award winning student racing team", icon: "" },
+      { id: 2, title: "I-Cell", description: "Innovation & Entrepreneurship Cell", icon: "" }
     ]
   },
   {
@@ -412,9 +412,9 @@ export const colleges = [
       management: []
     },
     departments: [
-      { id: 1, name: "Computer Science", code: "CS", hod: "Dr. A. Kumar", courses: 6, faculty: 28, icon: "💻" },
-      { id: 2, name: "Commerce", code: "COM", hod: "Dr. S. Priya", courses: 8, faculty: 35, icon: "📊" },
-      { id: 3, name: "English Literature", code: "ENG", hod: "Dr. R. Lakshmi", courses: 4, faculty: 18, icon: "📖" },
+      { id: 1, name: "Computer Science", code: "CS", hod: "Dr. A. Kumar", courses: 6, faculty: 28, icon: "" },
+      { id: 2, name: "Commerce", code: "COM", hod: "Dr. S. Priya", courses: 8, faculty: 35, icon: "" },
+      { id: 3, name: "English Literature", code: "ENG", hod: "Dr. R. Lakshmi", courses: 4, faculty: 18, icon: "" },
     ],
     courses: [
       { id: 1, name: "B.Sc Computer Science", degree: "B.Sc", dept: "CS", duration: "3 Years", intake: 120, fees: "₹45,000/year", eligibility: "12th Pass", level: "UG" },
@@ -422,8 +422,8 @@ export const colleges = [
       { id: 3, name: "BCA", degree: "BCA", dept: "CS", duration: "3 Years", intake: 120, fees: "₹50,000/year", eligibility: "12th with Maths", level: "UG" },
     ],
     facilities: [
-      { name: "Library", icon: "📚", description: "2 lakh books, rare collections" },
-      { name: "Auditorium", icon: "🎭", description: "2000 capacity, cultural events" },
+      { name: "Library", icon: "", description: "2 lakh books, rare collections" },
+      { name: "Auditorium", icon: "", description: "2000 capacity, cultural events" },
     ],
     placements: { highest: "₹18 LPA", average: "₹4.5 LPA", recruiters: ["TCS", "Infosys", "Wipro"], percentage: 88 },
     announcements: [
@@ -496,15 +496,15 @@ export const colleges = [
       management: []
     },
     departments: [
-      { id: 1, name: "BCA", code: "BCA", hod: "Dr. M. Priya", courses: 3, faculty: 22, icon: "💻" },
-      { id: 2, name: "Management", code: "MBA", hod: "Dr. R. Suresh", courses: 4, faculty: 18, icon: "📈" },
+      { id: 1, name: "BCA", code: "BCA", hod: "Dr. M. Priya", courses: 3, faculty: 22, icon: "" },
+      { id: 2, name: "Management", code: "MBA", hod: "Dr. R. Suresh", courses: 4, faculty: 18, icon: "" },
     ],
     courses: [
       { id: 1, name: "BCA", degree: "BCA", dept: "BCA", duration: "3 Years", intake: 240, fees: "₹65,000/year", eligibility: "12th Pass", level: "UG" },
       { id: 2, name: "BBA", degree: "BBA", dept: "MBA", duration: "3 Years", intake: 120, fees: "₹55,000/year", eligibility: "12th Pass", level: "UG" },
     ],
     facilities: [
-      { name: "Placement Cell", icon: "💼", description: "Dedicated training & placement" },
+      { name: "Placement Cell", icon: "", description: "Dedicated training & placement" },
     ],
     placements: { highest: "₹22 LPA", average: "₹5.2 LPA", recruiters: ["Amazon", "TCS", "Accenture"], percentage: 90 },
     announcements: [{ id: 1, title: "Admission 2026 Open for BCA/BBA", date: "2026-02-28", category: "Admission", urgent: true }],
@@ -566,16 +566,16 @@ export const colleges = [
       management: []
     },
     departments: [
-      { id: 1, name: "General Medicine", code: "MED", hod: "Dr. R. Kumar", courses: 2, faculty: 18, icon: "🩺" },
-      { id: 2, name: "Surgery", code: "SURG", hod: "Dr. S. Meena", courses: 2, faculty: 15, icon: "🏥" },
+      { id: 1, name: "General Medicine", code: "MED", hod: "Dr. R. Kumar", courses: 2, faculty: 18, icon: "" },
+      { id: 2, name: "Surgery", code: "SURG", hod: "Dr. S. Meena", courses: 2, faculty: 15, icon: "" },
     ],
     courses: [
       { id: 1, name: "MBBS", degree: "MBBS", dept: "MED", duration: "5.5 Years", intake: 150, fees: "₹15,000/year", eligibility: "NEET", level: "UG" },
       { id: 2, name: "MD General Medicine", degree: "MD", dept: "MED", duration: "3 Years", intake: 12, fees: "₹25,000/year", eligibility: "NEET PG", level: "PG" },
     ],
     facilities: [
-      { name: "Hospital", icon: "🏥", description: "1200 bedded teaching hospital" },
-      { name: "Library", icon: "📚", description: "Medical library with 30k books" },
+      { name: "Hospital", icon: "", description: "1200 bedded teaching hospital" },
+      { name: "Library", icon: "", description: "Medical library with 30k books" },
     ],
     placements: { highest: "-", average: "-", recruiters: ["Govt Hospitals", "Private Hospitals"], percentage: 100 },
     announcements: [{ id: 1, title: "NEET PG Counselling 2026", date: "2026-03-12", category: "Admission" }],

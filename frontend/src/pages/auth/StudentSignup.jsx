@@ -272,7 +272,7 @@ export default function StudentSignup() {
                 ))}
               </div>
               <div className="ml-3 flex items-center gap-2">
-                <span className="text-[10px] font-bold text-[#547792]">🌐 City → Dream Course Below:</span>
+                <span className="text-[10px] font-bold text-[#547792]"> City → Dream Course Below:</span>
                 <StudentLanguageToggleAlways variant="pill" />
               </div>
             </div>
@@ -290,7 +290,7 @@ export default function StudentSignup() {
             {step===1 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={22} className="text-[#FAB95B]" /> {language==='ta' ? 'அடிப்படை தகவல் - City க்கு கீழே கனவு பாடம்' : 'Basic Info - Dream Course Below City'} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 City → Dream Course</span></h2>
+                  <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={22} className="text-[#FAB95B]" /> {language==='ta' ? 'அடிப்படை தகவல் - City க்கு கீழே கனவு பாடம்' : 'Basic Info - Dream Course Below City'} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]"> City → Dream Course</span></h2>
                   <p className="text-[12px] text-[#547792] mt-1">{language==='ta' ? 'City க்கு கீழே என்ன படிக்க ஆசைப்படுகிறாய் என்பதை கேட்கிறோம் - Dream course signup போதே - City க்கு கீழே வேண்டும்' : 'We ask what you want to study right below City - Dream course at signup itself - Below City needed - Enna padikka aasa padra dream course signup pothey podanum citykku keela'}</p>
                 </div>
 
@@ -338,7 +338,7 @@ export default function StudentSignup() {
                         <select value={formData.interestedCourse} onChange={e=>updateField('interestedCourse', e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-white border-2 border-[#FAB95B] focus:border-[#1A3263] outline-none text-[13px] font-bold text-[#1A3263] shadow-sm">
                           <option>B.E Computer Science</option><option>B.Tech AI & Data Science</option><option>B.E CSE AI & ML</option><option>B.Tech Information Technology</option><option>B.E Electronics and Communication</option><option>B.E Mechanical</option><option>B.E Civil</option><option>BCA</option><option>B.Sc Computer Science</option><option>B.Com</option><option>BBA</option><option>MBBS</option><option>MBA</option><option>B.Sc Nursing</option><option>LLB</option>
                         </select>
-                        <div className="text-[10px] text-[#1A3263] font-bold mt-1 bg-[#FAB95B]/20 px-2 py-1 rounded-full inline-flex">📍 City ({formData.city || 'Your City'}) → Dream Course: {formData.interestedCourse}</div>
+                        <div className="text-[10px] text-[#1A3263] font-bold mt-1 bg-[#FAB95B]/20 px-2 py-1 rounded-full inline-flex"> City ({formData.city || 'Your City'}) → Dream Course: {formData.interestedCourse}</div>
                       </div>
                       <div>
                         <label className="text-[11px] font-bold uppercase text-[#1A3263]">{language==='ta' ? 'ஆர்வமுள்ள பாடம் / பிரிவு' : 'Interested Subject / Stream'}</label>
@@ -363,7 +363,7 @@ export default function StudentSignup() {
                 <button onClick={()=>setStep(2)} disabled={!formData.fullName || !formData.email || !formData.mobile || !formData.city || !formData.interestedCourse} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center justify-center gap-2 hover:bg-[#1A3263]/90 disabled:opacity-50">
                   {language==='ta' ? `தொடர்க - ${formData.city} → ${formData.interestedCourse}` : `Continue - ${formData.city || 'City'} → ${formData.interestedCourse}`} <ArrowRight size={18} />
                 </button>
-                <div className="text-[11px] text-center text-[#547792]">📍 {language==='ta' ? 'Flow: பெயர் → மின்னஞ்சல் → கைபேசி → கடவுச்சொல் → மாவட்டம் → நகரம் → அதற்கு கீழே கனவு பாடம்' : 'Flow: Name → Email → Mobile → Password → District → City → Immediately Below City Dream Course'}</div>
+                <div className="text-[11px] text-center text-[#547792]"> {language==='ta' ? 'Flow: பெயர் → மின்னஞ்சல் → கைபேசி → கடவுச்சொல் → மாவட்டம் → நகரம் → அதற்கு கீழே கனவு பாடம்' : 'Flow: Name → Email → Mobile → Password → District → City → Immediately Below City Dream Course'}</div>
               </div>
             )}
 
@@ -549,7 +549,7 @@ export default function StudentSignup() {
                     </div>
                     {formData.percentage && (
                       <div className="mt-4 rounded-[12px] bg-white text-[#1A3263] p-3">
-                        <div className="text-[11px] font-bold">✨ {t('autoPercentResult')}:</div>
+                        <div className="text-[11px] font-bold"> {t('autoPercentResult')}:</div>
                         <div className="text-[12px] mt-1">{formData.marksObtained} / {formData.totalMarks} = <span className="font-bold">{formData.percentage}%</span> - {formData.grade}</div>
                       </div>
                     )}
@@ -559,16 +559,16 @@ export default function StudentSignup() {
                     <div className="flex items-center gap-2 font-bold text-[14px] text-[#1A3263]"><Upload size={18} className="text-[#FAB95B]" /> {t('originalDocs')} - {t('documents')}</div>
                     <div className="grid md:grid-cols-2 gap-3 mt-4">
                       {[
-                        { key: 'tenthMarksheet', label: `${t('tenthMarksheet')} *`, desc: 'SSLC Original', required: true, icon: '📄' },
-                        { key: 'twelfthMarksheet', label: `${t('twelfthMarksheet')} *`, desc: 'HSC Original', required: true, icon: '📄' },
-                        { key: 'tc', label: `${t('tc')} *`, desc: 'School/College TC', required: true, icon: '📜' },
-                        { key: 'communityCertificate', label: `${t('communityCertificate')} *`, desc: 'BC/MBC/SC/ST', required: true, icon: '🏛️' },
-                        { key: 'incomeCertificate', label: t('incomeCertificate'), desc: 'For scholarship', required: false, icon: '💰' },
-                        { key: 'aadharCard', label: `${t('aadharCard')} *`, desc: 'ID Proof', required: true, icon: '🪪' },
-                        { key: 'photo', label: `${t('photo')} *`, desc: 'Recent Photo', required: true, icon: '📸' },
-                        { key: 'nativityCertificate', label: t('nativityCertificate'), desc: 'TN Nativity', required: false, icon: '📍' },
-                        { key: 'firstGraduateCertificate', label: t('firstGraduateCertificate'), desc: 'First graduate', required: false, icon: '🎓' },
-                        { key: 'specialReservation', label: t('specialReservation'), desc: 'Sports/PH', required: false, icon: '⭐' },
+                        { key: 'tenthMarksheet', label: `${t('tenthMarksheet')} *`, desc: 'SSLC Original', required: true, icon: '' },
+                        { key: 'twelfthMarksheet', label: `${t('twelfthMarksheet')} *`, desc: 'HSC Original', required: true, icon: '' },
+                        { key: 'tc', label: `${t('tc')} *`, desc: 'School/College TC', required: true, icon: '' },
+                        { key: 'communityCertificate', label: `${t('communityCertificate')} *`, desc: 'BC/MBC/SC/ST', required: true, icon: '' },
+                        { key: 'incomeCertificate', label: t('incomeCertificate'), desc: 'For scholarship', required: false, icon: '' },
+                        { key: 'aadharCard', label: `${t('aadharCard')} *`, desc: 'ID Proof', required: true, icon: '' },
+                        { key: 'photo', label: `${t('photo')} *`, desc: 'Recent Photo', required: true, icon: '' },
+                        { key: 'nativityCertificate', label: t('nativityCertificate'), desc: 'TN Nativity', required: false, icon: '' },
+                        { key: 'firstGraduateCertificate', label: t('firstGraduateCertificate'), desc: 'First graduate', required: false, icon: '' },
+                        { key: 'specialReservation', label: t('specialReservation'), desc: 'Sports/PH', required: false, icon: '' },
                       ].map(doc=>(
                         <div key={doc.key} className={`rounded-[14px] border-2 p-3 ${formData.documentNames[doc.key] ? 'bg-[#FAB95B]/20 border-[#FAB95B]' : 'bg-[#E8E2DB]/50 border-[#E8E2DB]'} `}>
                           <div className="flex items-start justify-between gap-2">
@@ -664,8 +664,7 @@ export default function StudentSignup() {
                     </div>
                     {topCollegesByPercentage.length===0 ? (
                       <div className="mt-4 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-8 text-center">
-                        <div className="text-3xl">🏛️</div>
-                        <div className="font-bold text-[#1A3263] mt-3">No Colleges Registered Yet - No Default Colleges</div>
+                                                <div className="font-bold text-[#1A3263] mt-3">No Colleges Registered Yet - No Default Colleges</div>
                         <div className="text-[11px] text-[#1A3263]/80 mt-2">Automatic default college name kattama - Platform la ippa colleges illa. Colleges signup panni avunga details add panna apram ungalukku matched colleges kaattum. First college /college/signup la register pannanum.</div>
                         <div className="text-[11px] text-[#547792] mt-2">Your {formData.percentage}% eligible - Once colleges register, top matches for {formData.interestedCourse} will appear here based on placement %.</div>
                       </div>

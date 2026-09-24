@@ -30,13 +30,13 @@ export default function Saved() {
       <StudentHeader />
       <div className="mx-auto max-w-[1100px] px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><Bookmark className="text-[#FAB95B]" /> {language==='ta' ? `எனது சேமித்த கல்லூரிகள் - ${saved.length}` : `My Saved Colleges - ${saved.length} Real`} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 {language==='ta' ? 'தமிழ் / English - மாணவருக்கு மட்டும்' : 'Tamil / English - Only Student'}</span></h1>
+          <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><Bookmark className="text-[#FAB95B]" /> {language==='ta' ? `எனது சேமித்த கல்லூரிகள் - ${saved.length}` : `My Saved Colleges - ${saved.length} Real`} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]"> {language==='ta' ? 'தமிழ் / English - மாணவருக்கு மட்டும்' : 'Tamil / English - Only Student'}</span></h1>
           <Link to="/search" className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] grid place-items-center">{language==='ta' ? 'மேலும் ஆராயுங்கள் →' : 'Explore More →'}</Link>
         </div>
 
         {saved.length===0 ? (
           <div className="mt-12 rounded-[24px] bg-white border-2 border-[#E8E2DB] p-16 text-center">
-            <div className="text-5xl">🔖</div>
+            <div className="text-5xl"></div>
             <div className="font-bold text-[#1A3263] mt-6 text-[18px]">No saved colleges yet - Real</div>
             <div className="text-[13px] text-[#547792] mt-2 max-w-[480px] mx-auto">When student clicks SAVE on college card, it appears here. Activity tracked as SAVE with student_id/college_id/date/time/activity_type. Platform admin sees aggregated saves per college, NOT individual browsing.</div>
             <Link to="/search" className="mt-6 inline-flex h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold">Discover Colleges - Real Tamil Nadu</Link>

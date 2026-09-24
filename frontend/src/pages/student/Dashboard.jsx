@@ -182,8 +182,7 @@ export default function StudentDashboard() {
               
               {colleges.length===0 ? (
                 <div className="mt-6 rounded-[20px] bg-white border-2 border-[#FAB95B]/30 p-10 text-center">
-                  <div className="text-4xl">🏛️</div>
-                  <div className="font-bold text-[#1A3263] mt-4">No Colleges Yet - Colleges Need to Signup & Add Themselves</div>
+                                    <div className="font-bold text-[#1A3263] mt-4">No Colleges Yet - Colleges Need to Signup & Add Themselves</div>
                   <div className="text-[12px] text-[#547792] mt-2 max-w-[400px] mx-auto">Automatic default college name kattama - Platform la default college illa. College signup panni avanga details add pannina aprom thaan colleges varum. Be first to invite colleges!</div>
                   <Link to="/college/signup" className="mt-4 inline-flex h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Invite College to Sign Up</Link>
                 </div>

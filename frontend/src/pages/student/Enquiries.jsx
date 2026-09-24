@@ -62,7 +62,7 @@ export default function Enquiries() {
     <div className="min-h-screen bg-[#E8E2DB]">
       <StudentHeader />
       <div className="mx-auto max-w-[1100px] px-6 lg:px-8 py-8">
-        <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><MessageCircle className="text-[#FAB95B]" /> {language==='ta' ? `எனது விசாரணைகள் - ${enquiries.length}` : `My Enquiries - Consent-Based Only Real`} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]">🌐 {language==='ta' ? 'தமிழ் / English - மாணவருக்கு மட்டும்' : 'Tamil / English - Only Student'}</span></h1>
+        <h1 className="font-display text-[28px] font-bold text-[#1A3263] flex items-center gap-3"><MessageCircle className="text-[#FAB95B]" /> {language==='ta' ? `எனது விசாரணைகள் - ${enquiries.length}` : `My Enquiries - Consent-Based Only Real`} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]"> {language==='ta' ? 'தமிழ் / English - மாணவருக்கு மட்டும்' : 'Tamil / English - Only Student'}</span></h1>
         <p className="text-[13px] text-[#547792] mt-2">Enquiry system: Student selects College, Course, Question, Preferred Contact Method, Submit. College receives via dashboard with status New, Contacted, Follow-up, Interested, Closed. Only enquiry-related info shared with consent - Privacy protected.</p>
 
         <div className="mt-8 grid lg:grid-cols-[1fr_1.2fr] gap-8">
@@ -122,8 +122,7 @@ export default function Enquiries() {
             <div className="mt-6 space-y-3 max-h-[700px] overflow-auto pr-1">
               {enquiries.length===0 ? (
                 <div className="py-16 text-center">
-                  <div className="text-4xl">💬</div>
-                  <div className="font-semibold text-[#1A3263] mt-4">No enquiries yet - Real</div>
+                                    <div className="font-semibold text-[#1A3263] mt-4">No enquiries yet - Real</div>
                   <div className="text-[12px] text-[#547792] mt-2">Your enquiries with status New/Contacted/Follow-up/Interested/Closed will appear here</div>
                 </div>
               ) : enquiries.map(enq=>(

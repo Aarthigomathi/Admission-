@@ -8,11 +8,11 @@ export default function ProgrammesManager({ college }) {
   const [programmes, setProgrammes] = useState(psgTechFullData.programmes)
 
   const categories = [
-    { id: 'be_btech', label: 'B.E / B.Tech', count: programmes.be_btech.length, icon: '🎓' },
-    { id: 'me_mtech', label: 'M.E / M.Tech', count: programmes.me_mtech.length, icon: '📚' },
-    { id: 'msc_mca_mba', label: 'M.Sc / MCA / MBA', count: programmes.msc_mca_mba.length, icon: '💼' },
-    { id: 'bsc', label: 'B.Sc', count: programmes.bsc.length, icon: '🔬' },
-    { id: 'phd', label: 'Ph.D / Research', count: programmes.phd.length, icon: '🔭' },
+    { id: 'be_btech', label: 'B.E / B.Tech', count: programmes.be_btech.length, icon: '' },
+    { id: 'me_mtech', label: 'M.E / M.Tech', count: programmes.me_mtech.length, icon: '' },
+    { id: 'msc_mca_mba', label: 'M.Sc / MCA / MBA', count: programmes.msc_mca_mba.length, icon: '' },
+    { id: 'bsc', label: 'B.Sc', count: programmes.bsc.length, icon: '' },
+    { id: 'phd', label: 'Ph.D / Research', count: programmes.phd.length, icon: '' },
   ]
 
   const currentList = programmes[activeCategory] || []
@@ -58,7 +58,7 @@ export default function ProgrammesManager({ college }) {
         {filtered.map((prog, i) => (
           <div key={i} className="group rounded-[20px] bg-white border p-5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all">
             <div className="flex items-start justify-between gap-4">
-              <div className="h-11 w-11 rounded-[12px] bg-zinc-50 border grid place-items-center text-[18px]">📘</div>
+              <div className="h-11 w-11 rounded-[12px] bg-zinc-50 border grid place-items-center text-[18px]"></div>
               <div className="flex items-center gap-1">
                 <button className="h-8 w-8 rounded-full bg-zinc-50 border grid place-items-center hover:bg-zinc-900 hover:text-white"><Edit3 size={14} /></button>
                 <button className="h-8 w-8 rounded-full bg-zinc-50 border grid place-items-center hover:bg-red-50 hover:text-red-600 hover:border-red-200"><Trash2 size={14} /></button>

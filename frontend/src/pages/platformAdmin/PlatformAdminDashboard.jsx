@@ -93,7 +93,7 @@ export default function PlatformAdminDashboard() {
         </aside>
         <div className="flex-1 grid place-items-center p-12">
           <div className="rounded-[28px] bg-white border-2 border-[#FAB95B]/30 p-12 text-center max-w-[600px]">
-            <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] grid place-items-center mx-auto text-2xl">🏛️</div>
+            <div className="h-16 w-16 rounded-[20px] bg-[#E8E2DB] grid place-items-center mx-auto text-2xl"></div>
             <h2 className="font-display text-[24px] font-bold text-[#1A3263] mt-6">No Colleges Registered Yet - No Default Colleges</h2>
             <p className="text-[13px] text-[#547792] mt-3 leading-[1.6]">Automatic default college name kattama - Platform la default PSG illa. College signup panni avunga college details - logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - ellam avangale add pannuvanga. Aprom thaan admin la varum.</p>
             <div className="mt-6 flex justify-center gap-2">

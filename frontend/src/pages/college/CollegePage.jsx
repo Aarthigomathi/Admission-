@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { getCollegeBySlug, getCollegeCustomData, getPublicColleges } from '../../lib/collegeStorage'
 import CollegeHeader from '../../components/college/CollegeHeader'
-import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase, Landmark, ShieldCheck, PhoneCall, Trophy } from 'lucide-react'
+import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf } from 'lucide-react'
 
 
 function placementStats(placements) {
@@ -207,7 +207,7 @@ function CustomCollegePage({ college, customData }) {
                 <p className="text-[14px] sm:text-[15px] leading-[1.9] text-[#1A3263]/80 whitespace-pre-wrap">{about.fullText}</p>
               ) : (
                 <div className="py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-                  <div className="text-3xl">📝</div>
+                  <FileText size={34} className="mx-auto text-[#547792]" />
                   <div className="font-bold text-[#1A3263] mt-3">About section not added yet</div>
                   <div className="text-[12px] text-[#547792] mt-2">College admin can add about, vision, mission in Admin → About</div>
                 </div>
@@ -264,7 +264,7 @@ function CustomCollegePage({ college, customData }) {
 
               {(admissions.applicationStart || admissions.applicationEnd || admissions.counsellingDate || admissions.lastDate) && (
                 <div>
-                  <h3 className="font-bold text-[16px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#FAB95B] text-[#1A3263] grid place-items-center text-[12px]">📅</span> Important Dates</h3>
+                  <h3 className="font-bold text-[16px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#FAB95B] text-[#1A3263] grid place-items-center"><Calendar size={13} /></span> Important Dates</h3>
                   <div className="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-3">
                     {admissions.applicationStart && <div className="rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4 text-center"><div className="text-[10px] font-bold uppercase text-[#547792]">Application Start</div><div className="font-bold text-[#1A3263] text-[13px] mt-1">{admissions.applicationStart}</div></div>}
                     {admissions.applicationEnd && <div className="rounded-[12px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4 text-center"><div className="text-[10px] font-bold uppercase text-[#1A3263]">Application End</div><div className="font-bold text-[#1A3263] text-[13px] mt-1">{admissions.applicationEnd}</div></div>}
@@ -277,13 +277,13 @@ function CustomCollegePage({ college, customData }) {
               <div className="grid md:grid-cols-2 gap-6">
                 {admissions.eligibility && (
                   <div className="rounded-[16px] border-2 border-[#E8E2DB] p-5 bg-white">
-                    <div className="font-bold text-[13px] text-[#1A3263] flex items-center gap-2">✅ Eligibility Criteria</div>
+                    <div className="font-bold text-[13px] text-[#1A3263] flex items-center gap-2"><CheckCircle size={15} className="text-[#FAB95B]" /> Eligibility Criteria</div>
                     <div className="text-[12px] text-[#1A3263]/80 mt-3 leading-[1.7] whitespace-pre-wrap">{admissions.eligibility}</div>
                   </div>
                 )}
                 {admissions.process && (
                   <div className="rounded-[16px] border-2 border-[#E8E2DB] p-5 bg-[#E8E2DB]/30">
-                    <div className="font-bold text-[13px] text-[#1A3263] flex items-center gap-2">📝 Admission Process</div>
+                    <div className="font-bold text-[13px] text-[#1A3263] flex items-center gap-2"><FileText size={15} className="text-[#FAB95B]" /> Admission Process</div>
                     <div className="text-[12px] text-[#1A3263]/80 mt-3 leading-[1.7] whitespace-pre-wrap">{admissions.process}</div>
                   </div>
                 )}
@@ -299,7 +299,7 @@ function CustomCollegePage({ college, customData }) {
               <div className="grid md:grid-cols-2 gap-6">
                 {admissions.documents && (
                   <div className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-6">
-                    <div className="font-bold text-[14px] text-[#1A3263]">📄 Documents Required</div>
+                    <div className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><ClipboardList size={16} className="text-[#FAB95B]" /> Documents Required</div>
                     <div className="mt-4 space-y-2">
                       {admissions.documents.split('\n').filter(l=>l.trim()).map((line,i)=>{
                         const clean = line.replace(/^[•\-\*]\s*/, '').trim()
@@ -310,7 +310,7 @@ function CustomCollegePage({ college, customData }) {
                 )}
                 {admissions.scholarships && (
                   <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/30 p-6">
-                    <div className="font-bold text-[14px] text-[#1A3263]">🎁 Scholarships</div>
+                    <div className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><Gift size={16} className="text-[#FAB95B]" /> Scholarships</div>
                     <div className="mt-4 space-y-2">
                       {admissions.scholarships.split('\n').filter(l=>l.trim()).map((line,i)=>{
                         const clean = line.replace(/^[•\-\*]\s*/, '').trim()
@@ -325,8 +325,8 @@ function CustomCollegePage({ college, customData }) {
                 <div className="text-white">
                   <div className="font-bold text-[#FAB95B]">Admission Enquiry</div>
                   <div className="text-[13px] text-[#E8E2DB]/80 mt-2 flex flex-wrap gap-4">
-                    {admissions.contactPhone && <span>📞 {admissions.contactPhone}</span>}
-                    {admissions.contactEmail && <span>✉️ {admissions.contactEmail}</span>}
+                    {admissions.contactPhone && <span className="flex items-center gap-1.5"><Phone size={13} /> {admissions.contactPhone}</span>}
+                    {admissions.contactEmail && <span className="flex items-center gap-1.5"><Mail size={13} /> {admissions.contactEmail}</span>}
                   </div>
                 </div>
                 <div className="flex gap-3">
@@ -337,7 +337,7 @@ function CustomCollegePage({ college, customData }) {
             </div>
           ) : (
             <div className="mt-6 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-              <div className="text-3xl">🎓</div>
+              <GraduationCap size={34} className="mx-auto text-[#547792]" />
               <div className="font-bold text-[#1A3263] mt-3">Admissions - Real-time update pannalam</div>
               <div className="text-[12px] text-[#547792] mt-2 max-w-[500px] mx-auto">College admin can add admission status, dates, eligibility, process, fees, documents, cutoff, scholarships - students will see real-time on website</div>
               <div className="mt-4 inline-flex px-4 py-2 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">Academic Year 2026-27 • Admissions Open / Closed</div>
@@ -400,7 +400,7 @@ function CustomCollegePage({ college, customData }) {
               </div>
             ) : (
               <div className="max-w-[800px] mx-auto py-16 text-center rounded-[16px] bg-white/5 border-2 border-dashed border-white/20">
-                <div className="text-4xl">👨‍🏫</div>
+                <Users size={40} className="mx-auto text-white/40" />
                 <div className="font-bold text-white mt-4 text-[18px]">Principal</div>
                 <div className="text-[13px] text-white/60 mt-2 max-w-[500px] mx-auto">Principal information will be updated soon</div>
               </div>
@@ -515,7 +515,7 @@ function CustomCollegePage({ college, customData }) {
             </div>
           ) : (
             <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8 py-16 text-center">
-              <div className="text-4xl">🏛️</div>
+              <Building2 size={40} className="mx-auto text-[#547792]" />
               <div className="font-bold text-[#1A3263] mt-4 text-[18px]">Departments</div>
               <div className="text-[13px] text-[#547792] mt-2 max-w-[600px] mx-auto">Departments information will be updated soon</div>
             </div>
@@ -584,7 +584,7 @@ function CustomCollegePage({ college, customData }) {
             </div>
           ) : (
             <div className="mt-8 py-14 text-center rounded-[20px] bg-white/5 border-2 border-dashed border-white/20">
-              <div className="text-3xl">🎓</div>
+              <GraduationCap size={34} className="mx-auto text-white/40" />
               <div className="font-extrabold text-white mt-3 uppercase tracking-wide">Programmes</div>
               <div className="text-[12px] text-white/50 mt-2">Programmes information will be updated soon</div>
             </div>
@@ -920,7 +920,7 @@ function CustomCollegePage({ college, customData }) {
             </div>
           ) : (
             <div className="mt-8 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
-              <div className="text-3xl">🎓</div>
+              <GraduationCap size={34} className="mx-auto text-[#547792]" />
               <div className="font-extrabold text-[#1A3263] mt-3 uppercase tracking-wide">Alumni Success Stories</div>
               <div className="text-[12px] text-[#547792] mt-2">Alumni will be updated soon</div>
             </div>
@@ -945,7 +945,7 @@ function CustomCollegePage({ college, customData }) {
             </div>
           ) : (
             <div className="mt-8 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed">
-              <div className="text-3xl">🏆</div>
+              <Trophy size={34} className="mx-auto text-[#547792]" />
               <div className="font-extrabold text-[#1A3263] mt-3 uppercase tracking-wide">Students Achievements</div>
               <div className="text-[12px] text-[#547792] mt-2">Achievements will be updated soon</div>
             </div>
@@ -961,17 +961,18 @@ function CustomCollegePage({ college, customData }) {
               {['Cultural / Arts Events','Technical / Academic Events','Sports Events','College / Student Events','Social / Awareness Events'].map(cat=>{
                 const catEvents = events.filter(ev=> (ev.category||'Cultural / Arts Events')===cat)
                 if (catEvents.length===0) return null
-                const icons = {
-                  'Cultural / Arts Events': '🎭',
-                  'Technical / Academic Events': '💻',
-                  'Sports Events': '⚽',
-                  'College / Student Events': '🎓',
-                  'Social / Awareness Events': '🌱'
+                const catIcons = {
+                  'Cultural / Arts Events': Palette,
+                  'Technical / Academic Events': FlaskConical,
+                  'Sports Events': Trophy,
+                  'College / Student Events': GraduationCap,
+                  'Social / Awareness Events': Leaf
                 }
+                const CatIcon = catIcons[cat] || Calendar
                 return (
                   <div key={cat}>
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="h-10 w-10 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[18px]">{icons[cat]||'📅'}</div>
+                      <div className="h-10 w-10 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center"><CatIcon size={18} /></div>
                       <div>
                         <h3 className="font-display text-[18px] font-bold text-[#1A3263]">{cat}</h3>
                         <div className="text-[11px] text-[#547792]">{catEvents.length} events</div>
@@ -985,7 +986,7 @@ function CustomCollegePage({ college, customData }) {
                           <div className="p-5">
                             <div className="font-bold text-[15px] text-[#1A3263]">{ev.title}</div>
                             <div className="mt-2 flex flex-wrap gap-2">
-                              {ev.date && <span className="px-3 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[11px] font-bold">📅 {ev.date}</span>}
+                              {ev.date && <span className="px-3 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] text-[11px] font-bold flex items-center gap-1.5"><Calendar size={11} /> {ev.date}</span>}
                               <span className="px-3 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] text-[10px] font-bold border border-[#FAB95B]/30">{ev.category}</span>
                             </div>
                             {ev.description && <div className="mt-3 text-[12px] text-[#1A3263]/80 leading-[1.7] whitespace-pre-wrap">{ev.description}</div>}
@@ -999,7 +1000,7 @@ function CustomCollegePage({ college, customData }) {
             </div>
           ) : (
             <div className="mt-6 py-10 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed text-[12px] text-[#547792]">
-              <div className="text-3xl">📅</div>
+              <Calendar size={34} className="mx-auto text-[#547792]" />
               <div className="font-bold text-[#1A3263] mt-3">Events - 5 Categories</div>
               <div className="text-[11px] mt-2">Cultural / Arts, Technical / Academic, Sports, College / Student (College Day), Social / Awareness - College admin can add with images</div>
             </div>
@@ -1049,7 +1050,7 @@ function CustomCollegePage({ college, customData }) {
                   return (
                     <div key={ev.id || i} className="flex gap-3 items-center">
                       <div className="h-[52px] w-[52px] rounded-[12px] bg-[#FAB95B] text-[#1A3263] grid place-items-center shrink-0 text-center leading-none py-1">
-                        {valid ? (<><div className="text-[9px] font-extrabold uppercase">{d.toLocaleString('en', { month: 'short' })}</div><div className="text-[18px] font-extrabold mt-0.5">{d.getDate()}</div></>) : (<span className="text-[16px]">📅</span>)}
+                        {valid ? (<><div className="text-[9px] font-extrabold uppercase">{d.toLocaleString('en', { month: 'short' })}</div><div className="text-[18px] font-extrabold mt-0.5">{d.getDate()}</div></>) : (<Calendar size={20} />)}
                       </div>
                       <div className="min-w-0">
                         <div className="text-[12.5px] font-bold text-white leading-snug line-clamp-2">{ev.title}</div>
@@ -1101,7 +1102,7 @@ function CustomCollegePage({ college, customData }) {
             <div className="mt-8 space-y-8">
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="rounded-[16px] bg-white/10 border border-white/20 p-5">
-                  <div className="flex gap-3"><MapPin size={20} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B] text-[12px] uppercase">Address</div><div className="text-[#E8E2DB]/90 text-[13px] mt-2 leading-[1.6]">{contactDetails.address}{contactDetails.city ? `, ${contactDetails.city}` : ''}{contactDetails.district ? `, ${contactDetails.district}` : ''}{contactDetails.pincode ? ` - ${contactDetails.pincode}` : ''}</div>{contactDetails.officeHours && <div className="text-[11px] text-[#E8E2DB]/60 mt-3">🕒 {contactDetails.officeHours}</div>}</div></div>
+                  <div className="flex gap-3"><MapPin size={20} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B] text-[12px] uppercase">Address</div><div className="text-[#E8E2DB]/90 text-[13px] mt-2 leading-[1.6]">{contactDetails.address}{contactDetails.city ? `, ${contactDetails.city}` : ''}{contactDetails.district ? `, ${contactDetails.district}` : ''}{contactDetails.pincode ? ` - ${contactDetails.pincode}` : ''}</div>{contactDetails.officeHours && <div className="text-[11px] text-[#E8E2DB]/60 mt-3 flex items-center gap-1.5"><Clock size={11} /> {contactDetails.officeHours}</div>}</div></div>
                 </div>
                 <div className="rounded-[16px] bg-white/10 border border-white/20 p-5">
                   <div className="flex gap-3"><Phone size={20} className="text-[#FAB95B] shrink-0" /><div><div className="font-bold text-[#FAB95B] text-[12px] uppercase">Phone</div><div className="text-[#E8E2DB]/90 text-[13px] mt-2 space-y-1"><div>{contactDetails.phone}</div>{contactDetails.phone2 && <div>{contactDetails.phone2}</div>}{contactDetails.tollFree && <div className="text-[#FAB95B]">Toll Free: {contactDetails.tollFree}</div>}{contactDetails.fax && <div className="text-[#E8E2DB]/60 text-[11px]">Fax: {contactDetails.fax}</div>}</div></div></div>
@@ -1115,7 +1116,7 @@ function CustomCollegePage({ college, customData }) {
                 <div className="rounded-[16px] bg-white p-6 text-[#1A3263]">
                   <div className="font-bold text-[14px]">Enquiry & Contact Person</div>
                   <div className="mt-4 grid md:grid-cols-3 gap-6 text-[13px]">
-                    {contactDetails.contactPerson && <div><div className="text-[11px] font-bold uppercase text-[#547792]">Contact Person</div><div className="font-bold text-[14px] mt-1">{contactDetails.contactPerson}</div>{contactDetails.contactDesignation && <div className="text-[12px] text-[#547792]">{contactDetails.contactDesignation}</div>}{contactDetails.contactPhone && <div className="text-[12px] mt-1">📞 {contactDetails.contactPhone}</div>}</div>}
+                    {contactDetails.contactPerson && <div><div className="text-[11px] font-bold uppercase text-[#547792]">Contact Person</div><div className="font-bold text-[14px] mt-1">{contactDetails.contactPerson}</div>{contactDetails.contactDesignation && <div className="text-[12px] text-[#547792]">{contactDetails.contactDesignation}</div>}{contactDetails.contactPhone && <div className="text-[12px] mt-1 flex items-center gap-1.5"><Phone size={11} /> {contactDetails.contactPhone}</div>}</div>}
                     {contactDetails.enquiryPhone && <div><div className="text-[11px] font-bold uppercase text-[#547792]">Enquiry Phone</div><div className="font-bold mt-1">{contactDetails.enquiryPhone}</div>{contactDetails.supportHours && <div className="text-[11px] text-[#547792] mt-1">{contactDetails.supportHours}</div>}</div>}
                     {contactDetails.enquiryEmail && <div><div className="text-[11px] font-bold uppercase text-[#547792]">Enquiry Email</div><div className="font-bold mt-1">{contactDetails.enquiryEmail}</div></div>}
                   </div>
@@ -1124,7 +1125,7 @@ function CustomCollegePage({ college, customData }) {
 
               <div className="flex flex-wrap gap-3">
                 <span className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-[#E8E2DB]/70 text-[11px]">ID {college.id} • {settings?.established || college.established} • {settings?.accreditation || college.accreditation || ''}</span>
-                {contactDetails.mapLink && <a href={contactDetails.mapLink} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-full bg-[#FAB95B]/20 border border-[#FAB95B]/30 text-[#FAB95B] text-[11px] font-bold">📍 Open in Google Maps</a>}
+                {contactDetails.mapLink && <a href={contactDetails.mapLink} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-full bg-[#FAB95B]/20 border border-[#FAB95B]/30 text-[#FAB95B] text-[11px] font-bold flex items-center gap-1.5"><MapPin size={12} /> Open in Google Maps</a>}
               </div>
             </div>
           ) : (
