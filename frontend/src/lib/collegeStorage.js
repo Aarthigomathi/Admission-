@@ -124,7 +124,7 @@ export function saveCollegeData(collegeId, section, data) {
   const registered = getRegisteredColleges()
   const idx = registered.findIndex(c => String(c.id) === String(collegeId))
   if (idx >= 0) {
-    registered[idx] = { ...registered[idx], ...existing, id: collegeId, updatedAt: existing.updatedAt }
+    registered[idx] = stripHeavyImages({ ...registered[idx], ...existing, id: collegeId, updatedAt: existing.updatedAt })
     // Ensure slug preserved
     if (!registered[idx].slug) registered[idx].slug = registered[idx].name?.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')
     localStorage.setItem(REGISTERED_KEY, JSON.stringify(registered))
@@ -263,6 +263,15 @@ export function findCollegeByLoginId(id) {
 
 /* ---------- storage-safe saves: auto-compress images + compact on quota ---------- */
 
+
+// Removes big data:image strings from list copies (public pages read images from the college key)
+function stripHeavyImages(value, limit = 100000) {
+  if (typeof value === 'string') return value.startsWith('data:image') && value.length > limit ? '' : value
+  if (Array.isArray(value)) return value.map(v => stripHeavyImages(v, limit))
+  if (value && typeof value === 'object') { const o = {}; for (const k of Object.keys(value)) o[k] = stripHeavyImages(value[k], limit); return o }
+  return value
+}
+
 function compressDataUrl(dataUrl, maxDim = 1280, quality = 0.82) {
   return new Promise((resolve) => {
     const img = new Image()
@@ -310,7 +319,8 @@ export async function compactAllCollegeStores() {
   for (const k of keys) {
     try {
       const obj = JSON.parse(localStorage.getItem(k) || '{}')
-      const compacted = await compressDeep(obj)
+      let compacted = await compressDeep(obj)
+      if (k === REGISTERED_KEY) compacted = stripHeavyImages(compacted, 200000)
       const s1 = JSON.stringify(obj).length
       const s2 = JSON.stringify(compacted).length
       if (s2 < s1) { localStorage.setItem(k, JSON.stringify(compacted)); freed = true }
@@ -330,7 +340,12 @@ export async function saveCollegeDataSafe(collegeId, section, data) {
       saveCollegeData(collegeId, section, compressed)
       return true
     } catch (e2) {
-      return false
+      try {
+        saveCollegeData(collegeId, section, stripHeavyImages(compressed, 200000))
+        return true
+      } catch (e3) {
+        return false
+      }
     }
   }
 }
