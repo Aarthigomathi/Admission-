@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Upload, Trash2, Plus, ImageIcon, Link as LinkIcon } from 'lucide-react'
-import { saveCollegeData } from '../../lib/collegeStorage'
+import { saveCollegeDataSafe } from '../../lib/collegeStorage'
 
 const inputCls = 'w-full h-10 px-3 rounded-[10px] border border-[#E8E2DB] bg-white text-[13px] text-[#1A3263] focus:outline-none focus:border-[#FAB95B]'
 const taCls = 'w-full px-3 py-2.5 rounded-[10px] border border-[#E8E2DB] bg-white text-[13px] text-[#1A3263] leading-relaxed focus:outline-none focus:border-[#FAB95B]'
@@ -136,9 +136,14 @@ export default function AboutPagesAdmin({ collegeId, customData, setCustomData, 
   const set = (fn) => setF(prev => fn(structuredClone(prev)))
   const save = () => {
     const data = toStored(f)
-    saveCollegeData(collegeId, 'aboutPages', data)
-    setCustomData({ ...customData, aboutPages: data })
-    alert('About pages saved! The college About section now shows this content in the KCE layout.')
+    saveCollegeDataSafe(collegeId, 'aboutPages', data).then(ok => {
+      if (ok) {
+        setCustomData({ ...customData, aboutPages: data })
+        alert('About pages saved! The college About section now shows this content in the KCE layout.')
+      } else {
+        alert('Storage full - images-ku URL use pannunga')
+      }
+    })
   }
 
   return (

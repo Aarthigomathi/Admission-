@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, getProfileCompletion, findCollegeByLoginId } from '../../lib/collegeStorage'
+import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, saveCollegeDataSafe, getProfileCompletion, findCollegeByLoginId } from '../../lib/collegeStorage'
 import CollegeAnalytics from '../../components/admin/CollegeAnalytics'
 import AboutPagesAdmin from '../../components/admin/AboutPagesAdmin.jsx'
 import { 
@@ -13,6 +13,14 @@ import {
 export default function AdminDashboard() {
  const [currentCollege, setCurrentCollege] = useState(null)
  const [activeSection, setActiveSection] = useState('dashboard')
+
+ // Storage-safe save: images auto-compress; on quota, existing stores compacted & retried
+ const saveSafe = (section, data) => {
+  return saveCollegeDataSafe(selectedCollegeId, section, data).then(ok => {
+    if (!ok) alert('Storage full - irukkura images-ellam auto-compress pannitom; innorum full-aa irundha photo-ku URL use pannunga')
+    return ok
+  })
+ }
  const [customData, setCustomData] = useState({})
  const [isLoggedIn, setIsLoggedIn] = useState(false)
  const [loginUser, setLoginUser] = useState('')
@@ -199,7 +207,7 @@ export default function AdminDashboard() {
   const list = customData.departments || []
   const newDept = { id: Date.now(), ...deptForm, createdAt: new Date().toISOString() }
   const updated = [...list, newDept]
-  saveCollegeData(selectedCollegeId, 'departments', updated)
+  saveSafe('departments', updated)
   setCustomData({ ...customData, departments: updated })
   setDeptForm({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', hodDetailedBio: '', hodBio: '', hodResearch: '', hodPublications: '', hodAwards: '', facultyCount: '', description: '', image: '' })
   alert(`Department ${newDept.name} with HOD ${newDept.hod} added successfully`)
@@ -210,7 +218,7 @@ export default function AdminDashboard() {
   const list = customData.courses || []
   const newCourse = { id: Date.now(), ...courseForm, createdAt: new Date().toISOString() }
   const updated = [...list, newCourse]
-  saveCollegeData(selectedCollegeId, 'courses', updated)
+  saveSafe('courses', updated)
   setCustomData({ ...customData, courses: updated })
   setCourseForm({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '' })
   alert(`Course ${newCourse.degree} - ${newCourse.name} added!`)
@@ -220,7 +228,7 @@ export default function AdminDashboard() {
   if (!facilityForm.name) return alert("Facility name required")
   const list = customData.customFacilities || []
   const updated = [...list, { id: Date.now(), ...facilityForm }]
-  saveCollegeData(selectedCollegeId, 'customFacilities', updated)
+  saveSafe('customFacilities', updated)
   setCustomData({ ...customData, customFacilities: updated })
   setFacilityForm({ name: '', description: '', icon: '', image: '' })
  }
@@ -229,7 +237,7 @@ export default function AdminDashboard() {
   if (!placementForm.company) return alert("Company required")
   const list = customData.placements || []
   const updated = [...list, { id: Date.now(), ...placementForm }]
-  saveCollegeData(selectedCollegeId, 'placements', updated)
+  saveSafe('placements', updated)
   setCustomData({ ...customData, placements: updated })
   setPlacementForm({ year: '', company: '', package: '', students: '', department: '', logo: '', description: '' })
  }
@@ -246,7 +254,7 @@ export default function AdminDashboard() {
   if (!eventForm.title) return alert("Event title required")
   const list = customData.events || []
   const updated = [...list, { id: Date.now(), ...eventForm, createdAt: new Date().toISOString() }]
-  saveCollegeData(selectedCollegeId, 'events', updated)
+  saveSafe('events', updated)
   setCustomData({ ...customData, events: updated })
   setEventForm({ title: '', date: '', category: 'Cultural / Arts Events', description: '', image: '' })
   alert(`Event ${eventForm.title} added with image!`)
@@ -264,7 +272,7 @@ export default function AdminDashboard() {
   if (!galleryForm.url) return alert("Image URL required - Real image from your campus")
   const list = customData.gallery || []
   const updated = [...list, { id: Date.now(), ...galleryForm }]
-  saveCollegeData(selectedCollegeId, 'gallery', updated)
+  saveSafe('gallery', updated)
   setCustomData({ ...customData, gallery: updated })
   setGalleryForm({ url: '', caption: '' })
  }
@@ -273,7 +281,7 @@ export default function AdminDashboard() {
   if (!announcementForm.title) return alert("Title required")
   const list = customData.announcements || []
   const updated = [...list, { id: Date.now(), ...announcementForm }]
-  saveCollegeData(selectedCollegeId, 'announcements', updated)
+  saveSafe('announcements', updated)
   setCustomData({ ...customData, announcements: updated })
   setAnnouncementForm({ title: '', date: '', category: '', description: '' })
  }
@@ -282,7 +290,7 @@ export default function AdminDashboard() {
   if (!hostelForm.name) return alert("Hostel name required")
   const list = customData.hostels || []
   const updated = [...list, { id: Date.now(), ...hostelForm }]
-  saveCollegeData(selectedCollegeId, 'hostels', updated)
+  saveSafe('hostels', updated)
   setCustomData({ ...customData, hostels: updated })
   setHostelForm({ name: '', type: 'Boys', capacity: '', fees: '', facilities: '', description: '', images: [] })
   setNewHostelImageUrl('')
@@ -317,7 +325,7 @@ export default function AdminDashboard() {
   if (!accreditationForm.name) return alert("Accreditation name required")
   const list = customData.accreditations || []
   const updated = [...list, { id: Date.now(), ...accreditationForm }]
-  saveCollegeData(selectedCollegeId, 'accreditations', updated)
+  saveSafe('accreditations', updated)
   setCustomData({ ...customData, accreditations: updated })
   setAccreditationForm({ name: '', grade: '', year: '', validTill: '', agency: '', description: '', image: '' })
  }
@@ -334,8 +342,8 @@ export default function AdminDashboard() {
   if (!researchForm.name) return alert("Research Centre name required")
   const list = customData.researchCentres || customData.research || []
   const updated = [...list, { id: Date.now(), ...researchForm, createdAt: new Date().toISOString() }]
-  saveCollegeData(selectedCollegeId, 'researchCentres', updated)
-  saveCollegeData(selectedCollegeId, 'research', updated)
+  saveSafe('researchCentres', updated)
+  saveSafe('research', updated)
   setCustomData({ ...customData, researchCentres: updated, research: updated })
   setResearchForm({ name: '', type: 'Centre of Excellence', funding: '', year: '', coordinator: '', description: '', facilities: '', achievements: '', image: '' })
   alert(`Research Centre ${researchForm.name} added!`)
@@ -353,8 +361,8 @@ export default function AdminDashboard() {
   if (!campusForm.title) return alert("Campus title required")
   const list = customData.campusEnvironment || customData.campus || []
   const updated = [...list, { id: Date.now(), ...campusForm, createdAt: new Date().toISOString() }]
-  saveCollegeData(selectedCollegeId, 'campusEnvironment', updated)
-  saveCollegeData(selectedCollegeId, 'campus', updated)
+  saveSafe('campusEnvironment', updated)
+  saveSafe('campus', updated)
   setCustomData({ ...customData, campusEnvironment: updated, campus: updated })
   setCampusForm({ title: '', area: '', description: '', environment: '', greenInitiatives: '', facilities: '', images: [] })
   setNewCampusImageUrl('')
@@ -388,7 +396,7 @@ export default function AdminDashboard() {
 
  const handleSaveLibrary = () => {
   if (!libraryForm.totalBooks && !libraryForm.description) return alert("Add at least books count or description")
-  saveCollegeData(selectedCollegeId, 'library', libraryForm)
+  saveSafe('library', libraryForm)
   setCustomData({ ...customData, library: libraryForm })
   alert("Library details saved! Your college website updated")
  }
@@ -405,7 +413,7 @@ export default function AdminDashboard() {
   if (!sportsForm.name && !sportsForm.description) return alert("Add sports name or description")
   const list = customData.sports || []
   const updated = [...list, { id: Date.now(), ...sportsForm, createdAt: new Date().toISOString() }]
-  saveCollegeData(selectedCollegeId, 'sports', updated)
+  saveSafe('sports', updated)
   setCustomData({ ...customData, sports: updated })
   setSportsForm({ name: '', coach: '', description: '', facilities: '', achievements: '', image: '' })
   alert(`Sports ${sportsForm.name || 'details'} added!`)
@@ -463,7 +471,7 @@ export default function AdminDashboard() {
   const entry = { id: Date.now(), name: alumniForm.name.trim(), designation: alumniForm.designation || '', company: alumniForm.company || '', companyLogo: alumniForm.companyLogo || '', batch: alumniForm.batch || '', image: alumniForm.image || '' }
   const updated = [...list, entry]
   try {
-    saveCollegeData(selectedCollegeId, 'alumni', updated)
+    saveSafe('alumni', updated)
   } catch (err) {
     return alert("Save aagala - storage full aagiduchu. Photo-ku URL use pannunga (upload vendam), apram try pannunga.")
   }
@@ -476,7 +484,7 @@ export default function AdminDashboard() {
   if (!achievementForm.title) return alert("Achievement title venum")
   const list = customData.achievements || []
   const updated = [...list, { id: Date.now(), ...achievementForm, createdAt: new Date().toISOString() }]
-  saveCollegeData(selectedCollegeId, 'achievements', updated)
+  saveSafe('achievements', updated)
   setCustomData({ ...customData, achievements: updated })
   setAchievementForm({ title: '', image: '', description: '' })
   alert("Student achievement added - website la real-time aagum!")
@@ -484,7 +492,7 @@ export default function AdminDashboard() {
 
  const handleSaveAdmissions = () => {
   if (!admissionForm.title && !admissionForm.description) return alert("Add at least title or description for Admissions")
-  saveCollegeData(selectedCollegeId, 'admissions', admissionForm)
+  saveSafe('admissions', admissionForm)
   setCustomData({ ...customData, admissions: admissionForm })
   alert("Admissions details saved! Your college website updated real-time - " + admissionForm.title)
  }
@@ -499,15 +507,15 @@ export default function AdminDashboard() {
 
  const handleSaveContact = () => {
   if (!contactForm.address && !contactForm.phone && !contactForm.email) return alert("Add at least address or phone or email")
-  saveCollegeData(selectedCollegeId, 'contactDetails', contactForm)
-  saveCollegeData(selectedCollegeId, 'contacts', contactForm)
+  saveSafe('contactDetails', contactForm)
+  saveSafe('contacts', contactForm)
   setCustomData({ ...customData, contactDetails: contactForm, contacts: contactForm })
   alert("Contact details saved! Real-time website updated - " + contactForm.phone)
  }
 
  const handleSaveSettings = () => {
   if (!settingsForm.name) return alert("College name required")
-  saveCollegeData(selectedCollegeId, 'settings', settingsForm)
+  saveSafe('settings', settingsForm)
   // Also update tagline and basic info in registered colleges
   const registered = JSON.parse(localStorage.getItem('tn_registered_colleges') || '[]')
   const idx = registered.findIndex(c => String(c.id) === String(selectedCollegeId))
@@ -540,7 +548,7 @@ export default function AdminDashboard() {
   if (!managementForm.designation) return alert("Designation required")
   const list = customData.management || []
   const updated = [...list, { id: Date.now(), ...managementForm, createdAt: new Date().toISOString() }]
-  saveCollegeData(selectedCollegeId, 'management', updated)
+  saveSafe('management', updated)
   setCustomData({ ...customData, management: updated })
   setManagementForm({ name: '', designation: '', image: '', email: '', phone: '', description: '' })
   alert(`Management member ${managementForm.name} - ${managementForm.designation} added successfully!`)
@@ -548,8 +556,8 @@ export default function AdminDashboard() {
 
  const handleSavePrincipal = () => {
   if (!principalForm.name) return alert("Principal name required")
-  saveCollegeData(selectedCollegeId, 'principal', principalForm)
-  saveCollegeData(selectedCollegeId, 'principalDetails', principalForm)
+  saveSafe('principal', principalForm)
+  saveSafe('principalDetails', principalForm)
   setCustomData({ ...customData, principal: principalForm, principalDetails: principalForm })
   alert(`Principal ${principalForm.name} details saved successfully! Will appear on your college website`)
  }
@@ -587,7 +595,7 @@ export default function AdminDashboard() {
  }
 
  const handleSaveAbout = () => {
-  saveCollegeData(selectedCollegeId, 'about', {
+  saveSafe('about', {
    fullText: aboutForm.fullText,
    vision: aboutForm.vision,
    mission: aboutForm.mission.split('\n').filter(Boolean)
@@ -604,8 +612,8 @@ export default function AdminDashboard() {
    colors: { primary: brandingForm.primary, secondary: brandingForm.secondary, accent: brandingForm.accent },
    preset: 'custom'
   }
-  saveCollegeData(selectedCollegeId, 'branding', branding)
-  saveCollegeData(selectedCollegeId, 'tagline', brandingForm.tagline)
+  saveSafe('branding', branding)
+  saveSafe('tagline', brandingForm.tagline)
   setCustomData({ ...customData, branding, tagline: brandingForm.tagline })
   alert(`Branding saved successfully`)
  }
@@ -651,7 +659,7 @@ export default function AdminDashboard() {
  const handleDelete = (section, id) => {
   const list = customData[section] || []
   const updated = list.filter(item => item.id !== id)
-  saveCollegeData(selectedCollegeId, section, updated)
+  saveSafe(section, updated)
   setCustomData({ ...customData, [section]: updated })
  }
 
@@ -671,7 +679,7 @@ export default function AdminDashboard() {
  const lines = (t) => String(t || '').split('\n').map(x => x.trim()).filter(Boolean)
  const handleSaveHome = () => {
   const data = { ...homeForm, coordinators: lines(homeForm.coordinators), convenors: lines(homeForm.convenors), partnerLogos: lines(homeForm.partnerLogos).slice(0, 6), accreditationLogos: lines(homeForm.accreditationLogos).slice(0, 8), industryLogos: lines(homeForm.industryLogos).slice(0, 54) }
-  saveCollegeData(selectedCollegeId, 'homePage', data)
+  saveSafe('homePage', data)
   setCustomData({ ...customData, homePage: data })
   alert('Home page setup saved! Website la real-time la update aagiduchu. Preview: college public page open pannunga.')
  }

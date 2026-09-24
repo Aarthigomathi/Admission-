@@ -260,3 +260,77 @@ export function findCollegeByLoginId(id) {
   const all = [...getRegisteredColleges(), ...getPublicColleges().filter(pc => !getRegisteredColleges().some(r => String(r.id) === String(pc.id)))]
   return all.find(c => idsFor(c).includes(target)) || null
 }
+
+/* ---------- storage-safe saves: auto-compress images + compact on quota ---------- */
+
+function compressDataUrl(dataUrl, maxDim = 1280, quality = 0.82) {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, maxDim / Math.max(img.width || 1, img.height || 1))
+        if (scale === 1 && dataUrl.length < 300000) return resolve(dataUrl)
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.max(1, Math.round((img.width || maxDim) * scale))
+        canvas.height = Math.max(1, Math.round((img.height || maxDim) * scale))
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+        const out = canvas.toDataURL('image/jpeg', quality)
+        resolve(out.length < dataUrl.length ? out : dataUrl)
+      } catch { resolve(dataUrl) }
+    }
+    img.onerror = () => resolve(dataUrl)
+    img.src = dataUrl
+  })
+}
+
+async function compressDeep(value) {
+  if (typeof value === 'string') {
+    return value.startsWith('data:image') && value.length > 200000 ? compressDataUrl(value) : value
+  }
+  if (Array.isArray(value)) {
+    const out = []
+    for (const v of value) out.push(await compressDeep(v))
+    return out
+  }
+  if (value && typeof value === 'object') {
+    const out = {}
+    for (const k of Object.keys(value)) out[k] = await compressDeep(value[k])
+    return out
+  }
+  return value
+}
+
+export async function compactAllCollegeStores() {
+  const keys = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i)
+    if (k && (k.startsWith(COLLEGE_DATA_PREFIX) || k === REGISTERED_KEY)) keys.push(k)
+  }
+  let freed = false
+  for (const k of keys) {
+    try {
+      const obj = JSON.parse(localStorage.getItem(k) || '{}')
+      const compacted = await compressDeep(obj)
+      const s1 = JSON.stringify(obj).length
+      const s2 = JSON.stringify(compacted).length
+      if (s2 < s1) { localStorage.setItem(k, JSON.stringify(compacted)); freed = true }
+    } catch {}
+  }
+  return freed
+}
+
+export async function saveCollegeDataSafe(collegeId, section, data) {
+  const compressed = await compressDeep(data)
+  try {
+    saveCollegeData(collegeId, section, compressed)
+    return true
+  } catch (e) {
+    await compactAllCollegeStores()
+    try {
+      saveCollegeData(collegeId, section, compressed)
+      return true
+    } catch (e2) {
+      return false
+    }
+  }
+}
