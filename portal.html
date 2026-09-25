@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Student Portal — Dashboard | Campus+</title>
-<meta name="description" content="Student Portal — attendance, marks, timetable, fees, announcements. College-la serntha piragu unga daily campus life inge.">
+<title>Student Portal — Thiagarajar College of Engineering</title>
+<meta name="description" content="Student Portal — unga college-oda own portal: personal details, marks, attendance, timetable, fees, announcements.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600&display=swap" rel="stylesheet">
@@ -16,48 +16,63 @@
 
 <div class="loader"><span class="brand-mark">🏫</span></div>
 
+<!-- ======= COLLEGE PICKER (first visit — unga college select pannunga) ======= -->
+<div class="p-pick hidden" id="pickOverlay">
+  <div class="p-pick-box">
+    <div class="p-pick-head">
+      <span class="p-logo" style="width:46px;height:46px;">🏫</span>
+      <div><h2 style="color:#fff">Unga college ethu?</h2>
+      <p style="color:#BFD2EE;font-size:.86rem">Student Portal unga college name + colour-la open aagum.<br>
+      <b style="color:#7CF2DC">Example: Thiagarajar College of Engineering select panni paarunga 👇</b></p></div>
+    </div>
+    <input class="p-pick-search" id="pickSearch" placeholder="🔎 College name / district type pannunga…" autocomplete="off">
+    <div class="p-pick-list" id="pickList"></div>
+    <p class="p-pick-note">💡 Demo project — 58 colleges-la irundhu select pannalaam. Data ellame sample.</p>
+  </div>
+</div>
+
 <div class="p-shell">
 
-  <!-- ============ SIDEBAR (portal menu) ============ -->
+  <!-- ============ SIDEBAR ============ -->
   <aside class="p-side" id="pSide">
     <div class="p-brand">
-      <span class="p-logo">🏫</span>
-      <div><b>Campus+ Portal</b><small id="pCollegeName">Student Dashboard</small></div>
+      <span class="p-logo" id="pLogo">T</span>
+      <div><b id="pCollegeShort">Student Portal</b><small id="pCollegeName">—</small></div>
     </div>
     <nav class="p-menu" id="pMenu">
       <div class="p-cap">Academics</div>
-      <a class="on" href="portal.html"><span class="p-ic">📊</span>Dashboard</a>
-      <a data-soon><span class="p-ic">🗓️</span>Attendance<span class="p-soon">soon</span></a>
-      <a data-soon><span class="p-ic">📝</span>Marks &amp; CGPA<span class="p-soon">soon</span></a>
-      <a data-soon><span class="p-ic">🕐</span>Timetable<span class="p-soon">soon</span></a>
+      <a data-tab="dashboard"  class="on"><span class="p-ic">📊</span>Dashboard</a>
+      <a data-tab="profile"    ><span class="p-ic">🪪</span>My Profile</a>
+      <a data-tab="marks"      ><span class="p-ic">📝</span>My Marks</a>
+      <a data-tab="attendance" ><span class="p-ic">🗓️</span>Attendance</a>
+      <a data-tab="timetable"  ><span class="p-ic">🕐</span>Timetable</a>
       <div class="p-cap">Services</div>
-      <a data-soon><span class="p-ic">💳</span>Fees<span class="p-soon">soon</span></a>
-      <a data-soon><span class="p-ic">📢</span>Announcements<span class="p-soon">soon</span></a>
-      <a data-soon><span class="p-ic">📚</span>Library<span class="p-soon">soon</span></a>
-      <a data-soon><span class="p-ic">🪪</span>My ID Card<span class="p-soon">soon</span></a>
+      <a data-tab="fees"       ><span class="p-ic">💳</span>Fees</a>
+      <a data-tab="announce"   ><span class="p-ic">📢</span>Announcements</a>
+      <a data-tab="college"    ><span class="p-ic">🏫</span>College Info</a>
     </nav>
     <div class="p-back">
+      <a id="changeCollege" style="cursor:pointer">⇄ Change college (demo)</a>
       <a href="index.html">← Admission+ home-ku poogu</a>
       <a href="dashboard.html">🎓 Admission dashboard</a>
     </div>
   </aside>
   <div class="p-dim" id="pDim"></div>
 
-  <!-- ============ MAIN CONTENT ============ -->
+  <!-- ============ MAIN ============ -->
   <main class="p-main">
     <div class="p-topbar">
       <button class="p-burger" id="pBurger" aria-label="Menu">☰</button>
       <div>
-        <h1>Dashboard</h1>
+        <h1 id="pTitle">Dashboard</h1>
         <div class="p-date" id="pDate"></div>
       </div>
       <div class="p-right" id="pTopRight"></div>
     </div>
 
-    <!-- Ella widget-um JS-la render aagum -->
     <div id="portalRoot" aria-live="polite"></div>
 
-    <p class="p-foot">Campus+ Student Portal · <b>Demo data</b> — nijha college-la ithu backend-la irundhu varum · Admission+ family product 🎓</p>
+    <p class="p-foot">Student Portal · <b>Demo data</b> — nijha college-la ithu backend-la irundhu varum · Admission+ family product 🎓</p>
   </main>
 </div>
 

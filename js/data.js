@@ -386,16 +386,22 @@ function feeBand(college) {
 const FEE_LABEL = { 1: "Low (₹0 – ₹40K/yr)", 2: "Medium (₹40K – ₹1L/yr)", 3: "High (₹1L+/yr)" };
 
 /* ==========================================================================
-   1.8 STUDENT PORTAL DATA  (portal.html-ku matthum)
+   1.8 STUDENT PORTAL DATA  (portal.html — college-oda own student portal)
    --------------------------------------------------------------------------
-   Admission+ = college SERCH panna (admission-ku MUNNADI).
-   Student Portal = college-la SERNTHA piragu student-oda daily life:
-   attendance, marks, timetable, fees, announcements.
+   CORE IDEA: Admission+ = admission-ku MUNNADI (register, login, college
+   details paakka). Student Portal = college-la SERNDHA piragu — oru college
+   (eg: Thiagarajar College of Engineering) oda own portal. Athula:
+     🪪 Student personal details (name, email, contact, address, parent)
+     📝 Marks (semester results + CIA internals)
+     🗓️ Attendance   🕐 Timetable   💳 Fees   📢 Announcements
+     🏫 College info (COLLEGES array-la irundhu automatic varum)
    Ippo ithu DEMO data — nijha college-la ithu backend-la irundhu varum.
    ========================================================================== */
 
-/* ---------------------- 1.8.1 STUDENT PROFILE (DEMO) -------------------- */
 const PORTAL = {
+
+  /* -------------------- 1.8.1 ACADEMIC IDENTITY --------------------------
+     Roll no, dept, class — ithu college kudukura academic details.         */
   student: {
     name: "Demo Student",
     roll: "24CS1023",
@@ -406,13 +412,29 @@ const PORTAL = {
     section: "A",
     batch: "2024 – 2028",
     mentor: "Dr. K. Revathi",
-    college: "Coimbatore Institute of Technology (Demo Campus)",
-    proctorRoom: "CS Block — Room 204",
-    blood: "O +ve"
+    collegeId: "thiagarajar-engg",          /* ← COLLEGES-la irukkura id */
+    college: "Thiagarajar College of Engineering",
+    proctorRoom: "CS Block — Room 204"
   },
 
-  /* ------------------ 1.8.2 SUBJECTS + ATTENDANCE + CIA MARKS -----------
-     att% = present/total. cia = CIA-1, CIA-2, CIA-3 (out of 50)           */
+  /* ----------------- 1.8.2 PERSONAL DETAILS (STUDENT RECORD) -------------
+     ⭐ USER CORE IDEA: name, email, contact, address, parent details —
+     college-la irukkura student-oda full personal record. User edit pannaa
+     browser-la (localStorage) save aagum.                                 */
+  profile: {
+    email: "student@st.tce.edu",
+    phone: "+91 98422 51023",
+    dob: "14 Mar 2007",
+    gender: "Female",
+    blood: "O +ve",
+    nationality: "Indian",
+    address: { door: "12/4, Gandhi Nagar 2nd Street", area: "Thiruparankundram", city: "Madurai", pin: "625 005" },
+    parent:  { name: "R. Murugan", relation: "Father", phone: "+91 94430 11235", occupation: "Farmer" },
+    admission: { year: "2024", mode: "TNEA Counselling", quota: "7.5% Govt School Quota", cutoff: "189.5 / 200", firstGrad: true },
+    stay: { type: "Day Scholar", bus: "Bus Route 5 — Thirumangalam" }
+  },
+
+  /* --------------- 1.8.3 CURRENT SEM SUBJECTS + ATTENDANCE + CIA -------- */
   subjects: [
     { code: "CS301", name: "Data Structures",        staff: "Dr. K. Revathi",   credits: 4, present: 46, total: 50, cia: [41, 39, null], type: "Theory" },
     { code: "CS302", name: "Database Systems",       staff: "Prof. M. Karthik", credits: 4, present: 40, total: 48, cia: [36, 38, null], type: "Theory" },
@@ -423,14 +445,42 @@ const PORTAL = {
     { code: "CS305", name: "DS & DBMS Laboratory",   staff: "Prof. M. Karthik", credits: 2, present: 14, total: 14, cia: [47, 48, null], type: "Lab" }
   ],
 
-  /* ------------------------- 1.8.3 SEM RESULTS -------------------------- */
-  sems: [
-    { sem: "Sem 1", gpa: 8.10, credits: 22, status: "All clear" },
-    { sem: "Sem 2", gpa: 8.74, credits: 23, status: "All clear" }
-  ],
+  /* --------------- 1.8.4 SEMESTER RESULTS (PUBLISHED MARKS) --------------
+     ⭐ "their marks" — mudinja semester-oda full mark sheet. grade-a
+     gradePts-la irundhu point-a maathi GPA/CGPA JS-la kanakku aagum.      */
+  results: {
+    gradePts: { "O": 10, "A+": 9, "A": 8, "B+": 7, "B": 6 },
+    sems: [
+      { name: "Semester 1", when: "Nov 2024", status: "Published ✓", subjects: [
+        { code: "MA101", name: "Engineering Mathematics I",  cr: 4, grade: "A+" },
+        { code: "PH101", name: "Engineering Physics",        cr: 3, grade: "A"  },
+        { code: "CY101", name: "Engineering Chemistry",      cr: 3, grade: "B+" },
+        { code: "CS101", name: "Problem Solving using Python", cr: 3, grade: "A+" },
+        { code: "EE101", name: "Basic Electrical Engineering", cr: 3, grade: "A" },
+        { code: "HS101", name: "Communicative English",      cr: 2, grade: "A"  },
+        { code: "CS111", name: "Python Laboratory",          cr: 2, grade: "A+" },
+        { code: "ME111", name: "Engineering Practices Lab",  cr: 2, grade: "A"  } ] },
+      { name: "Semester 2", when: "May 2025", status: "Published ✓", subjects: [
+        { code: "MA201", name: "Engineering Mathematics II", cr: 4, grade: "A+" },
+        { code: "CS201", name: "C Programming",              cr: 3, grade: "O"  },
+        { code: "ME201", name: "Engineering Mechanics",      cr: 3, grade: "A"  },
+        { code: "EC201", name: "Digital Electronics",        cr: 3, grade: "A+" },
+        { code: "HS201", name: "Technical English",          cr: 2, grade: "A+" },
+        { code: "EV201", name: "Environmental Science",      cr: 3, grade: "A"  },
+        { code: "CS211", name: "C Programming Laboratory",   cr: 2, grade: "O"  },
+        { code: "PH211", name: "Physics Laboratory",         cr: 2, grade: "A+" } ] }
+    ]
+  },
 
-  /* ------------------------- 1.8.4 WEEK TIMETABLE ------------------------
-     p = period number. Dashboard innikki (today) class-a kaatum.          */
+  /* ----------------- 1.8.5 THIS MONTH ATTENDANCE CALENDAR ----------------
+     September 2026 — start=enna day-la month thodanguthu, holidays, absent */
+  attMonth: {
+    title: "September 2026", start: "Tue", days: 30, today: 25,
+    holidays: [5, 6, 12, 13, 19, 20, 26, 27],   /* Saturdays + Sundays */
+    absent: [3, 11, 18]                          /* leave edutha naal */
+  },
+
+  /* ------------------------- 1.8.6 WEEK TIMETABLE ------------------------ */
   timetable: {
     times: ["08:45 – 09:35", "09:35 – 10:25", "10:45 – 11:35", "11:35 – 12:25", "01:20 – 02:10", "02:10 – 03:00", "03:10 – 04:00"],
     days: {
@@ -443,18 +493,18 @@ const PORTAL = {
     }
   },
 
-  /* --------------------------- 1.8.5 FEES -------------------------------- */
+  /* --------------------------- 1.8.7 FEES -------------------------------- */
   fees: {
     year: "2026 – 27",
     items: [
       { name: "Tuition Fee (Year 2)", amount: 55000, paid: true,  receipt: "RCP/2026/1182", date: "02 Jul 2026" },
       { name: "Hostel + Mess Fee",    amount: 38500, paid: true,  receipt: "RCP/2026/1204", date: "06 Jul 2026" },
       { name: "Semester 3 Exam Fee",  amount: 4200,  paid: false, due: "30 Sep 2026" },
-      { name: "Bus Route 7 (Avinashi)", amount: 12000, paid: false, due: "05 Oct 2026" }
+      { name: "Bus Route 5 (Thirumangalam)", amount: 12000, paid: false, due: "05 Oct 2026" }
     ]
   },
 
-  /* ------------------------ 1.8.6 ANNOUNCEMENTS -------------------------- */
+  /* ------------------------ 1.8.8 ANNOUNCEMENTS -------------------------- */
   announce: [
     { pin: true, tag: "Exam",      date: "24 Sep 2026", title: "CIA-3 timetable released",
       text: "CIA-3 exams Oct 6-la thodangum. Hall ticket exam cell-la irundhu Oct 1-ku appuram download pannalaam." },
@@ -468,6 +518,5 @@ const PORTAL = {
       text: "College leave. Hostel mess afternoon mattum work aagum." }
   ],
 
-  /* ------------------------- 1.8.7 NEXT EXAM ----------------------------- */
   nextExam: { name: "CIA-3 (Internal Test 3)", start: "06 Oct 2026", days: 11 }
 };
