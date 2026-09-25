@@ -37,7 +37,6 @@ export default function CollegeHeader({ college, homePage, currentPage, onNaviga
       label: 'Academics', id: 'departments',
       children: [
         ...(departments || []).map(dp => ({ label: 'Department of ' + (dp.name || ''), page: 'dept-' + dp.id })),
-        { label: 'Programmes', id: 'programmes' },
       ],
     },
     { label: 'AICTE IDEA Lab', id: 'centres' },
