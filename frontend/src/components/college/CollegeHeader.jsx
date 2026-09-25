@@ -39,16 +39,16 @@ export default function CollegeHeader({ college, homePage, currentPage, onNaviga
         ...(departments || []).map(dp => ({ label: 'Department of ' + (dp.name || ''), page: 'dept-' + dp.id })),
       ],
     },
-    { label: 'AICTE IDEA Lab', id: 'centres' },
-    { label: 'Research', id: 'centres' },
-    { label: 'IQAC', id: 'accreditation' },
+    { label: 'AICTE IDEA Lab', id: 'centres', page: 'about-coe' },
+    { label: 'Research', id: 'centres', page: 'about-coe' },
+    { label: 'IQAC', id: 'accreditation', page: 'about-accreditations' },
     {
       label: 'Life @ ' + shortName, id: 'campus',
       children: [
-        { label: 'Campus & Environment', id: 'campus' },
-        { label: 'Hostels', id: 'hostels' },
-        { label: 'Sports', id: 'sports' },
-        { label: 'Gallery', id: 'gallery' },
+        { label: 'Campus & Environment', page: 'about-profile' },
+        { label: 'Hostels', page: 'about-profile' },
+        { label: 'Sports', page: 'about-profile' },
+        { label: 'Gallery', id: 'news' },
       ],
     },
     {
@@ -56,7 +56,7 @@ export default function CollegeHeader({ college, homePage, currentPage, onNaviga
       children: [
         { label: 'Placements', id: 'placements' },
         { label: 'Industry & ' + shortName, id: 'industry' },
-        { label: 'Placement Records', id: 'placement-records' },
+        { label: 'Placement Records', id: 'placements' },
         { label: 'Alumni', id: 'alumni' },
       ],
     },
@@ -64,15 +64,15 @@ export default function CollegeHeader({ college, homePage, currentPage, onNaviga
       label: 'Media', id: 'news',
       children: [
         { label: 'Latest News', id: 'news' },
-        { label: 'Events', id: 'events' },
+        { label: 'Events', id: 'news' },
         { label: 'Student Achievements', id: 'achievements' },
       ],
     },
     {
       label: 'Examinations', id: 'admissions',
       children: [
-        { label: 'Admissions', id: 'admissions' },
-        { label: 'Examination Schedule', id: 'admissions' },
+        { label: 'Admissions', id: 'contact' },
+        { label: 'Examination Schedule', id: 'contact' },
       ],
     },
     { label: 'Contact', id: 'contact' },
@@ -168,7 +168,7 @@ export default function CollegeHeader({ college, homePage, currentPage, onNaviga
               <div key={item.label} className="relative" onMouseEnter={() => item.children && setActiveDropdown(item.label)} onMouseLeave={() => setActiveDropdown(null)}>
                 <a
                   href={'#' + item.id}
-                  onClick={(e) => { e.preventDefault(); goSection(item.id) }}
+                  onClick={(e) => { e.preventDefault(); item.page ? onNavigate(item.page) : goSection(item.id) }}
                   className={`flex items-center gap-1.5 px-3.5 lg:px-4 h-[46px] text-[12px] lg:text-[12.5px] font-extrabold uppercase tracking-[0.03em] transition-colors ${(item.id === 'home' && (!currentPage || currentPage === 'home')) || (item.isAbout && currentPage && currentPage.startsWith('about')) ? 'bg-[#1A3263] text-[#FAB95B]' : 'text-[#1A3263] hover:bg-[#1A3263]/10'}`}
                 >
                   {item.label}
@@ -195,7 +195,7 @@ export default function CollegeHeader({ college, homePage, currentPage, onNaviga
           <div className="p-4 space-y-1">
             {navigation.map(item => (
               <div key={item.label}>
-                <a href={'#' + item.id} onClick={(e) => { e.preventDefault(); item.isAbout && item.children ? onNavigate(item.children[0].page) : goSection(item.id) }} className="flex px-4 py-3 rounded-[12px] hover:bg-white/10 font-extrabold text-white text-[13px] uppercase tracking-wide">
+                <a href={'#' + item.id} onClick={(e) => { e.preventDefault(); item.page ? onNavigate(item.page) : item.isAbout && item.children ? onNavigate(item.children[0].page) : goSection(item.id) }} className="flex px-4 py-3 rounded-[12px] hover:bg-white/10 font-extrabold text-white text-[13px] uppercase tracking-wide">
                   {item.label}
                 </a>
                 {item.children && (
