@@ -167,7 +167,7 @@ export const colleges = [
       statCompanies: "54",
       statMaxLpa: "54",
       aboutImage: "https://www.psgtech.edu/images/slider/foundationday_2026.jpg",
-      accreditationLogos: [],
+      accreditationLogos: ["https://kce.ac.in/images/kce/home/logo/naac+.webp","https://kce.ac.in/images/kce/home/logo/nba.webp","https://kce.ac.in/images/kce/home/logo/aicte.webp","https://kce.ac.in/images/kce/home/logo/anna-university.webp","https://kce.ac.in/images/kce/home/logo/iso2015.webp","https://kce.ac.in/images/kce/home/logo/nirf.webp","https://kce.ac.in/images/kce/home/logo/mhrds.webp","https://kce.ac.in/images/kce/home/logo/UGC.webp"],
       industryLogos: [
         "https://kce.ac.in/images/kce/home/industry-logos/1.svg",
         "https://kce.ac.in/images/kce/home/industry-logos/2.svg",

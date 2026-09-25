@@ -411,7 +411,7 @@ function CustomCollegePage({ college, customData }) {
               <div className="mt-9 flex flex-wrap gap-x-7 gap-y-4 items-center">
                 {(homePage.accreditationLogos || []).length > 0 ? (
                   homePage.accreditationLogos.slice(0, 8).map((l, i) => (
-                    <img key={i} src={l} className="h-12 sm:h-14 w-auto object-contain grayscale opacity-80" alt={'Accreditation ' + (i + 1)} />
+                    <img key={i} src={l} className="h-12 sm:h-14 w-auto object-contain grayscale opacity-60 transition-all duration-300 hover:grayscale-0 hover:opacity-100" alt={'Accreditation ' + (i + 1)} />
                   ))
                 ) : (
                   (settings?.accreditation || college.accreditation || 'NAAC • NBA • ISO 9001:2015').split('•').map(t => t.trim()).filter(Boolean).slice(0, 8).map((t, i) => (
