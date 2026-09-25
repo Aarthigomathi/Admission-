@@ -407,7 +407,7 @@ function CustomCollegePage({ college, customData }) {
           <h2 className="text-[30px] sm:text-[38px] font-extrabold uppercase tracking-tight text-[#1A3263]">About Us</h2>
           <div className="mt-8 grid lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-16 items-start">
             <div>
-              <p className="text-[14.5px] sm:text-[15px] leading-[1.95] text-[#547792]">{about.fullText || 'College introduction will appear here once the college adds it from the dashboard.'}</p>
+              <p className="text-[14.5px] sm:text-[15px] leading-[1.95] text-[#547792]">{about.fullText || ((aboutPages.profile && Array.isArray(aboutPages.profile.paragraphs) && aboutPages.profile.paragraphs.length > 0) ? aboutPages.profile.paragraphs.slice(0, 2).join(' ') : 'College introduction will appear here once the college adds it from the dashboard.')}</p>
               <div className="mt-9 flex flex-wrap gap-x-7 gap-y-4 items-center">
                 {(homePage.accreditationLogos || []).length > 0 ? (
                   homePage.accreditationLogos.slice(0, 8).map((l, i) => (

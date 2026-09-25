@@ -774,32 +774,24 @@ export default function AdminDashboard() {
 
  const menu = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, count: `${profileCompletion}%` },
-  { id: 'branding', label: 'College Logo & Branding', icon: Palette, badge: '', highlight: true },
-  { id: 'about', label: 'About, Vision, Mission', icon: FileText, count: 'Full' },
-  { id: 'management', label: 'Management & Trustees', icon: Users, count: `${(allCustomData.management||[]).length}` },
-  { id: 'principal', label: 'Principal Details', icon: UserCheck, count: 'Add' },
+  { group: 'WEBSITE - KCE LAYOUT' },
+  { id: 'branding', label: 'College Logo & Branding', icon: Palette, highlight: true },
+  { id: 'homepage', label: 'Home Page (KCE Layout)', icon: Home, highlight: true },
+  { id: 'aboutpages', label: 'About, Vision, Mission & Management', icon: FileText, highlight: true },
   { id: 'departments', label: 'Departments with HOD', icon: Building2, count: `${(allCustomData.departments||[]).length} Depts`, highlight: true },
-  { id: 'courses', label: 'Courses', icon: GraduationCap, count: `${(allCustomData.courses||[]).length} Courses`, highlight: true },
-  { id: 'admissions', label: 'Admissions', icon: FileCheck },
-  { id: 'examinations', label: 'Examinations', icon: FileText, highlight: true },
-  { id: 'facilities', label: 'Facilities', icon: Layers, count: `${(allCustomData.customFacilities||[]).length}` },
-  { id: 'hostel', label: 'Hostel', icon: Home, count: `${(allCustomData.hostels||[]).length}` },
-  { id: 'placements', label: 'Placements', icon: Briefcase, count: `${(allCustomData.placements||[]).length} Records`, highlight: true },
-  { id: 'research', label: 'Research & Centres', icon: Microscope, count: `${(allCustomData.researchCentres||allCustomData.research||[]).length}` },
-  { id: 'accreditation', label: 'Accreditation', icon: Award, count: `${(allCustomData.accreditations||[]).length}` },
-  { id: 'campus', label: 'Campus & Environment', icon: MapPin, count: `${(allCustomData.campusEnvironment||allCustomData.campus||[]).length}` },
-  { id: 'library', label: 'Library', icon: Library, count: allCustomData.library ? 'Added' : '' },
-  { id: 'sports', label: 'Sports', icon: Heart, count: `${(allCustomData.sports||[]).length}` },
+  { id: 'deptpages', label: 'Department Pages (KCE Layout)', icon: Building2, highlight: true },
+  { id: 'courses', label: 'Programmes (UG & PG Courses)', icon: GraduationCap, count: `${(allCustomData.courses||[]).length} Courses`, highlight: true },
+  { group: 'RESULTS & STORIES' },
+  { id: 'placements', label: 'Placement Records', icon: Briefcase, count: `${(allCustomData.placements||[]).length} Records`, highlight: true },
   { id: 'alumni', label: 'Alumni Success Stories', icon: Award, count: `${(allCustomData.alumni||[]).length}` },
   { id: 'achievements', label: 'Student Achievements', icon: Trophy, count: `${(allCustomData.achievements||[]).length}`, highlight: true },
-  { id: 'homepage', label: 'Home Page (KCE Layout)', icon: Home, highlight: true },
-  { id: 'aboutpages', label: 'About Pages (KCE Layout)', icon: FileText, highlight: true },
-  { id: 'deptpages', label: 'Department Pages (KCE Layout)', icon: Building2, highlight: true },
-  { id: 'events', label: 'Events', icon: Calendar, count: `${(allCustomData.events||[]).length}`, highlight: true },
+  { group: 'CONTENT' },
+  { id: 'events', label: 'News & Events', icon: Calendar, count: `${(allCustomData.events||[]).length}`, highlight: true },
   { id: 'gallery', label: 'Gallery', icon: Camera, count: `${(allCustomData.gallery||[]).length} Images`, highlight: true },
-  { id: 'announcements', label: 'Announcements', icon: Bell, count: `${(allCustomData.announcements||[]).length}` },
-  { id: 'contact', label: 'Contact', icon: Contact },
-  { id: 'analytics', label: 'Analytics', icon: BarChart3,  },
+  { id: 'campus', label: 'Campus Images (Backgrounds)', icon: MapPin, count: `${(allCustomData.campusEnvironment||allCustomData.campus||[]).length}` },
+  { group: 'MANAGE' },
+  { id: 'contact', label: 'Contact Details', icon: Contact },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   { id: 'settings', label: 'Settings', icon: Settings },
  ]
 
@@ -830,7 +822,9 @@ export default function AdminDashboard() {
     </div>
 
     <div className="flex-1 overflow-auto px-3 py-2 space-y-1">
-     {menu.map(item=>(
+     {menu.map(item=> item.group ? (
+      <div key={item.group} className="pt-4 pb-1.5 px-3 text-[9px] font-extrabold uppercase tracking-[0.18em] text-white/40 first:pt-1">{item.group}</div>
+     ) : (
       <button
        key={item.id}
        onClick={()=>setActiveSection(item.id)}
@@ -856,7 +850,7 @@ export default function AdminDashboard() {
    <div className="flex-1 min-w-0">
     <div className="sticky top-0 z-20 h-[72px] bg-white/90 backdrop-blur-xl border-b-2 border-[#FAB95B]/30 px-6 lg:px-8 flex items-center justify-between gap-4">
      <div className="flex items-center gap-4">
-      <h1 className="font-display text-[16px] font-bold capitalize text-[#1A3263]">{college.name} - {activeSection}</h1>
+      <h1 className="font-display text-[16px] font-bold text-[#1A3263]">{college.name} - {(menu.find(m => m.id === activeSection) || {}).label || activeSection}</h1>
       <span className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAB95B]/20 text-[#1A3263] border-2 border-[#FAB95B]/30 text-[11px] font-bold uppercase"><CheckCircle2 size={12} /> {profileCompletion}% Complete</span>
      </div>
      <div className="flex items-center gap-2">
@@ -1297,30 +1291,6 @@ export default function AdminDashboard() {
       </div>
      )}
 
-     {activeSection==='facilities' && (
-      <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Facilities</h3>
-       <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
-        <div className="grid md:grid-cols-2 gap-4">
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facility Name *</label><input value={facilityForm.name} onChange={e=>setFacilityForm({...facilityForm, name: e.target.value})} placeholder="e.g. Central Library, Sports Complex, Environment" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Image URL</label><input value={facilityForm.image} onChange={e=>setFacilityForm({...facilityForm, image: e.target.value})} placeholder="Facility image URL" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={facilityForm.description} onChange={e=>setFacilityForm({...facilityForm, description: e.target.value})} placeholder="Facility description - environment, placement, etc" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px] resize-none" /></div>
-        </div>
-        <button onClick={handleAddFacility} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Facility</button>
-       </div>
-       <div className="mt-6 grid md:grid-cols-2 gap-4">
-        {(allCustomData.customFacilities||[]).map(f=>(
-         <div key={f.id} className="rounded-[16px] border-2 border-[#E8E2DB] p-4 flex gap-3">
-          {f.image && <img src={f.image} className="h-16 w-16 rounded-[10px] object-cover border" alt="Facility" />}
-          <div className="flex-1"><div className="font-bold text-[13px] text-[#1A3263]">{f.name}</div><div className="text-[11px] text-[#547792] mt-1">{f.description?.slice(0,100)}</div></div>
-          <button onClick={()=>handleDelete('customFacilities', f.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button>
-         </div>
-        ))}
-        {(allCustomData.customFacilities||[]).length===0 && <div className="col-span-2 py-8 text-center text-[#547792] text-[12px]">No facilities added yet</div>}
-       </div>
-      </div>
-     )}
-
      {activeSection==='placements' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
@@ -1421,32 +1391,6 @@ export default function AdminDashboard() {
       </div>
      )}
 
-     {activeSection==='examinations' && (
-      <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Examinations</h3>
-       <p className="text-[12px] text-[#547792] mt-2">Add examination details for your college</p>
-       
-       <div className="mt-6 grid md:grid-cols-2 gap-6">
-        <div className="rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
-         <h4 className="font-bold text-[#1A3263] text-[13px]">Controller of Examinations</h4>
-         <input placeholder="Name - e.g. Dr. Exam Controller" className="mt-3 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" />
-         <input placeholder="Email" className="mt-3 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" />
-         <input placeholder="Phone" className="mt-3 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" />
-        </div>
-        <div className="rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
-         <h4 className="font-bold text-[#1A3263] text-[13px]">Examination Timetable & Results</h4>
-         <textarea placeholder="Add examination timetable, result dates, revaluation process - Your own exam details" rows={4} className="mt-3 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px] resize-none" />
-         <button className="mt-3 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Save Exam Details</button>
-        </div>
-       </div>
-
-       <div className="mt-6 rounded-[16px] bg-[#1A3263] text-white p-5">
-        <div className="font-bold text-[#FAB95B]">Examination Details</div>
-        <div className="text-[11px] text-[#E8E2DB]/80 mt-2 leading-[1.6]">Manage examination notifications, timetable, results and academic calendar</div>
-       </div>
-      </div>
-     )}
-
      {activeSection==='gallery' && (
       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
        <h3 className="font-bold text-[18px] text-[#1A3263]">Gallery</h3>
@@ -1469,393 +1413,15 @@ export default function AdminDashboard() {
       </div>
      )}
 
-     {activeSection==='hostel' && (
-      <div className="space-y-6">
-       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Home className="text-[#FAB95B]" /> Hostel with Images</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add hostel details with images - hostel la images odd pantra mathiri venum</p>
-
-        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
-         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add New Hostel - With Images</h4>
-         <div className="mt-2 text-[12px] text-[#547792]">Add hostel info + upload multiple images - will show gallery on college website</div>
-
-         <div className="mt-8 space-y-6">
-          <div className="space-y-4">
-           <h5 className="font-bold text-[13px] uppercase tracking-wide text-[#1A3263] border-b-2 border-[#E8E2DB] pb-2">Hostel Information</h5>
-           <div className="grid md:grid-cols-2 gap-5">
-            <div>
-             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Hostel Name *</label>
-             <input value={hostelForm.name} onChange={e=>setHostelForm({...hostelForm, name: e.target.value})} placeholder="e.g. Boys Hostel A, Girls Hostel Main" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium transition-colors" />
-            </div>
-            <div>
-             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Type</label>
-             <select value={hostelForm.type} onChange={e=>setHostelForm({...hostelForm, type: e.target.value})} className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px]">
-              <option>Boys</option><option>Girls</option><option>Boys & Girls</option>
-             </select>
-            </div>
-            <div>
-             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Capacity</label>
-             <input value={hostelForm.capacity} onChange={e=>setHostelForm({...hostelForm, capacity: e.target.value})} placeholder="e.g. 200, 500 students" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] transition-colors" />
-            </div>
-            <div>
-             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Fees</label>
-             <input value={hostelForm.fees} onChange={e=>setHostelForm({...hostelForm, fees: e.target.value})} placeholder="e.g. 50000 per year, 60000 with mess" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] transition-colors" />
-            </div>
-            <div className="md:col-span-2">
-             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label>
-             <input value={hostelForm.facilities} onChange={e=>setHostelForm({...hostelForm, facilities: e.target.value})} placeholder="e.g. WiFi, Mess, Gym, Library, RO Water, Hot Water, Study Room" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px] transition-colors" />
-            </div>
-            <div className="md:col-span-2">
-             <label className="text-[11px] font-bold uppercase text-[#1A3263]">Hostel Description - Large Field</label>
-             <textarea value={hostelForm.description} onChange={e=>setHostelForm({...hostelForm, description: e.target.value})} placeholder="Enter detailed hostel description:&#10;&#10;• Rooms: Well-furnished rooms with cot, table, chair, cupboard&#10;• Mess: Hygienic vegetarian & non-veg mess, 3 times food&#10;• Facilities: 24/7 WiFi, library, gym, indoor games, medical facility&#10;• Security: 24/7 security, CCTV, warden&#10;• Rules, timings, etc" rows={8} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[180px]" />
-            </div>
-           </div>
-          </div>
-
-          <div className="space-y-4">
-           <h5 className="font-bold text-[13px] uppercase tracking-wide text-[#1A3263] border-b-2 border-[#E8E2DB] pb-2 flex items-center gap-2"><Camera size={14} className="text-[#FAB95B]" /> Hostel Images - Multiple Images Odd Pantra Mathiri</h5>
-           
-           <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/30 p-5">
-            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Add Hostel Images - URL or Upload (Up to 10)</label>
-            <div className="mt-3 flex gap-2">
-             <input value={newHostelImageUrl} onChange={e=>setNewHostelImageUrl(e.target.value)} placeholder="Paste hostel image URL - https://college.edu/hostel1.jpg" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-             <button onClick={handleAddHostelImage} className="h-12 px-5 rounded-[14px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-1.5"><Plus size={14} /> Add</button>
-            </div>
-            <div className="mt-3 flex gap-2">
-             <label className="flex-1 h-12 px-4 rounded-[14px] bg-white border-2 border-dashed border-[#1A3263]/20 text-[#1A3263] font-bold text-[12px] flex items-center justify-center gap-2 cursor-pointer hover:border-[#FAB95B]">
-               <Upload size={14} /> Upload Multiple Images ({(hostelForm.images||[]).length}/10)
-               <input type="file" accept="image/*" multiple className="hidden" onChange={handleHostelImageUpload} />
-             </label>
-            </div>
-
-            {(hostelForm.images||[]).length===0 ? (
-             <div className="mt-4 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 p-6 text-center">
-               <div className="text-2xl"></div>
-               <div className="text-[11px] text-[#547792] mt-2">No hostel images added yet - add room, mess, building photos</div>
-             </div>
-            ) : (
-             <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
-               {(hostelForm.images||[]).map((img, idx)=>(
-                 <div key={img.id} className="relative rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-white group">
-                   <img src={img.url} className="h-[110px] w-full object-cover" alt={`Hostel ${idx+1}`} />
-                   <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{idx+1}</div>
-                   <button onClick={()=>handleRemoveHostelImage(img.id)} className="absolute top-2 right-2 h-6 w-6 rounded-full bg-red-500 text-white grid place-items-center hover:bg-red-600"><Trash2 size={10} /></button>
-                 </div>
-               ))}
-             </div>
-            )}
-           </div>
-          </div>
-         </div>
-
-         <button onClick={handleAddHostel} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2 hover:bg-[#1A3263]/90 shadow-lg"><Plus size={18} /> Add Hostel with Images</button>
-        </div>
-
-        <div className="mt-8">
-         <h4 className="font-bold text-[#1A3263]">Hostels - {(allCustomData.hostels||[]).length}</h4>
-         {(allCustomData.hostels||[]).length===0 ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-                      <div className="font-bold text-[#1A3263] mt-3">No hostels added yet</div>
-           <div className="text-[12px] text-[#547792] mt-2">Add hostel with images - will show gallery on college website</div>
-          </div>
-         ) : (
-          <div className="mt-4 grid md:grid-cols-2 gap-4">
-           {(allCustomData.hostels||[]).map(h=>(
-            <div key={h.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] overflow-hidden hover:border-[#FAB95B]/40 transition-colors">
-             {(h.images && h.images.length>0) ? (
-               <div className="grid grid-cols-3 gap-1 p-1 bg-[#E8E2DB]">
-                 {h.images.slice(0,3).map((img, i)=>(
-                   <img key={i} src={img.url || img} className="h-[80px] w-full object-cover rounded-[8px]" alt="Hostel" />
-                 ))}
-                 {h.images.length>3 && <div className="h-[80px] rounded-[8px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold text-[12px]">+{h.images.length-3} more</div>}
-               </div>
-             ) : null}
-             <div className="p-4 flex justify-between gap-3">
-              <div className="flex-1 min-w-0">
-               <div className="font-bold text-[13px] text-[#1A3263]">{h.name} - {h.type}</div>
-               <div className="mt-1 flex flex-wrap gap-1">
-                 {h.capacity && <span className="px-2 py-0.5 rounded-full bg-[#E8E2DB] text-[10px]">Cap {h.capacity}</span>}
-                 {h.fees && <span className="px-2 py-0.5 rounded-full bg-[#FAB95B]/20 text-[10px] font-bold">{h.fees}</span>}
-                 {h.images && <span className="px-2 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px]">{h.images.length} images</span>}
-               </div>
-               <div className="text-[11px] text-[#547792] mt-2">{h.facilities}</div>
-               {h.description && <div className="text-[11px] text-[#1A3263]/60 mt-1 line-clamp-2">{h.description.slice(0,100)}</div>}
-              </div>
-              <button onClick={()=>handleDelete('hostels', h.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center shrink-0"><Trash2 size={12} /></button>
-             </div>
-            </div>
-           ))}
-          </div>
-         )}
-        </div>
-       </div>
-      </div>
-     )}
-
-     {activeSection==='about' && (
-      <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">About, Vision, Mission </h3>
-       <div className="mt-6 space-y-5">
-        <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">About College</label><textarea value={aboutForm.fullText} onChange={e=>setAboutForm({...aboutForm, fullText: e.target.value})} placeholder="Write about your college - history, campus, achievements" rows={6} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
-        <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Vision</label><textarea value={aboutForm.vision} onChange={e=>setAboutForm({...aboutForm, vision: e.target.value})} placeholder="Your college vision" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
-        <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Mission - Each line new mission</label><textarea value={aboutForm.mission} onChange={e=>setAboutForm({...aboutForm, mission: e.target.value})} placeholder="Mission 1&#10;Mission 2&#10;Mission 3" rows={4} className="mt-2 w-full p-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
-        <button onClick={handleSaveAbout} className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px]">Save About</button>
-       </div>
-      </div>
-     )}
-
      {activeSection==='analytics' && (
       <CollegeAnalytics college={college} />
-     )}
-
-     {activeSection==='management' && (
-      <div className="space-y-6">
-       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Users size={22} className="text-[#FAB95B]" /> Management & Trustees - Real-Time Working</h3>
-            <p className="text-[12px] text-[#547792] mt-2">Add management members - Chairman, Secretary, Trustees, Correspondent - image odu real-time website la theriyum</p>
-          </div>
-          <span className="px-3 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-bold">{(allCustomData.management||[]).length} Members</span>
-        </div>
-
-        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
-         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add New Management Member - Image + Details</h4>
-         <div className="mt-6 grid md:grid-cols-2 gap-5">
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Name *</label><input value={managementForm.name} onChange={e=>setManagementForm({...managementForm, name: e.target.value})} placeholder="e.g. Dr. R. Kumar" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-bold" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Designation * - Chairman / Secretary / Trustee</label><input value={managementForm.designation} onChange={e=>setManagementForm({...managementForm, designation: e.target.value})} placeholder="e.g. Chairman, Secretary, Correspondent, Trustee" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] font-bold" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Email</label><input value={managementForm.email} onChange={e=>setManagementForm({...managementForm, email: e.target.value})} placeholder="chairman@yourcollege.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone</label><input value={managementForm.phone} onChange={e=>setManagementForm({...managementForm, phone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><ImageIcon size={12} className="text-[#FAB95B]" /> Image - Upload or URL - Real-time</label>
-           <div className="mt-2 flex gap-2">
-            <input value={managementForm.image} onChange={e=>setManagementForm({...managementForm, image: e.target.value})} placeholder="Paste image URL or upload" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-            <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleManagementImageUpload} /></label>
-           </div>
-          </div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Bio, Achievements</label><textarea value={managementForm.description} onChange={e=>setManagementForm({...managementForm, description: e.target.value})} placeholder="Short bio, education, achievements, message..." rows={3} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y min-h-[80px]" /></div>
-          {managementForm.image && (
-            <div className="md:col-span-2">
-              <div className="rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-[#E8E2DB]/30 p-2 flex gap-4 items-center">
-                <img src={managementForm.image} className="h-20 w-20 rounded-[12px] object-cover border-2 border-white shadow" alt="Preview" />
-                <div><div className="font-bold text-[13px] text-[#1A3263]">{managementForm.name || 'Preview'} - {managementForm.designation || 'Designation'}</div><div className="text-[11px] text-[#547792]">Image preview - will show on website Management section</div></div>
-              </div>
-            </div>
-          )}
-         </div>
-         <button onClick={handleAddManagement} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2 shadow hover:bg-[#1A3263]/90"><Plus size={18} /> Add Management Member - Real-time</button>
-        </div>
-
-        <div className="mt-8">
-         <h4 className="font-bold text-[#1A3263]">Management - {(allCustomData.management||[]).length} Members Added</h4>
-         {(allCustomData.management||[]).length===0 ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20">
-                      <div className="font-bold text-[#1A3263] mt-3">No management members added yet</div>
-           <div className="text-[12px] text-[#547792] mt-2">Add Chairman, Secretary, Trustees - image odu - real-time website la theriyum</div>
-          </div>
-         ) : (
-          <div className="mt-4 grid md:grid-cols-2 gap-4">
-           {allCustomData.management.map(member=>(
-            <div key={member.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-5 flex gap-4 hover:border-[#FAB95B]/40 transition-colors">
-             {member.image ? <img src={member.image} className="h-20 w-20 rounded-[12px] object-cover border-2 border-[#E8E2DB] shrink-0" alt={member.name} /> : <div className="h-20 w-20 rounded-[12px] bg-[#E8E2DB] grid place-items-center text-[#1A3263] font-bold text-[20px]">{member.name[0]}</div>}
-             <div className="flex-1 min-w-0">
-              <div className="font-bold text-[14px] text-[#1A3263]">{member.name}</div>
-              <div className="mt-1 inline-flex px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{member.designation}</div>
-              <div className="text-[11px] text-[#547792] mt-2">{member.email} {member.phone ? `• ${member.phone}` : ''}</div>
-              <div className="text-[11px] text-[#1A3263]/60 mt-1 line-clamp-2">{member.description}</div>
-             </div>
-             <button onClick={()=>handleDelete('management', member.id)} className="h-8 w-8 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center text-[#547792] hover:border-red-200 hover:text-red-600 shrink-0"><Trash2 size={12} /></button>
-            </div>
-           ))}
-          </div>
-         )}
-        </div>
-       </div>
-      </div>
-     )}
-
-     {activeSection==='principal' && (
-      <div className="space-y-6">
-       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><UserCheck size={22} className="text-[#FAB95B]" /> Principal Details</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add principal information for your college</p>
-
-        <div className="mt-8 rounded-[20px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-6">
-         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Edit3 size={16} /> Principal Information</h4>
-         <div className="mt-2 text-[11px] text-[#547792]">Add principal biography including qualification, experience and achievements</div>
-         <div className="mt-4 grid md:grid-cols-2 gap-4">
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Name *</label>
-           <input value={principalForm.name} onChange={e=>setPrincipalForm({...principalForm, name: e.target.value})} placeholder="e.g. Dr. L. Ashok Kumar" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Designation</label>
-           <input value={principalForm.designation} onChange={e=>setPrincipalForm({...principalForm, designation: e.target.value})} placeholder="Principal" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Qualification</label>
-           <input value={principalForm.qualification} onChange={e=>setPrincipalForm({...principalForm, qualification: e.target.value})} placeholder="e.g. Ph.D, Postdoctoral Research Fellow" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Experience</label>
-           <input value={principalForm.experience} onChange={e=>setPrincipalForm({...principalForm, experience: e.target.value})} placeholder="e.g. 3 years industrial + 25 years academic" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Email</label>
-           <input value={principalForm.email} onChange={e=>setPrincipalForm({...principalForm, email: e.target.value})} placeholder="principal@college.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Phone</label>
-           <input value={principalForm.phone} onChange={e=>setPrincipalForm({...principalForm, phone: e.target.value})} placeholder="+91 98765 43210" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-          </div>
-          <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Principal Image</label>
-           <div className="mt-2 flex gap-2">
-            <input value={principalForm.image} onChange={e=>setPrincipalForm({...principalForm, image: e.target.value})} placeholder="Paste image URL or upload photo" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-            <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
-              <Upload size={12} /> Upload
-              <input type="file" accept="image/*" className="hidden" onChange={handlePrincipalImageUpload} />
-            </label>
-           </div>
-          </div>
-          <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Detailed Biography</label>
-           <textarea value={principalForm.detailedBio} onChange={e=>setPrincipalForm({...principalForm, detailedBio: e.target.value})} placeholder="Enter detailed biography including qualification, experience, research, publications and achievements" rows={12} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none leading-[1.6]" />
-           <div className="text-[10px] text-[#547792] mt-1">Detailed biography will appear on college website</div>
-          </div>
-          <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Short Message (Optional)</label>
-           <textarea value={principalForm.message} onChange={e=>setPrincipalForm({...principalForm, message: e.target.value})} placeholder="Short principal message" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" />
-          </div>
-         </div>
-         <button onClick={handleSavePrincipal} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Save size={16} /> Save Principal</button>
-        </div>
-
-        <div className="mt-8 rounded-[20px] bg-[#1A3263] border-2 border-[#1A3263] p-6">
-         <div className="text-center mb-6">
-           <h4 className="font-display text-[20px] font-bold text-white inline-block relative">Principal<span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-1 w-10 bg-[#FAB95B] rounded-full"></span></h4>
-         </div>
-         <div className="grid md:grid-cols-[200px_1fr] gap-6 max-w-[900px] mx-auto">
-          <div className="text-center">
-            {principalForm.image ? <img src={principalForm.image} className="w-full h-[220px] rounded-[12px] object-cover border-2 border-white/20 shadow-xl" alt="Principal" /> : <div className="w-full h-[220px] rounded-[12px] bg-white/10 border-2 border-dashed border-white/20 grid place-items-center text-white/40 text-[11px]">Principal Image</div>}
-            <div className="mt-3 font-bold text-[14px] text-white">{principalForm.name || 'Principal Name'}</div>
-            <div className="text-[12px] text-[#FAB95B] mt-1">{principalForm.designation || 'Principal'}</div>
-            <div className="text-[11px] text-white/70 mt-2 break-all">{principalForm.email || 'principal@college.edu'}</div>
-          </div>
-          <div className="rounded-[8px] bg-white p-5">
-            <div className="text-[12px] leading-[1.7] text-[#1A3263]/80 whitespace-pre-wrap">{principalForm.detailedBio || principalForm.message || 'Detailed biography will appear here'}</div>
-          </div>
-         </div>
-        </div>
-       </div>
-      </div>
-     )}
-
-     {activeSection==='research' && (
-      <div className="space-y-6">
-       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Microscope className="text-[#FAB95B]" /> Research & Centres</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add Research Centres, Centres of Excellence, Labs - with images real-time working</p>
-
-        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
-         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add Research Centre / Centre of Excellence</h4>
-         <div className="mt-8 space-y-6">
-          <div className="grid md:grid-cols-2 gap-5">
-           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Centre Name *</label><input value={researchForm.name} onChange={e=>setResearchForm({...researchForm, name: e.target.value})} placeholder="e.g. Centre for AI & Robotics, PSG-STEIN Centre" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
-           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Type</label><select value={researchForm.type} onChange={e=>setResearchForm({...researchForm, type: e.target.value})} className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[14px]"><option>Centre of Excellence</option><option>Research Centre</option><option>Advanced Lab</option><option>Innovation Centre</option><option>Incubation Centre</option></select></div>
-           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Funding / Sponsor</label><input value={researchForm.funding} onChange={e=>setResearchForm({...researchForm, funding: e.target.value})} placeholder="e.g. DST 50L, Industry sponsored" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Year Established</label><input value={researchForm.year} onChange={e=>setResearchForm({...researchForm, year: e.target.value})} placeholder="e.g. 2020" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-           <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Coordinator</label><input value={researchForm.coordinator} onChange={e=>setResearchForm({...researchForm, coordinator: e.target.value})} placeholder="e.g. Dr. Coordinator Name" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          </div>
-          <div>
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Centre Image - Upload or URL</label>
-           <div className="mt-2 flex gap-3">
-            <input value={researchForm.image} onChange={e=>setResearchForm({...researchForm, image: e.target.value})} placeholder="Paste centre image URL" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-            <label className="h-12 px-5 rounded-[14px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-2 cursor-pointer"><Upload size={14} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleResearchImageUpload} /></label>
-           </div>
-           {researchForm.image && <div className="mt-3"><img src={researchForm.image} className="h-24 w-full rounded-[12px] object-cover border-2 border-[#E8E2DB]" alt="Research preview" /></div>}
-          </div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Large Field</label><textarea value={researchForm.description} onChange={e=>setResearchForm({...researchForm, description: e.target.value})} placeholder="Enter detailed description: objectives, focus areas, research domains, collaboration with industries, projects..." rows={6} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[140px]" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label><textarea value={researchForm.facilities} onChange={e=>setResearchForm({...researchForm, facilities: e.target.value})} placeholder="Lab equipments, software, hardware, instruments..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Achievements</label><textarea value={researchForm.achievements} onChange={e=>setResearchForm({...researchForm, achievements: e.target.value})} placeholder="Projects completed, patents, publications, products developed, funding received..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
-         </div>
-         <button onClick={handleAddResearch} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Plus size={18} /> Add Research Centre</button>
-        </div>
-
-        <div className="mt-8">
-         <h4 className="font-bold text-[#1A3263]">Research Centres - {(allCustomData.researchCentres||allCustomData.research||[]).length}</h4>
-         {((allCustomData.researchCentres||allCustomData.research||[]).length===0) ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed border-[#1A3263]/20"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No research centres added yet</div><div className="text-[12px] text-[#547792] mt-2">Add your research centres with images</div></div>
-         ) : (
-          <div className="mt-4 grid md:grid-cols-2 gap-4">
-           {(allCustomData.researchCentres||allCustomData.research||[]).map(r=>(
-            <div key={r.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] overflow-hidden hover:border-[#FAB95B]/40">
-             {r.image && <img src={r.image} className="h-[140px] w-full object-cover" alt={r.name} />}
-             <div className="p-4">
-              <div className="flex justify-between"><div className="font-bold text-[13px] text-[#1A3263]">{r.name}</div><button onClick={()=>handleDelete('researchCentres', r.id)} className="h-7 w-7 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={10} /></button></div>
-              <div className="mt-1 flex gap-1.5 flex-wrap"><span className="px-2 py-0.5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[10px] font-bold">{r.type}</span>{r.year && <span className="px-2 py-0.5 rounded-full bg-[#E8E2DB] text-[10px]">{r.year}</span>}{r.funding && <span className="px-2 py-0.5 rounded-full bg-white border text-[10px]">{r.funding}</span>}</div>
-              <div className="text-[11px] text-[#547792] mt-2 line-clamp-3">{r.description}</div>
-             </div>
-            </div>
-           ))}
-          </div>
-         )}
-        </div>
-       </div>
-      </div>
-     )}
-
-     {activeSection==='accreditation' && (
-      <div className="space-y-6">
-       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Award className="text-[#FAB95B]" /> Accreditation</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add NAAC, NBA, NIRF, UGC, AICTE accreditation details with certificate image</p>
-
-        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
-         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add Accreditation</h4>
-         <div className="mt-6 grid md:grid-cols-2 gap-5">
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Accreditation Name *</label><input value={accreditationForm.name} onChange={e=>setAccreditationForm({...accreditationForm, name: e.target.value})} placeholder="e.g. NAAC, NBA, NIRF Ranking, ISO" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Grade / Rank</label><input value={accreditationForm.grade} onChange={e=>setAccreditationForm({...accreditationForm, grade: e.target.value})} placeholder="e.g. A++, Rank 45, Tier 1" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Agency</label><input value={accreditationForm.agency} onChange={e=>setAccreditationForm({...accreditationForm, agency: e.target.value})} placeholder="e.g. UGC, AICTE, NBA" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Year</label><input value={accreditationForm.year} onChange={e=>setAccreditationForm({...accreditationForm, year: e.target.value})} placeholder="e.g. 2023" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Valid Till</label><input value={accreditationForm.validTill} onChange={e=>setAccreditationForm({...accreditationForm, validTill: e.target.value})} placeholder="e.g. 2028" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div className="md:col-span-1">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Certificate Image</label>
-           <div className="mt-2 flex gap-2">
-            <input value={accreditationForm.image} onChange={e=>setAccreditationForm({...accreditationForm, image: e.target.value})} placeholder="Certificate URL" className="flex-1 h-12 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-            <label className="h-12 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleAccreditationImageUpload} /></label>
-           </div>
-          </div>
-          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={accreditationForm.description} onChange={e=>setAccreditationForm({...accreditationForm, description: e.target.value})} placeholder="Details about accreditation, score, CGPA, validity..." rows={3} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
-         </div>
-         <button onClick={handleAddAccreditation} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Accreditation</button>
-        </div>
-
-        <div className="mt-8">
-         <h4 className="font-bold text-[#1A3263]">Accreditations - {(allCustomData.accreditations||[]).length}</h4>
-         {(allCustomData.accreditations||[]).length===0 ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No accreditations added yet</div></div>
-         ) : (
-          <div className="mt-4 grid md:grid-cols-2 gap-4">
-           {(allCustomData.accreditations||[]).map(a=>(
-            <div key={a.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] p-4 flex gap-3">
-             {a.image ? <img src={a.image} className="h-16 w-16 rounded-[10px] object-cover border-2 border-[#E8E2DB]" alt={a.name} /> : <div className="h-16 w-16 rounded-[10px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-bold">{a.name[0]}</div>}
-             <div className="flex-1"><div className="font-bold text-[13px] text-[#1A3263]">{a.name} - {a.grade}</div><div className="text-[11px] text-[#547792] mt-1">{a.agency} • {a.year} - {a.validTill}</div><div className="text-[11px] text-[#1A3263]/60 mt-1">{a.description?.slice(0,80)}</div></div>
-             <button onClick={()=>handleDelete('accreditations', a.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button>
-            </div>
-           ))}
-          </div>
-         )}
-        </div>
-       </div>
-      </div>
      )}
 
      {activeSection==='campus' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><MapPin className="text-[#FAB95B]" /> Campus & Environment</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add campus details, green campus, environment initiatives with images real-time</p>
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><MapPin className="text-[#FAB95B]" /> Campus Images (Backgrounds)</h3>
+        <p className="text-[12px] text-[#547792] mt-2">Upload your campus photos here once - they are automatically used as background images in Department pages, Programmes section and About pages (KCE style). No need to add them anywhere else.</p>
 
         <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
          <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add Campus & Environment</h4>
@@ -1906,92 +1472,6 @@ export default function AdminDashboard() {
             <div key={c.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] overflow-hidden">
              {c.images && c.images.length>0 && <div className="grid grid-cols-3 gap-1 p-1 bg-[#E8E2DB]">{c.images.slice(0,3).map((img,i)=><img key={i} src={img.url||img} className="h-[70px] w-full object-cover rounded-[8px]" alt="Campus" />)}</div>}
              <div className="p-4 flex justify-between gap-3"><div className="flex-1"><div className="font-bold text-[13px] text-[#1A3263]">{c.title} {c.area && `• ${c.area}`}</div><div className="text-[11px] text-[#547792] mt-2 line-clamp-3">{c.description}</div><div className="text-[10px] text-[#1A3263]/60 mt-2">{c.facilities}</div></div><button onClick={()=>handleDelete('campusEnvironment', c.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button></div>
-            </div>
-           ))}
-          </div>
-         )}
-        </div>
-       </div>
-      </div>
-     )}
-
-     {activeSection==='library' && (
-      <div className="space-y-6">
-       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Library className="text-[#FAB95B]" /> Library</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add library details with image - real-time working</p>
-
-        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
-         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><BookOpen size={18} /> Library Information</h4>
-         <div className="mt-6 grid md:grid-cols-2 gap-5">
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Total Books</label><input value={libraryForm.totalBooks} onChange={e=>setLibraryForm({...libraryForm, totalBooks: e.target.value})} placeholder="e.g. 50000, 2.6 Lakhs" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Journals</label><input value={libraryForm.journals} onChange={e=>setLibraryForm({...libraryForm, journals: e.target.value})} placeholder="e.g. 200 Journals, 1000 e-journals" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Digital Resources</label><input value={libraryForm.digitalResources} onChange={e=>setLibraryForm({...libraryForm, digitalResources: e.target.value})} placeholder="e.g. KOHA, Digital Library 100 systems" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Timings</label><input value={libraryForm.timings} onChange={e=>setLibraryForm({...libraryForm, timings: e.target.value})} placeholder="e.g. 8AM - 8PM" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Librarian</label><input value={libraryForm.librarian} onChange={e=>setLibraryForm({...libraryForm, librarian: e.target.value})} placeholder="Librarian name" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Library Image</label>
-           <div className="mt-2 flex gap-2">
-            <input value={libraryForm.image} onChange={e=>setLibraryForm({...libraryForm, image: e.target.value})} placeholder="Library image URL" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-            <label className="h-12 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleLibraryImageUpload} /></label>
-           </div>
-           {libraryForm.image && <img src={libraryForm.image} className="mt-3 h-32 w-full rounded-[12px] object-cover border-2 border-[#E8E2DB]" alt="Library" />}
-          </div>
-          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Large Field</label><textarea value={libraryForm.description} onChange={e=>setLibraryForm({...libraryForm, description: e.target.value})} placeholder="Library description - sections, book bank, SWAYAM, digital learning, reference section, etc" rows={6} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y leading-[1.7] min-h-[140px]" /></div>
-          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label><textarea value={libraryForm.facilities} onChange={e=>setLibraryForm({...libraryForm, facilities: e.target.value})} placeholder="Reading halls, digital library, OPAC, reprography, internet, discussion rooms..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
-         </div>
-         <button onClick={handleSaveLibrary} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Save size={16} /> Save Library Details</button>
-
-         {allCustomData.library && (
-          <div className="mt-8 rounded-[16px] bg-[#1A3263] text-white p-5">
-           <div className="font-bold text-[#FAB95B]">Preview</div>
-           <div className="mt-3 flex gap-4">
-            {allCustomData.library.image && <img src={allCustomData.library.image} className="h-20 w-20 rounded-[10px] object-cover border-2 border-[#FAB95B]/30" alt="Library" />}
-            <div><div className="font-bold text-[13px]">{allCustomData.library.totalBooks} Books • {allCustomData.library.journals}</div><div className="text-[11px] text-white/70 mt-1">{allCustomData.library.description?.slice(0,120)}</div></div>
-           </div>
-          </div>
-         )}
-        </div>
-       </div>
-      </div>
-     )}
-
-     {activeSection==='sports' && (
-      <div className="space-y-6">
-       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Heart className="text-[#FAB95B]" /> Sports</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add sports facilities with images - real-time working</p>
-
-        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
-         <h4 className="font-bold text-[#1A3263] flex items-center gap-2"><Plus size={16} /> Add Sports / Game</h4>
-         <div className="mt-6 grid md:grid-cols-2 gap-5">
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Sports Name *</label><input value={sportsForm.name} onChange={e=>setSportsForm({...sportsForm, name: e.target.value})} placeholder="e.g. Cricket, Football, Basketball, Indoor Games" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Coach</label><input value={sportsForm.coach} onChange={e=>setSportsForm({...sportsForm, coach: e.target.value})} placeholder="Coach name" className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div className="md:col-span-2">
-           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Sports Image</label>
-           <div className="mt-2 flex gap-2">
-            <input value={sportsForm.image} onChange={e=>setSportsForm({...sportsForm, image: e.target.value})} placeholder="Sports image URL" className="flex-1 h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-            <label className="h-12 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleSportsImageUpload} /></label>
-           </div>
-           {sportsForm.image && <img src={sportsForm.image} className="mt-3 h-32 w-full rounded-[12px] object-cover border-2 border-[#E8E2DB]" alt="Sports" />}
-          </div>
-          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={sportsForm.description} onChange={e=>setSportsForm({...sportsForm, description: e.target.value})} placeholder="Sports description, ground details, indoor stadium..." rows={4} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
-          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Facilities</label><input value={sportsForm.facilities} onChange={e=>setSportsForm({...sportsForm, facilities: e.target.value})} placeholder="Ground, equipment, gym, coaching..." className="mt-2 w-full h-12 px-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Achievements</label><textarea value={sportsForm.achievements} onChange={e=>setSportsForm({...sportsForm, achievements: e.target.value})} placeholder="Tournaments won, university champions, players selected for state/national..." rows={3} className="mt-2 w-full p-5 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
-         </div>
-         <button onClick={handleSaveSports} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Sports</button>
-        </div>
-
-        <div className="mt-8">
-         <h4 className="font-bold text-[#1A3263]">Sports - {(allCustomData.sports||[]).length}</h4>
-         {(allCustomData.sports||[]).length===0 ? (
-          <div className="mt-4 py-12 text-center rounded-[16px] bg-[#E8E2DB]/30 border-2 border-dashed"><div className="text-3xl"></div><div className="font-bold text-[#1A3263] mt-3">No sports added yet</div></div>
-         ) : (
-          <div className="mt-4 grid md:grid-cols-2 gap-4">
-           {(allCustomData.sports||[]).map(s=>(
-            <div key={s.id} className="rounded-[16px] bg-white border-2 border-[#E8E2DB] overflow-hidden">
-             {s.image && <img src={s.image} className="h-[120px] w-full object-cover" alt={s.name} />}
-             <div className="p-4 flex justify-between gap-3"><div className="flex-1"><div className="font-bold text-[13px] text-[#1A3263]">{s.name} {s.coach && `• Coach ${s.coach}`}</div><div className="text-[11px] text-[#547792] mt-1">{s.description?.slice(0,100)}</div></div><button onClick={()=>handleDelete('sports', s.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button></div>
             </div>
            ))}
           </div>
@@ -2098,8 +1578,8 @@ export default function AdminDashboard() {
     {activeSection==='events' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Calendar className="text-[#FAB95B]" /> Events - 5 Categories with Images</h3>
-        <p className="text-[12px] text-[#547792] mt-2">Add events category-wise: Cultural / Arts, Technical / Academic, Sports, College / Student, Social / Awareness - images odd pantra mathiri, details neenga odd pannalam</p>
+        <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Calendar className="text-[#FAB95B]" /> News &amp; Events</h3>
+        <p className="text-[12px] text-[#547792] mt-2">One place for all news, events &amp; announcements - these appear in the home page Latest News slider, Upcoming Events and the News section (KCE style). Add with images.</p>
 
         <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
          <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add New Event - Category + Image</h4>
@@ -2258,111 +1738,6 @@ export default function AdminDashboard() {
        </div>
       </div>
     )}
-
-    {activeSection==='announcements' && (
-      <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-       <h3 className="font-bold text-[18px] text-[#1A3263]">Announcements</h3>
-       <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
-        <div className="grid md:grid-cols-2 gap-4">
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Title *</label><input value={announcementForm.title} onChange={e=>setAnnouncementForm({...announcementForm, title: e.target.value})} placeholder="Announcement title" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Date</label><input value={announcementForm.date} onChange={e=>setAnnouncementForm({...announcementForm, date: e.target.value})} placeholder="Date" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px]" /></div>
-         <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description</label><textarea value={announcementForm.description} onChange={e=>setAnnouncementForm({...announcementForm, description: e.target.value})} placeholder="Announcement details" rows={2} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] outline-none text-[13px] resize-none" /></div>
-        </div>
-        <button onClick={handleAddAnnouncement} className="mt-4 h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Add Announcement</button>
-       </div>
-       <div className="mt-6 space-y-3">
-        {(allCustomData.announcements||[]).map(an=>(
-         <div key={an.id} className="rounded-[12px] border-2 border-[#E8E2DB] p-4 flex justify-between"><div><div className="font-bold text-[13px] text-[#1A3263]">{an.title}</div><div className="text-[11px] text-[#547792]">{an.date} • {an.description?.slice(0,80)}</div></div><button onClick={()=>handleDelete('announcements', an.id)} className="h-8 w-8 rounded-full border-2 border-[#E8E2DB] grid place-items-center"><Trash2 size={12} /></button></div>
-        ))}
-       </div>
-      </div>
-     )}
-
-     {activeSection==='admissions' && (
-      <div className="space-y-6">
-       <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><FileCheck className="text-[#FAB95B]" /> Admissions - Real-Time Working</h3>
-            <p className="text-[12px] text-[#547792] mt-2">Add admission details - open/close status, dates, eligibility, process, fees, documents, cutoff - website la real-time update aagum</p>
-          </div>
-          <div className="flex gap-2">
-            <span className={`px-3 py-1 rounded-full text-[11px] font-bold ${admissionForm.status==='Open' ? 'bg-green-100 text-green-700 border border-green-200' : admissionForm.status==='Closed' ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-[#FAB95B]/20 text-[#1A3263] border border-[#FAB95B]/30'}`}>{admissionForm.status} • {admissionForm.academicYear}</span>
-          </div>
-        </div>
-
-        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm space-y-8">
-          <div>
-            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">1</span> Basic Info - Status & Title</h4>
-            <div className="mt-4 grid md:grid-cols-3 gap-4">
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Admission Status *</label><select value={admissionForm.status} onChange={e=>setAdmissionForm({...admissionForm, status: e.target.value})} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] font-bold"><option>Open</option><option>Closed</option><option>Upcoming</option></select></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Academic Year *</label><input value={admissionForm.academicYear} onChange={e=>setAdmissionForm({...admissionForm, academicYear: e.target.value})} placeholder="e.g. 2026-27" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Total Seats</label><input value={admissionForm.totalSeats} onChange={e=>setAdmissionForm({...admissionForm, totalSeats: e.target.value})} placeholder="e.g. 1200 Seats" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div className="md:col-span-3"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Admission Title *</label><input value={admissionForm.title} onChange={e=>setAdmissionForm({...admissionForm, title: e.target.value})} placeholder="e.g. Admissions Open 2026-27 - B.E / B.Tech / MBA / MCA" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[13px] font-bold" /></div>
-              <div className="md:col-span-3"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Description - Large - College details</label><textarea value={admissionForm.description} onChange={e=>setAdmissionForm({...admissionForm, description: e.target.value})} placeholder="Enter full admission description: about admission, why join your college, highlights, NAAC grade, placements..." rows={5} className="mt-2 w-full p-4 rounded-[14px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] leading-[1.7] min-h-[120px] resize-y" /></div>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#FAB95B] text-[#1A3263] grid place-items-center text-[12px]">2</span> Important Dates - Real-time</h4>
-            <div className="mt-4 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Application Start</label><input value={admissionForm.applicationStart} onChange={e=>setAdmissionForm({...admissionForm, applicationStart: e.target.value})} placeholder="e.g. 2026-03-01" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Application End</label><input value={admissionForm.applicationEnd} onChange={e=>setAdmissionForm({...admissionForm, applicationEnd: e.target.value})} placeholder="e.g. 2026-05-30" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Counselling Date</label><input value={admissionForm.counsellingDate} onChange={e=>setAdmissionForm({...admissionForm, counsellingDate: e.target.value})} placeholder="e.g. 2026-06-15" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Last Date</label><input value={admissionForm.lastDate} onChange={e=>setAdmissionForm({...admissionForm, lastDate: e.target.value})} placeholder="e.g. 2026-07-31" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#547792] text-white grid place-items-center text-[12px]">3</span> Eligibility, Process, Entrance, Cutoff</h4>
-            <div className="mt-4 grid md:grid-cols-2 gap-4">
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Eligibility Criteria</label><textarea value={admissionForm.eligibility} onChange={e=>setAdmissionForm({...admissionForm, eligibility: e.target.value})} placeholder="e.g. 10+2 with 50% PCM for B.E, Graduation 50% for MBA..." rows={4} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Admission Process - Step by Step</label><textarea value={admissionForm.process} onChange={e=>setAdmissionForm({...admissionForm, process: e.target.value})} placeholder="1. Fill online application&#10;2. Submit documents&#10;3. Entrance / Merit&#10;4. Counselling&#10;5. Fee payment..." rows={4} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Entrance Exam</label><input value={admissionForm.entranceExam} onChange={e=>setAdmissionForm({...admissionForm, entranceExam: e.target.value})} placeholder="e.g. TNEA / TANCET / JEE / Management Quota" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Cutoff Details</label><input value={admissionForm.cutoff} onChange={e=>setAdmissionForm({...admissionForm, cutoff: e.target.value})} placeholder="e.g. Cutoff 170+ for CSE, 160+ for ECE..." className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Fees Structure</label><input value={admissionForm.fees} onChange={e=>setAdmissionForm({...admissionForm, fees: e.target.value})} placeholder="e.g. 85,000 per year + hostel, scholarship available" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Quota Details</label><input value={admissionForm.quota} onChange={e=>setAdmissionForm({...admissionForm, quota: e.target.value})} placeholder="e.g. Govt 65% / Management 35%, SC/ST, BC/MBC reservation" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">4</span> Documents, Scholarships, Contact & Links</h4>
-            <div className="mt-4 grid md:grid-cols-2 gap-4">
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Documents Required - bullet list</label><textarea value={admissionForm.documents} onChange={e=>setAdmissionForm({...admissionForm, documents: e.target.value})} placeholder="• 10th Marksheet&#10;• 12th Marksheet&#10;• TC&#10;• Community Certificate&#10;• Aadhar&#10;• Photos..." rows={5} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Scholarships Available</label><textarea value={admissionForm.scholarships} onChange={e=>setAdmissionForm({...admissionForm, scholarships: e.target.value})} placeholder="• Merit Scholarship&#10;• SC/ST Scholarship&#10;• First Graduate&#10;• Sports Quota..." rows={5} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-y" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Application Link (URL)</label><input value={admissionForm.applicationLink} onChange={e=>setAdmissionForm({...admissionForm, applicationLink: e.target.value})} placeholder="https://yourcollege.edu/admissions/apply" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Contact Phone</label><input value={admissionForm.contactPhone} onChange={e=>setAdmissionForm({...admissionForm, contactPhone: e.target.value})} placeholder="e.g. 0422-257 1234" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Contact Email</label><input value={admissionForm.contactEmail} onChange={e=>setAdmissionForm({...admissionForm, contactEmail: e.target.value})} placeholder="admissions@college.edu" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
-              <div>
-                <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><ImageIcon size={12} className="text-[#FAB95B]" /> Brochure Image - Upload or URL</label>
-                <div className="mt-2 flex gap-2">
-                  <input value={admissionForm.brochureImage} onChange={e=>setAdmissionForm({...admissionForm, brochureImage: e.target.value})} placeholder="Paste brochure image URL or upload" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-                  <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[11px] flex items-center gap-1.5 cursor-pointer"><Upload size={12} /> Upload<input type="file" accept="image/*" className="hidden" onChange={handleAdmissionBrochureUpload} /></label>
-                </div>
-              </div>
-              {admissionForm.brochureImage && (
-                <div className="md:col-span-2">
-                  <div className="rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-[#E8E2DB]/30 p-2">
-                    <img src={admissionForm.brochureImage} className="h-[200px] w-full rounded-[10px] object-cover" alt="Brochure preview" />
-                    <div className="text-[11px] text-[#547792] mt-2 text-center">Brochure preview - will show on website</div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <button onClick={handleSaveAdmissions} className="h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Save size={18} /> Save Admissions - Real-time Website Update</button>
-
-          {customData.admissions && (
-            <div className="mt-6 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5">
-              <div className="font-bold text-[#1A3263] text-[13px]">Current Saved - {customData.admissions.title} • {customData.admissions.status} • {customData.admissions.academicYear}</div>
-              <div className="text-[11px] text-[#547792] mt-1">Real-time la college website la theriyum - students can see admissions open</div>
-            </div>
-          )}
-        </div>
-       </div>
-      </div>
-     )}
 
      {activeSection==='contact' && (
       <div className="space-y-6">
