@@ -48,9 +48,13 @@ function DarkStrip({ title, image, rows }) {
   )
 }
 
-export default function DeptPage({ dept, data, onNavigate }) {
+export default function DeptPage({ dept, data, onNavigate, campusImages = [], branding = {} }) {
   const [tab, setTab] = useState('peo')
   const d = data || {}
+  // KCE-look background images: dept's own upload first, then the college's own images
+  const heroImg = d.heroImage || dept.image || campusImages[0] || branding.heroImage || ''
+  const img2 = campusImages[1] || campusImages[0] || branding.heroImage || ''
+  const img3 = campusImages[2] || campusImages[0] || branding.heroImage || ''
   const about = d.aboutText || []
   const infra = d.infraText || []
   const labs = d.labs || []
@@ -68,8 +72,8 @@ export default function DeptPage({ dept, data, onNavigate }) {
       {/* Hero image + About card */}
       {(d.heroImage || about.length > 0) && (
         <div className="relative">
-          {d.heroImage ? (
-            <img src={d.heroImage} alt={'Department of ' + dept.name} className="w-full h-[340px] sm:h-[480px] object-cover" />
+          {heroImg ? (
+            <img src={heroImg} alt={'Department of ' + dept.name} className="w-full h-[340px] sm:h-[480px] object-cover" />
           ) : (
             <div className="w-full h-[200px] bg-[#547792]/20"></div>
           )}
@@ -97,7 +101,7 @@ export default function DeptPage({ dept, data, onNavigate }) {
       {(d.visionText || d.visionImage) && (
         <div className="py-16">
           <div className="mx-auto max-w-[1400px] px-6 lg:px-12 grid lg:grid-cols-[1.1fr_1fr] items-center">
-            {d.visionImage ? <img src={d.visionImage} alt="Vision" className="rounded-[14px] shadow-lg w-full h-[280px] sm:h-[360px] object-cover" /> : <div />}
+            <img src={d.visionImage || img2 || heroImg} alt="Vision" className="rounded-[14px] shadow-lg w-full h-[280px] sm:h-[360px] object-cover" />
             <div className="lg:-ml-24 mt-6 lg:mt-0 bg-white rounded-[14px] shadow-xl p-8 sm:p-10 relative z-10">
               <h3 className="text-[24px] sm:text-[28px] font-extrabold text-[#1A3263]">Our Vision</h3>
               <p className="mt-4 text-[14px] leading-[1.9] text-[#547792]">{d.visionText}</p>
@@ -119,13 +123,13 @@ export default function DeptPage({ dept, data, onNavigate }) {
                 ))}
               </div>
             </div>
-            {d.missionImage ? <img src={d.missionImage} alt="Mission" className="order-1 lg:order-2 rounded-[14px] shadow-lg w-full h-[280px] sm:h-[360px] object-cover" /> : <div className="order-1 lg:order-2" />}
+            <img src={d.missionImage || img3 || heroImg} alt="Mission" className="order-1 lg:order-2 rounded-[14px] shadow-lg w-full h-[280px] sm:h-[360px] object-cover" />
           </div>
         </div>
       )}
 
       {/* Regulations */}
-      {(d.regulations || []).length > 0 && <DarkStrip title="Regulations" image={d.regulationsImage} rows={d.regulations} />}
+      {(d.regulations || []).length > 0 && <DarkStrip title="Regulations" image={d.regulationsImage || img3 || heroImg} rows={d.regulations} />}
 
       {/* Courses offered */}
       {(courses.length > 0 || d.coursesImage) && (
@@ -267,7 +271,7 @@ export default function DeptPage({ dept, data, onNavigate }) {
       )}
 
       {/* Curriculum */}
-      {(d.curriculum || []).length > 0 && <DarkStrip title="Curriculum" image={d.curriculumImage} rows={d.curriculum} />}
+      {(d.curriculum || []).length > 0 && <DarkStrip title="Curriculum" image={d.curriculumImage || img2 || heroImg} rows={d.curriculum} />}
     </div>
   )
 }

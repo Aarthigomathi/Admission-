@@ -760,7 +760,7 @@ function CustomCollegePage({ college, customData }) {
       )}
 
       </>) : activeDept ? (
-        <DeptPage dept={activeDept} data={deptPages[String(activeDept.id)] || deptPages[activeDept.id] || {}} onNavigate={navigateSite} />
+        <DeptPage dept={activeDept} data={deptPages[String(activeDept.id)] || deptPages[activeDept.id] || {}} onNavigate={navigateSite} campusImages={campusImages} branding={branding} />
       ) : (
         <AboutPages
           page={sitePage}
