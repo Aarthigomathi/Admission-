@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { getCollegeBySlug, getCollegeCustomData, getPublicColleges } from '../../lib/collegeStorage'
 import CollegeHeader from '../../components/college/CollegeHeader'
 import AboutPages from '../../components/college/AboutPages.jsx'
+import DeptPage from '../../components/college/DeptPage.jsx'
 import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, User, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf, ChevronLeft, ChevronRight } from 'lucide-react'
 
 
@@ -308,7 +309,9 @@ function CustomCollegePage({ college, customData }) {
   const homePage = customData.homePage || college.homePage || {}
   const aboutPages = customData.aboutPages || college.aboutPages || {}
   const leadership = college.leadership || {}
-  const mgmtBase = (Array.isArray(aboutPages.management) && aboutPages.management.length > 0) ? aboutPages.management : [
+  const deptPages = customData.deptPages || college.deptPages || {}
+  const activeDept = sitePage && sitePage.startsWith('dept-') ? (departments.find(dp => String(dp.id) === sitePage.slice(5)) || null) : null
+    const mgmtBase = (Array.isArray(aboutPages.management) && aboutPages.management.length > 0) ? aboutPages.management : [
     ...(leadership.management || customData.management || []).map(m => ({ role: m.role || '', name: m.name || '', photo: m.photo || '', bio: m.bio || (m.details ? [m.details] : []) })),
     ...((principal || leadership.principal) ? [{ role: 'Principal', name: (principal || leadership.principal).name || '', photo: (principal || leadership.principal).photo || '', bio: (principal || leadership.principal).message ? [(principal || leadership.principal).message] : [] }] : []),
   ]
@@ -370,7 +373,7 @@ function CustomCollegePage({ college, customData }) {
 
   return (
     <div className="min-h-screen bg-[#E8E2DB]">
-      <CollegeHeader college={{ ...college, settings: settings, branding: { ...college.branding, ...branding, logo: branding.logo || college.branding?.logo, heroImage: branding.heroImage || college.branding?.heroImage } }} homePage={homePage} currentPage={sitePage} onNavigate={navigateSite} />
+      <CollegeHeader college={{ ...college, settings: settings, branding: { ...college.branding, ...branding, logo: branding.logo || college.branding?.logo, heroImage: branding.heroImage || college.branding?.heroImage } }} homePage={homePage} currentPage={sitePage} onNavigate={navigateSite} departments={departments} />
 
       {sitePage === 'home' ? (<>
       {/* Hero - KCE event banner */}
@@ -1387,7 +1390,9 @@ function CustomCollegePage({ college, customData }) {
         </div>
       )}
 
-      </>) : (
+      </>) : activeDept ? (
+        <DeptPage dept={activeDept} data={deptPages[String(activeDept.id)] || deptPages[activeDept.id] || {}} onNavigate={navigateSite} />
+      ) : (
         <AboutPages
           page={sitePage}
           college={college}

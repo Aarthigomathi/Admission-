@@ -174,6 +174,57 @@ export const colleges = [
       placementText: "",
       footerAbout: ""
     },
+    deptPages: {
+      '1': {
+        heroImage: 'https://www.psgtech.edu/images/slider/TheConfluence-2026.jpg',
+        aboutText: [
+          'The Department of Computer Science and Engineering was established in the year 1985 and offers undergraduate and postgraduate programmes with a strong focus on theory, systems and emerging technologies. The department is accredited by the National Board of Accreditation (NBA) and is recognised as a research centre by Anna University, Chennai.',
+          'With state-of-the-art laboratories in AI & Machine Learning, Cloud Computing, Cyber Security, VLSI and IoT, the department prepares graduates for global careers in software, research and entrepreneurship.'
+        ],
+        infraText: [
+          'The department has excellent infrastructure with high-performance computing labs, GPU clusters for deep learning, dedicated project labs and a software incubation centre. Students consistently secure top ranks in university examinations and hackathons.',
+          'Our faculty are active researchers and members of professional bodies such as CSI, IEEE and ISTE, regularly publishing in reputed international journals and conferences.',
+          'The department has signed MoUs with leading IT companies for internships, industrial training and collaborative projects, giving students hands-on exposure to current industry practices.'
+        ],
+        visionImage: 'https://www.psgtech.edu/images/slider/foundationday_2026.jpg',
+        visionText: 'To produce technically knowledgeable and socially responsible computer science engineers by inculcating value-based technical education.',
+        missionImage: 'https://www.psgtech.edu/images/slider/Interactivesession_jains.jpg',
+        missionBullets: [
+          'Imparting strong technical knowledge through qualified faculty.',
+          'Enriching the exposure of the students in emerging technologies, entrepreneurship, and research by industry - institute interaction.',
+          'Enabling the students to become professionally and socially responsible engineers.'
+        ],
+        regulationsImage: 'https://www.psgtech.edu/images/slider/rc2026/image001.JPG',
+        regulations: ['R2023', 'R2021', 'R2017'],
+        curriculumImage: 'https://www.psgtech.edu/images/slider/TheConfluence-2026.jpg',
+        curriculum: ['R2023', 'R2021', 'R2017'],
+        coursesImage: '',
+        courses: ['B.E. Computer Science and Engineering', 'M.E. Computer Science and Engineering'],
+        labs: ['Data Structures Laboratory', 'Operating Systems Laboratory', 'Computer Networks Laboratory', 'Artificial Intelligence Laboratory', 'Cloud Computing Laboratory', 'Cyber Security Laboratory', 'Database Systems Laboratory', 'Seminar Hall'],
+        peo: [
+          'Graduates will formulate and solve problems in various domains of Computer Science by exhibiting their technical skills.',
+          'Graduates will communicate effectively and work in multidisciplinary projects following the ethics in their profession.',
+          'Graduates will become entrepreneurs or successfully pursue higher education for their professional development.'
+        ],
+        po: [
+          'Apply knowledge of mathematics, science, and computer science fundamentals to solve complex engineering problems.',
+          'Design solutions for real-world computing problems with consideration for public health, safety and society.',
+          'Use research-based knowledge and modern tools to analyse and interpret data effectively.'
+        ],
+        pso: [
+          'Develop and deploy software systems using modern programming paradigms and open-source tools.',
+          'Analyse and secure computing environments using cyber security principles.'
+        ],
+        faculty: [
+          'Dr. V. Mahesh | Professor and Head',
+          'Dr. S. Karthik | Associate Professor',
+          'Dr. K. Priya | Assistant Professor',
+          'Mr. R. Anand | Lecturer'
+        ],
+        smartRooms: ['DATA STRUCTURES', 'OPERATING SYSTEMS', 'COMPUTER NETWORKS', 'MACHINE LEARNING', 'COMPILER DESIGN'],
+        teaching: ['Course Development Through YouTube and Blogs', 'Google Classroom Details Odd Semester - 2025-2026']
+      }
+    },
     alumni: [
       { id: 1, name: 'R Suganthraj', designation: 'Software Development Engineer', company: 'Amazon', companyLogo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg', image: 'https://kce.ac.in/images/kce/home/alumini/8.png' },
       { id: 2, name: 'Sarumathi S', designation: 'Software Development Engineer', company: 'Amazon', companyLogo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg', image: 'https://kce.ac.in/images/kce/home/alumini/7.png' },

@@ -13,7 +13,7 @@ function BrandIcon({ name, size = 15, className = '' }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true"><path d={paths[name]} /></svg>
 }
 
-export default function CollegeHeader({ college, homePage, currentPage, onNavigate }) {
+export default function CollegeHeader({ college, homePage, currentPage, onNavigate, departments = [] }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null)
 
@@ -36,10 +36,8 @@ export default function CollegeHeader({ college, homePage, currentPage, onNaviga
     {
       label: 'Academics', id: 'departments',
       children: [
-        { label: 'Departments', id: 'departments' },
+        ...(departments || []).map(dp => ({ label: 'Department of ' + (dp.name || ''), page: 'dept-' + dp.id })),
         { label: 'Programmes', id: 'programmes' },
-        { label: 'Library', id: 'library' },
-        { label: 'IQAC', id: 'accreditation' },
       ],
     },
     { label: 'AICTE IDEA Lab', id: 'centres' },
