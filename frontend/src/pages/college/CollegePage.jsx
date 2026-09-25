@@ -4,7 +4,7 @@ import { getCollegeBySlug, getCollegeCustomData, getPublicColleges } from '../..
 import CollegeHeader from '../../components/college/CollegeHeader'
 import AboutPages from '../../components/college/AboutPages.jsx'
 import DeptPage from '../../components/college/DeptPage.jsx'
-import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, User, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf, ChevronLeft, ChevronRight } from 'lucide-react'
+import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, User, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf, ChevronLeft, ChevronRight, Link2 } from 'lucide-react'
 
 
 function placementStats(placements) {
@@ -45,8 +45,15 @@ function BrandIcon({ name, size = 15, className = '' }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true"><path d={paths[name]} /></svg>
 }
 
-function KceHero({ college, branding, homePage, plStats, shortName, campusImages }) {
+function KceHero({ college, branding, homePage, plStats, shortName, campusImages, onNavigate }) {
   const banner = homePage.bannerImage || branding.heroImage || college.branding?.heroImage || campusImages[0] || ''
+  const banners = (Array.isArray(homePage.bannerImages) && homePage.bannerImages.length > 0 ? homePage.bannerImages : (banner ? [banner] : [])).filter(Boolean)
+  const [bIdx, setBIdx] = useState(0)
+  useEffect(() => {
+    if (banners.length < 2) return undefined
+    const t = setInterval(() => setBIdx(i => (i + 1) % banners.length), 6000)
+    return () => clearInterval(t)
+  }, [banners.length])
   const statPl = homePage.statPlacements || plStats.total || ''
   const statCo = homePage.statCompanies || plStats.companies || ''
   const statLpa = homePage.statMaxLpa || (plStats.highestNum ? String(plStats.highestNum) : String(plStats.highest || '').replace(/[^\d.]/g, ''))
@@ -55,19 +62,26 @@ function KceHero({ college, branding, homePage, plStats, shortName, campusImages
   const partners = (homePage.partnerLogos || []).slice(0, 6)
   const dateParts = (homePage.eventDate || '').split(' ')
   const cta = [
-    { label: 'Placement', id: 'placements' },
-    { label: 'Campus Tour', id: 'campus' },
-    { label: 'Campus Life', id: 'events' },
-    { label: 'Center of Excellence', id: 'centres' },
+    { label: 'Placement', run: () => scrollId('placements') },
+    { label: 'Campus Tour', run: () => { if (homePage.campusTourUrl) window.open(homePage.campusTourUrl, '_blank', 'noopener'); else scrollId('about') } },
+    { label: 'Campus Life', run: () => (onNavigate ? onNavigate('about-profile') : scrollId('about')) },
+    { label: 'Center of Excellence', run: () => (onNavigate ? onNavigate('about-coe') : scrollId('about')) },
   ]
   return (
     <div id="home" className="relative bg-[#1A3263]">
       {/* Event banner */}
       <div className="relative h-[400px] sm:h-[500px] lg:h-[600px] overflow-hidden">
-        {banner ? (
-          <img src={banner} className="absolute inset-0 h-full w-full object-cover object-center" alt={college.name + ' banner'} />
-        ) : (
+        {banners.length > 0 ? banners.map((b, i) => (
+          <img key={i} src={b} className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1200ms] ${i === bIdx % banners.length ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} alt={college.name + ' banner'} />
+        )) : (
           <div className="absolute inset-0 bg-gradient-to-br from-[#1A3263] via-[#547792] to-[#1A3263]"></div>
+        )}
+        {banners.length > 1 && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
+            {banners.map((_, i) => (
+              <button key={i} onClick={() => setBIdx(i)} aria-label={'Banner ' + (i + 1)} className={`h-1.5 rounded-full transition-all duration-300 ${i === bIdx % banners.length ? 'w-6 bg-[#FAB95B]' : 'w-1.5 bg-white/60 hover:bg-white'}`} />
+            ))}
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#1A3263]/60 via-transparent to-[#1A3263]/20"></div>
 
@@ -172,7 +186,7 @@ function KceHero({ college, branding, homePage, plStats, shortName, campusImages
           <div className="flex-1"></div>
           <div className="flex flex-wrap gap-2">
             {cta.map(b => (
-              <button key={b.label} onClick={() => scrollId(b.id)} className="h-10 px-4 sm:px-5 rounded-[10px] bg-[#1A3263] text-white text-[10.5px] sm:text-[11px] font-extrabold uppercase tracking-[0.08em] hover:bg-[#1A3263]/85 transition-colors">{b.label}</button>
+              <button key={b.label} onClick={b.run} className="h-10 px-4 sm:px-5 rounded-[10px] bg-[#1A3263] text-white text-[10.5px] sm:text-[11px] font-extrabold uppercase tracking-[0.08em] hover:bg-[#1A3263]/85 transition-colors">{b.label}</button>
             ))}
           </div>
         </div>
@@ -334,14 +348,22 @@ function CustomCollegePage({ college, customData }) {
   const statPl = homePage.statPlacements || plStats.total || ''
   const statCo = homePage.statCompanies || plStats.companies || ''
   const statLpa = homePage.statMaxLpa || (plStats.highestNum ? String(plStats.highestNum) : String(plStats.highest || '').replace(/[^\d.]/g, ''))
-  const industryItems = (Array.isArray(customData.industryLogos) && customData.industryLogos.length > 0 ? customData.industryLogos.map(l => (typeof l === 'string' ? { name: '', url: l } : l)) : (plStats.recruiters || []).map(n => ({ name: n, url: '' })))
-  const quickLinks = [
+  const rawIndustry = (Array.isArray(customData.industryLogos) && customData.industryLogos.length > 0) ? customData.industryLogos : (Array.isArray(homePage.industryLogos) ? homePage.industryLogos : [])
+  const industryItems = (rawIndustry.length > 0 ? rawIndustry.map(l => (typeof l === 'string' ? { name: '', url: l } : l)).filter(it => it && (it.url || it.name)) : (plStats.recruiters || []).map(n => ({ name: n, url: '' })))
+  const quickLinkDefaults = [
     { label: 'Vidya Lakshmi Portal', icon: 'user', href: 'https://vidyalakshmi.gov.in' },
     { label: 'National Digital Library', icon: 'book', href: 'https://ndl.in' },
     { label: 'Student Alumni', icon: 'cap', href: '#alumni' },
     { label: 'Anti Ragging Committee', icon: 'users', href: 'https://antiraggingccimc.in' },
     { label: 'Admission Enquiries', icon: 'landmark', href: '#contact' },
   ]
+  const quickLinks = (Array.isArray(homePage.quickLinks) && homePage.quickLinks.length > 0
+    ? homePage.quickLinks.map(q => {
+        if (typeof q !== 'string') return q
+        const parts = q.split('|').map(x => x.trim())
+        return { label: parts[0] || '', icon: 'link', href: parts[1] || '#' }
+      })
+    : quickLinkDefaults).filter(q => q && q.label)
 
   const achPages = Math.max(1, Math.ceil(achievements.length / 4))
   const newsPages = Math.max(1, Math.ceil(newsList.length / 2))
@@ -377,7 +399,7 @@ function CustomCollegePage({ college, customData }) {
 
       {sitePage === 'home' ? (<>
       {/* Hero - KCE event banner */}
-      <KceHero college={college} branding={branding} homePage={homePage} plStats={plStats} shortName={shortName} campusImages={campusImages} />
+      <KceHero college={college} branding={branding} homePage={homePage} plStats={plStats} shortName={shortName} campusImages={campusImages} onNavigate={navigateSite} />
 
       {/* ABOUT US - KCE layout */}
       <section id="about" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-white">
@@ -397,7 +419,7 @@ function CustomCollegePage({ college, customData }) {
                   ))
                 )}
               </div>
-              <button onClick={() => scrollId('management')} className="mt-10 h-11 px-8 rounded-full bg-[#FAB95B] text-[#1A3263] text-[13px] font-extrabold inline-flex items-center gap-2 hover:bg-[#FAB95B]/90 transition-colors">Read More <span>→</span></button>
+              <button onClick={() => navigateSite('about-profile')} className="mt-10 h-11 px-8 rounded-full bg-[#FAB95B] text-[#1A3263] text-[13px] font-extrabold inline-flex items-center gap-2 hover:bg-[#FAB95B]/90 transition-colors">Read More <span>→</span></button>
             </div>
             <div className="relative lg:mt-4">
               <div className="rounded-[28px] overflow-hidden shadow-xl aspect-[4/3] bg-[#E8E2DB]">
@@ -593,7 +615,7 @@ function CustomCollegePage({ college, customData }) {
           <div>
             <h2 className="text-[28px] sm:text-[34px] font-extrabold text-white">Placement &amp; Training</h2>
             <p className="mt-5 text-[14px] leading-[1.95] text-white/75 max-w-[540px]">{homePage.placementText || 'The placement cell takes immense effort in guiding the students for their successful career. The college has active MoUs & Centers of Excellence with various industries. The college is visited by multinational companies year after year and has a strong placement record.'}</p>
-            <button onClick={() => scrollId('placement-records')} className="mt-8 h-11 px-8 rounded-full bg-[#FAB95B] text-[#1A3263] text-[13px] font-extrabold inline-flex items-center gap-2 hover:bg-[#FAB95B]/90 transition-colors">Know More <span>→</span></button>
+            <button onClick={() => scrollId('industry')} className="mt-8 h-11 px-8 rounded-full bg-[#FAB95B] text-[#1A3263] text-[13px] font-extrabold inline-flex items-center gap-2 hover:bg-[#FAB95B]/90 transition-colors">Know More <span>→</span></button>
           </div>
           <div className="rounded-[20px] bg-white/5 border border-white/15 backdrop-blur-sm p-4 grid grid-cols-3 gap-4">
             <div className="rounded-[14px] bg-[#1A3263] border border-white/10 py-7 sm:py-9 text-center">
@@ -612,11 +634,11 @@ function CustomCollegePage({ college, customData }) {
         </div>
       </section>
 
-      {/* INDUSTRY & COLLEGE - KCE logo grid */}
-      {industryItems.length > 0 && (
-        <section id="industry" className="bg-white py-14 sm:py-16">
-          <div className="mx-auto max-w-[1600px] px-6 lg:px-12">
-            <h2 className="text-center text-[28px] sm:text-[32px] font-extrabold uppercase tracking-tight text-[#1A3263]">Industry &amp; {shortName || 'College'}</h2>
+      {/* INDUSTRY & COLLEGE - KCE logo grid (always visible like KCE home) */}
+      <section id="industry" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-white py-14 sm:py-16">
+        <div className="mx-auto max-w-[1600px] px-6 lg:px-12">
+          <h2 className="text-center text-[28px] sm:text-[32px] font-extrabold uppercase tracking-tight text-[#1A3263]">Industry &amp; {shortName || 'College'}</h2>
+          {industryItems.length > 0 ? (
             <div className="mt-9 grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-9 gap-2.5">
               {industryItems.slice(0, 54).map((it, i) => (
                 <div key={i} className="h-[74px] rounded-[10px] border border-[#E8E2DB] bg-white grid place-items-center p-3 overflow-hidden hover:border-[#FAB95B]/60 transition-colors">
@@ -624,16 +646,21 @@ function CustomCollegePage({ college, customData }) {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          ) : (
+            <div className="mt-9 rounded-[16px] border-2 border-dashed border-[#E8E2DB] py-14 px-6 text-center">
+              <Building2 size={30} className="mx-auto text-[#547792]/50" strokeWidth={1.6} />
+              <p className="mt-3 text-[13px] font-bold text-[#547792]">Industry partners and recruiter logos will appear here once the college adds them from the Home Page Setup.</p>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* QUICK LINKS ROW - KCE style */}
       <section className="bg-white border-t border-[#E8E2DB]">
         <div className="mx-auto max-w-[1250px] px-4 sm:px-6 py-7">
           <div className="flex flex-wrap items-stretch justify-center divide-x divide-[#E8E2DB]">
             {quickLinks.map(q => {
-              const Icon = q.icon === 'user' ? User : q.icon === 'book' ? BookOpen : q.icon === 'cap' ? GraduationCap : q.icon === 'users' ? Users : Landmark
+              const Icon = q.icon === 'user' ? User : q.icon === 'book' ? BookOpen : q.icon === 'cap' ? GraduationCap : q.icon === 'users' ? Users : q.icon === 'landmark' ? Landmark : Link2
               return (
                 <a key={q.label} href={q.href} target={q.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" onClick={e => { if (!q.href.startsWith('http')) { e.preventDefault(); scrollId(q.href.replace('#', '')) } }} className="flex flex-col items-center gap-2.5 px-5 sm:px-10 py-2 group">
                   <Icon size={27} className="text-[#1A3263] group-hover:text-[#FAB95B] transition-colors" strokeWidth={1.8} />

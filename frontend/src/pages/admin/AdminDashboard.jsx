@@ -54,7 +54,7 @@ export default function AdminDashboard() {
  const [newCollegeImageUrl, setNewCollegeImageUrl] = useState('')
  const [admissionForm, setAdmissionForm] = useState({ status: 'Open', academicYear: '2026-27', title: '', description: '', eligibility: '', process: '', applicationStart: '', applicationEnd: '', counsellingDate: '', lastDate: '', entranceExam: '', cutoff: '', fees: '', totalSeats: '', documents: '', quota: '', scholarships: '', applicationLink: '', brochureImage: '', contactPhone: '', contactEmail: '' })
  const [contactForm, setContactForm] = useState({ address: '', city: '', district: '', pincode: '', phone: '', phone2: '', email: '', admissionsEmail: '', website: '', officeHours: '', mapLink: '', contactPerson: '', contactDesignation: '', contactPhone: '', enquiryPhone: '', enquiryEmail: '', supportHours: '', fax: '', tollFree: '' })
- const [homeForm, setHomeForm] = useState({ tneaCode: '', eventDate: '', eventTime: '', chiefGuestName: '', chiefGuestTitle: '', chiefGuestPhoto: '', coordinators: '', convenors: '', partnerLogos: '', statPlacements: '', statCompanies: '', statMaxLpa: '', aboutImage: '', accreditationLogos: '', industryLogos: '', ugDesc: '', pgDesc: '', placementText: '', footerAbout: '' })
+ const [homeForm, setHomeForm] = useState({ tneaCode: '', eventDate: '', eventTime: '', chiefGuestName: '', chiefGuestTitle: '', chiefGuestPhoto: '', coordinators: '', convenors: '', partnerLogos: '', statPlacements: '', statCompanies: '', statMaxLpa: '', aboutImage: '', accreditationLogos: '', industryLogos: '', ugDesc: '', pgDesc: '', placementText: '', footerAbout: '', bannerImages: '', campusTourUrl: '', quickLinks: '' })
  const [settingsForm, setSettingsForm] = useState({ name: '', shortName: '', tagline: '', type: '', collegeType: '', university: '', affiliation: '', established: '', accreditation: '', email: '', phone: '', website: '', verificationStatus: '', maintenanceMode: false, showAdmissions: true, showPlacements: true, showEvents: true, loginUsername: '', loginPassword: '' })
 
  useEffect(() => {
@@ -94,7 +94,10 @@ export default function AdminDashboard() {
     ugDesc: custom.homePage?.ugDesc || fullCollege.homePage?.ugDesc || '',
     pgDesc: custom.homePage?.pgDesc || fullCollege.homePage?.pgDesc || '',
     placementText: custom.homePage?.placementText || fullCollege.homePage?.placementText || '',
-    footerAbout: custom.homePage?.footerAbout || fullCollege.homePage?.footerAbout || ''
+    footerAbout: custom.homePage?.footerAbout || fullCollege.homePage?.footerAbout || '',
+    bannerImages: (custom.homePage?.bannerImages || fullCollege.homePage?.bannerImages || []).join('\n'),
+    campusTourUrl: custom.homePage?.campusTourUrl || fullCollege.homePage?.campusTourUrl || '',
+    quickLinks: (custom.homePage?.quickLinks || fullCollege.homePage?.quickLinks || []).join('\n')
    })
    setAboutForm({
     fullText: custom.about?.fullText || fullCollege.about?.fullText || '',
@@ -679,7 +682,7 @@ export default function AdminDashboard() {
 
  const lines = (t) => String(t || '').split('\n').map(x => x.trim()).filter(Boolean)
  const handleSaveHome = () => {
-  const data = { ...homeForm, coordinators: lines(homeForm.coordinators), convenors: lines(homeForm.convenors), partnerLogos: lines(homeForm.partnerLogos).slice(0, 6), accreditationLogos: lines(homeForm.accreditationLogos).slice(0, 8), industryLogos: lines(homeForm.industryLogos).slice(0, 54) }
+  const data = { ...homeForm, coordinators: lines(homeForm.coordinators), convenors: lines(homeForm.convenors), partnerLogos: lines(homeForm.partnerLogos).slice(0, 6), accreditationLogos: lines(homeForm.accreditationLogos).slice(0, 8), industryLogos: lines(homeForm.industryLogos).slice(0, 54), bannerImages: lines(homeForm.bannerImages).slice(0, 10), campusTourUrl: String(homeForm.campusTourUrl || '').trim(), quickLinks: lines(homeForm.quickLinks).slice(0, 6) }
   saveSafe('homePage', data)
   setCustomData({ ...customData, homePage: data })
   alert('Home page setup saved! Website la real-time la update aagiduchu. Preview: college public page open pannunga.')
@@ -2207,6 +2210,8 @@ export default function AdminDashboard() {
         <div>
          <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">2</span> Hero Banner - Event Details</h4>
          <div className="mt-4 grid md:grid-cols-2 gap-4">
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Banner Images (1 URL per line, max 10 - auto-rotating slider like KCE)</label><textarea value={homeForm.bannerImages} onChange={e=>setHomeForm({...homeForm, bannerImages: e.target.value})} rows={3} placeholder={"https://... banner1\nhttps://... banner2 (empty = Branding tab hero image is used)"} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+          <div className="md:col-span-2"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Campus Tour Video URL (YouTube link for CAMPUS TOUR button)</label><input value={homeForm.campusTourUrl} onChange={e=>setHomeForm({...homeForm, campusTourUrl: e.target.value})} placeholder="https://www.youtube.com/watch?v=..." className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Event Date</label><input value={homeForm.eventDate} onChange={e=>setHomeForm({...homeForm, eventDate: e.target.value})} placeholder="e.g. 23 SEP 2026" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Event Time</label><input value={homeForm.eventTime} onChange={e=>setHomeForm({...homeForm, eventTime: e.target.value})} placeholder="e.g. 10:00 AM" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
           <div><label className="text-[11px] font-bold uppercase text-[#1A3263]">Chief Guest Name</label><input value={homeForm.chiefGuestName} onChange={e=>setHomeForm({...homeForm, chiefGuestName: e.target.value})} placeholder="e.g. Mr. Kishore Nair" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" /></div>
@@ -2240,7 +2245,11 @@ export default function AdminDashboard() {
          <div className="mt-4"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Company Logo URLs (1 per line)</label><textarea value={homeForm.industryLogos} onChange={e=>setHomeForm({...homeForm, industryLogos: e.target.value})} rows={4} placeholder="https://... company1 logo\nhttps://... company2 logo (empty = company names from Placements section will show)" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
         </div>
         <div>
-         <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">6</span> Footer About Text</h4>
+         <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">6</span> Quick Links Row (icons strip above footer - KCE style)</h4>
+         <div className="mt-4"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Links in format: Label | URL (1 per line, max 6 - empty = default KCE quick links)</label><textarea value={homeForm.quickLinks} onChange={e=>setHomeForm({...homeForm, quickLinks: e.target.value})} rows={4} placeholder={"Vidya Lakshmi Portal | https://vidyalakshmi.gov.in\nNational Digital Library | https://ndl.in\nAdmission Enquiries | #contact"} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+        </div>
+        <div>
+         <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">7</span> Footer About Text</h4>
          <div className="mt-4"><textarea value={homeForm.footerAbout} onChange={e=>setHomeForm({...homeForm, footerAbout: e.target.value})} rows={3} placeholder="Optional - default: AICTE approval + affiliation + accreditation + ISO lines" className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
         </div>
        </div>
