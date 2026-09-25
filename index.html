@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ta-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admission+ — Tamil Nadu College & Course Guide | 10th, 12th, PG</title>
+<meta name="description" content="Tamil Nadu 38 district, 58 college, 54 course — 10th mudicha diploma/ITI, 12th mudicha degree, PG courses. Ungal ooru pakkathula irukkira college-a fees, placement, student review, Google Map-oda paarunga.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body data-page="home">
+
+<!-- ============================== PAGE LOADER ============================ -->
+<div class="loader"><span class="brand-mark">Aa</span></div>
+
+<!-- ================================ NAVBAR ============================== -->
+<div id="nav-root"></div>
+
+<!-- ================================= HERO =============================== -->
+<section class="hero">
+  <div class="hero-bg"><img src="images/hero-students.jpg" alt="Tamil Nadu college students"></div>
+  <div class="wrap hero-in">
+    <span class="chip" style="background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.3)">
+      🇮🇳 Tamil Nadu · 38 District · 58 College · 54 Course · 100% Free
+    </span>
+    <h1 style="margin-top:18px">Ungal <em>ooru pakkathula</em> irukkira best college —<br>10th, 12th, PG ellathukum</h1>
+    <p class="lead">
+      Oru pillaikku college therndhu eduka evlo kashtam... Athanala thaan ithu.
+      Ungal ooru sollunga — pakkathula irukkira college, course, fees, placement, student review ellathaiyum
+      oru idathula kaattum. Google Maps-oda direction kooda! 🗺️
+    </p>
+
+    <form class="hero-search" id="heroSearch">
+      <div class="input-icon">
+        <span class="ico">🔎</span>
+        <input class="input" id="hsQuery" placeholder="Course / college peru type pannunga… (eg: Nursing, B.E CSE)">
+      </div>
+      <select class="select" id="hsDistrict" title="Ungal ooru"></select>
+      <select class="select" id="hsLevel">
+        <option value="">Enthe level?</option>
+        <option value="10th">10th mudinjirukku</option>
+        <option value="12th">12th mudinjirukku</option>
+        <option value="PG">UG mudinjirukku (PG)</option>
+      </select>
+      <button class="btn btn-primary btn-lg" type="submit">College thedu 🔍</button>
+    </form>
+
+    <div class="hero-tags">
+      <span>✅ Ungal ooru pakkathula nearest college</span>
+      <span>✅ Fees & eligibility clear-a</span>
+      <span>✅ Student reviews</span>
+      <span>✅ Google Maps direction</span>
+    </div>
+
+    <div class="hero-stats">
+      <div><b data-count="58">0</b><span>COLLEGES LISTED</span></div>
+      <div><b data-count="54">0</b><span>COURSES DETAILS</span></div>
+      <div><b data-count="38">0</b><span>DISTRICTS COVERED</span></div>
+      <div><b data-count="1000">0</b><span>STUDENT REVIEWS</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== RIBBON =============================== -->
+<div class="ribbon">
+  <div class="ribbon-track">
+    <span>📢 <b>TNEA 2026</b> counselling notification follow pannunga</span>
+    <span>🎓 <b>After 10th</b> — Diploma / ITI padicha 2 year-la lateral entry B.E chance</span>
+    <span>💰 <b>Government college</b> fee romba kammi — merit-la seat kidaikum</span>
+    <span>🏠 <b>Hostel</b> irukkira college-a select pannunga</span>
+    <span>🗺️ <b>Google Maps</b>-la direction direct-a edukkalaam</span>
+    <span>📢 <b>TNEA 2026</b> counselling notification follow pannunga</span>
+    <span>🎓 <b>After 10th</b> — Diploma / ITI padicha 2 year-la lateral entry B.E chance</span>
+    <span>💰 <b>Government college</b> fee romba kammi — merit-la seat kidaikum</span>
+    <span>🏠 <b>Hostel</b> irukkira college-a select pannunga</span>
+    <span>🗺️ <b>Google Maps</b>-la direction direct-a edukkalaam</span>
+  </div>
+</div>
+
+<!-- ========================= FEATURED 3 COLLEGES ======================== -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Featured Campus · Red · Orange · Yellow</span>
+        <h2>Moonu periya campus — moonu colour block</h2>
+        <p>Tamil Nadu-vin top 3 famous campus. Ovvoru college-kkum thani colour theme, thani UI — click pannunga, vera world!</p>
+      </div>
+      <a class="btn btn-ghost" href="colleges.html">58 college-um paaru →</a>
+    </div>
+    <div class="featured-grid" id="featuredRow"></div>
+  </div>
+</section>
+
+<!-- =========================== LEVEL 3 CARDS ============================ -->
+<section class="section" style="background:#fff;border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="section-head">
+      <div><span class="eyebrow">Start Here</span>
+        <h2>Neenga entha level? Adha select pannunga</h2>
+        <p>10th mudichavangalukku vera course, 12th mudichavangalukku vera course, PG-ku vera. Correct-a kaattum.</p></div>
+    </div>
+    <div class="grid g3">
+      <a class="card" href="courses.html?level=10th" style="text-decoration:none">
+        <div class="card-img"><img src="images/programmes/prog-diploma.jpg" alt="After 10th courses"><span class="badge-type">After 10th</span></div>
+        <div class="card-body">
+          <h3 class="card-title">10th mudichacha? 🎒</h3>
+          <p class="small">Diploma Engineering, ITI Electrician, Fitter, Agriculture Diploma, Paramedical — 3 year padichu 2 year-la B.E lateral entry-um pannalaam.</p>
+          <div class="wrapflex" style="margin-top:12px">
+            <span class="chip">Diploma</span><span class="chip">ITI</span><span class="chip">Paramedical</span>
+          </div>
+          <div class="mini" style="margin-top:12px">11 courses · 20+ colleges</div>
+        </div>
+      </a>
+      <a class="card" href="courses.html?level=12th" style="text-decoration:none">
+        <div class="card-img"><img src="images/programmes/prog-engineering.jpg" alt="After 12th courses"><span class="badge-type">After 12th</span></div>
+        <div class="card-body">
+          <h3 class="card-title">12th mudichacha? 🎓</h3>
+          <p class="small">B.E / B.Tech (TNEA), B.Sc, B.Com, BBA, BCA, B.Sc Nursing, B.Pharm, B.A. LL.B, Agriculture, Hotel Management — full list.</p>
+          <div class="wrapflex" style="margin-top:12px">
+            <span class="chip">Engineering</span><span class="chip">Arts & Science</span><span class="chip">Medical</span>
+          </div>
+          <div class="mini" style="margin-top:12px">26 courses · 50+ colleges</div>
+        </div>
+      </a>
+      <a class="card" href="courses.html?level=PG" style="text-decoration:none">
+        <div class="card-img"><img src="images/programmes/prog-pg.jpg" alt="PG courses"><span class="badge-type">PG / Research</span></div>
+        <div class="card-body">
+          <h3 class="card-title">UG mudichacha? 🧑‍🎓</h3>
+          <p class="small">M.E / M.Tech, MBA, MCA, M.Sc, M.Com, M.A, M.S.W, M.Sc Nursing, M.Pharm, LL.M, M.Phil / Ph.D — TANCET & university admission.</p>
+          <div class="wrapflex" style="margin-top:12px">
+            <span class="chip">TANCET</span><span class="chip">MBA / MCA</span><span class="chip">Research</span>
+          </div>
+          <div class="mini" style="margin-top:12px">17 courses · 40+ colleges</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= POPULAR COURSES ============================ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><span class="eyebrow">Popular Courses</span>
+        <h2>Ellarum kekkura courses — fees, eligibility, job ellame</h2>
+        <p>Course card-a click pannunga — entha college-la ithu irukku, evlo salary kidaikum ellame varum.</p></div>
+      <div class="pill-row" id="homeLevelTabs">
+        <a href="#" data-level="10th">After 10th</a>
+        <a href="#" data-level="12th" class="on">After 12th</a>
+        <a href="#" data-level="PG">PG</a>
+      </div>
+    </div>
+    <div class="grid g3" id="homeCourseGrid"></div>
+    <div class="center" style="margin-top:26px"><a class="btn btn-primary btn-lg" href="courses.html">54 course-um paarunga →</a></div>
+  </div>
+</section>
+
+<!-- ==================== NEARBY (OORU PAKKATHULA) ======================== -->
+<section class="section" style="background:linear-gradient(180deg,#fff, var(--soft))">
+  <div class="wrap">
+    <div class="section-head">
+      <div><span class="eyebrow">Nearest College Finder</span>
+        <h2>Ungal ooru pakkathula entha college irukku?</h2>
+        <p>District select pannunga (illainaa "En location" click pannunga) — pakkathula irukkira college distance-oda kaattum.</p></div>
+      <button class="btn btn-primary" id="useMyLoc">📍 En location use பண்ணு</button>
+    </div>
+    <div class="card card-pad" style="margin-bottom:22px">
+      <div class="row" style="gap:14px;flex-wrap:wrap">
+        <select class="select" id="nearDistrict" style="max-width:340px"></select>
+        <span class="mini">📍 Ithu ungal ooru-a vechu distance kanakku pannum (Google Maps direction button-um irukku)</span>
+      </div>
+    </div>
+    <div id="nearList"></div>
+  </div>
+</section>
+
+<!-- ========================== HOW IT WORKS ============================== -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><span class="eyebrow">How it works</span>
+        <h2>4 step-la ungal college ready 🎯</h2>
+        <p>Signup pannunga — ungal ooru & level podunga — match aagura college udane varum. Avlo thaan!</p></div>
+    </div>
+    <div class="grid g4">
+      <div class="card card-pad reveal">
+        <div class="stat-box" style="border:none;background:var(--soft);margin-bottom:12px"><b>1️⃣</b><span>Sign up</span></div>
+        <h3>Free account</h3><p class="small">Peru, email, phone — 30 second-la signup. Google sign-in option-um irukku.</p>
+      </div>
+      <div class="card card-pad reveal">
+        <div class="stat-box" style="border:none;background:var(--soft);margin-bottom:12px"><b>2️⃣</b><span>Ooru & Level</span></div>
+        <h3>Ungal ooru sollunga</h3><p class="small">Enthe oor / district, 10th-aa 12th-aa PG-aa — adha vechu college sort aagum.</p>
+      </div>
+      <div class="card card-pad reveal">
+        <div class="stat-box" style="border:none;background:var(--soft);margin-bottom:12px"><b>3️⃣</b><span>Match</span></div>
+        <h3>Nearest college first</h3><p class="small">Pakkathula irukkira college thaan mudhalla kaattum — distance, fee, placement-oda.</p>
+      </div>
+      <div class="card card-pad reveal">
+        <div class="stat-box" style="border:none;background:var(--soft);margin-bottom:12px"><b>4️⃣</b><span>Explore</span></div>
+        <h3>Map + Review</h3><p class="small">Google Map-la campus paarunga, direction edukkunga, student review padikkunga.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= COUNSELLING GUIDE ========================== -->
+<section class="section" style="background:#fff;border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="split" style="grid-template-columns:1fr 1.1fr">
+      <div>
+        <span class="eyebrow">Counselling Guide 2026</span>
+        <h2>TN counselling — ellathaiyum theriyanum</h2>
+        <p style="margin-top:12px">10th mudicha pinnadi <b>DoTE Polytechnic counselling</b>, 12th-kku <b>TNEA</b> (engineering),
+        <b>NEET</b> (medical), <b>TNAU</b> (agriculture), UG-kku college direct admission, PG-kku <b>TANCET</b> — inge ellame.</p>
+        <div class="grid g2" style="margin-top:18px">
+          <div class="card card-pad"><b>🎓 TNEA</b><div class="mini">B.E / B.Tech engineering counselling — Anna University nadathum. 12th cut-off vechu rank.</div></div>
+          <div class="card card-pad"><b>💉 NEET</b><div class="mini">MBBS, BDS, B.Sc Nursing, BPT, B.Pharm (govt quota) — TN Health counselling.</div></div>
+          <div class="card card-pad"><b>🛠️ DoTE</b><div class="mini">Diploma (polytechnic) counselling — 10th marks vechu. Lateral entry B.E chance.</div></div>
+          <div class="card card-pad"><b>📊 TANCET</b><div class="mini">MBA / MCA / M.E / M.Tech PG entrance — Anna University nadathum.</div></div>
+        </div>
+      </div>
+      <div>
+        <h3 style="margin-bottom:14px">Year plan — eppo enna pannanum?</h3>
+        <div class="acc on">
+          <button class="acc-head">📅 May – June: Registration <i>+</i></button>
+          <div class="acc-body">TNEA / TANCET / NEET / Polytechnic counselling website-la online registration. Application fee kattunga. Documents scan pannunga.</div>
+        </div>
+        <div class="acc">
+          <button class="acc-head">📅 June – July: Rank List & Counselling <i>+</i></button>
+          <div class="acc-body">Rank card download pannunga. Choice filling (college + course preference) — 50-100 choice fill pannalaam. Seat allotment ku pinnadi reporting.</div>
+        </div>
+        <div class="acc">
+          <button class="acc-head">📅 July – August: Seat Confirmation <i>+</i></button>
+          <div class="acc-body">Allotted college-la original certificates kuduthu fees kattunga. Admission confirm aagum. Hostel application-um idhe neram-la podunga.</div>
+        </div>
+        <div class="acc">
+          <button class="acc-head">📅 Documents Ready List <i>+</i></button>
+          <div class="acc-body">10th & 12th marksheet, Transfer Certificate (TC), Community Certificate, Nativity Certificate, Income Certificate, Aadhaar, 6 photos, Bank passbook. Ellathaiyum 3 copy xerox + scan vaingaa.</div>
+        </div>
+        <div class="disclaimer" style="margin-top:16px">⚠️ Ithu guide mattum. Official dates & rules-a corresponding department website-la verify pannunga.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ EVENTS ================================== -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><span class="eyebrow">Campus Events</span><h2>College life — events, fests, sports</h2>
+        <p>Padikkarathu mattum illa — cultural fest, technical symposium, sports meet, graduation day ellame college life-oda part.</p></div>
+      <a class="btn btn-ghost" href="events.html">Ellaa events →</a>
+    </div>
+    <div class="grid g4">
+      <article class="card reveal">
+        <div class="card-img"><img src="images/events/event-culturals.jpg" alt="College cultural festival"><span class="badge-type">Cultural</span></div>
+        <div class="card-body"><h3 class="card-title">Kalaivizha — Cultural Fest</h3><div class="mini">🎵 Dance, music, drama, food stalls</div></div>
+      </article>
+      <article class="card reveal">
+        <div class="card-img"><img src="images/events/event-techfest.jpg" alt="Technical symposium"><span class="badge-type">Technical</span></div>
+        <div class="card-body"><h3 class="card-title">Anveshan — Tech Symposium</h3><div class="mini">🤖 Hackathon, robotics, project expo</div></div>
+      </article>
+      <article class="card reveal">
+        <div class="card-img"><img src="images/events/event-sports.jpg" alt="Annual sports meet"><span class="badge-type">Sports</span></div>
+        <div class="card-body"><h3 class="card-title">Annual Sports Meet</h3><div class="mini">🏃 Athletics, kabaddi, volleyball</div></div>
+      </article>
+      <article class="card reveal">
+        <div class="card-img"><img src="images/events/event-graduation.jpg" alt="Graduation day"><span class="badge-type">Graduation</span></div>
+        <div class="card-body"><h3 class="card-title">Convocation Day</h3><div class="mini">🎓 Degree, gold medal, alumni meet</div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========================== TESTIMONIALS ============================== -->
+<section class="section" style="background:#fff;border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="section-head">
+      <div><span class="eyebrow">Student Reviews</span><h2>Padicha student-ngal enna solranga?</h2>
+        <p>Ovvoru college page-lum real student reviews — ungal review-um ezhuthalaam!</p></div>
+      <a class="btn btn-ghost" href="colleges.html">Reviews paaru →</a>
+    </div>
+    <div class="grid g3">
+      <div class="review-card reveal">
+        <div class="review-top"><span class="avatar">K</span>
+          <div><b>Karthik R.</b><div class="mini">B.E. CSE, Anna University</div></div>
+          <div class="stars" style="margin-left:auto">★★★★★</div></div>
+        <b>Tamil Nadu-in best technical campus</b>
+        <p class="small">TNEA counselling-la CEG campus kidaichuthu. Coding club, hackathon ellam active. Placement-la product company neraya varum.</p>
+      </div>
+      <div class="review-card reveal">
+        <div class="review-top"><span class="avatar">S</span>
+          <div><b>Sangeetha M.</b><div class="mini">B.E. ECE, PSG Tech</div></div>
+          <div class="stars" style="margin-left:auto">★★★★★</div></div>
+        <b>Industry connection vera level</b>
+        <p class="small">PSG group industries irukkuradhunala internship easy-a kidaikum. Lab facility top class. Attendance strict aana adhu nallathu.</p>
+      </div>
+      <div class="review-card reveal">
+        <div class="review-top"><span class="avatar">H</span>
+          <div><b>Hari Haran</b><div class="mini">B.Sc Chemistry, American College</div></div>
+          <div class="stars" style="margin-left:auto">★★★★★</div></div>
+        <b>140 varusham heritage campus</b>
+        <p class="small">Clock tower, koraiyila pathukkal — semma atmosphere. Professor-ngal romba knowledgeable. Cultural-ku neraya chance.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== CTA =================================== -->
+<section class="section">
+  <div class="wrap">
+    <div class="card" style="background:linear-gradient(120deg,#E2372B,#F97316 55%,#F4B400);border:none;padding:44px;text-align:center;color:#fff;border-radius:28px">
+      <h2 style="color:#fff">Innum confusion-a? 😅 Signup pannunga — 30 second thaan</h2>
+      <p style="color:rgba(255,255,255,.95);max-width:680px;margin:12px auto 0">
+        Ungal ooru + level kudutha udane, pakkathula irukkira college-a distance-oda, ungal course preference-oda kaattum.
+        Free — login pannaal ungal saved college list-um dashboard-la irukkum.
+      </p>
+      <div class="row" style="justify-content:center;margin-top:24px;gap:12px;flex-wrap:wrap">
+        <a class="btn btn-dark btn-lg" href="signup.html">🎓 Free Sign up</a>
+        <a class="btn btn-ghost btn-lg" href="login.html">Already account? Login</a>
+        <a class="btn btn-ghost btn-lg" href="colleges.html">Mudhalla colleges paarunga</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== FOOTER ================================ -->
+<footer id="foot-root"></footer>
+<button class="to-top" aria-label="Top">↑</button>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
