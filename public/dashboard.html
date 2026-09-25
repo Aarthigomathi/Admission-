@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard &mdash; AdmissionPortal</title>
+  <title>Dashboard &mdash; Student Portal</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%8E%93%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
@@ -16,7 +16,7 @@
     <div class="container nav-inner">
       <a class="brand" href="/">
         <span class="brand-logo">&#127891;</span>
-        <span>Admission<span class="accent">Portal</span></span>
+        <span>Student <span class="accent">Portal</span></span>
       </a>
       <nav class="nav-links">
         <a href="/">Home</a>
@@ -31,70 +31,110 @@
   </header>
 
   <main class="dash">
-    <div class="container">
+    <div class="container dash-container">
       <section class="dash-hero">
         <div>
           <h1>Welcome back, <span id="userName">Student</span> &#128075;</h1>
-          <p>Your admission journey continues from here.</p>
+          <p id="userEmail">&mdash;</p>
         </div>
-        <span class="dash-chip">2026&ndash;27 Applicant</span>
+        <span class="dash-chip" id="statusChip">Loading&hellip;</span>
       </section>
 
-      <div class="dash-grid">
-        <aside class="card profile-card">
-          <div class="avatar" id="avatar">?</div>
-          <h2 id="profileName">&mdash;</h2>
-          <div class="profile-rows">
-            <div class="profile-row">
-              <span>Email</span>
-              <strong id="profileEmail">&mdash;</strong>
-            </div>
-            <div class="profile-row">
-              <span>Phone</span>
-              <strong id="profilePhone">&mdash;</strong>
-            </div>
-            <div class="profile-row">
-              <span>Member since</span>
-              <strong id="profileJoined">&mdash;</strong>
-            </div>
-          </div>
-        </aside>
+      <!-- ================= WIZARD (before registration) ================= -->
+      <div id="wizardView" class="card wizard" hidden>
+        <ol class="stepper" id="stepper">
+          <li class="stepper-item" data-step="0">
+            <span class="stepper-dot">1</span>
+            <span class="stepper-label">Personal</span>
+          </li>
+          <li class="stepper-item" data-step="1">
+            <span class="stepper-dot">2</span>
+            <span class="stepper-label">Academic</span>
+          </li>
+          <li class="stepper-item" data-step="2">
+            <span class="stepper-dot">3</span>
+            <span class="stepper-label">Certificates</span>
+          </li>
+          <li class="stepper-item" data-step="3">
+            <span class="stepper-dot">4</span>
+            <span class="stepper-label">Register</span>
+          </li>
+        </ol>
 
-        <section class="card steps-card">
-          <h2>Your admission steps</h2>
+        <p class="wizard-tip">Complete the steps below &mdash; your progress is saved automatically.</p>
 
-          <div class="step done">
-            <div class="step-icon">&#10003;</div>
-            <div class="step-body">
-              <div class="step-title">Create your account <span class="badge badge-done">Done</span></div>
-              <p class="step-desc">Your account is ready and your details are stored securely.</p>
+        <!-- Step 1: Personal details -->
+        <section class="step-panel" id="panel-0" hidden>
+          <h2>&#128100; Personal details</h2>
+          <form id="personalForm" novalidate>
+            <div class="form-grid"></div>
+            <div class="wizard-actions">
+              <span></span>
+              <button type="submit" class="btn btn-primary" id="personalBtn">Save &amp; Continue &rarr;</button>
             </div>
-          </div>
+          </form>
+        </section>
 
-          <div class="step locked">
-            <div class="step-icon">2</div>
-            <div class="step-body">
-              <div class="step-title">Fill the application form <span class="badge badge-soon">Coming soon</span></div>
-              <p class="step-desc">Choose your program and enter your academic details.</p>
+        <!-- Step 2: Academic details -->
+        <section class="step-panel" id="panel-1" hidden>
+          <h2>&#128218; Academic details</h2>
+          <form id="academicForm" novalidate>
+            <div class="form-grid"></div>
+            <div class="wizard-actions">
+              <button type="button" class="btn btn-outline" data-back="0">&larr; Back</button>
+              <button type="submit" class="btn btn-primary" id="academicBtn">Save &amp; Continue &rarr;</button>
             </div>
-          </div>
+          </form>
+        </section>
 
-          <div class="step locked">
-            <div class="step-icon">3</div>
-            <div class="step-body">
-              <div class="step-title">Upload documents <span class="badge badge-soon">Coming soon</span></div>
-              <p class="step-desc">Marksheets, ID proof and passport photo.</p>
-            </div>
-          </div>
-
-          <div class="step locked">
-            <div class="step-icon">4</div>
-            <div class="step-body">
-              <div class="step-title">Pay the application fee <span class="badge badge-soon">Coming soon</span></div>
-              <p class="step-desc">Secure online payment &mdash; UPI, cards and net banking.</p>
-            </div>
+        <!-- Step 3: Certificates -->
+        <section class="step-panel" id="panel-2" hidden>
+          <h2>&#128194; Certificate upload</h2>
+          <p class="step-sub">Upload clear scans or photos. PDF, JPG or PNG &mdash; max 5 MB each.</p>
+          <div class="upload-grid" id="uploadGrid"></div>
+          <div class="wizard-actions">
+            <button type="button" class="btn btn-outline" data-back="1">&larr; Back</button>
+            <button type="button" class="btn btn-primary" id="certsNextBtn">Continue &rarr;</button>
           </div>
         </section>
+
+        <!-- Step 4: Review & register -->
+        <section class="step-panel" id="panel-3" hidden>
+          <h2>&#9989; Review &amp; register</h2>
+          <p class="step-sub">Please check your details carefully before registering.</p>
+          <div id="reviewSummary"></div>
+          <label class="confirm-row">
+            <input type="checkbox" id="confirmCheck" />
+            <span>I confirm that all the details and documents provided above are true and correct.</span>
+          </label>
+          <div class="form-error" id="registerError" hidden></div>
+          <div class="wizard-actions">
+            <button type="button" class="btn btn-outline" data-back="2">&larr; Back</button>
+            <button type="button" class="btn btn-primary" id="registerBtn" disabled>&#128274; Register</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= SUCCESS (after registration) ================= -->
+      <div id="successView" hidden>
+        <div class="card success-panel">
+          <div class="success-icon">&#127881;</div>
+          <h2>Registration Successful!</h2>
+          <p class="muted">Your registration number</p>
+          <div class="reg-no-row">
+            <span class="reg-no" id="regNo">&mdash;</span>
+            <button type="button" class="btn btn-ghost btn-sm" id="copyRegBtn">Copy</button>
+          </div>
+          <p class="muted" id="regDate">&mdash;</p>
+          <p class="success-note">
+            Save your registration number. The college office will contact you
+            about the next steps in the admission process.
+          </p>
+        </div>
+        <div class="card">
+          <h2 class="review-title">Your submitted details</h2>
+          <div id="finalSummary"></div>
+        </div>
       </div>
     </div>
   </main>
