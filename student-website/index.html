@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudentSite — Register & View College Details</title>
+<meta name="description" content="Student registration portal — OTP verified account, marks save pannunga, Tamil Nadu college details free-a paarunga.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231A3263'/><text x='50' y='.72em' font-size='54' text-anchor='middle' fill='%23FAB95B' font-family='Arial' font-weight='700'>S</text></svg>">
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="brand" href="index.html">
+    <span class="side-logo">S</span>
+    <div><b>StudentSite</b><small>Register → View Colleges</small></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html" class="on">Home</a>
+    <a href="colleges.html">Colleges</a>
+    <a href="register.html">Register</a>
+  </div>
+  <div class="nav-right" id="navRight"></div>
+</nav>
+
+<header class="hero">
+  <div class="hero-in">
+    <h1>Student registration — <em>2 nimisham</em>, aprom college details <em>free</em>.</h1>
+    <p>Email &amp; mobile OTP-verify panna account create pannunga. Unga 10th, 12th, Diploma, UG, PG marks-ah save pannunga — aprom Tamil Nadu colleges-oda fees, placement, hostel, courses ellathaiyum paarunga.</p>
+    <div class="cta">
+      <a class="btn btn-gold btn-lg" href="register.html"><span data-ic="cap"></span>Student Registration — Start</a>
+      <a class="btn btn-ghost btn-lg" href="colleges.html"><span data-ic="build"></span>View College Details</a>
+    </div>
+    <div class="hero-stats">
+      <div><b>10</b><span>Demo colleges</span></div>
+      <div><b>OTP</b><span>Email + mobile verify</span></div>
+      <div><b>10/12/Dip/UG/PG</b><span>Marks save</span></div>
+      <div><b>100% Free</b><span>Demo project</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <h2>Epdi work aagum?</h2>
+  <p class="sec-sub">3 simple steps — register, verify, view.</p>
+  <div class="g3">
+    <div class="feat"><span class="fi" data-ic="shield"></span><b>1. OTP Verified Registration</b>
+      <p>Unga email &amp; mobile-ku OTP anuppuvom (demo-la screen-la kaatum). Verify aana green tick ✅ — account safe.</p></div>
+    <div class="feat"><span class="fi" data-ic="award"></span><b>2. Marks Save Pannunga</b>
+      <p>10th &amp; 12th percentage, Diploma, UG/PG CGPA — completed illainaa <b>expected</b> marks-um podalaam.</p></div>
+    <div class="feat"><span class="fi" data-ic="build"></span><b>3. College Details Paarunga</b>
+      <p>Registration aprom — fees, placement %, hostel, courses, rating ella college details-um free.</p></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <h2>Sample colleges neenga paakap porathu</h2>
+  <p class="sec-sub">Register panna udane intha list full details-oda theriyum.</p>
+  <div class="clg-grid" id="homeClg"></div>
+</section>
+
+<footer class="foot">StudentSite · <b>Demo student project</b> · Data browser-la mattum save aagum · Real admission-ku official counselling (TNEA / DoTE) use pannunga</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/colleges.js"></script>
+<script>
+  /* home page: icons + nav + 3 sample colleges (details hidden till register) */
+  document.querySelectorAll("[data-ic]").forEach(el => el.insertAdjacentHTML("afterbegin", SW.icon(el.dataset.ic)));
+  SW_NAV("home");
+  document.getElementById("homeClg").innerHTML = COLLEGES.slice(0, 3).map(c => clgCard(c, true)).join("");
+  bindClgCards(true);
+</script>
+</body>
+</html>

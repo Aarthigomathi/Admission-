@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>College Details — StudentSite</title>
+<meta name="description" content="Tamil Nadu college details — fees, placement, hostel, courses, rating. Registered students-ku full details free.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231A3263'/><text x='50' y='.72em' font-size='54' text-anchor='middle' fill='%23FAB95B' font-family='Arial' font-weight='700'>S</text></svg>">
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="brand" href="index.html">
+    <span class="side-logo">S</span>
+    <div><b>StudentSite</b><small>Register → View Colleges</small></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="colleges.html" class="on">Colleges</a>
+    <a href="register.html">Register</a>
+  </div>
+  <div class="nav-right" id="navRight"></div>
+</nav>
+
+<section class="section">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
+    <div>
+      <h2>College Details</h2>
+      <p class="sec-sub" id="clgSub">Fees · placement · hostel · courses · rating — registered students-ku full details.</p>
+    </div>
+    <input class="input" id="clgSearch" placeholder="Search college / district…" style="max-width:270px">
+  </div>
+
+  <div id="regBanner"></div>
+  <div class="clg-grid" id="clgGrid" style="margin-top:18px"></div>
+</section>
+
+<footer class="foot">StudentSite · <b>Demo data</b> — fees &amp; placement are illustrative samples</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/colleges.js"></script>
+<script>
+  SW_NAV("colleges");
+  CLG_PAGE();
+</script>
+</body>
+</html>
