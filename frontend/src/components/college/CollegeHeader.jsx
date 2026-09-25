@@ -23,7 +23,7 @@ export default function CollegeHeader({ college, homePage, currentPage, onNaviga
   const navigation = [
     { label: 'Home', id: 'home' },
     {
-      label: 'About', id: 'about', isAbout: true,
+      label: 'About', id: 'about', isAbout: true, page: 'about-profile',
       children: [
         { label: 'Profile', page: 'about-profile' },
         { label: 'Vision And Mission', page: 'about-vision' },
