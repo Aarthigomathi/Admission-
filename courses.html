@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ta-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Courses after 10th, 12th & PG — Admission+ | Tamil Nadu</title>
+<meta name="description" content="54 courses — 10th mudicha diploma/ITI, 12th mudicha degree, UG mudicha PG. Eligibility, fees, salary, entha college-la irukku ellame oru idathula.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body data-page="courses">
+
+<div class="loader"><span class="brand-mark">Aa</span></div>
+<div id="nav-root"></div>
+
+<!-- ============================== PAGE HEAD ============================== -->
+<section style="background:linear-gradient(120deg,#171A21,var(--c2) 60%,var(--c1));color:#fff;padding:44px 0">
+  <div class="wrap">
+    <div class="crumb" style="color:rgba(255,255,255,.85);font-size:.82rem">
+      <a href="index.html">Home</a> › <span>Courses</span>
+    </div>
+    <h1 style="color:#fff;margin-top:12px">Course-a select pannunga 📘</h1>
+    <p style="color:rgba(255,255,255,.94);max-width:780px;margin-top:10px">
+      10th mudichavangalukku diploma & ITI · 12th mudichavangalukku degree & professional course ·
+      UG mudichavangalukku MBA, MCA, M.E, M.Sc. Ovvoru course-kkum eligibility, fees, job opportunity,
+      entha college-la irukku ellame irukku.
+    </p>
+  </div>
+</section>
+
+<div class="wrap section" style="padding-top:26px">
+
+  <!-- ============================ LEVEL TABS ============================ -->
+  <div class="pill-row" id="lvlTabs" style="margin-bottom:18px">
+    <a href="#" data-level="" class="on">Ellaa course-um (54)</a>
+    <a href="#" data-level="10th">🎒 After 10th — Diploma / ITI</a>
+    <a href="#" data-level="12th">🎓 After 12th — Degree / Professional</a>
+    <a href="#" data-level="PG">🧑‍🎓 After UG — PG / Research</a>
+  </div>
+
+  <!-- ============================= TOOLS ROW ============================ -->
+  <div class="grid g2" style="margin-bottom:22px">
+    <div class="card card-pad">
+      <h3>🔎 Course thedu</h3>
+      <div class="input-icon" style="margin-top:10px">
+        <span class="ico">🔎</span>
+        <input class="input" id="cQuery" placeholder="eg: Nursing, Data Science, Mechanical, Commerce">
+      </div>
+      <div class="mini" style="margin-top:8px">Ithu <b><span id="cCount">0</span></b> course kaattuthu</div>
+    </div>
+
+    <div class="card card-pad" style="background:var(--soft);border:none">
+      <h3>🎯 Marks podunga — eligible course kaattum</h3>
+      <div class="row" style="gap:10px;margin-top:10px;flex-wrap:wrap">
+        <input class="input" id="eligInput" type="number" min="1" max="100" placeholder="Ungal marks % (eg: 65)" style="max-width:220px">
+        <button class="btn btn-primary" id="eligBtn">Check pannu ✅</button>
+      </div>
+      <div id="eligOut"></div>
+      <div class="mini" style="margin-top:8px">12th cut-off / total percentage-a podunga — minimum eligibility irukkira course-ngal mattum kaattum.</div>
+    </div>
+  </div>
+
+  <!-- ============================ COURSE GRID =========================== -->
+  <div class="grid g3" id="courseGrid"></div>
+
+  <!-- ========================= COURSE PATH GUIDE ======================== -->
+  <section style="margin-top:44px">
+    <div class="section-head"><div><span class="eyebrow">Career Path</span>
+      <h2>Padikkarathu mudinja pinnadi enna panalaam?</h2>
+      <p>Ovvoru level-um adutha level-ku vazhi kaattuthu — ithu ungal roadmap.</p></div></div>
+    <div class="grid g3">
+      <div class="card card-pad">
+        <span class="chip">After 10th</span>
+        <h3 style="margin-top:12px">Diploma / ITI → Job illa B.E</h3>
+        <ul class="timeline" style="margin-top:14px">
+          <li><span class="yr">3 YEARS</span><b>Diploma / ITI mudinga</b><span class="mini">Practical skill + apprenticeship</span></li>
+          <li><span class="yr">OR</span><b>Lateral entry B.E 2nd year</b><span class="mini">Diploma mudicha pinnadi direct-a engineering 2nd year-la join pannalaam</span></li>
+          <li><span class="yr">JOB</span><b>Technician / Supervisor</b><span class="mini">₹1.8L – ₹3.6L start</span></li>
+        </ul>
+      </div>
+      <div class="card card-pad">
+        <span class="chip">After 12th</span>
+        <h3 style="margin-top:12px">Degree → PG illa Job</h3>
+        <ul class="timeline" style="margin-top:14px">
+          <li><span class="yr">3-4 YEARS</span><b>B.E / B.Sc / B.Com / BBA / Nursing</b><span class="mini">TNEA, NEET, direct admission</span></li>
+          <li><span class="yr">PLACEMENT</span><b>Campus placement</b><span class="mini">₹2.4L – ₹8L package</span></li>
+          <li><span class="yr">OR</span><b>PG (MBA / M.E / M.Sc)</b><span class="mini">TANCET / university entrance</span></li>
+        </ul>
+      </div>
+      <div class="card card-pad">
+        <span class="chip">After UG</span>
+        <h3 style="margin-top:12px">PG → Specialist / Research</h3>
+        <ul class="timeline" style="margin-top:14px">
+          <li><span class="yr">2 YEARS</span><b>MBA / MCA / M.E / M.Sc</b><span class="mini">TANCET score venum</span></li>
+          <li><span class="yr">JOB</span><b>Specialist role</b><span class="mini">₹4L – ₹12L (MBA-ku)</span></li>
+          <li><span class="yr">RESEARCH</span><b>M.Phil / Ph.D / NET</b><span class="mini">Assistant Professor, scientist</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer id="foot-root"></footer>
+<button class="to-top" aria-label="Top">↑</button>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

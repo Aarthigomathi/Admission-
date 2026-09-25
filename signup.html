@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ta-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign up — Admission+ | Tamil Nadu College Guide</title>
+<meta name="description" content="Free sign up pannunga. Ungal ooru & level (10th / 12th / PG) kudutha udane pakkathula irukkira best college-a kaattum.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body data-page="signup">
+
+<div class="auth">
+  <!-- ------------------------- LEFT SIDE (IMAGE) ------------------------- -->
+  <aside class="auth-aside">
+    <div class="auth-aside-in">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">Aa</span>
+        <span>Admission+<small>Tamil Nadu College Guide</small></span>
+      </a>
+      <h1>Ungal college life<br>inge-la irundhu thuvangattum! 🎓</h1>
+      <p>Free account create pannunga. Ungal ooru, level, interest sollunga —
+        pakkathula irukkira best college-a udane kaattum.</p>
+      <ul class="auth-points">
+        <li><span class="tick">✓</span><span><b>Nearest college first</b> — ungal ooru pakkathula irukkiradhu mudhalla varum</span></li>
+        <li><span class="tick">✓</span><span><b>Level-wise courses</b> — 10th, 12th, PG-ku thani thani course list</span></li>
+        <li><span class="tick">✓</span><span><b>Fees, placement, hostel</b> — ellame clear-a, comparison table-oda</span></li>
+        <li><span class="tick">✓</span><span><b>Google Maps</b> — campus location + direction</span></li>
+        <li><span class="tick">✓</span><span><b>Student reviews</b> — padicha student-ngal sonna unmaiaana experience</span></li>
+      </ul>
+      <div class="auth-college-strip">
+        <img src="images/colleges/campus-red.jpg" alt="Red campus" title="Red Campus">
+        <img src="images/colleges/campus-orange.jpg" alt="Orange campus" title="Orange Campus">
+        <img src="images/colleges/campus-yellow.jpg" alt="Yellow campus" title="Yellow Campus">
+      </div>
+    </div>
+  </aside>
+
+  <!-- ------------------------ RIGHT SIDE (FORM) ------------------------- -->
+  <main class="auth-main">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <a href="signup.html" class="on">Sign up</a>
+        <a href="login.html">Sign in</a>
+      </div>
+
+      <span class="step-no" id="suStepTxt">Step 1 / 3 — Account</span>
+      <div class="step-dots" id="suDots" style="margin-top:12px"><i class="on"></i><i></i><i></i></div>
+
+      <form id="signupForm" novalidate>
+        <!-- ============================ STEP 1 ============================ -->
+        <div id="suStep1">
+          <h2>Vanakkam! Mudhalla account 🎉</h2>
+          <p class="small muted" style="margin:6px 0 20px">30 second-la mudinjidum. Oru paisa-um illa — 100% free.</p>
+
+          <div class="field">
+            <label>Ungal Peru <span>*</span></label>
+            <input class="input" id="suName" placeholder="eg: Karthik Raja" autocomplete="name">
+            <div class="err">Sariyaana peru podunga (3 letter-ku mela)</div>
+          </div>
+          <div class="field">
+            <label>Email <span>*</span></label>
+            <input class="input" id="suEmail" type="email" placeholder="karthik@gmail.com" autocomplete="email">
+            <div class="err">Sariyaana email podunga (eg: name@gmail.com)</div>
+          </div>
+          <div class="field">
+            <label>Mobile Number <span>*</span></label>
+            <input class="input" id="suPhone" placeholder="98765 43210" inputmode="tel">
+            <div class="hint">Counselling reminder-ku use pannalaam (demo-la save aagum mattum).</div>
+            <div class="err">10 digit mobile number podunga</div>
+          </div>
+          <div class="grid g2" style="gap:14px">
+            <div class="field">
+              <label>Password <span>*</span></label>
+              <div class="input-icon">
+                <input class="input" id="suPass" type="password" placeholder="min 6 letter" autocomplete="new-password">
+                <button type="button" class="pw-toggle" data-pw="suPass">Show</button>
+              </div>
+              <div class="err">Kுறைந்தது 6 letter venum</div>
+            </div>
+            <div class="field">
+              <label>Password Confirm <span>*</span></label>
+              <div class="input-icon">
+                <input class="input" id="suPass2" type="password" placeholder="meendum type pannunga">
+                <button type="button" class="pw-toggle" data-pw="suPass2">Show</button>
+              </div>
+              <div class="err">Password rendum same-a illa</div>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-lg btn-block" type="button" id="suNext">Adutha step →</button>
+          <div class="auth-sep">ILLAINAA</div>
+          <button class="btn btn-ghost btn-block" type="button" id="googleBtn">🔵 Google-a vechu sign up (demo)</button>
+          <p class="small muted center" style="margin-top:16px">
+            Sign up pannaal neenga <b>Terms</b> & <b>Privacy</b>-ku sammathikkireenga. (Idhu oru student project demo.)
+          </p>
+        </div>
+
+        <!-- ============================ STEP 2 ============================ -->
+        <div id="suStep2" class="hidden">
+          <h2>Ungal ooru & goal 📍</h2>
+          <p class="small muted" style="margin:6px 0 20px">Ithu thaan mukkiyam — ithu vechu thaan pakkathula irukkira college-a kaattuvom.</p>
+
+          <div class="field">
+            <label>Neenga entha level? <span>*</span></label>
+            <select class="select" id="suLevel">
+              <option value="">Select pannunga…</option>
+              <option value="10th">10th mudinjirukku (Diploma / ITI / Paramedical)</option>
+              <option value="12th">12th mudinjirukku (Degree / Engineering / Nursing)</option>
+              <option value="PG">UG mudinjirukku (MBA / MCA / M.E / M.Sc)</option>
+            </select>
+            <div class="hint" id="suLevelHint"></div>
+          </div>
+
+          <div class="grid g2" style="gap:14px">
+            <div class="field">
+              <label>Ooru / District <span>*</span></label>
+              <select class="select" id="suDistrict"></select>
+            </div>
+            <div class="field">
+              <label>Area / Village / Town</label>
+              <input class="input" id="suArea" placeholder="eg: Peelamedu, Sulur, Karaikudi">
+              <div class="hint">Pakkathula irukkira college-a innum accurate-a theda</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Enna maathiri college venum? (palathai select pannalaam)</label>
+            <div class="wrapflex" id="prefChips"></div>
+            <div class="hint">Ithu ungal dashboard recommendation-a set pannum</div>
+          </div>
+
+          <div class="row" style="gap:10px;margin-top:8px">
+            <button class="btn btn-ghost btn-lg" type="button" id="suBack">← Pinnaadi</button>
+            <button class="btn btn-primary btn-lg" type="submit" style="flex:1">Sign up முடிக்க 🎓</button>
+          </div>
+        </div>
+
+        <!-- ============================ STEP 3 ============================ -->
+        <div id="suStep3" class="hidden">
+          <div class="center" style="margin-bottom:22px">
+            <div style="font-size:3rem">🎉</div>
+            <h2>Sign up success!</h2>
+            <p class="small muted">Ungal ooru & level-ku match aagura top 3 college:</p>
+          </div>
+          <div class="grid" style="gap:12px" id="suMatch"></div>
+          <h3 style="margin:24px 0 12px">Ungal level-la irukkira courses</h3>
+          <div class="wrapflex" id="suCourses"></div>
+          <div class="row" style="gap:10px;margin-top:24px;flex-wrap:wrap">
+            <a class="btn btn-primary btn-lg" href="dashboard.html">🎯 My Dashboard →</a>
+            <a class="btn btn-ghost btn-lg" href="colleges.html?sort=nearby">Nearest college paaru</a>
+          </div>
+          <div class="disclaimer" style="margin-top:20px">
+            ℹ️ Ungal details browser-la mattum (localStorage) save aagum — server-ku poagala. Idhu demo student project.
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<button class="to-top" aria-label="Top">↑</button>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

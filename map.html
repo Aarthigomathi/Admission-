@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ta-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>College Map — Nearest Colleges with Google Maps | Admission+</title>
+<meta name="description" content="Ungal ooru select pannunga — pakkathula irukkira college-a distance-oda, Google Map-la paarunga. Direction direct-a edukkalaam.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body data-page="map">
+
+<div class="loader"><span class="brand-mark">Aa</span></div>
+<div id="nav-root"></div>
+
+<section style="background:linear-gradient(120deg,#1B6FD1,#0B3E7F 60%,#4F46E5);color:#fff;padding:42px 0">
+  <div class="wrap">
+    <div class="crumb" style="color:rgba(255,255,255,.85);font-size:.82rem"><a href="index.html">Home</a> › <span>Map</span></div>
+    <h1 style="color:#fff;margin-top:12px">Nearest college — Google Map-oda 🗺️</h1>
+    <p style="color:rgba(255,255,255,.94);max-width:780px;margin-top:10px">
+      Ungal ooru / district select pannunga — pakkathula irukkira college-a distance (km) kanakku panni order panni kaattum.
+      College click pannaal map antha college-ku move aagum. <b>Direction</b> button-ல Google Maps-la route varum!
+    </p>
+  </div>
+</section>
+
+<div class="wrap section">
+  <!-- ============================== CONTROLS ============================ -->
+  <div class="card card-pad" style="margin-bottom:20px">
+    <div class="row" style="gap:12px;flex-wrap:wrap">
+      <select class="select" id="mapDistrict" style="max-width:280px"></select>
+      <select class="select" id="mapKind" style="max-width:280px"></select>
+      <button class="btn btn-primary" id="mapGeo">📍 En location-a use pannu</button>
+      <span class="mini">📍 Distance = straight-line (haversine) kanakku. Road distance konjam koodudhal aagum.</span>
+    </div>
+  </div>
+
+  <!-- ============================== MAP + LIST ========================== -->
+  <div class="map-layout">
+    <div>
+      <div class="map-shell" id="mapShell">
+        <div style="padding:60px;text-align:center" class="muted">Map load aaguthu…</div>
+      </div>
+      <div class="map-shell" style="margin-top:14px">
+        <div class="map-info" id="mapInfo"></div>
+      </div>
+
+      <div class="grid g3" style="margin-top:18px">
+        <div class="card card-pad center"><b style="font-size:1.4rem;color:var(--c1)">58</b><div class="mini">COLLEGES IN TN</div></div>
+        <div class="card card-pad center"><b style="font-size:1.4rem;color:var(--c1)">38</b><div class="mini">DISTRICTS</div></div>
+        <div class="card card-pad center"><b style="font-size:1.4rem;color:var(--c1)">100%</b><div class="mini">MAP CONNECTED</div></div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="card card-pad" style="margin-bottom:14px">
+        <div class="row-between">
+          <b>Pakkathula irukkira colleges</b>
+          <span class="chip">Nearest first</span>
+        </div>
+        <div class="mini" style="margin-top:6px">Oru college-a click pannunga — map antha idathuku move aagum</div>
+      </div>
+      <div class="map-side" id="nearList"></div>
+    </aside>
+  </div>
+
+  <!-- ============================ HOW TO USE ============================ -->
+  <section style="margin-top:44px">
+    <div class="section-head"><div><span class="eyebrow">Help</span>
+      <h2>Map-a eppadi use pannanum?</h2></div></div>
+    <div class="grid g3">
+      <div class="card card-pad"><b>1️⃣ Ooru select</b><p class="small">District dropdown-la ungal ooru (illainaa pakkathu periya ooru) select pannunga.</p></div>
+      <div class="card card-pad"><b>2️⃣ College click</b><p class="small">Right side list-la irundhu college click pannunga — map antha campus-ku move aagum.</p></div>
+      <div class="card card-pad"><b>3️⃣ Direction</b><p class="small">🧭 Direction button click pannaal Google Maps app/website-la route varum — bus/car route paarunga.</p></div>
+    </div>
+  </section>
+</div>
+
+<footer id="foot-root"></footer>
+<button class="to-top" aria-label="Top">↑</button>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
