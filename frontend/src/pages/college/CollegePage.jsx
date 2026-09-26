@@ -490,6 +490,51 @@ function CustomCollegePage({ college, customData }) {
         <svg className="absolute bottom-0 left-0 w-full h-[64px] block" viewBox="0 0 1440 64" preserveAspectRatio="none"><path d="M0,64 L0,8 Q720,76 1440,8 L1440,64 Z" fill="#ffffff" /></svg>
       </section>
 
+      {/* ACADEMICS - DEPARTMENTS WITH HOD (KCE layout) - Academics menu scrolls here */}
+      {departments.length > 0 && (
+        <section id="departments" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-white border-t border-[#E8E2DB]">
+          <div className="mx-auto max-w-[1600px] px-6 lg:px-12 py-14 sm:py-20">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h2 className="text-[30px] sm:text-[38px] font-extrabold uppercase tracking-tight text-[#1A3263]">Academics</h2>
+                <p className="mt-2.5 text-[13.5px] leading-[1.8] text-[#547792] max-w-[660px]">Every department is guided by an experienced Head of the Department. Tap a HOD photo to read the full profile, or open a department to see its programmes, labs and faculty.</p>
+              </div>
+              <div className="text-[12px] font-extrabold uppercase tracking-wide text-[#547792]">{departments.length} Departments</div>
+            </div>
+
+            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {departments.map(dept => {
+                const photo = dept.hodImage || dept.image || ''
+                return (
+                  <div key={dept.id} className="group flex flex-col rounded-[22px] bg-white border border-[#E8E2DB] overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all">
+                    <button type="button" onClick={() => setHodProfile(dept)} className="relative block h-[250px] w-full overflow-hidden bg-[#E8E2DB] text-left" title={'View ' + (dept.hod || 'HOD') + ' profile'}>
+                      {photo ? (
+                        <img src={photo} alt={dept.hod || 'HOD'} className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]" />
+                      ) : (
+                        <div className="h-full w-full grid place-items-center bg-gradient-to-br from-[#E8E2DB] to-[#547792] text-[#1A3263] font-extrabold text-[46px]">{(dept.hod || dept.name || 'H')[0]}</div>
+                      )}
+                      <span className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#1A3263]/90 to-transparent" />
+                      <span className="absolute bottom-3 left-4 inline-flex items-center gap-1.5 rounded-full bg-[#FAB95B] px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide text-[#1A3263]">View HOD Profile</span>
+                    </button>
+                    <div className="flex flex-1 flex-col p-5">
+                      <h3 className="font-extrabold text-[15px] leading-snug text-[#1A3263]">{dept.name}</h3>
+                      <div className="mt-3 space-y-1">
+                        <div className="text-[13px] font-bold text-[#1A3263]">{dept.hod || 'HOD'}</div>
+                        <div className="text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-[#547792]">{dept.hodDesignation || 'Head of Department'}</div>
+                        {dept.hodQualification ? <div className="text-[11.5px] text-[#547792]">Qualification: {dept.hodQualification}</div> : null}
+                        {dept.hodExperience ? <div className="text-[11.5px] text-[#547792]">Experience: {dept.hodExperience}</div> : null}
+                        {dept.facultyCount ? <div className="text-[11.5px] text-[#547792]">{dept.facultyCount} Faculty members</div> : null}
+                      </div>
+                      <button type="button" onClick={() => navigateSite('dept-' + dept.id)} className="mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border-2 border-[#1A3263] text-[12px] font-extrabold text-[#1A3263] transition-colors hover:bg-[#1A3263] hover:text-[#FAB95B]">View Department &rarr;</button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ALUMNI SUCCESS STORIES - KCE overlapping carousel */}
       <section id="alumni" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-[#F4F2EE] overflow-hidden">
         <div className="mx-auto max-w-[1600px] px-6 lg:px-12 pt-14 sm:pt-16">
@@ -762,7 +807,10 @@ function CustomCollegePage({ college, customData }) {
                 </div>
               )}
 
-              <button onClick={() => setHodProfile(null)} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] hover:bg-[#1A3263]/90 transition-colors">Close Profile</button>
+              <div className="mt-2 grid sm:grid-cols-2 gap-3">
+                <button onClick={() => { const id = hodProfile.id; setHodProfile(null); navigateSite('dept-' + id) }} className="h-12 rounded-full border-2 border-[#1A3263] text-[#1A3263] font-bold text-[14px] hover:bg-[#1A3263] hover:text-[#FAB95B] transition-colors">View Department &rarr;</button>
+                <button onClick={() => setHodProfile(null)} className="h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] hover:bg-[#1A3263]/90 transition-colors">Close Profile</button>
+              </div>
             </div>
           </div>
         </div>

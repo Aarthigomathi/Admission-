@@ -8,7 +8,7 @@ import {
  LayoutDashboard, Palette, Building2, GraduationCap, Users, Megaphone, Calendar, Image as ImageIcon, Trophy, Landmark, ShieldCheck, PhoneCall,
  FileText, Phone, Settings, Eye, Save, Upload, Plus, Trash2, Edit3, CheckCircle2, BarChart3, ExternalLink,
  Library, Home, Award, Beaker, Microscope, Shield, MapPin, Briefcase, BookOpen, Heart, Camera, Bell, Contact,
- Layers, FileCheck, Globe, UserCheck
+ Layers, FileCheck, Globe, UserCheck, Pencil
 } from 'lucide-react'
 
 export default function AdminDashboard() {
@@ -30,6 +30,7 @@ export default function AdminDashboard() {
 
  // Forms
  const [deptForm, setDeptForm] = useState({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', hodDetailedBio: '', hodBio: '', hodResearch: '', hodPublications: '', hodAwards: '', facultyCount: '', description: '', image: '' })
+ const [editingDeptId, setEditingDeptId] = useState(null)
  const [courseForm, setCourseForm] = useState({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '' })
  const [facilityForm, setFacilityForm] = useState({ name: '', description: '', icon: '', image: '' })
  const [placementForm, setPlacementForm] = useState({ year: '', company: '', package: '', students: '', department: '', logo: '', description: '' })
@@ -205,10 +206,48 @@ export default function AdminDashboard() {
   setCustomData(custom)
  }
 
+ const startEditDepartment = (dept) => {
+  setEditingDeptId(dept.id)
+  setDeptForm({ name: dept.name || '', hod: dept.hod || '', hodDesignation: dept.hodDesignation || 'Head of Department', hodQualification: dept.hodQualification || '', hodExperience: dept.hodExperience || '', hodEmail: dept.hodEmail || '', hodPhone: dept.hodPhone || '', hodImage: dept.hodImage || '', hodDetailedBio: dept.hodDetailedBio || '', hodBio: dept.hodBio || '', hodResearch: dept.hodResearch || '', hodPublications: dept.hodPublications || '', hodAwards: dept.hodAwards || '', facultyCount: dept.facultyCount || '', description: dept.description || '', image: dept.image || '' })
+  const el = document.getElementById('dept-form-top')
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+ }
+
+ const cancelEditDepartment = () => {
+  setEditingDeptId(null)
+  setDeptForm({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', hodDetailedBio: '', hodBio: '', hodResearch: '', hodPublications: '', hodAwards: '', facultyCount: '', description: '', image: '' })
+ }
+
+ // HOD photo ah oru department-kum thani-a update panna (Academics section la card-la photo varum)
+ const handleDeptHodImageReplace = (id, e) => {
+  const file = e.target.files && e.target.files[0]
+  e.target.value = ''
+  if (!file) return
+  const list = customData.departments || []
+  const target = list.find(d => d.id === id)
+  const reader = new FileReader()
+  reader.onload = (ev) => {
+    const updated = list.map(d => d.id === id ? { ...d, hodImage: ev.target.result } : d)
+    saveSafe('departments', updated)
+    setCustomData({ ...customData, departments: updated })
+    alert(`HOD photo updated for ${(target && target.name) || 'department'} - website Academics section la kaanum`)
+  }
+  reader.readAsDataURL(file)
+ }
+
  const handleAddDepartment = () => {
   if (!deptForm.name) return alert("Department name required")
   if (!deptForm.hod) return alert("HOD name required")
   const list = customData.departments || []
+  if (editingDeptId) {
+    const updated = list.map(d => d.id === editingDeptId ? { ...d, ...deptForm } : d)
+    saveSafe('departments', updated)
+    setCustomData({ ...customData, departments: updated })
+    setEditingDeptId(null)
+    setDeptForm({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', hodDetailedBio: '', hodBio: '', hodResearch: '', hodPublications: '', hodAwards: '', facultyCount: '', description: '', image: '' })
+    alert(`Department ${deptForm.name} updated - Academics section la HOD photo kaanum`)
+    return
+  }
   const newDept = { id: Date.now(), ...deptForm, createdAt: new Date().toISOString() }
   const updated = [...list, newDept]
   saveSafe('departments', updated)
@@ -1066,9 +1105,15 @@ export default function AdminDashboard() {
         <h3 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Building2 className="text-[#FAB95B]" /> Departments with HOD</h3>
         <p className="text-[12px] text-[#547792] mt-2">Add departments with HOD information including image and biography</p>
 
-        <div className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm">
-         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> Add New Department</h4>
-         <div className="mt-2 text-[12px] text-[#547792]">Add department and HOD details - all fields support long text</div>
+        <div id="dept-form-top" className="mt-8 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm scroll-mt-[120px]">
+         <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><Plus size={18} /> {editingDeptId ? 'Edit Department & HOD' : 'Add New Department'}</h4>
+         <div className="mt-2 text-[12px] text-[#547792]">Department + HOD details - HOD photo kitta department website la <b>Academics</b> section la card-aa kaanum</div>
+         {editingDeptId ? (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[14px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/40 px-4 py-3">
+           <div className="text-[12px] font-bold text-[#1A3263]">Editing: {deptForm.name || 'Department'} - values maathitu Update press pannunga</div>
+           <button onClick={cancelEditDepartment} className="h-9 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[12px] font-bold text-[#1A3263]">Cancel Edit</button>
+          </div>
+         ) : null}
          
          <div className="mt-8 space-y-6">
           {/* Department Info */}
@@ -1170,7 +1215,7 @@ export default function AdminDashboard() {
           </div>
          </div>
 
-         <button onClick={handleAddDepartment} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2 hover:bg-[#1A3263]/90 shadow-lg"><Plus size={18} /> Add Department</button>
+         <button onClick={handleAddDepartment} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2 hover:bg-[#1A3263]/90 shadow-lg"><Plus size={18} /> {editingDeptId ? 'Update Department' : 'Add Department'}</button>
         </div>
 
         <div className="mt-8">
@@ -1184,9 +1229,16 @@ export default function AdminDashboard() {
           <div className="mt-4 space-y-4">
            {allCustomData.departments.map(dept=>(
             <div key={dept.id} className="rounded-[20px] bg-[#1A3263] border-2 border-[#1A3263] p-5">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <div className="font-bold text-white text-[14px]">{dept.name} <span className="text-[#FAB95B] text-[11px]">• {dept.facultyCount} Faculty</span></div>
-                <button onClick={()=>handleDelete('departments', dept.id)} className="h-8 w-8 rounded-full bg-white/10 border border-white/20 grid place-items-center text-white hover:bg-red-500"><Trash2 size={12} /></button>
+                <div className="flex items-center gap-2">
+                  <label className="h-8 px-3 inline-flex items-center gap-1.5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold cursor-pointer hover:bg-[#FAB95B]/90" title="HOD photo upload pannunga - website Academics section la card-la photo varum">
+                    <Upload size={12} /> {dept.hodImage ? 'Change HOD Photo' : 'Add HOD Photo'}
+                    <input type="file" accept="image/*" className="hidden" onChange={e=>handleDeptHodImageReplace(dept.id, e)} />
+                  </label>
+                  <button onClick={()=>startEditDepartment(dept)} className="h-8 px-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 text-[11px] font-bold text-white hover:bg-white/20"><Pencil size={12} /> Edit</button>
+                  <button onClick={()=>handleDelete('departments', dept.id)} className="h-8 w-8 rounded-full bg-white/10 border border-white/20 grid place-items-center text-white hover:bg-red-500"><Trash2 size={12} /></button>
+                </div>
               </div>
               <div className="grid md:grid-cols-[100px_1fr] gap-4">
                 {dept.hodImage ? <img src={dept.hodImage} className="h-[100px] w-[100px] rounded-[12px] object-cover border-2 border-[#FAB95B]/30 bg-white" alt={dept.hod} /> : <div className="h-[100px] w-[100px] rounded-[12px] bg-white/10 border border-white/20 grid place-items-center text-white font-bold text-[24px]">{dept.hod ? dept.hod[0] : dept.name[0]}</div>}
