@@ -85,6 +85,27 @@ const renderDeptAdmin = () => {
   return container
 }
 
+// generic value setter that works for both <input> and <textarea>
+const setField = (el, v) => {
+  const proto = el.tagName === 'TEXTAREA' ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype
+  const setter = Object.getOwnPropertyDescriptor(proto, 'value').set
+  act(() => {
+    setter.call(el, v)
+    el.dispatchEvent(new Event('input', { bubbles: true }))
+  })
+}
+// find a form field by its <Label> text (Label renders the text, wrapper holds the field)
+const fieldByLabel = (c, labelText) => {
+  // the <Label> itself has no form field inside it - the wrapper div around a field
+  // has the same textContent when the field is still empty, so exclude those
+  const lbl = [...c.querySelectorAll('div')].find(d => d.textContent.trim() === labelText && !d.querySelector('input,textarea,select'))
+  if (!lbl) throw new Error('label not found: ' + labelText)
+  const box = lbl.parentElement
+  const el = [...box.querySelectorAll('textarea,input,select')].find(e => e.type !== 'file')
+  if (!el) throw new Error('field not found for: ' + labelText)
+  return el
+}
+
 describe('Academics - only the college own departments', () => {
   it('never shows template/default departments', () => {
     // college has not added any department of its own
@@ -180,6 +201,50 @@ describe('Admin - department manager in Department Pages', () => {
     expect(stored.departments).toEqual([])
     expect(Object.keys(stored.deptPages || {})).toEqual([])
     expect(c.textContent).toContain('No departments added yet')
+  })
+
+  it('adds a department AND its full page content in one form', async () => {
+    seed({ departments: [] })
+    const c = renderDeptAdmin()
+    expect(c.textContent).toContain('No departments added yet')
+
+    const addBtn = [...c.querySelectorAll('button')].find(b => b.textContent.trim() === 'Add Department')
+    act(() => { addBtn.click() })
+    // the add form now contains the department fields AND the page content fields
+    expect(c.textContent).toContain('Add New Department - full KCE page ore form-la')
+    expect(c.textContent).toContain('Hero + About the Department')
+    expect(c.textContent).toContain('Vision & Mission')
+    expect(c.textContent).toContain('Regulations + Curriculum + Courses')
+    expect(c.textContent).toContain('Labs + PEO / PO / PSO')
+    expect(c.textContent).toContain('Faculty + Smart Classrooms + Teaching & Learning')
+
+    setField(c.querySelector('input[placeholder="e.g. Information Technology"]'), 'Artificial Intelligence and Data Science')
+    setField(c.querySelector('input[placeholder="e.g. Dr. C. Deisy"]'), 'Dr. S. Priya')
+    setField(c.querySelector('input[placeholder="e.g. 25"]'), '30')
+    setField(fieldByLabel(c, 'Hero image (full width)'), 'https://example.com/hero.jpg')
+    setField(fieldByLabel(c, 'About paragraphs (blank line between)'), 'AI department started in 2020.')
+    setField(fieldByLabel(c, 'Vision text'), 'To create AI professionals.')
+    setField(fieldByLabel(c, 'Lab facilities (one per line)'), 'AI Lab\nData Science Lab')
+
+    const submit = [...c.querySelectorAll('button')].filter(b => b.textContent.includes('Add Department')).pop()
+    await act(async () => {
+      submit.click()
+      await new Promise(r => setTimeout(r, 250))
+    })
+
+    const stored = JSON.parse(localStorage.getItem('tn_college_data_C1') || '{}')
+    expect(stored.departments.length).toBe(1)
+    expect(stored.departments[0].name).toBe('Artificial Intelligence and Data Science')
+    expect(stored.departments[0].hod).toBe('Dr. S. Priya')
+    expect(stored.departments[0].facultyCount).toBe('30')
+    // the page content was saved together with the department - no second step
+    const page = stored.deptPages[String(stored.departments[0].id)] || {}
+    expect(page.heroImage).toBe('https://example.com/hero.jpg')
+    expect(page.aboutText).toEqual(['AI department started in 2020.'])
+    expect(page.visionText).toBe('To create AI professionals.')
+    expect(page.labs).toEqual(['AI Lab', 'Data Science Lab'])
+    // the new department is selected for editing and listed
+    expect(c.textContent).toContain('Editing')
   })
 
   it('deletes a department and its saved page', async () => {
