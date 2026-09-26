@@ -4,7 +4,7 @@ import { ChevronRight, GraduationCap, ArrowRight, Building2 } from 'lucide-react
 // from the admin "Department Pages (KCE Layout)" tab.
 export default function AcademicsPage({ departments = [], deptPages = {}, onNavigate }) {
   const pageFor = (dept) => deptPages[String(dept.id)] || deptPages[dept.id] || null
-  const list = (departments || []).filter(d => pageFor(d))
+  const list = departments || []
 
   return (
     <div className="bg-white">
@@ -29,9 +29,9 @@ export default function AcademicsPage({ departments = [], deptPages = {}, onNavi
         {list.length === 0 ? (
           <div className="rounded-[20px] border-2 border-dashed border-[#E8E2DB] bg-[#F4F1EB] py-16 text-center">
             <GraduationCap size={34} className="mx-auto text-[#547792]/50" />
-            <div className="mt-4 font-extrabold text-[16px] text-[#1A3263]">No department pages published yet</div>
+            <div className="mt-4 font-extrabold text-[16px] text-[#1A3263]">No departments added yet</div>
             <div className="mx-auto mt-2 max-w-[520px] text-[12.5px] leading-[1.8] text-[#547792]">
-              Admin dashboard-la <b>Department Pages (KCE Layout)</b> tab-ku poni, oru department-ah select panni content add pannitu save pannunga - adhu inga vara start aagum.
+              Admin dashboard-la <b>Department Pages (KCE Layout)</b> tab-ku poni, <b>Add Department</b> click panni unga department-ah add pannunga - appuram content fill panni save pannunga.
             </div>
           </div>
         ) : (

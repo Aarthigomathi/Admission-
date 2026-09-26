@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Upload, ImageIcon, Link as LinkIcon } from 'lucide-react'
+import { Upload, ImageIcon, Link as LinkIcon, Plus, Trash2 } from 'lucide-react'
 import { saveCollegeDataSafe } from '../../lib/collegeStorage'
 
 const inputCls = 'w-full h-10 px-3 rounded-[10px] border border-[#E8E2DB] bg-white text-[13px] text-[#1A3263] focus:outline-none focus:border-[#FAB95B]'
@@ -86,14 +86,19 @@ function toStored(f) {
 }
 
 export default function DeptPagesAdmin({ collegeId, customData, setCustomData, fullCollege }) {
-  const departments = customData.departments || (fullCollege && fullCollege.departments) || []
+  // Only the departments this college added itself - template/default ones are never shown
+  const departments = Array.isArray(customData.departments) ? customData.departments : []
   const [selId, setSelId] = useState(null)
   const [f, setF] = useState(blank())
+  const [deptForm, setDeptForm] = useState({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', facultyCount: '' })
+  const [showAdd, setShowAdd] = useState(false)
 
+  // if the selected department was deleted, fall back to the first one
   useEffect(() => {
-    if (!selId && departments.length > 0) setSelId(String(departments[0].id))
+    if (departments.length === 0) { if (selId !== null) setSelId(null); return }
+    if (!selId || !departments.some(d => String(d.id) === String(selId))) setSelId(String(departments[0].id))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [departments.length])
+  }, [departments.length, selId])
 
   useEffect(() => {
     const all = customData.deptPages || (fullCollege && fullCollege.deptPages) || {}
@@ -102,6 +107,37 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
   }, [selId, collegeId])
 
   const set = (k, v) => setF(prev => ({ ...prev, [k]: v }))
+
+  const persistDepartments = (list, extra = {}) => {
+    const merged = { ...customData, departments: list, ...extra }
+    setCustomData(merged)
+    saveCollegeDataSafe(collegeId, 'departments', list)
+    if (extra.deptPages) saveCollegeDataSafe(collegeId, 'deptPages', extra.deptPages)
+  }
+
+  const addDepartment = () => {
+    const name = (deptForm.name || '').trim()
+    if (!name) return alert('Department name required')
+    const list = customData.departments || []
+    const dept = { id: Date.now(), createdAt: new Date().toISOString(), ...deptForm, name }
+    persistDepartments([...list, dept])
+    setDeptForm({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', facultyCount: '' })
+    setShowAdd(false)
+    setSelId(String(dept.id))
+    alert(`Department ${name} added - ippo content fill panni save pannunga`)
+  }
+
+  const deleteDepartment = (id) => {
+    const dept = departments.find(d => String(d.id) === String(id))
+    if (!dept) return
+    if (!window.confirm(`Delete "${dept.name}"? Adhoda department page content-um delete aagum.`)) return
+    const list = (customData.departments || []).filter(d => String(d.id) !== String(id))
+    const pages = { ...(customData.deptPages || {}) }
+    delete pages[String(id)]
+    delete pages[id]
+    persistDepartments(list, { deptPages: pages })
+    alert(`Department ${dept.name} deleted - website Academics la irundhu remove aagiduchu`)
+  }
   const save = () => {
     const all = customData.deptPages || {}
     const next = { ...all, [selId]: toStored(f) }
@@ -116,8 +152,9 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
       <div className="rounded-[16px] bg-[#1A3263] p-5 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-[16px] font-extrabold text-white">Department Pages (KCE Layout)</h2>
-          <p className="text-[12px] text-white/60 mt-1">Each department gets the KCE department page: hero + about card, vision/mission cards, regulations, courses, labs, PEO/PO/PSO, HOD profile, faculty, smart classrooms, curriculum. HOD name + HOD photo website Academics card-la already irukka department details-aa use panum.</p>
+          <p className="text-[12px] text-white/60 mt-1">Each department gets the KCE department page: hero + about card, vision/mission cards, regulations, courses, labs, PEO/PO/PSO, HOD profile, faculty, smart classrooms, curriculum. Nee add panna department maathrum website Academics page-la varum.</p>
         </div>
+        <button onClick={() => setShowAdd(v => !v)} className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] text-[12px] font-extrabold uppercase tracking-wide hover:bg-[#FAB95B]/90 inline-flex items-center gap-2"><Plus size={15} /> Add Department</button>
         <div className="flex items-center gap-3">
           <select value={selId || ''} onChange={e => setSelId(e.target.value)} className="h-11 px-4 rounded-[12px] bg-white text-[13px] font-bold text-[#1A3263] focus:outline-none">
             {departments.map(d => <option key={d.id} value={String(d.id)}>{d.name}</option>)}
@@ -126,8 +163,60 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
         </div>
       </div>
 
+      {showAdd ? (
+        <div className="rounded-[16px] bg-white border-2 border-[#FAB95B]/40 p-6 space-y-4">
+          <h3 className="text-[15px] font-extrabold text-[#1A3263]">Add New Department</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div><Label>Department Name *</Label><input className={inputCls} value={deptForm.name} onChange={e => setDeptForm({ ...deptForm, name: e.target.value })} placeholder="e.g. Information Technology" /></div>
+            <div><Label>Faculty Count</Label><input className={inputCls} value={deptForm.facultyCount} onChange={e => setDeptForm({ ...deptForm, facultyCount: e.target.value })} placeholder="e.g. 25" /></div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div><Label>HOD Name</Label><input className={inputCls} value={deptForm.hod} onChange={e => setDeptForm({ ...deptForm, hod: e.target.value })} placeholder="e.g. Dr. C. Deisy" /></div>
+            <div><Label>HOD Designation</Label><input className={inputCls} value={deptForm.hodDesignation} onChange={e => setDeptForm({ ...deptForm, hodDesignation: e.target.value })} placeholder="Head of Department" /></div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div><Label>HOD Qualification</Label><input className={inputCls} value={deptForm.hodQualification} onChange={e => setDeptForm({ ...deptForm, hodQualification: e.target.value })} placeholder="e.g. Ph.D, M.E IT" /></div>
+            <div><Label>HOD Experience</Label><input className={inputCls} value={deptForm.hodExperience} onChange={e => setDeptForm({ ...deptForm, hodExperience: e.target.value })} placeholder="e.g. 15 years" /></div>
+          </div>
+          <div><Label>HOD Photo (Academics card + department page HOD profile)</Label><ImgInput value={deptForm.hodImage} onChange={v => setDeptForm({ ...deptForm, hodImage: v })} /></div>
+          <div className="flex flex-wrap gap-3">
+            <button onClick={addDepartment} className="h-11 px-7 rounded-full bg-[#1A3263] text-[#FAB95B] text-[12px] font-extrabold uppercase tracking-wide hover:bg-[#1A3263]/90 inline-flex items-center gap-2"><Plus size={15} /> Add Department</button>
+            <button onClick={() => setShowAdd(false)} className="h-11 px-6 rounded-full bg-white border-2 border-[#E8E2DB] text-[12px] font-bold text-[#1A3263]">Cancel</button>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="rounded-[16px] bg-white border border-[#E8E2DB] p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-[15px] font-extrabold text-[#1A3263]">Departments - {departments.length}</h3>
+          <div className="text-[11.5px] text-[#547792]">Inga add panna department maathrum website Academics page-la varum</div>
+        </div>
+        {departments.length === 0 ? (
+          <div className="mt-4 py-10 text-center rounded-[12px] bg-[#F4F1EB] border-2 border-dashed border-[#E8E2DB]">
+            <div className="font-bold text-[13px] text-[#1A3263]">No departments added yet</div>
+            <div className="mt-2 text-[12px] text-[#547792]">Mela irukka <b>Add Department</b> click panni unga department-ah add pannunga - appuram content fill panni save pannunga.</div>
+          </div>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {departments.map(d => (
+              <div key={d.id} className="flex flex-wrap items-center gap-3 rounded-[12px] border border-[#E8E2DB] bg-[#F4F1EB] p-3">
+                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-[8px] border border-[#E8E2DB] bg-white grid place-items-center text-[14px] font-extrabold text-[#1A3263]">
+                  {d.hodImage ? <img src={d.hodImage} alt={d.hod} className="h-full w-full object-cover" /> : (d.name || 'D')[0]}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-[13px] font-extrabold text-[#1A3263]">{d.name}</div>
+                  <div className="mt-0.5 truncate text-[11px] text-[#547792]">{d.hod || 'HOD not set'}{d.hodDesignation ? ' \u2022 ' + d.hodDesignation : ''}{d.facultyCount ? ' \u2022 ' + d.facultyCount + ' Faculty' : ''}</div>
+                </div>
+                <button onClick={() => setSelId(String(d.id))} className={`h-9 px-4 rounded-full text-[11.5px] font-bold ${String(selId) === String(d.id) ? 'bg-[#1A3263] text-[#FAB95B]' : 'bg-white border-2 border-[#E8E2DB] text-[#1A3263]'}`}>{String(selId) === String(d.id) ? 'Editing' : 'Edit Page'}</button>
+                <button onClick={() => deleteDepartment(d.id)} className="h-9 w-9 shrink-0 grid place-items-center rounded-full bg-white border-2 border-red-200 text-red-500 hover:bg-red-50" title={'Delete ' + (d.name || 'department')}><Trash2 size={14} /></button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {departments.length === 0 ? (
-        <div className="rounded-[16px] bg-white border border-[#E8E2DB] p-10 text-center text-[13px] text-[#547792]">First add departments in the "Departments with HOD" tab.</div>
+        <div className="rounded-[16px] bg-white border border-[#E8E2DB] p-10 text-center text-[13px] text-[#547792]">Add a department above to start filling its page.</div>
       ) : (
         <>
           <div className="rounded-[16px] bg-white border border-[#E8E2DB] p-6 space-y-4">
@@ -180,7 +269,7 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
               <div><Label>Smart classroom subjects (one per line)</Label><textarea rows={4} className={taCls} value={f.smartRooms} onChange={e => set('smartRooms', e.target.value)} /></div>
               <div><Label>Teaching & learning links (one per line)</Label><textarea rows={4} className={taCls} value={f.teaching} onChange={e => set('teaching', e.target.value)} /></div>
             </div>
-            <Hint>HOD profile section automatic-aa "Departments with HOD" tab data-va irundhu varum (name, designation, photo, bio).</Hint>
+            <Hint>HOD profile section automatic-aa inga add panna department HOD details-va use panum (name, designation, photo). Bio text-ah idha department page content-ala save pannunga.</Hint>
           </div>
 
           <div className="flex justify-end">
