@@ -929,8 +929,8 @@ export default function AdminDashboard() {
            "✓ ",
            "✓ ",
            "✓ "
-          ].map(item=>(
-           <div key={item} className="p-2 rounded-[8px] bg-[#E8E2DB]/50 border border-[#E8E2DB] text-[#1A3263] font-medium">{item}</div>
+          ].map((item, i)=>(
+           <div key={`college-mgmt-${i}`} className="p-2 rounded-[8px] bg-[#E8E2DB]/50 border border-[#E8E2DB] text-[#1A3263] font-medium">{item}</div>
           ))}
          </div>
          <div className="mt-4 rounded-[12px] bg-[#1A3263] text-white p-3 text-[11px]">

@@ -61,8 +61,33 @@ const blankForm = () => ({
   acc: { naacLogo: '', naacTitle: '', naacText: '', nbaLogo: '', nbaTitle: '', nbaText: '', nbaItems: '', companiesHeading: '', mouIntro: '', mous: [], electivesTitle: '', electivesIntro: '', electives: [] },
 })
 
+// Deep clone with a fallback for environments without structuredClone
+function cloneForm(src) {
+  if (!src || typeof src !== 'object') return blankForm()
+  if (typeof structuredClone === 'function') {
+    try { return structuredClone(src) } catch { /* fall through to JSON clone */ }
+  }
+  return JSON.parse(JSON.stringify(src))
+}
+
+// Guarantees every section/array exists, even if stored data is partial or bad
+function normalizeForm(src) {
+  const f = cloneForm(src)
+  f.profile = { ...blankForm().profile, ...(f.profile || {}) }
+  f.vision = { ...blankForm().vision, ...(f.vision || {}) }
+  f.org = { ...blankForm().org, ...(f.org || {}) }
+  f.coe = { ...blankForm().coe, ...(f.coe || {}) }
+  f.coe.categories = Array.isArray(f.coe.categories) ? f.coe.categories : []
+  f.coe.innovation = { ...blankForm().coe.innovation, ...(f.coe.innovation || {}) }
+  f.acc = { ...blankForm().acc, ...(f.acc || {}) }
+  f.acc.mous = Array.isArray(f.acc.mous) ? f.acc.mous : []
+  f.acc.electives = Array.isArray(f.acc.electives) ? f.acc.electives : []
+  f.management = Array.isArray(f.management) ? f.management : []
+  return f
+}
+
 function fromStored(src) {
-  const f = blankForm()
+  const f = normalizeForm(src)
   if (!src) return f
   const p = src.profile || {}
   f.profile = {
@@ -73,24 +98,24 @@ function fromStored(src) {
     highlights: (p.highlights || []).join('\n'),
     whyHeading: p.whyHeading || '',
     whyText: p.whyText || '',
-    stats: (p.stats || []).map(s => s.value + ' | ' + s.label).join('\n'),
+    stats: (p.stats || []).map(s => ((s && s.value) || '') + ' | ' + ((s && s.label) || '')).join('\n'),
     campusLife: (p.campusLife || []).join('\n'),
   }
   const v = src.vision || {}
   f.vision = {
     visionText: v.visionText || '',
     missionBullets: (v.missionBullets || []).join('\n'),
-    coreValues: (v.coreValues || []).map(c => c.title + '\n' + c.text).join('\n\n'),
+    coreValues: (v.coreValues || []).map(c => ((c && c.title) || '') + '\n' + ((c && c.text) || '')).join('\n\n'),
   }
-  f.management = (src.management || []).map(m => ({ role: m.role || '', name: m.name || '', photo: m.photo || '', bioText: (m.bio || []).join('\n\n') }))
+  f.management = (src.management || []).map(m => ({ role: (m && m.role) || '', name: (m && m.name) || '', photo: (m && m.photo) || '', bioText: ((m && m.bio) || []).join('\n\n') }))
   f.org = { chartImage: (src.org || {}).chartImage || '' }
   const c = src.coe || {}
   f.coe = {
-    categories: (c.categories || []).map(cat => ({ title: cat.title || '', logos: (cat.logos || []).map(l => ({ name: l.name || '', url: l.url || '' })) })),
+    categories: (c.categories || []).map(cat => ({ title: (cat && cat.title) || '', logos: ((cat && cat.logos) || []).map(l => ({ name: (l && l.name) || '', url: (l && l.url) || '' })) })),
     innovation: { title: (c.innovation || {}).title || '', text: ((c.innovation || {}).text || []).join('\n\n'), image: (c.innovation || {}).image || '' },
   }
   const a = src.acc || {}
-  f.acc = { ...f.acc, ...a, nbaItems: (a.nbaItems || []).join('\n'), mous: (a.mous || []).map(m => ({ ...m })), electives: (a.electives || []).map(l => ({ ...l })) }
+  f.acc = { ...f.acc, ...a, nbaItems: (a.nbaItems || []).join('\n'), mous: (a.mous || []).map(m => ({ ...(m || {}) })), electives: (a.electives || []).map(l => ({ ...(l || {}) })) }
   return f
 }
 
@@ -114,26 +139,35 @@ function toStored(f) {
       missionBullets: L(f.vision.missionBullets),
       coreValues: B(f.vision.coreValues).map(block => { const idx = block.indexOf('\n'); return idx === -1 ? { title: block, text: '' } : { title: block.slice(0, idx).trim(), text: block.slice(idx + 1).trim() } }),
     },
-    management: f.management.map(m => ({ role: m.role, name: m.name, photo: m.photo, bio: B(m.bioText) })),
+    management: f.management.map(m => ({ role: (m && m.role) || '', name: (m && m.name) || '', photo: (m && m.photo) || '', bio: B(m && m.bioText) })),
     org: { chartImage: f.org.chartImage },
     coe: {
-      categories: f.coe.categories.map(c => ({ title: c.title, logos: c.logos.filter(l => l.name || l.url) })),
+      categories: f.coe.categories.map(c => ({ title: (c && c.title) || '', logos: ((c && c.logos) || []).filter(l => l && (l.name || l.url)) })),
       innovation: { title: f.coe.innovation.title, text: B(f.coe.innovation.text), image: f.coe.innovation.image },
     },
-    acc: { ...f.acc, nbaItems: L(f.acc.nbaItems), mous: f.acc.mous.filter(m => m.name || m.url), electives: f.acc.electives.filter(l => l.name || l.url) },
+    acc: { ...f.acc, nbaItems: L(f.acc.nbaItems), mous: f.acc.mous.filter(m => m && (m.name || m.url)), electives: f.acc.electives.filter(l => l && (l.name || l.url)) },
   }
 }
 
 export default function AboutPagesAdmin({ collegeId, customData, setCustomData, fullCollege }) {
-  const [f, setF] = useState(blankForm())
+  const [rawF, setRawF] = useState(blankForm())
+  // Always render from a fully shaped form, even if state ever became undefined
+  const f = normalizeForm(rawF)
 
   useEffect(() => {
-    const src = customData.aboutPages || (fullCollege && fullCollege.aboutPages) || null
-    setF(fromStored(src))
+    const src = (customData && customData.aboutPages) || (fullCollege && fullCollege.aboutPages) || null
+    setRawF(fromStored(src))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collegeId])
 
-  const set = (fn) => setF(prev => fn(structuredClone(prev)))
+  // The mutators below use block bodies, so they return undefined.
+  // The updater has to return the mutated clone itself - returning the result
+  // of the mutator set the state to undefined and crashed the next render.
+  const set = (fn) => setRawF(prev => {
+    const next = cloneForm(prev)
+    fn(next)
+    return next
+  })
   const save = () => {
     const data = toStored(f)
     saveCollegeDataSafe(collegeId, 'aboutPages', data).then(ok => {
