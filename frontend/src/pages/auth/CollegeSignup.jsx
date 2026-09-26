@@ -46,13 +46,13 @@ export default function CollegeSignup() {
           </div>
 
           <h1 className="font-display text-[34px] font-bold leading-[0.9] mt-12">Register your college and build your official website</h1>
-          <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">After signup, you can manage your complete college profile - logo, campus images, departments, courses, facilities, placements, examinations, and more through our official academic portal.</p>
+          <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">After signup, login to your college dashboard and fill your pages - logo & branding, home page, about/vision/mission, department pages (KCE Academics layout), courses, placements, examinations. Your college website goes live at /college/your-college-slug.</p>
 
           <div className="mt-8 space-y-3">
             {[
               { title: "Your own college website", desc: "After signup, your college profile is empty - you add all details yourself", icon: Building2 },
               { title: "Add Logo & Campus Images", desc: "Branding: logo, hero image, cover, tagline and visual identity", icon: ImageIcon },
-              { title: "Add Departments with HOD", desc: "Each department: name, HOD name, faculty count, labs, description, image", icon: Users },
+              { title: "Department Pages (KCE Layout)", desc: "Academics page kce.ac.in maathiri: about, vision/mission, regulations, courses, labs, PEO/PO/PSO, faculty, curriculum", icon: Users },
               { title: "Add Facilities, Placements, Exams", desc: "Environment, placement records, facilities, hostel, library, sports, exam details, research centres", icon: Award },
               { title: "Verification Process", desc: "After you add information, platform admin reviews. Verified colleges get badge", icon: CheckCircle2 },
             ].map((item,i)=>(
