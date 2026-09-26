@@ -1,5 +1,6 @@
-// Regression tests for the admin "Departments with HOD" section:
-// per-department HOD photo upload and edit support.
+// Regression tests for the admin sidebar: the standalone "Departments with HOD"
+// section was removed on request, so only "Department Pages (KCE Layout)" must
+// remain (and it must still render for an existing department).
 //
 // Dev-only deps (not in package.json):  npm i --no-save vitest jsdom
 // Run:  npx vitest run src/__tests__/adminDepartmentsHod.test.jsx
@@ -11,10 +12,6 @@ import { createRoot } from 'react-dom/client'
 import { MemoryRouter } from 'react-router-dom'
 import { saveCollegeData } from '../lib/collegeStorage'
 import AdminDashboard from '../pages/admin/AdminDashboard.jsx'
-
-const TINY_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8AAAwAB/AL+i4bAAAAAElFTkSuQmCC'
-
-const readStore = (id) => JSON.parse(localStorage.getItem(`tn_college_data_${id}`) || '{}')
 
 beforeEach(() => {
   localStorage.clear()
@@ -40,63 +37,42 @@ const renderDashboard = () => {
   return container
 }
 
-const openDepartments = (c) => {
-  const link = [...c.querySelectorAll('a, button')].find(el => el.textContent.trim().startsWith('Departments with HOD'))
-  expect(link).toBeTruthy()
-  act(() => { link.click() })
-}
+const menuLabels = (c) => [...c.querySelectorAll('a, button')].map(el => el.textContent.trim())
 
-describe('Admin - Departments with HOD', () => {
-  it('shows the section and lets you add a HOD photo to an existing department', async () => {
+describe('Admin sidebar - Departments with HOD removed', () => {
+  it('no longer shows the "Departments with HOD" menu item', () => {
     seed([{ id: 101, name: 'Computer Science and Engineering', hod: 'Dr. Ramesh Kumar', facultyCount: '25' }])
     const c = renderDashboard()
-    openDepartments(c)
-    expect(c.textContent).toContain('Departments with HOD')
-    expect(c.textContent).toContain('Add HOD Photo')
-
-    const fileInput = [...c.querySelectorAll('input[type="file"]')].find(i => {
-      const lbl = i.closest('label')
-      return lbl && (lbl.textContent.includes('Add HOD Photo') || lbl.textContent.includes('Change HOD Photo'))
-    })
-    expect(fileInput).toBeTruthy()
-    const file = new File([new Uint8Array([1, 2, 3])], 'hod.png', { type: 'image/png' })
-    await act(async () => {
-      Object.defineProperty(fileInput, 'files', { value: [file], configurable: true })
-      fileInput.dispatchEvent(new Event('change', { bubbles: true }))
-      await new Promise(r => setTimeout(r, 250))
-    })
-
-    const stored = readStore('C1')
-    expect(String(stored.departments[0].hodImage)).toMatch(/^data:image\/png;base64,/)
-    expect(c.textContent).toContain('Change HOD Photo')
+    const labels = menuLabels(c)
+    expect(labels.some(l => l.startsWith('Departments with HOD'))).toBe(false)
+    // ...but the Department Pages tab is still there
+    expect(labels.some(l => l.startsWith('Department Pages (KCE Layout)'))).toBe(true)
   })
 
-  it('loads a department into the form for editing and saves the change', async () => {
-    seed([{ id: 101, name: 'Computer Science and Engineering', hod: 'Dr. Ramesh Kumar', hodImage: TINY_PNG, facultyCount: '25' }])
+  it('still opens Department Pages for the existing departments', () => {
+    seed([
+      { id: 101, name: 'Computer Science and Engineering', hod: 'Dr. Ramesh Kumar', hodImage: 'data:image/png;base64,iVBORw0KGgo=', facultyCount: '25' },
+      { id: 102, name: 'Electronics and Communication Engineering', hod: 'Dr. Meena Raj', facultyCount: '18' },
+    ])
     const c = renderDashboard()
-    openDepartments(c)
+    const link = [...c.querySelectorAll('a, button')].find(el => el.textContent.trim().startsWith('Department Pages (KCE Layout)'))
+    expect(link).toBeTruthy()
+    act(() => { link.click() })
+    expect(c.textContent).toContain('Department Pages (KCE Layout)')
+    // department picker still lists both departments
+    expect(c.textContent).toContain('Computer Science and Engineering')
+    expect(c.textContent).toContain('Electronics and Communication Engineering')
+  })
 
-    const editBtn = [...c.querySelectorAll('button')].find(b => b.textContent.trim() === 'Edit')
-    act(() => { editBtn.click() })
-    expect(c.textContent).toContain('Editing: Computer Science and Engineering')
-
-    const nameInput = c.querySelector('#dept-form-top input')
-    expect(nameInput.value).toBe('Computer Science and Engineering')
-
-    const updateBtn = [...c.querySelectorAll('button')].find(b => b.textContent.includes('Update Department'))
-    expect(updateBtn).toBeTruthy()
-    act(() => {
-      Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(nameInput, 'Computer Science and Engineering (AI)')
-      nameInput.dispatchEvent(new Event('input', { bubbles: true }))
-    })
-    await act(async () => {
-      updateBtn.click()
-      await new Promise(r => setTimeout(r, 250))
-    })
-
-    const stored = readStore('C1')
-    expect(stored.departments[0].name).toBe('Computer Science and Engineering (AI)')
-    expect(stored.departments[0].hodImage).toBe(TINY_PNG)
-    expect(c.textContent).toContain('Computer Science and Engineering (AI)')
+  it('keeps existing department data intact (only the admin tab was removed)', () => {
+    seed([
+      { id: 101, name: 'Computer Science and Engineering', hod: 'Dr. Ramesh Kumar', hodImage: 'data:image/png;base64,iVBORw0KGgo=', facultyCount: '25' },
+      { id: 102, name: 'Electronics and Communication Engineering', hod: 'Dr. Meena Raj', facultyCount: '18' },
+    ])
+    // stored departments are untouched, so the website Academics section keeps working
+    const stored = JSON.parse(localStorage.getItem('tn_college_data_C1') || '{}')
+    expect(stored.departments.length).toBe(2)
+    expect(stored.departments[0].hod).toBe('Dr. Ramesh Kumar')
+    expect(stored.departments[0].hodImage).toBe('data:image/png;base64,iVBORw0KGgo=')
   })
 })

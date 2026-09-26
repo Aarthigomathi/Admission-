@@ -116,7 +116,7 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
       <div className="rounded-[16px] bg-[#1A3263] p-5 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-[16px] font-extrabold text-white">Department Pages (KCE Layout)</h2>
-          <p className="text-[12px] text-white/60 mt-1">Each department gets the KCE department page: hero + about card, vision/mission cards, regulations, courses, labs, PEO/PO/PSO, HOD profile, faculty, smart classrooms, curriculum. HOD details come from the Departments tab.</p>
+          <p className="text-[12px] text-white/60 mt-1">Each department gets the KCE department page: hero + about card, vision/mission cards, regulations, courses, labs, PEO/PO/PSO, HOD profile, faculty, smart classrooms, curriculum. HOD name + HOD photo website Academics card-la already irukka department details-aa use panum.</p>
         </div>
         <div className="flex items-center gap-3">
           <select value={selId || ''} onChange={e => setSelId(e.target.value)} className="h-11 px-4 rounded-[12px] bg-white text-[13px] font-bold text-[#1A3263] focus:outline-none">
