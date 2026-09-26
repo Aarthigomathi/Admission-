@@ -65,15 +65,20 @@ const openAcademicsPage = (c) => {
   act(() => { link.click() })
 }
 
+// stateful wrapper so setCustomData actually re-renders the admin like the real dashboard
+function DeptAdminHarness() {
+  const [customData, setCustomData] = React.useState(() => JSON.parse(localStorage.getItem('tn_college_data_C1') || '{}'))
+  return <DeptPagesAdmin collegeId="C1" customData={customData} setCustomData={setCustomData} fullCollege={{}} />
+}
+
 const renderDeptAdmin = () => {
   const container = document.createElement('div')
   document.body.appendChild(container)
   const root = createRoot(container)
-  const customData = JSON.parse(localStorage.getItem('tn_college_data_C1') || '{}')
   act(() => {
     root.render(
       <MemoryRouter>
-        <DeptPagesAdmin collegeId="C1" customData={customData} setCustomData={() => {}} fullCollege={{}} />
+        <DeptAdminHarness />
       </MemoryRouter>
     )
   })
@@ -154,6 +159,27 @@ describe('Admin - department manager in Department Pages', () => {
     expect(stored.departments.length).toBe(1)
     expect(stored.departments[0].name).toBe('Artificial Intelligence and Data Science')
     expect(stored.departments[0].hod).toBe('Dr. S. Priya')
+  })
+
+  it('deletes all departments in one click (clean slate)', async () => {
+    seed({
+      departments: [
+        { id: 101, name: 'Information Technology', hod: 'Dr. C. Deisy' },
+        { id: 102, name: 'Civil Engineering', hod: 'Dr. A. Sharma' },
+      ],
+      deptPages: { 101: { aboutText: ['a'] }, 102: { aboutText: ['b'] } },
+    })
+    const c = renderDeptAdmin()
+    const clearBtn = [...c.querySelectorAll('button')].find(b => b.textContent.includes('Delete All'))
+    expect(clearBtn).toBeTruthy()
+    await act(async () => {
+      clearBtn.click()
+      await new Promise(r => setTimeout(r, 250))
+    })
+    const stored = JSON.parse(localStorage.getItem('tn_college_data_C1') || '{}')
+    expect(stored.departments).toEqual([])
+    expect(Object.keys(stored.deptPages || {})).toEqual([])
+    expect(c.textContent).toContain('No departments added yet')
   })
 
   it('deletes a department and its saved page', async () => {

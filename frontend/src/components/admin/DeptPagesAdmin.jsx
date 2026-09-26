@@ -127,6 +127,14 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
     alert(`Department ${name} added - ippo content fill panni save pannunga`)
   }
 
+  const clearAllDepartments = () => {
+    if (departments.length === 0) return
+    if (!window.confirm(`Delete ALL ${departments.length} department(s) and their page content? Nee add panra department mattum vaanganum-na idha use pannunga.`)) return
+    persistDepartments([], { deptPages: {} })
+    setSelId(null)
+    alert('All departments deleted - ippo Add Department click panni unga department-ah add pannunga')
+  }
+
   const deleteDepartment = (id) => {
     const dept = departments.find(d => String(d.id) === String(id))
     if (!dept) return
@@ -189,7 +197,12 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
       <div className="rounded-[16px] bg-white border border-[#E8E2DB] p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-[15px] font-extrabold text-[#1A3263]">Departments - {departments.length}</h3>
-          <div className="text-[11.5px] text-[#547792]">Inga add panna department maathrum website Academics page-la varum</div>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-[11.5px] text-[#547792]">Inga add panna department maathrum website Academics page-la varum</span>
+            {departments.length > 0 ? (
+              <button onClick={clearAllDepartments} className="h-8 px-3 rounded-full bg-white border-2 border-red-200 text-[11px] font-bold text-red-500 hover:bg-red-50 inline-flex items-center gap-1.5"><Trash2 size={12} /> Delete All</button>
+            ) : null}
+          </div>
         </div>
         {departments.length === 0 ? (
           <div className="mt-4 py-10 text-center rounded-[12px] bg-[#F4F1EB] border-2 border-dashed border-[#E8E2DB]">
