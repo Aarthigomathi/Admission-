@@ -34,7 +34,7 @@ export default function CollegeHeader({ college, homePage, currentPage, onNaviga
       ],
     },
     {
-      label: 'Academics', id: 'departments',
+      label: 'Academics', id: 'departments', page: 'academics',
       children: [
         ...(departments || []).map(dp => ({ label: 'Department of ' + (dp.name || ''), page: 'dept-' + dp.id })),
       ],

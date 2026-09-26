@@ -12,7 +12,7 @@ function Banner({ dept, onNavigate }) {
         <div className="flex flex-wrap items-center gap-2 text-[12.5px] font-semibold">
           <button onClick={() => onNavigate('home')} className="text-white/85 hover:text-[#FAB95B] cursor-pointer">Home</button>
           <ChevronRight size={13} className="text-white/50" />
-          <button onClick={() => onNavigate('home', 'departments')} className="text-white/85 hover:text-[#FAB95B] cursor-pointer">Academics</button>
+          <button onClick={() => onNavigate('academics')} className="text-white/85 hover:text-[#FAB95B] cursor-pointer">Academics</button>
           <ChevronRight size={13} className="text-white/50" />
           <span className="text-[#FAB95B]">Department of {dept.name}</span>
         </div>

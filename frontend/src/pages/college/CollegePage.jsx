@@ -4,7 +4,8 @@ import { getCollegeBySlug, getCollegeCustomData, getPublicColleges } from '../..
 import CollegeHeader from '../../components/college/CollegeHeader'
 import AboutPages from '../../components/college/AboutPages.jsx'
 import DeptPage from '../../components/college/DeptPage.jsx'
-import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, User, Award, Image as ImageIcon, X, BookOpen, FlaskConical, Briefcase, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf, ChevronLeft, ChevronRight, Link2 } from 'lucide-react'
+import AcademicsPage from '../../components/college/AcademicsPage.jsx'
+import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, User, Image as ImageIcon, X, BookOpen, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf, ChevronLeft, ChevronRight, Link2 } from 'lucide-react'
 
 
 function placementStats(placements) {
@@ -274,7 +275,6 @@ function FooterLinkCol({ title, links }) {
 }
 
 function CustomCollegePage({ college, customData }) {
-  const [hodProfile, setHodProfile] = useState(null)
   const [progTab, setProgTab] = useState('All')
   const [selCourse, setSelCourse] = useState(null)
   const [selAchievement, setSelAchievement] = useState(null)
@@ -381,18 +381,6 @@ function CustomCollegePage({ college, customData }) {
     return () => clearTimeout(t)
   }, [sitePage])
 
-  // HOD profile modal - close on Escape, lock body scroll while open
-  useEffect(() => {
-    if (!hodProfile) return
-    const onKey = (e) => { if (e.key === 'Escape') setHodProfile(null) }
-    document.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
-    }
-  }, [hodProfile])
-
   return (
     <div className="min-h-screen bg-[#E8E2DB]">
       <CollegeHeader college={{ ...college, settings: settings, branding: { ...college.branding, ...branding, logo: branding.logo || college.branding?.logo, heroImage: branding.heroImage || college.branding?.heroImage } }} homePage={homePage} currentPage={sitePage} onNavigate={navigateSite} departments={departments} />
@@ -489,51 +477,6 @@ function CustomCollegePage({ college, customData }) {
         </div>
         <svg className="absolute bottom-0 left-0 w-full h-[64px] block" viewBox="0 0 1440 64" preserveAspectRatio="none"><path d="M0,64 L0,8 Q720,76 1440,8 L1440,64 Z" fill="#ffffff" /></svg>
       </section>
-
-      {/* ACADEMICS - DEPARTMENTS WITH HOD (KCE layout) - Academics menu scrolls here */}
-      {departments.length > 0 && (
-        <section id="departments" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-white border-t border-[#E8E2DB]">
-          <div className="mx-auto max-w-[1600px] px-6 lg:px-12 py-14 sm:py-20">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <h2 className="text-[30px] sm:text-[38px] font-extrabold uppercase tracking-tight text-[#1A3263]">Academics</h2>
-                <p className="mt-2.5 text-[13.5px] leading-[1.8] text-[#547792] max-w-[660px]">Every department is guided by an experienced Head of the Department. Tap a HOD photo to read the full profile, or open a department to see its programmes, labs and faculty.</p>
-              </div>
-              <div className="text-[12px] font-extrabold uppercase tracking-wide text-[#547792]">{departments.length} Departments</div>
-            </div>
-
-            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {departments.map(dept => {
-                const photo = dept.hodImage || dept.image || ''
-                return (
-                  <div key={dept.id} className="group flex flex-col rounded-[22px] bg-white border border-[#E8E2DB] overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all">
-                    <button type="button" onClick={() => setHodProfile(dept)} className="relative block h-[250px] w-full overflow-hidden bg-[#E8E2DB] text-left" title={'View ' + (dept.hod || 'HOD') + ' profile'}>
-                      {photo ? (
-                        <img src={photo} alt={dept.hod || 'HOD'} className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]" />
-                      ) : (
-                        <div className="h-full w-full grid place-items-center bg-gradient-to-br from-[#E8E2DB] to-[#547792] text-[#1A3263] font-extrabold text-[46px]">{(dept.hod || dept.name || 'H')[0]}</div>
-                      )}
-                      <span className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#1A3263]/90 to-transparent" />
-                      <span className="absolute bottom-3 left-4 inline-flex items-center gap-1.5 rounded-full bg-[#FAB95B] px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide text-[#1A3263]">View HOD Profile</span>
-                    </button>
-                    <div className="flex flex-1 flex-col p-5">
-                      <h3 className="font-extrabold text-[15px] leading-snug text-[#1A3263]">{dept.name}</h3>
-                      <div className="mt-3 space-y-1">
-                        <div className="text-[13px] font-bold text-[#1A3263]">{dept.hod || 'HOD'}</div>
-                        <div className="text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-[#547792]">{dept.hodDesignation || 'Head of Department'}</div>
-                        {dept.hodQualification ? <div className="text-[11.5px] text-[#547792]">Qualification: {dept.hodQualification}</div> : null}
-                        {dept.hodExperience ? <div className="text-[11.5px] text-[#547792]">Experience: {dept.hodExperience}</div> : null}
-                        {dept.facultyCount ? <div className="text-[11.5px] text-[#547792]">{dept.facultyCount} Faculty members</div> : null}
-                      </div>
-                      <button type="button" onClick={() => navigateSite('dept-' + dept.id)} className="mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border-2 border-[#1A3263] text-[12px] font-extrabold text-[#1A3263] transition-colors hover:bg-[#1A3263] hover:text-[#FAB95B]">View Department &rarr;</button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* ALUMNI SUCCESS STORIES - KCE overlapping carousel */}
       <section id="alumni" className="scroll-mt-[100px] lg:scroll-mt-[150px] bg-[#F4F2EE] overflow-hidden">
@@ -718,104 +661,6 @@ function CustomCollegePage({ college, customData }) {
       </section>
 
 
-      {/* HOD Full Profile Modal - opens when HOD image is tapped */}
-      {hodProfile && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6" onClick={() => setHodProfile(null)} role="dialog" aria-modal="true">
-          <div className="absolute inset-0 bg-[#1A3263]/85 backdrop-blur-sm" />
-          <div onClick={(e) => e.stopPropagation()} className="relative w-full max-w-[760px] max-h-[92vh] overflow-y-auto rounded-[24px] bg-white shadow-2xl border-2 border-[#E8E2DB]">
-            <button onClick={() => setHodProfile(null)} className="absolute top-4 right-4 z-10 h-10 w-10 grid place-items-center rounded-full bg-[#1A3263]/80 text-[#FAB95B] border border-[#FAB95B]/40 hover:bg-[#1A3263] transition-colors" aria-label="Close">
-              <X size={18} />
-            </button>
-
-            <div className="bg-[#1A3263] p-6 sm:p-8">
-              <div className="flex flex-col sm:flex-row gap-5 items-center sm:items-start">
-                <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-[20px] overflow-hidden border-4 border-[#FAB95B] bg-white shrink-0 shadow-xl">
-                  {hodProfile.hodImage || hodProfile.image ? (
-                    <img src={hodProfile.hodImage || hodProfile.image} className="h-full w-full object-cover object-top" alt={hodProfile.hod} />
-                  ) : (
-                    <div className="h-full w-full grid place-items-center bg-gradient-to-br from-[#E8E2DB] to-[#547792] text-[#1A3263] font-bold text-[40px]">{hodProfile.hod ? hodProfile.hod[0] : 'H'}</div>
-                  )}
-                </div>
-                <div className="text-center sm:text-left flex-1 min-w-0">
-                  <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#FAB95B]">Head of Department</div>
-                  <h3 className="font-display text-[24px] sm:text-[28px] font-bold text-white leading-tight mt-1">{hodProfile.hod || 'HOD'}</h3>
-                  <div className="text-[13px] text-[#E8E2DB]/80 mt-1">{hodProfile.hodDesignation || 'Head of Department'}, {hodProfile.name}</div>
-                  <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-2">
-                    {hodProfile.hodQualification && <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#FAB95B]/20 border border-[#FAB95B]/30 text-[#FAB95B] text-[11px] font-bold"><GraduationCap size={11} /> {hodProfile.hodQualification}</span>}
-                    {hodProfile.hodExperience && <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/80 text-[11px] font-bold"><Briefcase size={11} /> {hodProfile.hodExperience}</span>}
-                    {hodProfile.facultyCount && <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/70 text-[11px]"><Users size={11} /> {hodProfile.facultyCount} Faculty</span>}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 sm:p-8 space-y-6">
-              {(hodProfile.hodEmail || hodProfile.hodPhone) && (
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {hodProfile.hodEmail && (
-                    <a href={`mailto:${hodProfile.hodEmail.replace(/\[at\]/g,'@').replace(/\[dot\]/g,'.')}`} className="flex items-center gap-3 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4 hover:border-[#FAB95B]/50 transition-colors">
-                      <div className="h-10 w-10 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center shrink-0"><Mail size={16} /></div>
-                      <div className="min-w-0"><div className="text-[10px] font-bold uppercase text-[#547792]">Email</div><div className="text-[12px] font-semibold text-[#1A3263] break-all">{hodProfile.hodEmail}</div></div>
-                    </a>
-                  )}
-                  {hodProfile.hodPhone && (
-                    <a href={`tel:${hodProfile.hodPhone}`} className="flex items-center gap-3 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4 hover:border-[#FAB95B]/50 transition-colors">
-                      <div className="h-10 w-10 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center shrink-0"><Phone size={16} /></div>
-                      <div className="min-w-0"><div className="text-[10px] font-bold uppercase text-[#547792]">Phone</div><div className="text-[12px] font-semibold text-[#1A3263]">{hodProfile.hodPhone}</div></div>
-                    </a>
-                  )}
-                </div>
-              )}
-
-              <div>
-                <h4 className="font-display text-[18px] font-bold text-[#1A3263] flex items-center gap-2"><span className="h-5 w-1 rounded-full bg-[#FAB95B]"></span> Profile & Biography</h4>
-                <div className="mt-3 rounded-[16px] bg-[#E8E2DB]/40 border-2 border-[#E8E2DB] p-5 text-[13.5px] leading-[1.85] text-[#1A3263]/85 whitespace-pre-wrap">
-                  {hodProfile.hodDetailedBio || hodProfile.hodBio || (
-                    <>
-                      {hodProfile.description && <p><span className="font-bold text-[#1A3263]">About {hodProfile.name} Department:</span> {hodProfile.description}</p>}
-                      <p className={hodProfile.description ? 'mt-3' : ''}>{hodProfile.hod} is currently working as {hodProfile.hodDesignation || `Head of Department, ${hodProfile.name}`} at {college.name}, {college.city}, {college.district}. {hodProfile.facultyCount ? `The department carries a faculty strength of ${hodProfile.facultyCount} members` : 'The department carries a dedicated faculty team'} with expertise across various specializations of {hodProfile.name}.</p>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {hodProfile.hodResearch && (
-                <div>
-                  <h4 className="font-display text-[16px] font-bold text-[#1A3263] flex items-center gap-2"><FlaskConical size={15} className="text-[#547792]" /> Research</h4>
-                  <p className="mt-2 text-[13px] leading-[1.8] text-[#1A3263]/80 whitespace-pre-wrap">{hodProfile.hodResearch}</p>
-                </div>
-              )}
-
-              {hodProfile.hodPublications && (
-                <div>
-                  <h4 className="font-display text-[16px] font-bold text-[#1A3263] flex items-center gap-2"><BookOpen size={15} className="text-[#547792]" /> Publications</h4>
-                  <p className="mt-2 text-[13px] leading-[1.8] text-[#1A3263]/80 whitespace-pre-wrap">{hodProfile.hodPublications}</p>
-                </div>
-              )}
-
-              {hodProfile.hodAwards && (
-                <div>
-                  <h4 className="font-display text-[16px] font-bold text-[#1A3263] flex items-center gap-2"><Award size={15} className="text-[#547792]" /> Awards & Honours</h4>
-                  <p className="mt-2 text-[13px] leading-[1.8] text-[#1A3263]/80 whitespace-pre-wrap">{hodProfile.hodAwards}</p>
-                </div>
-              )}
-
-              {hodProfile.description && (hodProfile.hodDetailedBio || hodProfile.hodBio) && (
-                <div className="rounded-[16px] bg-[#1A3263] text-white p-5">
-                  <div className="font-bold text-[#FAB95B] text-[13px] flex items-center gap-2"><Building2 size={14} /> About {hodProfile.name} Department</div>
-                  <p className="mt-2 text-[12.5px] leading-[1.8] text-[#E8E2DB]/85">{hodProfile.description}</p>
-                </div>
-              )}
-
-              <div className="mt-2 grid sm:grid-cols-2 gap-3">
-                <button onClick={() => { const id = hodProfile.id; setHodProfile(null); navigateSite('dept-' + id) }} className="h-12 rounded-full border-2 border-[#1A3263] text-[#1A3263] font-bold text-[14px] hover:bg-[#1A3263] hover:text-[#FAB95B] transition-colors">View Department &rarr;</button>
-                <button onClick={() => setHodProfile(null)} className="h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] hover:bg-[#1A3263]/90 transition-colors">Close Profile</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Achievement detail modal */}
       {selAchievement && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6" onClick={() => setSelAchievement(null)} role="dialog" aria-modal="true">
@@ -834,7 +679,9 @@ function CustomCollegePage({ college, customData }) {
         </div>
       )}
 
-      </>) : activeDept ? (
+      </>) : sitePage === 'academics' ? (
+        <AcademicsPage departments={departments} deptPages={deptPages} onNavigate={navigateSite} />
+      ) : activeDept ? (
         <DeptPage dept={activeDept} data={deptPages[String(activeDept.id)] || deptPages[activeDept.id] || {}} onNavigate={navigateSite} campusImages={campusImages} branding={branding} />
       ) : (
         <AboutPages

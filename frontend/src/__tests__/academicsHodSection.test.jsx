@@ -1,6 +1,7 @@
-// Regression tests for the Academics (Departments with HOD) section on the
-// public college page: HOD photo + details must render and the HOD profile
-// modal / department page must be reachable.
+// Regression tests for the Academics page:
+//  - the Academics section must NOT be on the home page any more
+//  - the Academics page lists ONLY departments that have a Department Page saved
+//    from the admin "Department Pages (KCE Layout)" tab
 //
 // Dev-only deps (not in package.json):  npm i --no-save vitest jsdom
 // Run:  npx vitest run src/__tests__/academicsHodSection.test.jsx
@@ -14,6 +15,7 @@ import { saveCollegeData } from '../lib/collegeStorage'
 import CollegePage from '../pages/college/CollegePage.jsx'
 
 const HOD_IMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8AAAwAB/AL+i4bAAAAAElFTkSuQmCC'
+const HERO_IMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8AAAwAB/AL+i4bAAAAAElFTkSuQmCC'
 
 beforeEach(() => {
   localStorage.clear()
@@ -23,22 +25,15 @@ beforeEach(() => {
   window.scrollTo = vi.fn()
 })
 
-const seedCollege = (departments) => {
+const seed = ({ departments = [], deptPages = {} }) => {
   const college = {
-    id: 'C1',
-    slug: 'test-college',
-    name: 'Test Engineering College',
-    shortName: 'TEC',
-    city: 'Coimbatore',
-    district: 'Coimbatore',
-    type: 'Private',
-    affiliation: 'Anna University',
-    accreditation: 'NAAC A+',
-    email: 'info@test.edu',
-    phone: '+91 98765 43210',
+    id: 'C1', slug: 'test-college', name: 'Test Engineering College', shortName: 'TEC',
+    city: 'Coimbatore', district: 'Coimbatore', type: 'Private', affiliation: 'Anna University',
+    accreditation: 'NAAC A+', email: 'info@test.edu', phone: '+91 98765 43210',
   }
   localStorage.setItem('tn_registered_colleges', JSON.stringify([college]))
   saveCollegeData('C1', 'departments', departments)
+  saveCollegeData('C1', 'deptPages', deptPages)
 }
 
 const renderPage = () => {
@@ -56,53 +51,62 @@ const renderPage = () => {
 }
 
 const depts = [
-  { id: 101, name: 'Computer Science and Engineering', hod: 'Dr. Ramesh Kumar', hodDesignation: 'Head of Department', hodQualification: 'Ph.D, M.E CSE', hodExperience: '15 years', hodImage: HOD_IMG, facultyCount: '25', hodEmail: 'hod.cse@test.edu', description: 'Well equipped labs.' },
-  { id: 102, name: 'Electronics and Communication Engineering', hod: 'Dr. Meena Raj', hodDesignation: 'Professor & Head', hodQualification: 'Ph.D', hodExperience: '12 years', facultyCount: '18' },
+  { id: 101, name: 'Computer Science and Engineering', hod: 'Dr. Ramesh Kumar', hodDesignation: 'Head of Department', hodQualification: 'Ph.D, M.E CSE', hodImage: HOD_IMG, facultyCount: '25' },
+  { id: 102, name: 'Electronics and Communication Engineering', hod: 'Dr. Meena Raj', hodDesignation: 'Professor & Head', hodQualification: 'Ph.D', facultyCount: '18' },
 ]
 
-describe('Academics section - Departments with HOD', () => {
-  it('renders one card per department with the HOD photo and details', () => {
-    seedCollege(depts)
-    const c = renderPage()
-    const section = c.querySelector('#departments')
-    expect(section).toBeTruthy()
-    expect(c.textContent).toContain('Academics')
-    expect(c.textContent).toContain('Computer Science and Engineering')
-    expect(c.textContent).toContain('Dr. Ramesh Kumar')
-    expect(c.textContent).toContain('Qualification: Ph.D, M.E CSE')
-    expect(c.textContent).toContain('25 Faculty members')
-    // HOD photo for dept 1, initial fallback for dept 2 (no photo)
-    const imgs = section.querySelectorAll('img')
-    expect(imgs.length).toBe(1)
-    expect(imgs[0].getAttribute('src')).toBe(HOD_IMG)
-  })
+const openAcademicsPage = (c) => {
+  const link = [...c.querySelectorAll('a')].find(a => a.textContent.trim() === 'Academics')
+  expect(link).toBeTruthy()
+  act(() => { link.click() })
+}
 
-  it('hides the section when no departments exist', () => {
-    seedCollege([])
+describe('Academics', () => {
+  it('is not rendered on the home page', () => {
+    seed({ departments: depts, deptPages: { 101: { heroImage: HERO_IMG, aboutText: ['Well equipped labs.'] } } })
     const c = renderPage()
     expect(c.querySelector('#departments')).toBeNull()
+    expect(c.textContent).not.toContain('View HOD Profile')
   })
 
-  it('opens the HOD profile modal when the HOD photo is tapped', () => {
-    seedCollege(depts)
+  it('shows only the departments that have a Department Page', () => {
+    seed({
+      departments: depts,
+      deptPages: {
+        101: { heroImage: HERO_IMG, aboutText: ['Well equipped labs and smart classrooms.'], courses: ['B.E CSE', 'M.E CSE'], labs: ['AI Lab', 'IoT Lab'], faculty: [{ name: 'A' }, { name: 'B' }] },
+      },
+    })
     const c = renderPage()
-    const photoBtn = c.querySelector('#departments button')
-    expect(photoBtn.textContent).toContain('View HOD Profile')
-    act(() => { photoBtn.click() })
-    expect(c.textContent).toContain('HOD Profile')
+    openAcademicsPage(c)
+    expect(c.textContent).toContain('Academics')
+    expect(c.textContent).toContain('Department of Computer Science and Engineering')
+    expect(c.textContent).toContain('Well equipped labs and smart classrooms.')
+    expect(c.textContent).toContain('2 Courses')
+    expect(c.textContent).toContain('2 Labs')
+    // dept 102 has no Department Page -> must not be listed
+    expect(c.textContent).not.toContain('Department of Electronics and Communication Engineering')
+    // HOD chip still shown for the published department
     expect(c.textContent).toContain('Dr. Ramesh Kumar')
-    expect(c.textContent).toContain('hod.cse@test.edu')
-    // department link inside the modal
-    const modalBtns = [...c.querySelectorAll('button')].filter(b => b.textContent.includes('View Department'))
-    expect(modalBtns.length).toBeGreaterThan(0)
+    expect(c.textContent).toContain('1 Published')
   })
 
-  it('navigates to the department page from the card button', () => {
-    seedCollege(depts)
+  it('shows an empty state when no department page is published', () => {
+    seed({ departments: depts, deptPages: {} })
     const c = renderPage()
-    const btn = [...c.querySelectorAll('#departments button')].find(b => b.textContent.includes('View Department'))
+    openAcademicsPage(c)
+    expect(c.textContent).toContain('No department pages published yet')
+    expect(c.textContent).not.toContain('Department of Computer Science and Engineering')
+  })
+
+  it('navigates to the department page from an Academics card', () => {
+    seed({ departments: depts, deptPages: { 101: { heroImage: HERO_IMG, aboutText: ['Well equipped labs.'] } } })
+    const c = renderPage()
+    openAcademicsPage(c)
+    const btn = [...c.querySelectorAll('button')].find(b => b.textContent.includes('Read More'))
+    expect(btn).toBeTruthy()
     act(() => { btn.click() })
-    expect(c.textContent).toContain('HOD Profile') // DeptPage renders the HOD profile
+    // DeptPage renders the HOD profile for that department
+    expect(c.textContent).toContain('HOD Profile')
     expect(c.textContent).toContain('Dr. Ramesh Kumar')
   })
 })
