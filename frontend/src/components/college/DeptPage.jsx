@@ -1,8 +1,24 @@
 import { useState } from 'react'
-import { ChevronRight, ChevronsRight, Building2, ArrowRight, ChevronDown } from 'lucide-react'
+import { ChevronRight, ChevronsRight, Building2, ArrowRight, ChevronDown, Quote, Award, Briefcase, Users, BadgeCheck, GraduationCap } from 'lucide-react'
+import { hodInitials } from '../../lib/hodProfile'
 
 function P({ text, className = 'text-[14px] leading-[1.9] text-[#547792]' }) {
   return <p className={className}>{text}</p>
+}
+
+function HodFact({ icon: Icon, label, value }) {
+  if (!value) return null
+  return (
+    <div className="flex items-start gap-3 rounded-[12px] border border-[#1A3263]/10 bg-[#F4F1EB]/70 px-4 py-3">
+      <span className="mt-[1px] grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#1A3263] text-[#FAB95B]">
+        <Icon size={14} />
+      </span>
+      <div className="min-w-0">
+        <div className="text-[9.5px] font-extrabold uppercase tracking-[0.16em] text-[#547792]">{label}</div>
+        <div className="mt-1 text-[12.5px] font-bold leading-snug text-[#1A3263]">{value}</div>
+      </div>
+    </div>
+  )
 }
 
 function Banner({ dept, onNavigate }) {
@@ -196,24 +212,87 @@ export default function DeptPage({ dept, data, onNavigate, campusImages = [], br
 
       {/* HOD Profile */}
       {dept.hod && (
-        <div className="bg-[#547792]/10 py-16">
+        <div className="bg-[#547792]/10 py-16 sm:py-20">
           <div className="mx-auto max-w-[1600px] px-6 lg:px-12">
-            <h3 className="text-[26px] sm:text-[30px] font-extrabold text-[#1A3263]">HOD Profile</h3>
-            <div className="mt-8 grid lg:grid-cols-[1.2fr_0.8fr] gap-10 items-start">
+            <div className="flex flex-wrap items-end justify-between gap-5">
               <div>
-                <div className="text-[17px] font-extrabold text-[#1A3263]">{dept.hod}</div>
-                <div className="mt-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#547792]">{dept.hodDesignation || 'Professor & Head'}</div>
-                <div className="mt-5 space-y-4 text-[13.5px] leading-[1.9] text-[#547792]">
-                  {hodBio ? hodBio.split(/\n\n|\n/).filter(Boolean).map((t, i) => <p key={i}><strong className="text-[#1A3263]">{dept.hod}</strong> {t}</p>) : null}
-                  {dept.hodQualification ? <p><strong className="text-[#1A3263]">Qualification:</strong> {dept.hodQualification}</p> : null}
-                  {dept.hodExperience ? <p><strong className="text-[#1A3263]">Experience:</strong> {dept.hodExperience}</p> : null}
+                <div className="flex items-center gap-4">
+                  <span className="h-[5px] w-[60px] rounded-full bg-[#FAB95B]"></span>
+                  <h3 className="text-[26px] sm:text-[30px] font-extrabold text-[#1A3263]">HOD Profile</h3>
+                </div>
+                <p className="mt-4 max-w-[560px] text-[13px] leading-[1.85] text-[#547792]">
+                  Message and profile of the Head of the Department of {dept.name}.
+                </p>
+              </div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#1A3263]/10 bg-white px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#1A3263] shadow-sm">
+                <BadgeCheck size={13} className="text-[#FAB95B]" /> Verified HoD Profile
+              </span>
+            </div>
+
+            <div className="mt-10 grid items-start gap-8 lg:grid-cols-[340px_minmax(0,1fr)] lg:gap-10">
+              {/* Portrait card - photo when uploaded, professional monogram otherwise */}
+              <div className="mx-auto w-full max-w-[340px] lg:mx-0">
+                <div className="rounded-[20px] border border-[#1A3263]/10 bg-white p-3 shadow-[0_26px_60px_-30px_rgba(26,50,99,0.55)]">
+                  <div className="relative overflow-hidden rounded-[14px] bg-[#1A3263]">
+                    <div className="aspect-[4/5] w-full">
+                      {dept.hodImage ? (
+                        <img src={dept.hodImage} alt={dept.hod} className="h-full w-full object-cover object-top" />
+                      ) : (
+                        <div className="relative grid h-full w-full place-items-center bg-gradient-to-br from-[#1A3263] via-[#25406F] to-[#547792]">
+                          <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.16),transparent_60%)]" />
+                          <div className="relative flex flex-col items-center">
+                            <span className="grid h-[104px] w-[104px] place-items-center rounded-full border-2 border-[#FAB95B]/70 bg-white/10 text-[34px] font-extrabold tracking-wide text-white">
+                              {hodInitials(dept.hod)}
+                            </span>
+                            <span className="mt-5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/70">Head of Department</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {dept.hodImage ? (
+                      <span className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#1A3263]/85 to-transparent" />
+                    ) : null}
+                    <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-[#FAB95B] px-3 py-1 text-[9.5px] font-extrabold uppercase tracking-[0.14em] text-[#1A3263]">
+                      <GraduationCap size={11} /> HoD
+                    </span>
+                  </div>
+                  <div className="px-2 pb-2 pt-5 text-center">
+                    <div className="text-[16px] font-extrabold leading-snug text-[#1A3263]">{dept.hod}</div>
+                    <div className="mx-auto mt-2.5 h-[3px] w-10 rounded-full bg-[#FAB95B]"></div>
+                    <div className="mt-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#547792]">{dept.hodDesignation || 'Professor & Head'}</div>
+                    {dept.hodQualification ? (
+                      <div className="mt-4 inline-flex max-w-full rounded-full bg-[#F4F1EB] px-3.5 py-1.5 text-[10.5px] font-bold text-[#1A3263]">{dept.hodQualification}</div>
+                    ) : null}
+                  </div>
                 </div>
               </div>
-              {dept.hodImage ? (
-                <div className="bg-white rounded-[10px] shadow-lg p-2.5">
-                  <img src={dept.hodImage} alt={dept.hod} className="w-full h-[380px] object-cover object-top rounded-[6px]" />
+
+              {/* Message card */}
+              <div className="rounded-[20px] border border-[#1A3263]/10 bg-white p-7 shadow-sm sm:p-10">
+                <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#547792]">
+                  {hodBio ? 'Message from the HoD' : 'Department Leadership'}
                 </div>
-              ) : null}
+                {hodBio ? (
+                  <>
+                    <Quote size={34} className="mt-5 text-[#FAB95B]" />
+                    <div className="mt-5 space-y-4 text-[13.5px] leading-[1.95] text-[#547792]">
+                      {hodBio.split(/\n\n|\n/).filter(Boolean).map((t, i) => <p key={i}><strong className="text-[#1A3263]">{dept.hod}</strong> {t}</p>)}
+                    </div>
+                  </>
+                ) : (
+                  <p className="mt-4 text-[13.5px] leading-[1.95] text-[#547792]">
+                    <strong className="text-[#1A3263]">{dept.hod}</strong> heads the Department of {dept.name}, guiding the department's academic programmes, faculty team, laboratories and research activities.
+                  </p>
+                )}
+
+                <div className="mt-8 h-px w-full bg-[#1A3263]/10"></div>
+                <div className="mt-6 grid gap-3.5 sm:grid-cols-2">
+                  <HodFact icon={Award} label="Qualification" value={dept.hodQualification} />
+                  <HodFact icon={Briefcase} label="Experience" value={dept.hodExperience} />
+                  <HodFact icon={Users} label="Faculty Members" value={dept.facultyCount ? String(dept.facultyCount) : ''} />
+                  <HodFact icon={Building2} label="Department" value={dept.name} />
+                </div>
+              </div>
             </div>
           </div>
         </div>

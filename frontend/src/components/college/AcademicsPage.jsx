@@ -1,4 +1,5 @@
 import { ChevronRight, GraduationCap, ArrowRight, Building2 } from 'lucide-react'
+import { hodInitials } from '../../lib/hodProfile'
 
 // Academics page - lists ONLY the departments that have a Department Page saved
 // from the admin "Department Pages (KCE Layout)" tab.
@@ -60,9 +61,9 @@ export default function AcademicsPage({ departments = [], deptPages = {}, onNavi
                     <div className="flex flex-1 flex-col p-5">
                       <h3 className="text-[15px] font-extrabold leading-snug text-[#1A3263]">Department of {dept.name}</h3>
                       {dept.hod ? (
-                        <div className="mt-2 flex items-center gap-2">
-                          <span className="grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-full border border-[#E8E2DB] bg-[#F4F1EB] text-[10px] font-extrabold text-[#1A3263]">
-                            {dept.hodImage ? <img src={dept.hodImage} alt={dept.hod} className="h-full w-full object-cover" /> : (dept.hod || 'H')[0]}
+                        <div className="mt-2.5 flex items-center gap-2">
+                          <span className="grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-full border border-[#E8E2DB] bg-[#1A3263] text-[10px] font-extrabold tracking-wide text-[#FAB95B]">
+                            {dept.hodImage ? <img src={dept.hodImage} alt={dept.hod} className="h-full w-full object-cover object-top" /> : hodInitials(dept.hod)}
                           </span>
                           <span className="min-w-0 truncate text-[12px] font-bold text-[#1A3263]">{dept.hod}</span>
                         </div>

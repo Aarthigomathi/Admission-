@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# local design preview pages (not part of the build)
+design-preview
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
