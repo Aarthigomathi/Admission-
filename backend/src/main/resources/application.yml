@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    # For production: MySQL
+    # url: jdbc:mysql://localhost:3306/tn_colleges?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
+    # username: root
+    # password: root
+    # Development: H2 in-memory for easy startup
+    url: jdbc:h2:mem:tn_colleges
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+app:
+  jwt:
+    secret: 5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437
+    expiration-ms: 86400000
+
+logging:
+  level:
+    com.tncolleges: DEBUG
