@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
-=======
 # Tamil Nadu College Discovery Platform - Complete Premium Production System
 
 > **Centralized discovery across all Tamil Nadu districts - Students Sign Up & Discover, Colleges Sign Up & Manage, Platform Securely Collects Activity & Generates PDF Reports**
@@ -305,4 +287,3 @@ mvn spring-boot:run
 > Platform is COMMON. Technology is COMMON. Database is COMMON. CMS is COMMON. But public-facing college experience must feel INDIVIDUAL. Student data belongs to platform and must be protected. Viewing does NOT auto-send personal info. Only ENQUIRE NOW with consent shares. Aggregated analytics only for colleges. PDF reports with platform branding #E8E2DB #FAB95B #547792 #1A3263.
 
 **Tamil Nadu College Discovery Platform - Complete Premium Production System - 2026 - #E8E2DB #FAB95B #547792 #1A3263**
->>>>>>> 720df147e5ffac5ad32401c98e3d5f91323469cb

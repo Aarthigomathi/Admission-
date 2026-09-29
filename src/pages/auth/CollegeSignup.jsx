@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Building2, Mail, Phone, Globe, MapPin, Calendar, User, Lock, Upload, CheckCircle2, AlertCircle, Sparkles, Image as ImageIcon, Award, Users, BookOpen } from 'lucide-react'
 import { createNewCollegeFromSignup } from '../../lib/collegeStorage'
 
-import { districts } from '../../lib/colleges'
 export default function CollegeSignup() {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
@@ -47,13 +46,13 @@ export default function CollegeSignup() {
           </div>
 
           <h1 className="font-display text-[34px] font-bold leading-[0.9] mt-12">Register your college and build your official website</h1>
-          <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">After signup, you can manage your complete college profile - logo, campus images, departments, courses, facilities, placements, examinations, and more through our official academic portal.</p>
+          <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">After signup, login to your college dashboard and fill your pages - logo & branding, home page, about/vision/mission, department pages (KCE Academics layout), courses, placements, examinations. Your college website goes live at /college/your-college-slug.</p>
 
           <div className="mt-8 space-y-3">
             {[
               { title: "Your own college website", desc: "After signup, your college profile is empty - you add all details yourself", icon: Building2 },
               { title: "Add Logo & Campus Images", desc: "Branding: logo, hero image, cover, tagline and visual identity", icon: ImageIcon },
-              { title: "Add Departments with HOD", desc: "Each department: name, HOD name, faculty count, labs, description, image", icon: Users },
+              { title: "Department Pages (KCE Layout)", desc: "Academics page kce.ac.in maathiri: about, vision/mission, regulations, courses, labs, PEO/PO/PSO, faculty, curriculum", icon: Users },
               { title: "Add Facilities, Placements, Exams", desc: "Environment, placement records, facilities, hostel, library, sports, exam details, research centres", icon: Award },
               { title: "Verification Process", desc: "After you add information, platform admin reviews. Verified colleges get badge", icon: CheckCircle2 },
             ].map((item,i)=>(
@@ -127,7 +126,7 @@ export default function CollegeSignup() {
                 <div>
                   <label className="text-[11px] font-bold uppercase text-[#1A3263]">District *</label>
                   <select value={formData.district} onChange={e=>updateField('district', e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]">
-                    {districts.map(item => <option key={item}>{item}</option>)}
+                    <option>Coimbatore</option><option>Chennai</option><option>Madurai</option><option>Trichy</option><option>Salem</option><option>Erode</option><option>Tirupur</option><option>Chengalpattu</option><option>Thanjavur</option>
                   </select>
                 </div>
                 <div>
@@ -150,7 +149,7 @@ export default function CollegeSignup() {
                 <div>
                   <label className="text-[11px] font-bold uppercase text-[#1A3263]">University / Affiliation</label>
                   <select value={formData.university} onChange={e=>updateField('university', e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]">
-                    <option>Anna University</option><option>Bharathiar University</option><option>Bharathidasan University</option><option>University of Madras</option><option>Madurai Kamaraj University</option><option>Alagappa University</option><option>Manonmaniam Sundaranar University</option><option>Periyar University</option><option>Thiruvalluvar University</option><option>Annamalai University</option><option>Tamil Nadu Agricultural University</option><option>Tamil Nadu Dr. M.G.R. Medical University</option><option>Tamil Nadu Teachers Education University</option><option>Tamil Nadu Open University</option><option>Tamil University</option><option>Central University of Tamil Nadu</option><option>SRM Institute of Science and Technology</option><option>Vellore Institute of Technology</option><option>SASTRA Deemed University</option><option>Hindustan Institute of Technology and Science</option><option>Kalasalingam Academy of Research and Education</option><option>Karunya Institute of Technology and Sciences</option><option>Amrita Vishwa Vidyapeetham</option><option>Other</option>
+                    <option>Anna University</option><option>Bharathiar University</option><option>TN Dr MGR Medical</option><option>University of Madras</option><option>Autonomous</option>
                   </select>
                 </div>
                 <div>

@@ -299,7 +299,8 @@ function CustomCollegePage({ college, customData }) {
     }
   }
   const branding = customData.branding || college.branding || {}
-  const departments = customData.departments || college.departments || []
+  // Only the departments this college added itself - template/default departments are never shown
+  const departments = Array.isArray(customData.departments) ? customData.departments : []
   const courses = customData.courses || college.courses || []
   const facilities = customData.customFacilities || []
   const placements = customData.placements || college.placements || []
@@ -323,7 +324,7 @@ function CustomCollegePage({ college, customData }) {
   const homePage = customData.homePage || college.homePage || {}
   const aboutPages = customData.aboutPages || college.aboutPages || {}
   const leadership = college.leadership || {}
-  const deptPages = customData.deptPages || college.deptPages || {}
+  const deptPages = customData.deptPages || {}
   const activeDept = sitePage && sitePage.startsWith('dept-') ? (departments.find(dp => String(dp.id) === sitePage.slice(5)) || null) : null
     const mgmtBase = (Array.isArray(aboutPages.management) && aboutPages.management.length > 0) ? aboutPages.management : [
     ...(leadership.management || customData.management || []).map(m => ({ role: m.role || '', name: m.name || '', photo: m.photo || '', bio: m.bio || (m.details ? [m.details] : []) })),

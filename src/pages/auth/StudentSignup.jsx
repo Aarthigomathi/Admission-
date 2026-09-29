@@ -5,81 +5,6 @@ import { getPublicColleges } from '../../lib/collegeStorage'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
-import { districts } from '../../lib/colleges'
-
-const tamilNaduUniversities = [
-  'Anna University', 'Bharathiar University', 'Bharathidasan University', 'University of Madras',
-  'Madurai Kamaraj University', 'Alagappa University', 'Manonmaniam Sundaranar University',
-  'Periyar University', 'Thiruvalluvar University', 'Annamalai University', 'Tamil Nadu Agricultural University',
-  'Tamil Nadu Dr. M.G.R. Medical University', 'Tamil Nadu Teachers Education University',
-  'Tamil Nadu Open University', 'Tamil University', 'Central University of Tamil Nadu',
-  'SRM Institute of Science and Technology', 'Vellore Institute of Technology', 'SASTRA Deemed University',
-  'Hindustan Institute of Technology and Science', 'Kalasalingam Academy of Research and Education',
-  'Karunya Institute of Technology and Sciences', 'Amrita Vishwa Vidyapeetham'
-]
-
-const districtDirectory = {
-  Coimbatore: { schools: ['PSG Sarvajana Higher Secondary School', 'Bharathi Matriculation Higher Secondary School', 'SBOA Matriculation and Higher Secondary School', 'Sri Ramakrishna Matriculation Higher Secondary School', 'Chinmaya Vidyalaya, Coimbatore', 'Kendriya Vidyalaya, Coimbatore', 'CS Academy, Coimbatore', 'SSVM World School', 'The Indian Public School, Coimbatore', 'Stanes Anglo Indian Higher Secondary School', 'Bharatiya Vidya Bhavan, Coimbatore', 'Manchester International School', 'Lisieux CMI International School', 'National Model Matriculation Higher Secondary School', 'Sri Ramakrishna Vidyalaya Matriculation Higher Secondary School'], colleges: ['PSG College of Technology', 'Coimbatore Institute of Technology', 'Kumaraguru College of Technology', 'Government College of Technology, Coimbatore', 'Sri Krishna College of Technology', 'Sri Krishna College of Engineering and Technology', 'Sri Ramakrishna Engineering College', 'Sri Ramakrishna Institute of Technology', 'PSG College of Arts & Science', 'Sri Krishna Arts and Science College', 'Hindusthan College of Engineering and Technology', 'Hindusthan College of Arts and Science', 'Rathinam College of Engineering and Technology', 'Karpagam College of Engineering', 'Karpagam Institute of Technology', 'SNS College of Technology', 'SNS College of Engineering', 'Nehru Institute of Engineering and Technology', 'Dr. N.G.P. Institute of Technology', 'Adithya Institute of Technology', 'Info Institute of Engineering', 'Park College of Engineering Technology', 'Karunya Institute of Technology and Sciences', 'Avinashilingam Institute for Home Science and Higher Education for Women', 'Government Arts College, Coimbatore', 'Kongunadu Arts and Science College', 'CMS College of Science and Commerce', 'Sri Ramakrishna Mission Vidyalaya College of Arts and Science', 'Amrita Vishwa Vidyapeetham, Coimbatore', 'Tamil Nadu Agricultural University, Coimbatore', 'Coimbatore Medical College', 'PSG Institute of Medical Sciences and Research', 'KMCH Institute of Health Sciences'] },
-  Chennai: { schools: ['PSBB Senior Secondary School', 'DAV Boys Senior Secondary School', 'SBOA School and Junior College', 'Chettinad Vidyashram', 'The Hindu Senior Secondary School', 'Kendriya Vidyalaya, IIT Madras'], colleges: ['Anna University, Chennai', 'Madras Institute of Technology', 'Loyola College, Chennai', 'Madras Christian College', 'Stella Maris College, Chennai', 'Presidency College, Chennai', 'SSN College of Engineering', 'Sathyabama Institute of Science and Technology', 'Stanley Medical College, Chennai'] },
-  Madurai: { schools: ['TVS Matriculation Higher Secondary School', 'Velammal Matriculation Higher Secondary School', 'SBOA Matriculation Higher Secondary School, Madurai', 'Kendriya Vidyalaya, Madurai'], colleges: ['Thiagarajar College of Engineering, Madurai', 'Madurai Kamaraj University', 'The Madura College', 'American College, Madurai'] },
-  Tiruchirappalli: { schools: ['Campion Anglo-Indian Higher Secondary School', 'Montfort School, Tiruchirappalli', 'Kendriya Vidyalaya, Tiruchirappalli', 'RSK Higher Secondary School'], colleges: ['Bishop Heber College, Tiruchirappalli', 'National College, Tiruchirappalli', 'Bharathidasan University, Tiruchirappalli', 'Government College of Engineering, Tiruchirappalli'] },
-  Salem: { schools: ['Montfort Anglo Indian Higher Secondary School', 'Holy Angels Matriculation Higher Secondary School', 'Kendriya Vidyalaya, Salem'], colleges: ['Government College of Engineering, Salem', 'Periyar University, Salem', 'Sona College of Technology, Salem', 'Sri Sarada College for Women, Salem'] },
-  Tirunelveli: { schools: ['St. Johns Matriculation Higher Secondary School, Tirunelveli', 'Kendriya Vidyalaya, Tirunelveli'], colleges: ['Manonmaniam Sundaranar University, Tirunelveli', 'Government College of Engineering, Tirunelveli', 'St. Xavier’s College, Palayamkottai'] },
-  Erode: { schools: ['Bharathi Matriculation Higher Secondary School, Erode', 'Vivekananda Matriculation Higher Secondary School, Erode'], colleges: ['Kongu Engineering College, Erode', 'Erode Sengunthar Engineering College', 'Bannari Amman Institute of Technology, Sathyamangalam'] },
-  Vellore: { schools: ['Vellore Central School', 'Kendriya Vidyalaya, Vellore'], colleges: ['Vellore Institute of Technology', 'Christian Medical College, Vellore', 'Voorhees College, Vellore'] },
-  Ariyalur: { schools: ['Government Higher Secondary School, Ariyalur', 'Kendriya Vidyalaya, Ariyalur'], colleges: [] },
-  Chengalpattu: { schools: ['Government Higher Secondary School, Chengalpattu', 'Kendriya Vidyalaya, Chengalpattu'], colleges: [] },
-  Cuddalore: { schools: ['St. Joseph’s Higher Secondary School, Cuddalore', 'Government Higher Secondary School, Cuddalore'], colleges: [] },
-  Dharmapuri: { schools: ['Sri Vijay Vidyalaya, Dharmapuri', 'Government Higher Secondary School, Dharmapuri'], colleges: [] },
-  Dindigul: { schools: ['St. Mary’s Higher Secondary School, Dindigul', 'Government Higher Secondary School, Dindigul'], colleges: [] },
-  Kallakurichi: { schools: ['Government Higher Secondary School, Kallakurichi', 'Kendriya Vidyalaya, Kallakurichi'], colleges: [] },
-  Kancheepuram: { schools: ['Sri Sankara Global Academy, Kanchipuram', 'Government Higher Secondary School, Kanchipuram'], colleges: [] },
-  Kanniyakumari: { schools: ['St. Joseph’s Convent Higher Secondary School, Nagercoil', 'Government Higher Secondary School, Nagercoil'], colleges: [] },
-  Karur: { schools: ['Cheran Matriculation Higher Secondary School, Karur', 'Government Higher Secondary School, Karur'], colleges: [] },
-  Krishnagiri: { schools: ['Adhiyamaan Matriculation Higher Secondary School, Hosur', 'Maharishi Vidya Mandir, Hosur'], colleges: [] },
-  Mayiladuthurai: { schools: ['Government Higher Secondary School, Mayiladuthurai', 'Kendriya Vidyalaya, Mayiladuthurai'], colleges: [] },
-  Nagapattinam: { schools: ['Government Higher Secondary School, Nagapattinam', 'Kendriya Vidyalaya, Nagapattinam'], colleges: [] },
-  Namakkal: { schools: ['K.S.R. Matriculation Higher Secondary School, Tiruchengode', 'Government Higher Secondary School, Namakkal'], colleges: [] },
-  Nilgiris: { schools: ['Good Shepherd International School, Ooty', 'Kendriya Vidyalaya, Ooty'], colleges: [] },
-  Perambalur: { schools: ['Government Higher Secondary School, Perambalur', 'Kendriya Vidyalaya, Perambalur'], colleges: [] },
-  Pudukkottai: { schools: ['Government Higher Secondary School, Pudukkottai', 'Kendriya Vidyalaya, Pudukkottai'], colleges: [] },
-  Ramanathapuram: { schools: ['Government Higher Secondary School, Ramanathapuram', 'Kendriya Vidyalaya, Ramanathapuram'], colleges: [] },
-  Ranipet: { schools: ['Government Higher Secondary School, Ranipet', 'Kendriya Vidyalaya, Ranipet'], colleges: [] },
-  Sivaganga: { schools: ['Chettinad Public School, Sivaganga', 'Government Higher Secondary School, Sivaganga'], colleges: [] },
-  Tenkasi: { schools: ['Government Higher Secondary School, Tenkasi', 'Kendriya Vidyalaya, Tenkasi'], colleges: [] },
-  Thanjavur: { schools: ['Sacred Heart Higher Secondary School, Thanjavur', 'Kendriya Vidyalaya, Thanjavur'], colleges: [] },
-  Theni: { schools: ['Government Higher Secondary School, Theni', 'Kendriya Vidyalaya, Theni'], colleges: [] },
-  Thoothukudi: { schools: ['Sakthi Vinayagar Hindu Vidyalaya, Thoothukudi', 'Government Higher Secondary School, Thoothukudi'], colleges: [] },
-  Tirupathur: { schools: ['Government Higher Secondary School, Tirupathur', 'Kendriya Vidyalaya, Tirupathur'], colleges: [] },
-  Tiruppur: { schools: ['Nanjappa Municipal Higher Secondary School, Tiruppur', 'Kendriya Vidyalaya, Tiruppur'], colleges: [] },
-  Tiruvallur: { schools: ['Velammal New-Gen School, Tiruvallur', 'Kendriya Vidyalaya, Tiruvallur'], colleges: [] },
-  Tiruvannamalai: { schools: ['Government Higher Secondary School, Tiruvannamalai', 'Kendriya Vidyalaya, Tiruvannamalai'], colleges: [] },
-  Tiruvarur: { schools: ['Government Higher Secondary School, Tiruvarur', 'Kendriya Vidyalaya, Tiruvarur'], colleges: [] },
-  Viluppuram: { schools: ['Government Higher Secondary School, Viluppuram', 'Kendriya Vidyalaya, Viluppuram'], colleges: [] },
-  Virudhunagar: { schools: ['KVS Matriculation Higher Secondary School, Virudhunagar', 'Government Higher Secondary School, Virudhunagar'], colleges: [] }
-}
-
-const universityColleges = {
-  'Anna University': ['PSG College of Technology', 'Coimbatore Institute of Technology', 'Government College of Technology, Coimbatore', 'Kumaraguru College of Technology', 'Sri Krishna College of Technology', 'Sri Krishna College of Engineering and Technology', 'Sri Ramakrishna Engineering College', 'Thiagarajar College of Engineering, Madurai', 'SSN College of Engineering', 'Rajalakshmi Engineering College', 'Sri Sairam Engineering College', 'Saveetha Engineering College', 'Velammal Engineering College', 'Government College of Engineering, Salem', 'Government College of Engineering, Tirunelveli'],
-  'Bharathiar University': ['PSG College of Arts & Science', 'Sri Krishna Arts and Science College', 'Kongunadu Arts and Science College', 'Government Arts College, Coimbatore', 'CMS College of Science and Commerce', 'Sri Ramakrishna Mission Vidyalaya College of Arts and Science'],
-  'Bharathidasan University': ['Bishop Heber College, Tiruchirappalli', 'National College, Tiruchirappalli', 'St. Joseph’s College, Tiruchirappalli', 'Bharathidasan University Constituent College'],
-  'University of Madras': ['Loyola College, Chennai', 'Madras Christian College', 'Stella Maris College, Chennai', 'Presidency College, Chennai', 'Women’s Christian College, Chennai', 'The New College, Chennai'],
-  'Madurai Kamaraj University': ['The American College, Madurai', 'Thiagarajar College, Madurai', 'The Madura College', 'Lady Doak College, Madurai'],
-  'Alagappa University': ['Alagappa Government Arts College, Karaikudi', 'Kendriya Electrotechnical Institute, Karaikudi'],
-  'Periyar University': ['Sona College of Technology, Salem', 'Government Arts College, Salem', 'Sri Sarada College for Women, Salem'],
-  'Manonmaniam Sundaranar University': ['Government College of Engineering, Tirunelveli', 'St. Xavier’s College, Palayamkottai', 'Sarah Tucker College, Tirunelveli'],
-  'Tamil Nadu Agricultural University': ['Agricultural College and Research Institute, Coimbatore', 'Agricultural College and Research Institute, Madurai', 'Anbil Dharmalingam Agricultural College, Tiruchirappalli'],
-  'Tamil Nadu Dr. M.G.R. Medical University': ['Coimbatore Medical College', 'Stanley Medical College, Chennai', 'Madras Medical College', 'Christian Medical College, Vellore', 'Government Medical College, Omandurar'],
-  'Vellore Institute of Technology': ['VIT, Vellore', 'VIT Chennai'],
-  'SRM Institute of Science and Technology': ['SRM Institute of Science and Technology, Kattankulathur', 'SRM Institute of Science and Technology, Ramapuram'],
-  'Amrita Vishwa Vidyapeetham': ['Amrita School of Engineering, Coimbatore', 'Amrita School of Medicine, Coimbatore']
-}
-
-const directorySuggestions = (district, type) => {
-  const local = districtDirectory[district]?.[type] || []
-  const fallback = type === 'schools' ? [`Government Higher Secondary School, ${district}`, `Government Girls Higher Secondary School, ${district}`, `Kendriya Vidyalaya, ${district}`] : [`Government Arts and Science College, ${district}`, `Government College of Engineering, ${district}`]
-  return [...new Set([...local, ...fallback])]
-}
 export default function StudentSignup() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
@@ -116,7 +41,6 @@ export default function StudentSignup() {
     state: 'Tamil Nadu',
     educationLevel: '12th',
     schoolCollege: '',
-    university: 'Anna University',
     board: 'Tamil Nadu State Board',
     yearOfPassing: '2024',
     marksObtained: '',
@@ -210,10 +134,11 @@ export default function StudentSignup() {
   const handleEducationLevelChange = (level) => {
     let total = ''
     if (level === '10th') total = '500'
+    else if (level === '11th') total = '600'
     else if (level === '12th') total = '600'
     else if (level === 'Diploma') total = '1000'
     else if (level === 'Undergraduate') total = '1000'
-    else total = ''
+    else total = '1000'
     const newData = { ...formData, educationLevel: level, totalMarks: total }
     if (formData.marksObtained) {
       const { percentage, grade } = calculatePercentage(formData.marksObtained, total)
@@ -296,13 +221,13 @@ export default function StudentSignup() {
             <div className="h-12 w-12 rounded-[14px] bg-[#FAB95B] text-[#1A3263] grid place-items-center font-bold text-[22px]">T</div>
             <div>
               <div className="font-display font-bold text-[18px]">Tamil Nadu Colleges</div>
-              <div className="text-[11px] tracking-widest uppercase text-[#FAB95B]">{language==='ta' ? 'மாணவர் பதிவு - கல்வி விருப்பம்' : 'Student Sign Up • Academic Interest'}</div>
+              <div className="text-[11px] tracking-widest uppercase text-[#FAB95B]">{language==='ta' ? 'மாணவர் பதிவு - City க்கு கீழே Dream Course' : 'Student Sign Up - Dream Course Below City'}</div>
             </div>
           </div>
 
           <div className="mt-10">
-            <h1 className="font-display text-[28px] font-bold leading-[0.95]">{language==='ta' ? 'உங்கள் கல்வி விருப்பம்' : 'Your Academic Interest'}</h1>
-            <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">{language==='ta' ? 'நீங்கள் என்ன படிக்க விரும்புகிறீர்கள்? உங்கள் நகரம் மற்றும் பாட விருப்பத்தைப் பயன்படுத்தி பொருத்தமான கல்லூரிகளைக் காட்டுவோம்.' : 'What would you like to study? We’ll use your city and course interest to show relevant colleges.'}</p>
+            <h1 className="font-display text-[28px] font-bold leading-[0.95]">{language==='ta' ? 'City க்கு கீழே உங்கள் கனவு பாடம்' : 'Your Dream Course Below City'}</h1>
+            <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">{language==='ta' ? 'என்ன படிக்க ஆசைப்படுகிறாய் என்பதை City க்கு கீழே உடனே கேட்கிறோம் - Dream course signup போதே போடணும் - City க்கு கீழே - Tamil / English toggle' : 'We ask what you want to study immediately below City - Dream course at signup itself - Below City - Tamil / English toggle'}</p>
           </div>
 
           <div className="mt-8 space-y-3">
@@ -365,8 +290,8 @@ export default function StudentSignup() {
             {step===1 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={22} className="text-[#FAB95B]" /> {language==='ta' ? 'அடிப்படை தகவல் - உங்கள் கல்வி விருப்பம்' : 'Basic Information - Your Academic Interest'}</h2>
-                  <p className="text-[12px] text-[#547792] mt-1">{language==='ta' ? 'நீங்கள் என்ன படிக்க விரும்புகிறீர்கள்? உங்கள் நகரம் மற்றும் பாட விருப்பத்தைப் பயன்படுத்தி பொருத்தமான கல்லூரிகளைக் காட்டுவோம்.' : 'What would you like to study? We’ll use your city and course interest to show relevant colleges.'}</p>
+                  <h2 className="font-display text-[24px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={22} className="text-[#FAB95B]" /> {language==='ta' ? 'அடிப்படை தகவல் - City க்கு கீழே கனவு பாடம்' : 'Basic Info - Dream Course Below City'} <span className="text-[11px] px-2 py-1 rounded-full bg-[#FAB95B] text-[#1A3263]"> City → Dream Course</span></h2>
+                  <p className="text-[12px] text-[#547792] mt-1">{language==='ta' ? 'City க்கு கீழே என்ன படிக்க ஆசைப்படுகிறாய் என்பதை கேட்கிறோம் - Dream course signup போதே - City க்கு கீழே வேண்டும்' : 'We ask what you want to study right below City - Dream course at signup itself - Below City needed - Enna padikka aasa padra dream course signup pothey podanum citykku keela'}</p>
                 </div>
 
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6 shadow-sm space-y-5">
@@ -392,7 +317,7 @@ export default function StudentSignup() {
                       <div>
                         <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><MapPin size={12} className="text-[#FAB95B]" /> {t('district')} *</label>
                         <select value={formData.district} onChange={e=>updateField('district', e.target.value)} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[13px] font-medium">
-                          {districts.map(item => <option key={item}>{item}</option>)}<option>Tirunelveli</option>
+                          <option>Coimbatore</option><option>Chennai</option><option>Madurai</option><option>Trichy</option><option>Salem</option><option>Erode</option><option>Tirupur</option><option>Chengalpattu</option><option>Thanjavur</option><option>Tirunelveli</option>
                         </select>
                       </div>
                       <div>
@@ -405,7 +330,7 @@ export default function StudentSignup() {
 
                   <div className="rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/40 p-5">
                     <div className="flex items-center gap-2 text-[13px] font-bold text-[#1A3263]"><Sparkles size={16} className="text-[#FAB95B]" /> {language==='ta' ? 'என்ன படிக்க ஆசைப்படுகிறாய்? - கனவு பாடம் - City க்கு கீழே' : 'What do you want to study? - Dream Course - Below City'} <span className="px-2 py-0.5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[10px]">{language==='ta' ? 'City க்கு கீழே' : 'Below City'} *</span></div>
-                    <div className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'நீங்கள் என்ன படிக்க விரும்புகிறீர்கள்? உங்கள் நகரம் மற்றும் பாட விருப்பத்தைப் பயன்படுத்தி பொருத்தமான கல்லூரிகளைக் காட்டுவோம்.' : 'What would you like to study? We’ll use your city and course interest to show relevant colleges.'}</div>
+                    <div className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'City க்கு கீழே உடனே கேட்கிறோம் - என்ன படிக்க ஆசைப்படுகிறாய் என்பதை - Dream course signup போதே போடணும்' : 'We ask immediately below City - What do you want to study - Dream course at signup itself - Below City needed'}</div>
                     
                     <div className="grid md:grid-cols-2 gap-4 mt-4">
                       <div className="md:col-span-2">
@@ -425,6 +350,13 @@ export default function StudentSignup() {
                       </div>
                     </div>
 
+                    <div className="mt-4 rounded-[12px] bg-[#1A3263] text-white p-3 flex items-start gap-2">
+                      <Heart size={14} className="text-[#FAB95B] shrink-0 mt-0.5" />
+                      <div className="text-[11px] leading-[1.5]">
+                        <div className="font-bold text-[#FAB95B]">{language==='ta' ? 'City க்கு கீழே Dream Course' : 'Dream Course Below City'}</div>
+                        <div className="text-[#E8E2DB]/80 mt-1">{language==='ta' ? `நீங்கள் ${formData.city || 'உங்கள் நகரம்'} - ${formData.district} ல் இருந்து ${formData.interestedCourse} படிக்க ஆசைப்படுகிறீர்கள் - இதற்கு ஏற்ற கல்லூரிகள் அடுத்த படியில் காட்டப்படும்` : `You are from ${formData.city || 'your city'} - ${formData.district} and want to study ${formData.interestedCourse} - Colleges for this will be shown in next steps`}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -548,6 +480,7 @@ export default function StudentSignup() {
               <div className="space-y-5 animate-fadeIn">
                 <div>
                   <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><FileText size={20} className="text-[#FAB95B]" /> {language==='ta' ? 'கல்வி & அசல் ஆவணங்கள்' : 'Education & Original Documents'}</h2>
+                  <p className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'மதிப்பெண் போட்டவுடன் தானியங்கி சதவீதம் - அசல் ஆவணங்கள் பதிவேற்றம்' : 'Mark potta odaney automatic percentage - Original documents upload'}</p>
                 </div>
 
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6 shadow-sm space-y-5">
@@ -555,49 +488,25 @@ export default function StudentSignup() {
                     <div>
                       <label className="text-[10px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><GraduationCap size={12} className="text-[#FAB95B]" /> {t('educationLevel')} *</label>
                       <div className="mt-2 grid grid-cols-3 gap-2">
-                        {['10th','12th','Diploma','Undergraduate','Postgraduate'].map(level=>(
+                        {['10th','11th','12th','Diploma','Undergraduate','Postgraduate'].map(level=>(
                           <button key={level} onClick={()=>handleEducationLevelChange(level)} className={`h-10 rounded-[10px] border-2 text-[11px] font-semibold transition-all ${formData.educationLevel===level?'bg-[#1A3263] text-[#FAB95B] border-[#1A3263]':'bg-[#E8E2DB] border-[#E8E2DB] text-[#1A3263] hover:border-[#FAB95B]'}`}>{level}</button>
                         ))}
                       </div>
                     </div>
-                    {['10th', '12th'].includes(formData.educationLevel) ? (
-                      <>
-                        <div>
-                          <label className="text-[10px] font-bold uppercase text-[#1A3263]">{t('board')}</label>
-                          <select value={formData.board} onChange={e=>updateField('board', e.target.value)} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]">
-                            <option>Tamil Nadu State Board</option><option>CBSE</option><option>ICSE</option><option>ISC</option><option>NIOS</option><option>Anglo-Indian Board</option><option>Matriculation</option><option>Other</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><School size={12} className="text-[#FAB95B]" /> School Name *</label>
-                          <input list="tn-schools" value={formData.schoolCollege} onChange={e=>updateField('schoolCollege', e.target.value)} placeholder="Search or enter school name" className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div>
-                          <label className="text-[10px] font-bold uppercase text-[#1A3263]">University / Institution *</label>
-                          <select value={formData.university} onChange={e=>updateField('university', e.target.value)} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]">
-                            {tamilNaduUniversities.map(university => <option key={university}>{university}</option>)}
-                            <option>Other</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><School size={12} className="text-[#FAB95B]" /> College Name *</label>
-                          <input list="tn-colleges" value={formData.schoolCollege} onChange={e=>updateField('schoolCollege', e.target.value)} placeholder="Search or enter college name" className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
-                        </div>
-                      </>
-                    )}
-                    <datalist id="tn-schools">
-                      {directorySuggestions(formData.district, 'schools').map(school => <option key={school} value={school} />)}
-                    </datalist>
-                    <datalist id="tn-colleges">
-                      {[...(universityColleges[formData.university] || []), ...directorySuggestions(formData.district, 'colleges'), ...tamilNaduUniversities].filter((institution, index, all) => all.indexOf(institution) === index).map(institution => <option key={institution} value={institution} />)}
-                    </datalist>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-[#1A3263]">{t('board')}</label>
+                      <select value={formData.board} onChange={e=>updateField('board', e.target.value)} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]">
+                        <option>Tamil Nadu State Board</option><option>CBSE</option><option>ICSE</option><option>Anna University</option><option>Bharathiar University</option><option>Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><School size={12} className="text-[#FAB95B]" /> {t('schoolCollege')} *</label>
+                      <input value={formData.schoolCollege} onChange={e=>updateField('schoolCollege', e.target.value)} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
+                    </div>
                     <div>
                       <label className="text-[10px] font-bold uppercase text-[#1A3263]">{t('yearOfPassing')}</label>
                       <select value={formData.yearOfPassing} onChange={e=>updateField('yearOfPassing', e.target.value)} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]">
-                        {Array.from({ length: 27 }, (_, index) => String(2026 - index)).map(year => <option key={year}>{year}</option>)}
+                        <option>2026</option><option>2025</option><option>2024</option><option>2023</option><option>2022</option>
                       </select>
                     </div>
                   </div>
@@ -610,7 +519,7 @@ export default function StudentSignup() {
                         <input value={formData.marksObtained} onChange={e=>handleMarksChange('marksObtained', e.target.value)} placeholder="540 or 450/500" className="mt-1 w-full h-11 px-3 rounded-[10px] bg-white text-[#1A3263] border-2 border-[#FAB95B] outline-none text-[13px] font-bold" />
                       </div>
                       <div>
-                        <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('totalMarks')} * {formData.totalMarks ? `- ${formData.educationLevel} = ${formData.totalMarks}` : ''}</label>
+                        <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('totalMarks')} * - {formData.educationLevel} = {formData.totalMarks}</label>
                         <input value={formData.totalMarks} onChange={e=>handleMarksChange('totalMarks', e.target.value)} className="mt-1 w-full h-11 px-3 rounded-[10px] bg-white text-[#1A3263] border-2 border-[#FAB95B] outline-none text-[13px] font-bold" />
                       </div>
                       <div>
@@ -707,7 +616,7 @@ export default function StudentSignup() {
                     <div>
                       <label className="text-[10px] font-bold uppercase text-[#1A3263]">{t('preferredDistrict')}</label>
                       <select value={formData.preferredDistrict} onChange={e=>updateField('preferredDistrict', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]">
-                        {districts.map(item => <option key={item}>{item}</option>)}<option>Any District</option>
+                        <option>Coimbatore</option><option>Chennai</option><option>Madurai</option><option>Trichy</option><option>Salem</option><option>Any District</option>
                       </select>
                     </div>
                     <div>

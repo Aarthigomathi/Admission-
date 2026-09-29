@@ -3,7 +3,6 @@ import { Search, MapPin, Bookmark, GitCompare, Menu, X, GraduationCap, Building2
 import { useState, useEffect } from 'react'
 import LanguageToggle from '../student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
-import { districts } from '../../lib/colleges'
 
 export default function PlatformHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -28,7 +27,7 @@ export default function PlatformHeader() {
             <div className="h-10 w-10 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center font-display text-[20px] font-bold tracking-tight border-2 border-[#FAB95B]">T</div>
             <div className="leading-[0.9]">
               <div className="font-display text-[18px] font-semibold tracking-tight text-[#1A3263]">Tamil Nadu</div>
-              <div className="text-[11px] font-semibold tracking-[0.14em] uppercase text-[#547792]">Discover • Decide • Dream</div>
+              <div className="text-[11px] font-semibold tracking-[0.14em] uppercase text-[#547792]">Colleges • Premium • Secure</div>
             </div>
           </Link>
 
@@ -44,9 +43,11 @@ export default function PlatformHeader() {
             {currentStudent && <div className="hidden md:flex"><LanguageToggle variant="pill" /></div>}
             <div className="hidden md:flex items-center gap-1.5 rounded-full bg-white border-2 border-[#E8E2DB] px-3 h-10 mr-1">
               <MapPin size={14} className="text-[#547792]" />
-              <select className="bg-transparent text-[12px] font-medium outline-none text-[#1A3263]" aria-label="Select Tamil Nadu district">
+              <select className="bg-transparent text-[12px] font-medium outline-none text-[#1A3263]">
                 <option>{t('allDistricts')}</option>
-                {districts.map(item => <option key={item}>{item}</option>)}
+                <option>Coimbatore</option>
+                <option>Chennai</option>
+                <option>Madurai</option>
               </select>
             </div>
             <Link to="/search" className="hidden md:grid h-10 w-10 place-items-center rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] hover:border-[#FAB95B]">

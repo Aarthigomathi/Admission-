@@ -3,7 +3,6 @@ import { useSearchParams, Link } from 'react-router-dom'
 import { Search, MapPin, Filter, GraduationCap, Bookmark, GitCompare, ArrowUpRight, Building2, Sparkles, Shield } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
 import { getPublicColleges } from '../../lib/collegeStorage'
-import { districts } from '../../lib/colleges'
 import { activityTracker, ACTIVITY_TYPES } from '../../lib/activityTracker'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
@@ -120,8 +119,13 @@ export default function SearchPage() {
                 <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search colleges added by colleges themselves..." className="flex-1 bg-transparent outline-none text-[14px] font-medium placeholder:text-[#547792]/60 text-[#1A3263]" />
               </div>
               <select value={district} onChange={e=>setDistrict(e.target.value)} className="h-12 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-medium text-[#1A3263] focus:border-[#FAB95B] outline-none">
-                <option value="All">All Districts - TN</option>
-                {districts.map(item => <option key={item} value={item}>{item}</option>)}
+                <option value="All">All Districts</option>
+                <option>Coimbatore</option>
+                <option>Chennai</option>
+                <option>Madurai</option>
+                <option>Trichy</option>
+                <option>Salem</option>
+                <option>Tirupur</option>
               </select>
               <select value={typeFilter} onChange={e=>setTypeFilter(e.target.value)} className="h-12 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-medium text-[#1A3263]">
                 <option value="All">All Types</option>

@@ -801,46 +801,6 @@ export const colleges = [
   }
 ]
 
-// Official 38 districts of Tamil Nadu, kept in alphabetical order for every district filter.
-export const districts = [
-  "Ariyalur",
-  "Chengalpattu",
-  "Chennai",
-  "Coimbatore",
-  "Cuddalore",
-  "Dharmapuri",
-  "Dindigul",
-  "Erode",
-  "Kallakurichi",
-  "Kancheepuram",
-  "Kanniyakumari",
-  "Karur",
-  "Krishnagiri",
-  "Madurai",
-  "Mayiladuthurai",
-  "Nagapattinam",
-  "Namakkal",
-  "Nilgiris",
-  "Perambalur",
-  "Pudukkottai",
-  "Ramanathapuram",
-  "Ranipet",
-  "Salem",
-  "Sivaganga",
-  "Tenkasi",
-  "Thanjavur",
-  "Theni",
-  "Thoothukudi",
-  "Tiruchirappalli",
-  "Tirunelveli",
-  "Tirupathur",
-  "Tiruppur",
-  "Tiruvallur",
-  "Tiruvannamalai",
-  "Tiruvarur",
-  "Vellore",
-  "Viluppuram",
-  "Virudhunagar"
-]
+export const districts = ["Coimbatore", "Chennai", "Madurai", "Trichy", "Salem", "Tirunelveli", "Erode", "Tirupur"]
 export const collegeTypes = ["Engineering", "Arts & Science", "Medical", "Management", "Law", "Agriculture"]
 export const courseTypes = ["B.E", "B.Tech", "B.Sc", "BCA", "BBA", "B.Com", "M.E", "MBA", "MBBS", "M.Sc"]

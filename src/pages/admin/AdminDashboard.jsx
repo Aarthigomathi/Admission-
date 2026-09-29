@@ -4,6 +4,7 @@ import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCus
 import CollegeAnalytics from '../../components/admin/CollegeAnalytics'
 import AboutPagesAdmin from '../../components/admin/AboutPagesAdmin.jsx'
 import DeptPagesAdmin from '../../components/admin/DeptPagesAdmin.jsx'
+import AddCollegeAdmin from '../../components/admin/AddCollegeAdmin.jsx'
 import { 
  LayoutDashboard, Palette, Building2, GraduationCap, Users, Megaphone, Calendar, Image as ImageIcon, Trophy, Landmark, ShieldCheck, PhoneCall,
  FileText, Phone, Settings, Eye, Save, Upload, Plus, Trash2, Edit3, CheckCircle2, BarChart3, ExternalLink,
@@ -726,6 +727,7 @@ export default function AdminDashboard() {
        • Exam Details<br/>
        • Management, Principal, Accreditation<br/>
        • Events, Gallery, Announcements<br/>
+       • Add College (new college website)<br/>
        • Manage all college sections
       </div>
      </div>
@@ -745,6 +747,8 @@ export default function AdminDashboard() {
 
  const menu = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, count: `${profileCompletion}%` },
+  { group: 'COLLEGES' },
+  { id: 'addcollege', label: 'Add College (New Website)', icon: Building2, highlight: true },
   { group: 'WEBSITE - KCE LAYOUT' },
   { id: 'branding', label: 'College Logo & Branding', icon: Palette, highlight: true },
   { id: 'homepage', label: 'Home Page (KCE Layout)', icon: Home, highlight: true },
@@ -1474,6 +1478,23 @@ export default function AdminDashboard() {
 
      {activeSection==='deptpages' && (
        <DeptPagesAdmin collegeId={selectedCollegeId} customData={customData} setCustomData={setCustomData} fullCollege={currentCollege} />
+     )}
+
+     {activeSection==='addcollege' && (
+       <AddCollegeAdmin onCreated={(c)=>{
+        localStorage.setItem('tn_current_college', JSON.stringify(c))
+        setCurrentCollege(c)
+        setSelectedCollegeId(c.id)
+        setCustomData(getCollegeCustomData(c.id))
+        setActiveSection('deptpages')
+        alert(`${c.name} created - ID ${c.id}. Ippo Department Pages tab-la content fill pannunga - Academics kce.ac.in maathiri varum.`)
+       }} onOpenCollege={(c)=>{
+        localStorage.setItem('tn_current_college', JSON.stringify(c))
+        setCurrentCollege(c)
+        setSelectedCollegeId(c.id)
+        setCustomData(getCollegeCustomData(c.id))
+        setActiveSection('deptpages')
+       }} />
      )}
 
      {activeSection==='aboutpages' && (
