@@ -1,0 +1,12 @@
+{
+  "name": "campusconnect-frontend-shortcut",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Convenience entry point for admission-portal/client",
+  "scripts": {
+    "postinstall": "npm --prefix ../admission-portal/client install",
+    "dev": "npm --prefix ../admission-portal/client run dev",
+    "build": "npm --prefix ../admission-portal/client run build",
+    "preview": "npm --prefix ../admission-portal/client run preview"
+  }
+}
