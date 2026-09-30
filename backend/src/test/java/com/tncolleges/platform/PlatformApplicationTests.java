@@ -19,7 +19,9 @@ class PlatformApplicationTests {
     }
 
     @Test
-    void researchTableIsCreatedInH2() {
+    void entityTablesAreCreatedInH2() {
         assertEquals(0, jdbcTemplate.queryForObject("select count(*) from research", Integer.class));
+        assertEquals(0, jdbcTemplate.queryForObject("select count(*) from placements", Integer.class));
+        assertEquals(0, jdbcTemplate.queryForObject("select count(*) from accreditations", Integer.class));
     }
 }
