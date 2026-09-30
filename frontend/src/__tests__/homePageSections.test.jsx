@@ -67,4 +67,37 @@ describe('home page', () => {
     expect(container.textContent).not.toContain('Verified Platform')
     expect(container.textContent).not.toContain('All Types')
   })
+
+  it('has no "No Colleges Yet" placeholder and no how-it-works flow sections', async () => {
+    await render(<PlatformHome />)
+    const text = container.textContent
+    expect(text).not.toContain('No Colleges Yet')
+    expect(text).not.toContain('Automatic Default College Name Kattama')
+    expect(text).not.toContain('How it works - Automatic Default')
+    expect(text).not.toContain('How It Works - Complete Flows')
+    expect(text).not.toContain('Student Flow - Multi-step Signup')
+    expect(text).not.toContain('College Flow - Verification')
+    expect(text).not.toContain('Platform Admin Flow - Analytics')
+    expect(text).not.toContain('Colleges - No Default')
+    // with zero colleges the section renders nothing at all
+    expect(text).not.toContain('Colleges Added by Colleges Themselves')
+  })
+
+  it('still shows the college list when colleges exist', async () => {
+    localStorage.setItem('tn_registered_colleges', JSON.stringify([{
+      id: 9001,
+      slug: 'demo-check-college',
+      name: 'Demo Check College',
+      shortName: 'Demo Check',
+      district: 'Coimbatore',
+      city: 'Coimbatore',
+      type: 'Engineering',
+      courses: [],
+      departments: [],
+      branding: {}
+    }]))
+    await render(<PlatformHome />)
+    expect(container.textContent).toContain('Colleges Added by Colleges Themselves - 1 Colleges')
+    expect(container.textContent).toContain('Demo Check College')
+  })
 })

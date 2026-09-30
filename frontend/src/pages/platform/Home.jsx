@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Sparkles, GraduationCap, Users, Building2, ArrowUpRight, Star, SlidersHorizontal, Image as ImageIcon, Shield, FileText, BarChart3, Bookmark, GitCompare, MessageCircle } from 'lucide-react'
+import { GraduationCap, Building2, ArrowUpRight, Image as ImageIcon, Shield, BarChart3 } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
 import { getPublicColleges } from '../../lib/collegeStorage'
 import LanguageToggle from '../../components/student/LanguageToggle'
@@ -147,72 +147,21 @@ export default function PlatformHome() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-10">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="font-display text-[28px] font-bold tracking-tight text-[#1A3263]">
-            {colleges.length===0 ? 'Colleges - No Default - Colleges Signup & Add Themselves' : `Colleges Added by Colleges Themselves - ${colleges.length} Colleges - Premium`}
-          </h2>
-          <Link to="/search" className="hidden lg:inline-flex items-center gap-1.5 text-[13px] font-bold text-[#1A3263] hover:gap-2 transition-all">View all <ArrowUpRight size={16} /></Link>
-        </div>
-
-        {colleges.length===0 ? (
-          <div className="rounded-[28px] bg-white border-2 border-[#FAB95B]/30 p-12 text-center shadow-sm">
-            <div className="h-20 w-20 rounded-[24px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center mx-auto text-3xl"></div>
-            <h3 className="font-display text-[24px] font-bold text-[#1A3263] mt-6">No Colleges Yet - Automatic Default College Name Kattama</h3>
-            <p className="text-[14px] text-[#547792] mt-3 max-w-[600px] mx-auto leading-[1.6]">
-              Ippa automatic ah default ah college name kattama - New ah avunga college details college sign up panni avunga details add patra mathiri kette - Done! 
-              Platform la default PSG or vera college name automatic ah kaatathu. College signup panni avunga login panni avunga college details - logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - ellam avangale add pannuvanga. Aprom thaan students ku theriyum.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link to="/college/signup" className="h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] inline-flex items-center gap-2 border-2 border-[#1A3263]"><Building2 size={16} /> College Sign Up - Add Your College A-Z Yourself</Link>
-              <Link to="/student/signup" className="h-12 px-8 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[13px] inline-flex items-center gap-2 border-2 border-[#FAB95B]"><GraduationCap size={16} /> Student Sign Up</Link>
-            </div>
-            <div className="mt-8 rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-5 text-left max-w-[700px] mx-auto">
-              <div className="font-bold text-[13px] text-[#1A3263]">How it works - Automatic Default College Name Kattama:</div>
-              <div className="text-[12px] text-[#547792] mt-2 leading-[1.6] space-y-1">
-                <div>1. <strong>College Sign Up:</strong> College name, email, phone, website, address, district, city, type, university, principal - Signup</div>
-                <div>2. <strong>Login:</strong> College login pannina avunga college empty website varum - PSG illa, vera default illa - Avunga college mattum</div>
-                <div>3. <strong>Add A-Z Yourself:</strong> Logo, Campus Hero Image, Tagline, Colors, About, Vision, Mission, Management, Principal, Departments with HOD (oru oru dept kum HOD), Courses (degree, fees, intake), Facilities, Hostel, Placements, Exams, Research, Accreditation, Events, Gallery, Announcements, Contact, Social - Full A-Z</div>
-                <div>4. <strong>Publish:</strong> Preview → Publish → Students can discover - Chennai filter: student Chennai nu sonna Chennai colleges first based on details</div>
-                <div>5. <strong>College Content:</strong> Colleges add their own details - logo, campus images, departments, courses, facilities, placements - Content fully managed by college.</div>
-              </div>
-            </div>
+      {colleges.length > 0 && (
+        <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-10">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="font-display text-[28px] font-bold tracking-tight text-[#1A3263]">
+              {`Colleges Added by Colleges Themselves - ${colleges.length} Colleges`}
+            </h2>
+            <Link to="/search" className="hidden lg:inline-flex items-center gap-1.5 text-[13px] font-bold text-[#1A3263] hover:gap-2 transition-all">View all <ArrowUpRight size={16} /></Link>
           </div>
-        ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {colleges.map(college=>(
               <CollegeCard key={college.id} college={college} />
             ))}
           </div>
-        )}
-      </div>
-
-      <div className="border-t-2 border-[#FAB95B]/20 bg-white">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-20">
-          <div className="max-w-[720px]">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1A3263] border-2 border-[#FAB95B] text-[11px] font-bold tracking-widest uppercase text-[#FAB95B]">
-              <Sparkles size={12} /> How It Works - Complete Flows - Production Ready
-            </div>
-            <h2 className="font-display text-[36px] lg:text-[48px] font-bold leading-[0.95] tracking-tight mt-6 text-[#1A3263]">
-              Student, College, Platform - <br/>Secure tracking & PDF reports. <br/><span className="text-[#547792]">Premium SaaS.</span>
-            </h2>
-          </div>
-
-          <div className="mt-16 grid lg:grid-cols-3 gap-8">
-            {[
-              { step: "01", title: "Student Flow - Multi-step Signup", desc: "Landing → Signup (Basic: fullName/email/mobile/password/district/city, Education: level 10th-Postgrad/school/marks/percentage/groupStream/interestedSubject, Preferences: interestedCourse/preferredDistrict/collegeType/hostel/transport) → Profile → Dashboard (welcome, profile completion, recommended, recentlyViewed, saved, compare, enquiries) → Search (name/course/dept/district/city/university/type + filters) → View College (full profile real images + Save/Compare/Enquire) → Courses → Save/Compare/Enquire → Tracking (student_id/college_id/date/time/activity_type)", color: "bg-[#E8E2DB] border-[#FAB95B]/30" },
-              { step: "02", title: "College Flow - Verification & CMS", desc: "Landing → Signup (name/official email/phone/website/address/district/city/pincode/type/university/established/principal + docs upload) → Details → Verification (PENDING, Under Review, Verified, Rejected, Needs Changes - only verified badge) → Admin Dashboard (Dashboard/Profile/Branding/About/Management/Principal/Departments/Courses/Admissions/Examinations/Research/Accreditation/Campus/Facilities/Hostel/Library/Placements/Alumni/Careers/IIC/Events/Gallery/Announcements/Documents/Contact/Social/Settings with Add/Edit/Delete/Upload/Draft/Publish every record college_id) → Add info/courses/depts/events/gallery → Publish → Manage → Analytics own college only", color: "bg-[#FAB95B]/20 border-[#FAB95B]" },
-              { step: "03", title: "Platform Admin Flow - Analytics & PDF", desc: "Login → Dashboard (totals students/colleges/verified/pending/views/course views/saves/compares/enquiries + charts college views/course interest/district-wise/education-level/popular colleges/courses) → Manage Students (totals/education/district/courses/activity protecting sensitive) / Manage Colleges (approve/reject/verify/request changes/view info/analytics/PDF) → Verify Colleges → Monitor → View Interest Aggregated → Generate PDF Report (logo, name, period, summary, charts tables, generated date/page number, View/Generate/Download) - College-wise Student Interest Report", color: "bg-white border-[#547792]/20" },
-            ].map(item=>(
-              <div key={item.step} className={`rounded-[28px] border-2 p-8 ${item.color}`}>
-                <div className="h-12 w-12 rounded-[14px] bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] grid place-items-center font-display font-bold text-[18px]">{item.step}</div>
-                <h3 className="font-bold text-[16px] leading-tight mt-6 text-[#1A3263]">{item.title}</h3>
-                <p className="text-[12px] leading-[1.6] text-[#1A3263]/70 mt-3">{item.desc}</p>
-              </div>
-            ))}
-          </div>
         </div>
-      </div>
+      )}
 
       <footer className="bg-[#1A3263] text-white border-t-4 border-[#FAB95B]">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-16">
