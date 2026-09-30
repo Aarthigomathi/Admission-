@@ -7,7 +7,6 @@ import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
 
 export default function PlatformHome() {
-  const [type, setType] = useState('All')
   const [colleges, setColleges] = useState([])
   const { t, language, isStudent } = useLanguage()
 
@@ -22,11 +21,6 @@ export default function PlatformHome() {
       window.removeEventListener('collegeRegistered', handleStorage)
     }
   }, [])
-
-  const filtered = colleges.filter(c => {
-    const matchType = type==='All' || c.type.toLowerCase().includes(type.toLowerCase())
-    return matchType
-  })
 
   return (
     <div className="min-h-screen bg-[#E8E2DB]">
@@ -98,31 +92,6 @@ export default function PlatformHome() {
         </div>
       </div>
 
-      <div className="sticky top-[72px] z-30 backdrop-blur-xl bg-[#E8E2DB]/90 border-b-2 border-[#FAB95B]/20">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-8 h-[64px] flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 overflow-x-auto">
-            {[
-              { label: "All Real", value: "All" },
-              { label: "Engineering Real", value: "Engineering" },
-              { label: "Arts & Science", value: "Arts" },
-              { label: "Management", value: "Management" },
-              { label: "Medical", value: "Medical" },
-            ].map(f=>(
-              <button 
-                key={f.label} 
-                onClick={()=>setType(f.value)}
-                className={`whitespace-nowrap px-5 h-9 rounded-full text-[13px] font-bold border-2 transition-all ${type===f.value?'bg-[#1A3263] text-[#FAB95B] border-[#1A3263] shadow-lg':'bg-white border-[#E8E2DB] text-[#547792] hover:border-[#FAB95B] hover:text-[#1A3263]'}`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-          <div className="hidden lg:flex items-center gap-2">
-            <span className="text-[11px] font-bold uppercase text-[#547792]">{filtered.length} Colleges • Verified Platform</span>
-          </div>
-        </div>
-      </div>
-
       {/* Three Roles Section */}
       <div className="bg-white border-b-2 border-[#E8E2DB]">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-16">
@@ -181,7 +150,7 @@ export default function PlatformHome() {
       <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-10">
         <div className="flex items-center justify-between mb-8">
           <h2 className="font-display text-[28px] font-bold tracking-tight text-[#1A3263]">
-            {colleges.length===0 ? 'Colleges - No Default - Colleges Signup & Add Themselves' : `Colleges Added by Colleges Themselves - ${filtered.length} Colleges - Premium`}
+            {colleges.length===0 ? 'Colleges - No Default - Colleges Signup & Add Themselves' : `Colleges Added by Colleges Themselves - ${colleges.length} Colleges - Premium`}
           </h2>
           <Link to="/search" className="hidden lg:inline-flex items-center gap-1.5 text-[13px] font-bold text-[#1A3263] hover:gap-2 transition-all">View all <ArrowUpRight size={16} /></Link>
         </div>
@@ -211,7 +180,7 @@ export default function PlatformHome() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map(college=>(
+            {colleges.map(college=>(
               <CollegeCard key={college.id} college={college} />
             ))}
           </div>

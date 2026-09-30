@@ -51,12 +51,20 @@ describe('home page', () => {
     expect(container.textContent).not.toContain('district by district')
   })
 
-  it('keeps the college type filter and signup entry points', async () => {
+  it('keeps the signup / login entry points', async () => {
     await render(<PlatformHome />)
     const text = container.textContent
-    expect(text).toContain('All Real')
-    expect(text).toContain('Engineering Real')
     expect(text).toContain('Student Sign Up')
     expect(text).toContain('Login - 3 Roles')
+  })
+
+  it('has no college-type filter chip bar', async () => {
+    await render(<PlatformHome />)
+    const chipLabels = ['All Real', 'Engineering Real', 'Arts & Science', 'Management', 'Medical']
+    const buttons = [...container.querySelectorAll('button')].map(b => b.textContent.trim())
+    chipLabels.forEach(label => expect(buttons).not.toContain(label))
+    expect(buttons.length).toBe(0)                    // the chip bar was the only button group here
+    expect(container.textContent).not.toContain('Verified Platform')
+    expect(container.textContent).not.toContain('All Types')
   })
 })
