@@ -34,6 +34,13 @@ const DREAM_COURSE_OPTIONS = [
   'LLB'
 ]
 
+// Year of passing choices - latest year back to 2000
+const LATEST_PASSING_YEAR = Math.max(new Date().getFullYear(), 2026)
+const YEAR_OF_PASSING_OPTIONS = Array.from(
+  { length: LATEST_PASSING_YEAR - 1999 },
+  (_, i) => String(LATEST_PASSING_YEAR - i)
+)
+
 export default function StudentSignup() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
@@ -640,7 +647,7 @@ export default function StudentSignup() {
                     <div>
                       <label className="text-[11px] font-semibold text-[#547792]">{t('yearOfPassing')}</label>
                       <select value={formData.yearOfPassing} onChange={e=>updateField('yearOfPassing', e.target.value)} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]">
-                        <option>2026</option><option>2025</option><option>2024</option><option>2023</option><option>2022</option>
+                        {YEAR_OF_PASSING_OPTIONS.map(year => <option key={year}>{year}</option>)}
                       </select>
                     </div>
                   </div>

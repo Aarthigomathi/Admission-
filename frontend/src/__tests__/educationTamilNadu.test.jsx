@@ -162,4 +162,18 @@ describe('signup step 3 - Tamil Nadu education', () => {
     expect(text).toContain('Enter your marks and the percentage is calculated automatically. Upload your original documents below.')
     expect(text).toContain('Marks and Percentage Calculation')
   })
+
+  it('offers year of passing from 2000 up to the latest year', async () => {
+    await render(<StudentSignup />)
+    await goToStep3()
+    const select = [...container.querySelectorAll('select')].find(s => [...s.options].some(o => o.text === '2000'))
+    expect(select).toBeTruthy()
+    const years = [...select.options].map(o => Number(o.text))
+    expect(years).toContain(2000)
+    expect(years).toContain(2026)
+    expect(years.length).toBeGreaterThanOrEqual(27)                    // 2000 .. 2026
+    expect(years[0]).toBe(Math.max(new Date().getFullYear(), 2026))     // latest year first
+    expect(years[years.length - 1]).toBe(2000)                          // goes down to 2000
+    expect(years).toEqual([...years].sort((a, b) => b - a))
+  })
 })
