@@ -1,5 +1,6 @@
 package com.tncolleges.platform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -58,16 +59,20 @@ public class College {
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @JsonIgnore
     @OneToOne(mappedBy = "college", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private CollegeProfile profile;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "college", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private CollegeBranding branding;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "college", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Department> departments = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "college", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Course> courses = new ArrayList<>();
