@@ -36,7 +36,8 @@ public class AdminController {
     }
 
     private boolean canManage(UserDetails user, Long collegeId) {
-        return user != null && collegeAccessService.canManageCollege(user.getUsername(), collegeId);
+        return user != null && collegeRepo.findById(collegeId).filter(College::isRegistered).isPresent()
+                && collegeAccessService.canManageCollege(user.getUsername(), collegeId);
     }
 
     @GetMapping("/college/{collegeId}")

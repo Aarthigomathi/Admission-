@@ -184,7 +184,7 @@ public class CollegeController {
     }
 
     private boolean canManage(Long collegeId, UserDetails user) {
-        return user != null && collegeRepo.existsById(collegeId)
+        return user != null && collegeRepo.findById(collegeId).filter(College::isRegistered).isPresent()
                 && collegeAccessService.canManageCollege(user.getUsername(), collegeId);
     }
 }

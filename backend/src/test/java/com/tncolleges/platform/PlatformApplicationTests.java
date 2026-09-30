@@ -10,7 +10,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tncolleges.platform.service.CollegeContentService;
 import com.tncolleges.platform.service.CollegeService;
+import com.tncolleges.platform.repository.CollegeRepository;
 import com.tncolleges.platform.repository.UserRepository;
+import com.tncolleges.platform.model.College;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +40,9 @@ class PlatformApplicationTests {
     private UserRepository userRepository;
 
     @Autowired
+    private CollegeRepository collegeRepository;
+
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -54,6 +59,22 @@ class PlatformApplicationTests {
         assertEquals(0, jdbcTemplate.queryForObject("select count(*) from placements", Integer.class));
         assertEquals(0, jdbcTemplate.queryForObject("select count(*) from accreditations", Integer.class));
         assertTrue(jdbcTemplate.queryForObject("select count(*) from college_content", Integer.class) >= 0);
+    }
+
+    @Test
+    void unregisteredTemplateCollegesNeverAppearInListsOrAdminLookup() {
+        String slug = "legacy-template-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+        College template = collegeRepository.save(College.builder()
+                .slug(slug)
+                .name("Legacy Template College")
+                .verified(true)
+                .verificationStatus(College.VerificationStatus.VERIFIED)
+                .registered(false)
+                .build());
+
+        assertFalse(collegeService.publicColleges(null, null, null).stream().anyMatch(c -> slug.equals(c.get("slug"))));
+        assertFalse(collegeService.allForPlatformAdmin().stream().anyMatch(c -> slug.equals(c.get("slug"))));
+        assertTrue(collegeService.byId(template.getId(), true).isEmpty());
     }
 
     @Test

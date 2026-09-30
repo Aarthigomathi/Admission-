@@ -3,6 +3,7 @@ package com.tncolleges.platform.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -52,6 +53,8 @@ public class College {
     private boolean active = true;
 
     @Builder.Default
+    @ColumnDefault("false")
+    @Column(nullable = false)
     private boolean registered = false;
 
     @Builder.Default

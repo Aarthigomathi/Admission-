@@ -58,7 +58,7 @@ public class CollegeService {
     @Transactional(readOnly = true)
     public Optional<Map<String, Object>> byId(Long id, boolean includeUnverified) {
         return colleges.findById(id)
-                .filter(c -> includeUnverified || (c.isRegistered() && c.isActive()))
+                .filter(c -> c.isRegistered() && (includeUnverified || c.isActive()))
                 .map(c -> enriched(c, includeUnverified));
     }
 
@@ -129,7 +129,8 @@ public class CollegeService {
 
     @Transactional
     public Map<String, Object> verify(Long collegeId, String requestedStatus, String remarks) {
-        College college = colleges.findById(collegeId).orElseThrow(() -> new NoSuchElementException("College not found"));
+        College college = colleges.findById(collegeId).filter(College::isRegistered)
+                .orElseThrow(() -> new NoSuchElementException("Registered college not found"));
         College.VerificationStatus status;
         try { status = College.VerificationStatus.valueOf(requestedStatus == null ? "VERIFIED" : requestedStatus.trim().toUpperCase(Locale.ROOT)); }
         catch (IllegalArgumentException exception) { throw new IllegalArgumentException("Invalid verification status"); }
