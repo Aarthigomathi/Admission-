@@ -34,5 +34,6 @@ public class Department {
     private List<Faculty> faculties = new ArrayList<>();
 
     private boolean active = true;
+    @Builder.Default
     private Integer displayOrder = 0;
 }

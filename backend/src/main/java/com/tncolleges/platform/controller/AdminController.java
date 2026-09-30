@@ -1,111 +1,106 @@
 package com.tncolleges.platform.controller;
 
-import com.tncolleges.platform.model.*;
-import com.tncolleges.platform.repository.*;
+import com.tncolleges.platform.model.College;
+import com.tncolleges.platform.model.CollegeBranding;
+import com.tncolleges.platform.model.Course;
+import com.tncolleges.platform.repository.CollegeRepository;
+import com.tncolleges.platform.repository.CourseRepository;
+import com.tncolleges.platform.security.CollegeAccessService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-/**
- * College Admin CMS - Multi-tenant secured
- * Every request must include college_id and is validated
- * PSG admin (101) can ONLY manage 101, never 102, 103
- */
+/** College CMS endpoints. Tenant ownership is checked against the authenticated account. */
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "*")
 public class AdminController {
 
     private final CollegeRepository collegeRepo;
     private final CourseRepository courseRepo;
+    private final CollegeAccessService collegeAccessService;
 
-    public AdminController(CollegeRepository collegeRepo, CourseRepository courseRepo) {
+    public AdminController(CollegeRepository collegeRepo,
+                           CourseRepository courseRepo,
+                           CollegeAccessService collegeAccessService) {
         this.collegeRepo = collegeRepo;
         this.courseRepo = courseRepo;
+        this.collegeAccessService = collegeAccessService;
     }
 
-    // Middleware-like check for college_id ownership
-    private boolean isAuthorizedForCollege(Long requestedCollegeId, Long userCollegeId, String role) {
-        if ("SUPER_ADMIN".equals(role)) return true;
-        return Objects.equals(requestedCollegeId, userCollegeId);
+    private boolean canManage(UserDetails user, Long collegeId) {
+        return user != null && collegeAccessService.canManageCollege(user.getUsername(), collegeId);
     }
 
     @GetMapping("/college/{collegeId}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','COLLEGE_ADMIN','COLLEGE_EDITOR')")
-    public ResponseEntity<?> getCollegeForAdmin(
-            @PathVariable Long collegeId,
-            @RequestHeader(value = "X-College-Id", required = false) Long headerCollegeId,
-            @RequestHeader(value = "X-User-Role", required = false) String role) {
-
-        // Enforce multi-tenant isolation
-        if (headerCollegeId != null && !isAuthorizedForCollege(collegeId, headerCollegeId, role)) {
-            return ResponseEntity.status(403).body(Map.of("error", "Access denied: College ID mismatch. You can only manage your own college."));
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','PLATFORM_ADMIN','COLLEGE_ADMIN','COLLEGE_EDITOR')")
+    public ResponseEntity<?> getCollegeForAdmin(@PathVariable Long collegeId,
+                                                 @AuthenticationPrincipal UserDetails user) {
+        if (!canManage(user, collegeId)) {
+            return ResponseEntity.status(403).body(Map.of("error", "You can only manage your own college"));
         }
-
         return collegeRepo.findById(collegeId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/college/{collegeId}/branding")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','COLLEGE_ADMIN')")
-    public ResponseEntity<?> updateBranding(
-            @PathVariable Long collegeId,
-            @RequestBody CollegeBranding branding,
-            @RequestHeader(value = "X-College-Id", required = false) Long headerCollegeId,
-            @RequestHeader(value = "X-User-Role", required = false) String role) {
-
-        if (headerCollegeId != null && !isAuthorizedForCollege(collegeId, headerCollegeId, role)) {
-            return ResponseEntity.status(403).body(Map.of("error", "Multi-tenant violation: Cannot edit another college's branding"));
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','PLATFORM_ADMIN','COLLEGE_ADMIN')")
+    public ResponseEntity<?> updateBranding(@PathVariable Long collegeId,
+                                             @RequestBody CollegeBranding branding,
+                                             @AuthenticationPrincipal UserDetails user) {
+        if (!canManage(user, collegeId)) {
+            return ResponseEntity.status(403).body(Map.of("error", "You cannot edit another college's branding"));
         }
-
-        Optional<College> collegeOpt = collegeRepo.findById(collegeId);
-        if (collegeOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-        // In real app, save branding via service
-        return ResponseEntity.ok(Map.of("message", "Branding updated for college " + collegeId, "collegeId", collegeId));
+        if (collegeRepo.findById(collegeId).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        // Persistence for branding is part of the CMS implementation phase.
+        return ResponseEntity.ok(Map.of("message", "Branding update accepted", "collegeId", collegeId));
     }
 
     @PostMapping("/college/{collegeId}/courses")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','COLLEGE_ADMIN','COLLEGE_EDITOR')")
-    public ResponseEntity<?> addCourse(
-            @PathVariable Long collegeId,
-            @RequestBody Course course,
-            @RequestHeader(value = "X-College-Id", required = false) Long headerCollegeId,
-            @RequestHeader(value = "X-User-Role", required = false) String role) {
-
-        if (headerCollegeId != null && !isAuthorizedForCollege(collegeId, headerCollegeId, role)) {
-            return ResponseEntity.status(403).body(Map.of("error", "Cannot add course to another college"));
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','PLATFORM_ADMIN','COLLEGE_ADMIN','COLLEGE_EDITOR')")
+    public ResponseEntity<?> addCourse(@PathVariable Long collegeId,
+                                        @RequestBody Course course,
+                                        @AuthenticationPrincipal UserDetails user) {
+        if (!canManage(user, collegeId)) {
+            return ResponseEntity.status(403).body(Map.of("error", "You cannot add a course to another college"));
         }
-
-        Optional<College> collegeOpt = collegeRepo.findById(collegeId);
-        if (collegeOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-        course.setCollege(collegeOpt.get());
-        Course saved = courseRepo.save(course);
-        return ResponseEntity.ok(saved);
+        Optional<College> college = collegeRepo.findById(collegeId);
+        if (college.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        course.setCollege(college.get());
+        return ResponseEntity.ok(courseRepo.save(course));
     }
 
     @GetMapping("/analytics/{collegeId}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN','COLLEGE_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','PLATFORM_ADMIN','COLLEGE_ADMIN')")
     public ResponseEntity<?> getAnalytics(@PathVariable Long collegeId,
-                                          @RequestHeader(value = "X-College-Id", required = false) Long headerCollegeId,
-                                          @RequestHeader(value = "X-User-Role", required = false) String role) {
-        if (headerCollegeId != null && !isAuthorizedForCollege(collegeId, headerCollegeId, role)) {
-            return ResponseEntity.status(403).body(Map.of("error", "Analytics access denied for other college"));
+                                           @AuthenticationPrincipal UserDetails user) {
+        if (!canManage(user, collegeId)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Analytics access denied for this college"));
+        }
+        if (collegeRepo.findById(collegeId).isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
 
-        // Mock analytics
+        // Placeholder response until analytics is backed by persisted activity records.
         Map<String, Object> analytics = new HashMap<>();
         analytics.put("collegeId", collegeId);
-        analytics.put("views", 12400);
-        analytics.put("courseViews", 3200);
-        analytics.put("enquiries", 84);
-        analytics.put("pendingContent", 3);
-        analytics.put("publishedSections", 18);
-        analytics.put("profileCompletion", 80);
+        analytics.put("views", 0);
+        analytics.put("courseViews", 0);
+        analytics.put("enquiries", 0);
+        analytics.put("pendingContent", 0);
+        analytics.put("publishedSections", 0);
+        analytics.put("profileCompletion", 0);
+        analytics.put("dataStatus", "Analytics persistence is not implemented yet");
         return ResponseEntity.ok(analytics);
     }
 }

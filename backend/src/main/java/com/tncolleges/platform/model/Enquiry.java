@@ -20,6 +20,8 @@ public class Enquiry {
     private String phone;
     private String courseInterested;
     private String message;
+    @Builder.Default
     private String status = "PENDING"; // PENDING, CONTACTED, CLOSED
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

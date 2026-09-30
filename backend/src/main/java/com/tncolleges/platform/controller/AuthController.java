@@ -9,6 +9,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.Map;
 
@@ -30,16 +34,20 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
-        if (userRepo.existsByEmail(req.getEmail())) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
+        String email = req.getEmail().trim().toLowerCase();
+        if (userRepo.existsByEmail(email)) {
             return ResponseEntity.badRequest().body(Map.of("error", "Email already exists"));
         }
+        // Self-service registration must never accept an elevated role or tenant ID
+        // from the request body. Admin accounts are provisioned separately.
         User user = User.builder()
-                .email(req.getEmail())
+                .email(email)
                 .password(passwordEncoder.encode(req.getPassword()))
-                .fullName(req.getFullName())
-                .role(req.getRole() != null ? req.getRole() : User.Role.PUBLIC_USER)
-                .collegeId(req.getCollegeId())
+                .fullName(req.getFullName().trim())
+                .role(User.Role.STUDENT)
+                .collegeId(null)
+                .enabled(true)
                 .build();
         userRepo.save(user);
 
@@ -58,14 +66,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest req) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
+        String email = req.getEmail().trim().toLowerCase();
         try {
-            authManager.authenticate(new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
+            authManager.authenticate(new UsernamePasswordAuthenticationToken(email, req.getPassword()));
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
 
-        User user = userRepo.findByEmail(req.getEmail()).orElseThrow();
+        User user = userRepo.findByEmail(email).orElseThrow();
         String token = jwtService.generateToken(user.getEmail(), Map.of(
                 "role", user.getRole().name(),
                 "collegeId", user.getCollegeId() != null ? user.getCollegeId().toString() : "",
@@ -83,16 +92,26 @@ public class AuthController {
 
     @Getter @Setter
     public static class RegisterRequest {
+        @NotBlank
+        @Email
         private String email;
+
+        @NotBlank
+        @Size(min = 8, max = 100)
         private String password;
+
+        @NotBlank
+        @Size(max = 120)
         private String fullName;
-        private User.Role role;
-        private Long collegeId;
     }
 
     @Getter @Setter
     public static class LoginRequest {
+        @NotBlank
+        @Email
         private String email;
+
+        @NotBlank
         private String password;
     }
 }

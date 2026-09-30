@@ -2,7 +2,11 @@ package com.tncolleges.platform.controller;
 
 import com.tncolleges.platform.model.*;
 import com.tncolleges.platform.repository.*;
+import com.tncolleges.platform.security.CollegeAccessService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -14,10 +18,14 @@ public class CollegeController {
 
     private final CollegeRepository collegeRepo;
     private final CourseRepository courseRepo;
+    private final CollegeAccessService collegeAccessService;
 
-    public CollegeController(CollegeRepository collegeRepo, CourseRepository courseRepo) {
+    public CollegeController(CollegeRepository collegeRepo,
+                             CourseRepository courseRepo,
+                             CollegeAccessService collegeAccessService) {
         this.collegeRepo = collegeRepo;
         this.courseRepo = courseRepo;
+        this.collegeAccessService = collegeAccessService;
     }
 
     @GetMapping
@@ -59,14 +67,16 @@ public class CollegeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Multi-tenant security check: College Admin can only access own college
+    // This path sits under a public /api/colleges/** matcher, so method security is required.
     @GetMapping("/admin/my-college")
-    public ResponseEntity<?> getMyCollege(@RequestHeader(value = "X-College-Id", required = false) Long collegeId) {
-        if (collegeId == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "X-College-Id header required for multi-tenant isolation"));
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','PLATFORM_ADMIN','COLLEGE_ADMIN','COLLEGE_EDITOR')")
+    public ResponseEntity<?> getMyCollege(@AuthenticationPrincipal UserDetails user) {
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Authentication required"));
         }
-        return collegeRepo.findById(collegeId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return collegeAccessService.findManagedCollegeId(user.getUsername())
+                .flatMap(collegeRepo::findById)
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(403).body(Map.of("error", "No college is assigned to this account")));
     }
 }

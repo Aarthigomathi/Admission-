@@ -24,7 +24,10 @@ public class Announcement {
     private String linkUrl;
     private String category; // ADMISSION, EXAM, EVENT, SCHOLARSHIP, RECRUITMENT, HOLIDAY, NOTICE
     private LocalDate expiryDate;
+    @Builder.Default
     private boolean urgent = false;
+    @Builder.Default
     private boolean active = true;
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

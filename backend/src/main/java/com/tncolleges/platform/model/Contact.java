@@ -21,5 +21,6 @@ public class Contact {
     private String phone;
     private String officeTiming;
     private String location;
+    @Builder.Default
     private Integer displayOrder = 0;
 }

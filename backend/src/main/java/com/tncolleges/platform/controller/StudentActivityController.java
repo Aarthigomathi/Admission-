@@ -1,8 +1,11 @@
 package com.tncolleges.platform.controller;
 
 import com.tncolleges.platform.model.StudentActivity;
-import com.tncolleges.platform.repository.UserRepository;
+import com.tncolleges.platform.security.CollegeAccessService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -26,10 +29,17 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class StudentActivityController {
 
+    private final CollegeAccessService collegeAccessService;
+
+    public StudentActivityController(CollegeAccessService collegeAccessService) {
+        this.collegeAccessService = collegeAccessService;
+    }
+
     // In production, inject StudentActivityRepository
     // For now, mock responses showing structure
 
     @PostMapping("/track")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<?> trackActivity(@RequestBody Map<String, Object> payload) {
         // Expected payload: student_id, college_id, course_id (optional), activity_type, metadata, consent
         Long studentId = Long.valueOf(payload.getOrDefault("student_id", 1).toString());
@@ -68,7 +78,12 @@ public class StudentActivityController {
     }
 
     @GetMapping("/college/{collegeId}/aggregated")
-    public ResponseEntity<?> getAggregatedInterest(@PathVariable Long collegeId) {
+    @PreAuthorize("hasAnyRole('PLATFORM_ADMIN','SUPER_ADMIN','COLLEGE_ADMIN','COLLEGE_EDITOR')")
+    public ResponseEntity<?> getAggregatedInterest(@PathVariable Long collegeId,
+                                                    @AuthenticationPrincipal UserDetails user) {
+        if (user == null || !collegeAccessService.canManageCollege(user.getUsername(), collegeId)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Access denied for this college's analytics"));
+        }
         // Platform Admin and College Admin (own college only) can see aggregated
         // Returns: totalStudentsViewed, totalViews, courseViews, saved, compared, enquiries
         // Plus breakdowns: byEducation, byDistrict, byCourse, byDate, byActivityType
@@ -122,7 +137,9 @@ public class StudentActivityController {
         return ResponseEntity.ok(aggregated);
     }
 
+    // Student ownership cannot be safely resolved until activity records are persisted and linked to users.
     @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasAnyRole('PLATFORM_ADMIN','SUPER_ADMIN')")
     public ResponseEntity<?> getStudentActivities(@PathVariable Long studentId) {
         // Only student themselves and platform admin can see their own activities
         // Mock

@@ -19,5 +19,6 @@ public class Favorite {
     @JoinColumn(name = "college_id")
     private College college;
 
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

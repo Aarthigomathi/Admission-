@@ -1,6 +1,11 @@
 package com.tncolleges.platform.controller;
 
+import com.tncolleges.platform.security.CollegeAccessService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -26,7 +31,14 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class EnquiryController {
 
+    private final CollegeAccessService collegeAccessService;
+
+    public EnquiryController(CollegeAccessService collegeAccessService) {
+        this.collegeAccessService = collegeAccessService;
+    }
+
     @PostMapping
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<?> createEnquiry(@RequestBody Map<String, Object> payload) {
         // Required: student_id, college_id, course_id (optional), question, contact_method, consent
         Boolean consent = (Boolean) payload.getOrDefault("consent", false);
@@ -61,7 +73,9 @@ public class EnquiryController {
         ));
     }
 
+    // Until enquiry records are persisted and linked to a Student entity, limit this mock endpoint to platform admins.
     @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasAnyRole('PLATFORM_ADMIN','SUPER_ADMIN')")
     public ResponseEntity<?> getStudentEnquiries(@PathVariable Long studentId) {
         List<Map<String, Object>> enquiries = List.of(
             Map.of(
@@ -79,12 +93,11 @@ public class EnquiryController {
     }
 
     @GetMapping("/college/{collegeId}")
+    @PreAuthorize("hasAnyRole('PLATFORM_ADMIN','SUPER_ADMIN','COLLEGE_ADMIN','COLLEGE_EDITOR')")
     public ResponseEntity<?> getCollegeEnquiries(@PathVariable Long collegeId,
-                                                 @RequestHeader(value = "X-College-Id", required = false) Long headerCollegeId,
-                                                 @RequestHeader(value = "X-User-Role", required = false) String role) {
-        // College admin can only see own college enquiries - college_id isolation
-        if (headerCollegeId != null && !Objects.equals(collegeId, headerCollegeId) && !"PLATFORM_ADMIN".equals(role) && !"SUPER_ADMIN".equals(role)) {
-            return ResponseEntity.status(403).body(Map.of("error", "Access denied - College ID isolation"));
+                                                 @AuthenticationPrincipal UserDetails user) {
+        if (user == null || !collegeAccessService.canManageCollege(user.getUsername(), collegeId)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Access denied - you can only view enquiries for your own college"));
         }
 
         List<Map<String, Object>> enquiries = List.of(
@@ -115,12 +128,12 @@ public class EnquiryController {
     }
 
     @PutMapping("/{enquiryId}/status")
+    @PreAuthorize("hasAnyRole('PLATFORM_ADMIN','SUPER_ADMIN')")
     public ResponseEntity<?> updateEnquiryStatus(@PathVariable Long enquiryId, @RequestBody Map<String, String> body) {
-        String status = body.getOrDefault("status", "Contacted"); // New, Contacted, Follow-up, Interested, Closed
-        return ResponseEntity.ok(Map.of(
-            "message", "Enquiry " + enquiryId + " status updated to " + status,
-            "enquiry_id", enquiryId,
-            "status", status
+        // This endpoint must be connected to a persisted EnquiryRepository before it can update data safely.
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(Map.of(
+            "error", "Enquiry status updates are not implemented until enquiries are persisted",
+            "enquiry_id", enquiryId
         ));
     }
 }

@@ -25,7 +25,10 @@ public class CustomSection {
     private String contactInfo;
     private String links;
     private String icon;
+    @Builder.Default
     private Integer displayOrder = 0;
+    @Builder.Default
     private boolean active = true;
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

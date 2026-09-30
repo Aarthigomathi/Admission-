@@ -27,7 +27,9 @@ public class User {
     // Multi-tenant: college_id for COLLEGE_ADMIN, COLLEGE_EDITOR
     private Long collegeId;
 
+    @Builder.Default
     private boolean enabled = true;
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime lastLogin;
 

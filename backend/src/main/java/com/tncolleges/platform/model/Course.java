@@ -40,6 +40,8 @@ public class Course {
     private String contactInfo;
     private String imageUrl;
 
+    @Builder.Default
     private boolean active = true;
+    @Builder.Default
     private boolean featured = false;
 }

@@ -26,6 +26,8 @@ public class Career {
     private String description;
     private String applyLink;
     private String type; // FACULTY, NON_TEACHING, INTERNSHIP
+    @Builder.Default
     private boolean active = true;
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }
