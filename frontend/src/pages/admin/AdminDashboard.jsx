@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, saveCollegeDataSafe, getProfileCompletion, findCollegeByLoginId } from '../../lib/collegeStorage'
 import { normalizeQuickLinks, QUICK_LINK_MAX } from '../../lib/quickLinks'
+import {
+  saveAdminDraft, readAdminDraft, clearAdminDraft,
+  downloadCollegeBackup, restoreCollegeBackup, readBackupFile, listAdminDrafts
+} from '../../lib/adminDraft'
 import CollegeAnalytics from '../../components/admin/CollegeAnalytics'
 import AboutPagesAdmin from '../../components/admin/AboutPagesAdmin.jsx'
 import DeptPagesAdmin from '../../components/admin/DeptPagesAdmin.jsx'
@@ -10,7 +14,7 @@ import {
  LayoutDashboard, Palette, Building2, GraduationCap, Users, Megaphone, Calendar, Image as ImageIcon, Trophy, Landmark, ShieldCheck, PhoneCall,
  FileText, Phone, Settings, Eye, Save, Upload, Plus, Trash2, Edit3, CheckCircle2, BarChart3, ExternalLink,
  Library, Home, Award, Beaker, Microscope, Shield, MapPin, Briefcase, BookOpen, Heart, Camera, Bell, Contact,
- Layers, FileCheck, Globe, UserCheck, Pencil, User, Link2
+ Layers, FileCheck, Globe, UserCheck, Pencil, User, Link2, Download, UploadCloud, RotateCcw, CloudCheck
 } from 'lucide-react'
 
 const QUICK_LINK_ICONS = {
@@ -24,6 +28,8 @@ export default function AdminDashboard() {
 
  // Storage-safe save: images auto-compress; on quota, existing stores compacted & retried
  const saveSafe = (section, data) => {
+  // a real save replaces the auto-saved draft
+  clearAdminDraft(selectedCollegeId, section)
   return saveCollegeDataSafe(selectedCollegeId, section, data).then(ok => {
     if (!ok) alert('Storage full - irukkura images-ellam auto-compress pannitom; innorum full-aa irundha photo-ku URL use pannunga')
     return ok
@@ -62,6 +68,66 @@ export default function AdminDashboard() {
  const [contactForm, setContactForm] = useState({ address: '', city: '', district: '', pincode: '', phone: '', phone2: '', email: '', admissionsEmail: '', website: '', officeHours: '', mapLink: '', contactPerson: '', contactDesignation: '', contactPhone: '', enquiryPhone: '', enquiryEmail: '', supportHours: '', fax: '', tollFree: '' })
  const [homeForm, setHomeForm] = useState({ tneaCode: '', eventDate: '', eventTime: '', chiefGuestName: '', chiefGuestTitle: '', chiefGuestPhoto: '', coordinators: '', convenors: '', partnerLogos: '', statPlacements: '', statCompanies: '', statMaxLpa: '', aboutImage: '', accreditationLogos: '', industryLogos: '', ugDesc: '', pgDesc: '', placementText: '', footerAbout: '', bannerImages: '', campusTourUrl: '', quickLinks: '' })
  const [settingsForm, setSettingsForm] = useState({ name: '', shortName: '', tagline: '', type: '', collegeType: '', university: '', affiliation: '', established: '', accreditation: '', email: '', phone: '', website: '', verificationStatus: '', maintenanceMode: false, showAdmissions: true, showPlacements: true, showEvents: true, loginUsername: '', loginPassword: '' })
+
+ // ---------- auto-save: never lose in-progress edits ----------
+ const [draftStatus, setDraftStatus] = useState('')
+ const [draftNotice, setDraftNotice] = useState('')
+ const [restoreInputKey] = useState(0)
+ const formsRef = useRef({})
+ formsRef.current = {
+  branding: brandingForm, homepage: homeForm, courses: courseForm, placements: placementForm,
+  alumni: alumniForm, achievements: achievementForm, events: eventForm, gallery: galleryForm,
+  campus: campusForm, contact: contactForm, settings: settingsForm
+ }
+ const formSetters = {
+  branding: setBrandingForm, homepage: setHomeForm, courses: setCourseForm, placements: setPlacementForm,
+  alumni: setAlumniForm, achievements: setAchievementForm, events: setEventForm, gallery: setGalleryForm,
+  campus: setCampusForm, contact: setContactForm, settings: setSettingsForm
+ }
+ const activeSectionRef = useRef(activeSection)
+ useEffect(() => { activeSectionRef.current = activeSection }, [activeSection])
+ const lastDraftRef = useRef('')
+
+ useEffect(() => {
+  if (!isLoggedIn || !selectedCollegeId) return undefined
+  const flush = () => {
+   const section = activeSectionRef.current
+   const form = formsRef.current[section]
+   if (!form) return
+   let snapshot = ''
+   try { snapshot = JSON.stringify(form) } catch { return }
+   if (!snapshot || snapshot === '{}' || snapshot === lastDraftRef.current) return
+   lastDraftRef.current = snapshot
+   if (saveAdminDraft(selectedCollegeId, section, form)) {
+    setDraftStatus(`Auto-saved ${new Date().toLocaleTimeString()}`)
+   }
+  }
+  const timer = setInterval(flush, 2000)
+  window.addEventListener('beforeunload', flush)
+  window.addEventListener('pagehide', flush)
+  return () => {
+   clearInterval(timer)
+   window.removeEventListener('beforeunload', flush)
+   window.removeEventListener('pagehide', flush)
+   flush()   // leaving the section - keep whatever was typed
+  }
+ }, [isLoggedIn, selectedCollegeId])
+
+ // when a section opens, bring back anything that was auto-saved but never saved
+ const restoreKeyRef = useRef('')
+ useEffect(() => {
+  if (!isLoggedIn || !selectedCollegeId) return
+  const key = `${selectedCollegeId}:${activeSection}`
+  if (restoreKeyRef.current === key) return
+  restoreKeyRef.current = key
+  const setter = formSetters[activeSection]
+  const draft = readAdminDraft(selectedCollegeId, activeSection)
+  if (!setter || !draft) return
+  try { setter(draft.data) } catch { return }
+  lastDraftRef.current = JSON.stringify(draft.data)
+  const when = new Date(draft.savedAt).toLocaleString()
+  setDraftNotice(`Auto-save la irundhu thirumba kondu vandhutom (${when}) - kandippa Save button click pannunga`)
+ }, [activeSection, isLoggedIn, selectedCollegeId])
 
  useEffect(() => {
   const stored = localStorage.getItem('tn_current_college')
@@ -861,6 +927,11 @@ export default function AdminDashboard() {
      </div>
      <div className="flex items-center gap-2">
       <span className="hidden lg:flex items-center gap-2 text-[11px] text-[#547792]"><Shield size={12} /> College ID {college.id}</span>
+      {draftStatus && (
+       <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1.5">
+        <CloudCheck size={13} /> {draftStatus}
+       </span>
+      )}
       <button onClick={()=>handleSaveAll(false)} className="h-10 px-5 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">Save Draft</button>
       <button onClick={()=>handleSaveAll(true)} className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold flex items-center gap-2"><Save size={14} /> Publish</button>
      </div>
@@ -891,6 +962,13 @@ export default function AdminDashboard() {
     </div>
 
     <div className="p-6 lg:p-8 max-w-[1200px]">
+     {draftNotice && (
+      <div className="mb-5 rounded-[14px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/40 px-4 py-3 flex items-start gap-3">
+       <RotateCcw size={15} className="text-[#1A3263] mt-0.5 shrink-0" />
+       <div className="flex-1 text-[11.5px] font-semibold text-[#1A3263] leading-[1.5]">{draftNotice}</div>
+       <button onClick={()=>setDraftNotice('')} className="h-7 px-3 rounded-full bg-white border-2 border-[#FAB95B]/40 text-[11px] font-bold text-[#1A3263]">OK</button>
+      </div>
+     )}
      {activeSection==='dashboard' && (
       <div className="space-y-6">
        <div className="rounded-[24px] bg-[#1A3263] text-white p-8 border-2 border-[#1A3263] relative overflow-hidden">
@@ -1789,7 +1867,36 @@ export default function AdminDashboard() {
             <div className="mt-3 text-[11px] text-[#547792]">Save panna Login page la idha username + password la login aagum. College email um username-oda oru oru login ku work aagum.</div>
           </div>
 
-          <button onClick={handleSaveSettings} className="h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Save size={18} /> Save Settings - Real-time Website Update</button>
+          <div className="mt-8 rounded-[16px] bg-[#FAB95B]/10 border-2 border-[#FAB95B]/30 p-5">
+            <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><UploadCloud size={16} className="text-[#FAB95B]" /> Backup &amp; Restore</h4>
+            <p className="text-[11.5px] text-[#547792] mt-2 leading-[1.6]">
+              Unga college data ellame intha browser-la mattum save aagum (browser cache clear panna, vera browser / vera device use panna poidum).
+              Oru JSON file download panni vachukonga - edhuvum poana, adhe file-a thirumba upload panna ella details-um cover aagum (logo, images, departments, quick links ellam).
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button onClick={()=>{ downloadCollegeBackup(selectedCollegeId, settingsForm.name || college.name); alert('Backup file download aagiduchu - Downloads folder la paakkunga. Safe-a vachukonga.') }} className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[12px] font-bold flex items-center gap-2"><Download size={14} /> Download Backup (JSON)</button>
+              <label className="h-10 px-5 rounded-full bg-white border-2 border-[#1A3263]/20 text-[#1A3263] text-[12px] font-bold flex items-center gap-2 cursor-pointer hover:border-[#FAB95B]">
+                <RotateCcw size={14} /> Restore from Backup
+                <input key={restoreInputKey} type="file" accept="application/json,.json" className="hidden" onChange={async (e) => {
+                  const file = e.target.files?.[0]
+                  if (!file) return
+                  try {
+                    const backup = await readBackupFile(file)
+                    const result = restoreCollegeBackup(backup)
+                    if (!result.ok) return alert(result.error === 'storage-full' ? 'Storage full - konjam images remove panni thirumba try pannunga' : 'Intha file unga college backup illa - vera file select pannunga')
+                    setCustomData(getCollegeCustomData(selectedCollegeId))
+                    alert(`Restore mudinjadhu - ${result.keys} items thirumba vandhuduchu. Page reload aagum.`)
+                    window.location.reload()
+                  } catch {
+                    alert('File-a padikka mudiyala - correct JSON backup file-a select pannunga')
+                  }
+                }} />
+              </label>
+              <button onClick={()=>{ const drafts = listAdminDrafts(selectedCollegeId); alert(drafts.length === 0 ? 'Ippo unsaved draft edhuvum illa' : `Unsaved drafts (${drafts.length}):\n` + drafts.map(d => `• ${d.section} - ${new Date(d.savedAt).toLocaleString()}`).join('\n') + '\n\nAndha section open panna udane thirumba varum.') }} className="h-10 px-5 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">Check Unsaved Drafts</button>
+            </div>
+          </div>
+
+          <button onClick={handleSaveSettings} className="mt-8 h-12 px-8 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center gap-2"><Save size={18} /> Save Settings - Real-time Website Update</button>
         </div>
        </div>
       </div>
