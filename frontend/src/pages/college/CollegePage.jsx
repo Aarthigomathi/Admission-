@@ -1,11 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { getCollegeBySlug, getCollegeCustomData, getPublicColleges } from '../../lib/collegeStorage'
+import { normalizeQuickLinks } from '../../lib/quickLinks'
 import CollegeHeader from '../../components/college/CollegeHeader'
 import AboutPages from '../../components/college/AboutPages.jsx'
 import DeptPage from '../../components/college/DeptPage.jsx'
 import AcademicsPage from '../../components/college/AcademicsPage.jsx'
-import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, User, Image as ImageIcon, X, BookOpen, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf, ChevronLeft, ChevronRight, Link2 } from 'lucide-react'
+import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, User, Image as ImageIcon, X, BookOpen, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf, ChevronLeft, ChevronRight, Link2, Briefcase, Globe } from 'lucide-react'
 
 
 function placementStats(placements) {
@@ -27,6 +28,11 @@ function placementStats(placements) {
     return { total: placements.total || '', companies: recruiters.length, highest: placements.highest || '', highestNum: m ? parseFloat(m[1]) : 0, recruiters }
   }
   return { total: 0, companies: 0, highest: '', highestNum: 0, recruiters: [] }
+}
+
+const QUICK_LINK_ICONS = {
+  link: Link2, user: User, book: BookOpen, cap: GraduationCap, users: Users,
+  landmark: Landmark, briefcase: Briefcase, globe: Globe, phone: PhoneCall, building: Building2
 }
 
 function scrollId(id) {
@@ -351,20 +357,8 @@ function CustomCollegePage({ college, customData }) {
   const statLpa = homePage.statMaxLpa || (plStats.highestNum ? String(plStats.highestNum) : String(plStats.highest || '').replace(/[^\d.]/g, ''))
   const rawIndustry = (Array.isArray(customData.industryLogos) && customData.industryLogos.length > 0) ? customData.industryLogos : (Array.isArray(homePage.industryLogos) ? homePage.industryLogos : [])
   const industryItems = (rawIndustry.length > 0 ? rawIndustry.map(l => (typeof l === 'string' ? { name: '', url: l } : l)).filter(it => it && (it.url || it.name)) : (plStats.recruiters || []).map(n => ({ name: n, url: '' })))
-  const quickLinkDefaults = [
-    { label: 'Vidya Lakshmi Portal', icon: 'user', href: 'https://vidyalakshmi.gov.in' },
-    { label: 'National Digital Library', icon: 'book', href: 'https://ndl.in' },
-    { label: 'Student Alumni', icon: 'cap', href: '#alumni' },
-    { label: 'Anti Ragging Committee', icon: 'users', href: 'https://antiraggingccimc.in' },
-    { label: 'Admission Enquiries', icon: 'landmark', href: '#contact' },
-  ]
-  const quickLinks = (Array.isArray(homePage.quickLinks) && homePage.quickLinks.length > 0
-    ? homePage.quickLinks.map(q => {
-        if (typeof q !== 'string') return q
-        const parts = q.split('|').map(x => x.trim())
-        return { label: parts[0] || '', icon: 'link', href: parts[1] || '#' }
-      })
-    : quickLinkDefaults).filter(q => q && q.label)
+  // Quick links strip (accepts array, single string or objects; empty = default KCE links)
+  const quickLinks = normalizeQuickLinks(homePage.quickLinks)
 
   const achPages = Math.max(1, Math.ceil(achievements.length / 4))
   const newsPages = Math.max(1, Math.ceil(newsList.length / 2))
@@ -649,7 +643,7 @@ function CustomCollegePage({ college, customData }) {
         <div className="mx-auto max-w-[1250px] px-4 sm:px-6 py-7">
           <div className="flex flex-wrap items-stretch justify-center divide-x divide-[#E8E2DB]">
             {quickLinks.map(q => {
-              const Icon = q.icon === 'user' ? User : q.icon === 'book' ? BookOpen : q.icon === 'cap' ? GraduationCap : q.icon === 'users' ? Users : q.icon === 'landmark' ? Landmark : Link2
+              const Icon = QUICK_LINK_ICONS[q.icon] || Link2
               return (
                 <a key={q.label} href={q.href} target={q.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" onClick={e => { if (!q.href.startsWith('http')) { e.preventDefault(); scrollId(q.href.replace('#', '')) } }} className="flex flex-col items-center gap-2.5 px-5 sm:px-10 py-2 group">
                   <Icon size={27} className="text-[#1A3263] group-hover:text-[#FAB95B] transition-colors" strokeWidth={1.8} />

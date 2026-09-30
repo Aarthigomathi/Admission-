@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, saveCollegeDataSafe, getProfileCompletion, findCollegeByLoginId } from '../../lib/collegeStorage'
+import { normalizeQuickLinks, QUICK_LINK_MAX } from '../../lib/quickLinks'
 import CollegeAnalytics from '../../components/admin/CollegeAnalytics'
 import AboutPagesAdmin from '../../components/admin/AboutPagesAdmin.jsx'
 import DeptPagesAdmin from '../../components/admin/DeptPagesAdmin.jsx'
@@ -9,8 +10,13 @@ import {
  LayoutDashboard, Palette, Building2, GraduationCap, Users, Megaphone, Calendar, Image as ImageIcon, Trophy, Landmark, ShieldCheck, PhoneCall,
  FileText, Phone, Settings, Eye, Save, Upload, Plus, Trash2, Edit3, CheckCircle2, BarChart3, ExternalLink,
  Library, Home, Award, Beaker, Microscope, Shield, MapPin, Briefcase, BookOpen, Heart, Camera, Bell, Contact,
- Layers, FileCheck, Globe, UserCheck, Pencil
+ Layers, FileCheck, Globe, UserCheck, Pencil, User, Link2
 } from 'lucide-react'
+
+const QUICK_LINK_ICONS = {
+  link: Link2, user: User, book: BookOpen, cap: GraduationCap, users: Users,
+  landmark: Landmark, briefcase: Briefcase, globe: Globe, phone: PhoneCall, building: Building2
+}
 
 export default function AdminDashboard() {
  const [currentCollege, setCurrentCollege] = useState(null)
@@ -1620,7 +1626,35 @@ export default function AdminDashboard() {
         </div>
         <div>
          <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">6</span> Quick Links Row (icons strip above footer - KCE style)</h4>
-         <div className="mt-4"><label className="text-[11px] font-bold uppercase text-[#1A3263]">Links in format: Label | URL (1 per line, max 6 - empty = default KCE quick links)</label><textarea value={homeForm.quickLinks} onChange={e=>setHomeForm({...homeForm, quickLinks: e.target.value})} rows={4} placeholder={"Vidya Lakshmi Portal | https://vidyalakshmi.gov.in\nNational Digital Library | https://ndl.in\nAdmission Enquiries | #contact"} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" /></div>
+         <div className="mt-4">
+          <label className="text-[11px] font-bold uppercase text-[#1A3263]">Links in format: Label | URL (1 per line, max 6 - empty = default KCE quick links)</label>
+          <textarea value={homeForm.quickLinks} onChange={e=>setHomeForm({...homeForm, quickLinks: e.target.value})} rows={4} placeholder={"Vidya Lakshmi Portal | https://vidyalakshmi.gov.in\nNational Digital Library | https://ndl.in\nAdmission Enquiries | #contact"} className="mt-2 w-full p-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px] resize-none" />
+          {(() => {
+            const typed = String(homeForm.quickLinks || '').split(/\r?\n/).filter(l => l.trim()).length
+            const preview = normalizeQuickLinks(homeForm.quickLinks)
+            return (
+              <div className="mt-3 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-[10.5px] font-bold uppercase tracking-wide text-[#547792]">Live preview - icons strip above footer</div>
+                  <div className={`text-[10.5px] font-bold ${typed > QUICK_LINK_MAX ? 'text-red-600' : 'text-[#547792]'}`}>{Math.min(typed, QUICK_LINK_MAX)}/{QUICK_LINK_MAX}{typed === 0 ? ' - default KCE links' : ''}</div>
+                </div>
+                <div className="mt-2 flex flex-wrap justify-center divide-x divide-[#E8E2DB] border-t border-[#E8E2DB] pt-2">
+                  {preview.map(q => {
+                    const Icon = QUICK_LINK_ICONS[q.icon] || Link2
+                    return (
+                      <div key={q.label} className="flex flex-col items-center gap-1.5 px-4 py-2">
+                        <Icon size={22} className="text-[#1A3263]" strokeWidth={1.8} />
+                        <span className="text-[11px] font-bold text-[#1A3263] whitespace-nowrap">{q.label}</span>
+                        <span className="text-[9.5px] text-[#547792] max-w-[140px] truncate">{q.href === '#' ? 'no link - scrolls to top' : q.href}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="text-[10px] text-[#547792] mt-2">Icon auto-aa select aagum (Admission = landmark, Library = book, Alumni = cap, Anti-ragging = users...). Vera icon venum-na <b>Label | URL | icon</b> nu moonraavathu column-la podunga - options: {QUICK_LINK_MAX ? '' : ''}link, user, book, cap, users, landmark, briefcase, globe, phone, building</div>
+              </div>
+            )
+          })()}
+         </div>
         </div>
         <div>
          <h4 className="font-bold text-[14px] text-[#1A3263] flex items-center gap-2"><span className="h-6 w-6 rounded-full bg-[#1A3263] text-[#FAB95B] grid place-items-center text-[12px]">7</span> Footer About Text</h4>
