@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Building2, Mail, Phone, Globe, MapPin, Calendar, User, Lock, Upload, CheckCircle2, AlertCircle, Sparkles, Image as ImageIcon, Award, Users, BookOpen } from 'lucide-react'
 import { createNewCollegeFromSignup } from '../../lib/collegeStorage'
+import { districts } from '../../lib/colleges'
 
 export default function CollegeSignup() {
   const navigate = useNavigate()
@@ -126,7 +127,7 @@ export default function CollegeSignup() {
                 <div>
                   <label className="text-[11px] font-bold uppercase text-[#1A3263]">District *</label>
                   <select value={formData.district} onChange={e=>updateField('district', e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]">
-                    <option>Coimbatore</option><option>Chennai</option><option>Madurai</option><option>Trichy</option><option>Salem</option><option>Erode</option><option>Tirupur</option><option>Chengalpattu</option><option>Thanjavur</option>
+                    {districts.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
                 <div>

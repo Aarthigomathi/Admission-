@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { colleges as staticColleges } from '../../lib/colleges'
+import { colleges as staticColleges, districts } from '../../lib/colleges'
 import { getAllCollegesMerged } from '../../lib/collegeStorage'
 import { User, Mail, Phone, MapPin, GraduationCap, BookOpen, Heart, Home, Save, ArrowLeft, Edit3, Check, Award, Building2, Star, Trophy, Calculator, Briefcase, IdCard, Calendar } from 'lucide-react'
 import { useLanguage } from '../../lib/languageContext'
@@ -169,7 +169,7 @@ export default function StudentProfile() {
                     <div>
                       <label className="text-[11px] font-bold uppercase text-[#1A3263]">{t('district')} *</label>
                       <select value={formData.district} onChange={e=>updateField('district', e.target.value)} className="mt-1 w-full h-11 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[13px]">
-                        <option>Coimbatore</option><option>Chennai</option><option>Madurai</option><option>Trichy</option><option>Salem</option><option>Erode</option><option>Tirupur</option>
+                        {districts.map(d => <option key={d} value={d}>{d}</option>)}
                       </select>
                     </div>
                     <div>
@@ -314,7 +314,8 @@ export default function StudentProfile() {
                   <div>
                     <label className="text-[11px] font-bold uppercase text-[#1A3263]">{language==='ta' ? 'எங்கே கல்லூரி வேண்டும்? - District' : 'Where do you want college? - District'} * - {language==='ta' ? 'Chennai என்றால் Chennai Colleges முதலில் வரும்' : 'If Chennai, Chennai colleges first'}</label>
                     <select value={formData.preferredDistrict} onChange={e=>updateField('preferredDistrict', e.target.value)} className="mt-2 w-full h-12 px-4 rounded-[12px] bg-white border-2 border-[#FAB95B] focus:border-[#1A3263] outline-none text-[13px] font-bold text-[#1A3263]">
-                      <option>Coimbatore</option><option>Chennai</option><option>Madurai</option><option>Trichy</option><option>Salem</option><option>Erode</option><option>Tirupur</option><option>Any District</option>
+                      <option>Any District</option>
+                      {districts.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
                     <div className="text-[11px] font-bold text-[#1A3263] mt-2 bg-[#FAB95B]/20 px-3 py-2 rounded-full"> {language==='ta' ? `நீங்கள் ${formData.preferredDistrict} தேர்ந்தெடுத்தால் ${formData.preferredDistrict} மாவட்ட கல்லூரிகள் உங்கள் விவரங்களுக்கு ஏற்ப முதலில் காட்டப்படும்` : `If you select ${formData.preferredDistrict}, ${formData.preferredDistrict} district colleges matching your details will show first`}</div>
                   </div>

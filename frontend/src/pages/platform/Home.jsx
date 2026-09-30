@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Sparkles, GraduationCap, Users, Building2, ArrowUpRight, Star, SlidersHorizontal, Image as ImageIcon, Shield, FileText, BarChart3, Bookmark, GitCompare, MessageCircle } from 'lucide-react'
+import { Sparkles, GraduationCap, Users, Building2, ArrowUpRight, Star, SlidersHorizontal, Image as ImageIcon, Shield, FileText, BarChart3, Bookmark, GitCompare, MessageCircle } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
 import { getPublicColleges } from '../../lib/collegeStorage'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
 
 export default function PlatformHome() {
-  const [search, setSearch] = useState('')
-  const [district, setDistrict] = useState('All')
   const [type, setType] = useState('All')
   const [colleges, setColleges] = useState([])
   const { t, language, isStudent } = useLanguage()
@@ -26,10 +24,8 @@ export default function PlatformHome() {
   }, [])
 
   const filtered = colleges.filter(c => {
-    const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.courses.some(co=>co.name.toLowerCase().includes(search.toLowerCase()))
-    const matchDist = district==='All' || c.district===district
     const matchType = type==='All' || c.type.toLowerCase().includes(type.toLowerCase())
-    return matchSearch && matchDist && matchType
+    return matchType
   })
 
   return (
@@ -56,42 +52,6 @@ export default function PlatformHome() {
             <p className="mt-6 text-[18px] lg:text-[20px] leading-[1.5] text-[#1A3263]/70 max-w-[700px]">
               Centralized discovery across all districts. Students <span className="font-bold text-[#1A3263]">SIGN UP & discover</span>, Colleges <span className="font-bold text-[#1A3263]">SIGN UP & add/manage own info</span>, Platform <span className="font-bold text-[#1A3263]">securely collects activity & generates college-wise PDF reports</span>. Premium SaaS feel.
             </p>
-
-            <div className="mt-10 rounded-[28px] bg-white border-2 border-[#FAB95B]/30 shadow-[0_12px_40px_rgba(26,50,99,0.12)] p-2 flex flex-col lg:flex-row gap-2 max-w-[840px]">
-              <div className="flex-1 flex items-center gap-3 px-5 h-[56px] rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus-within:bg-white focus-within:border-[#1A3263] transition-colors">
-                <Search size={20} className="text-[#547792] shrink-0" />
-                <input 
-                  value={search}
-                  onChange={e=>setSearch(e.target.value)}
-                  placeholder="Search name/course/dept/district/city/university/type..." 
-                  className="flex-1 bg-transparent outline-none text-[15px] placeholder:text-[#547792]/60 font-medium text-[#1A3263]"
-                />
-              </div>
-              <div className="flex gap-2">
-                <div className="flex items-center gap-2 px-4 h-[56px] rounded-[20px] bg-[#E8E2DB] border-2 border-[#E8E2DB]">
-                  <MapPin size={16} className="text-[#547792]" />
-                  <select value={district} onChange={e=>setDistrict(e.target.value)} className="bg-transparent outline-none text-[13px] font-bold text-[#1A3263]">
-                    <option value="All">All Districts - TN</option>
-                    <option>Coimbatore</option>
-                    <option>Chennai</option>
-                    <option>Madurai</option>
-                  </select>
-                </div>
-                <Link to={`/search?q=${search}`} className="h-[56px] px-8 grid place-items-center rounded-[20px] bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[14px] font-bold tracking-wide hover:bg-[#1A3263]/90 transition-colors shrink-0 shadow-lg">
-                  Search Real
-                </Link>
-              </div>
-            </div>
-
-            <div className="mt-6 flex flex-wrap items-center gap-2.5">
-              <span className="text-[11px] font-bold tracking-widest uppercase text-[#547792]">Popular - Real:</span>
-              {["B.E CSE", "BCA", "MBA", "B.Com", "Mechanical", "ECE"].map(tag=>(
-                <button key={tag} onClick={()=>setSearch(tag)} className="px-4 h-8 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] text-[13px] font-bold hover:border-[#FAB95B] hover:bg-[#FAB95B] hover:text-[#1A3263] transition-colors">
-                  {tag}
-                </button>
-              ))}
-              <span className="ml-2 text-[12px] font-bold text-[#1A3263]">{filtered.length} colleges • Real images from psgtech.edu</span>
-            </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/student/signup" className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] font-bold text-[13px] inline-flex items-center gap-2"><GraduationCap size={16} /> Student Sign Up - Multi Step</Link>

@@ -6,13 +6,15 @@ import { getPublicColleges } from '../../lib/collegeStorage'
 import { activityTracker, ACTIVITY_TYPES } from '../../lib/activityTracker'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
+import { districts } from '../../lib/colleges'
 
 export default function SearchPage() {
   const [params] = useSearchParams()
   const initialQ = params.get('q') || ''
+  const districtParam = params.get('district') || 'All'
   const { t, language, isStudent } = useLanguage()
   const [q, setQ] = useState(initialQ)
-  const [district, setDistrict] = useState('All')
+  const [district, setDistrict] = useState(districtParam)
   const [courseFilter, setCourseFilter] = useState('All')
   const [typeFilter, setTypeFilter] = useState('All')
   const [level, setLevel] = useState('All')
@@ -34,6 +36,11 @@ export default function SearchPage() {
       window.removeEventListener('storage', handle)
     }
   }, [])
+
+  // Header-la district maathina udane intha page filter-um update aagum
+  useEffect(() => {
+    setDistrict(districtParam)
+  }, [districtParam])
 
   const filtered = useMemo(() => {
     return colleges.filter(c => {
@@ -118,14 +125,9 @@ export default function SearchPage() {
                 <Search size={18} className="text-[#1A3263]" />
                 <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search colleges added by colleges themselves..." className="flex-1 bg-transparent outline-none text-[14px] font-medium placeholder:text-[#547792]/60 text-[#1A3263]" />
               </div>
-              <select value={district} onChange={e=>setDistrict(e.target.value)} className="h-12 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-medium text-[#1A3263] focus:border-[#FAB95B] outline-none">
+              <select value={district} onChange={e=>setDistrict(e.target.value)} className="h-12 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-medium text-[#1A3263] focus:border-[#FAB95B] outline-none max-w-[220px]">
                 <option value="All">All Districts</option>
-                <option>Coimbatore</option>
-                <option>Chennai</option>
-                <option>Madurai</option>
-                <option>Trichy</option>
-                <option>Salem</option>
-                <option>Tirupur</option>
+                {districts.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
               <select value={typeFilter} onChange={e=>setTypeFilter(e.target.value)} className="h-12 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-medium text-[#1A3263]">
                 <option value="All">All Types</option>

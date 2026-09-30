@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles } from 'lucide-react'
 import { getPublicColleges } from '../../lib/collegeStorage'
+import { districts } from '../../lib/colleges'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
@@ -317,7 +318,7 @@ export default function StudentSignup() {
                       <div>
                         <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><MapPin size={12} className="text-[#FAB95B]" /> {t('district')} *</label>
                         <select value={formData.district} onChange={e=>updateField('district', e.target.value)} className="mt-2 w-full h-11 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[13px] font-medium">
-                          <option>Coimbatore</option><option>Chennai</option><option>Madurai</option><option>Trichy</option><option>Salem</option><option>Erode</option><option>Tirupur</option><option>Chengalpattu</option><option>Thanjavur</option><option>Tirunelveli</option>
+                          {districts.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
                       </div>
                       <div>
@@ -616,7 +617,8 @@ export default function StudentSignup() {
                     <div>
                       <label className="text-[10px] font-bold uppercase text-[#1A3263]">{t('preferredDistrict')}</label>
                       <select value={formData.preferredDistrict} onChange={e=>updateField('preferredDistrict', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]">
-                        <option>Coimbatore</option><option>Chennai</option><option>Madurai</option><option>Trichy</option><option>Salem</option><option>Any District</option>
+                        <option>Any District</option>
+                        {districts.map(d => <option key={d} value={d}>{d}</option>)}
                       </select>
                     </div>
                     <div>

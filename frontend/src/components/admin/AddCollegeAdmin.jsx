@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Upload, ImageIcon, Link as LinkIcon, Plus, ExternalLink, ArrowRight, CheckCircle2, GraduationCap, Layers } from 'lucide-react'
 import { createNewCollegeFromSignup, getRegisteredColleges, saveCollegeDataSafe } from '../../lib/collegeStorage'
+import { districts as DISTRICTS } from '../../lib/colleges'
 
 const inputCls = 'w-full h-10 px-3 rounded-[10px] border border-[#E8E2DB] bg-white text-[13px] text-[#1A3263] focus:outline-none focus:border-[#FAB95B]'
 const taCls = 'w-full px-3 py-2.5 rounded-[10px] border border-[#E8E2DB] bg-white text-[13px] text-[#1A3263] leading-relaxed focus:outline-none focus:border-[#FAB95B]'
 
-const DISTRICTS = ['Coimbatore', 'Chennai', 'Madurai', 'Trichy', 'Salem', 'Erode', 'Tirupur', 'Chengalpattu', 'Thanjavur', 'Vellore', 'Kanyakumari']
 const COLLEGE_TYPES = ['Engineering', 'Arts & Science', 'Medical', 'Management', 'Law', 'Polytechnic']
 const UNIVERSITIES = ['Anna University', 'Bharathiar University', 'TN Dr MGR Medical', 'University of Madras', 'Autonomous']
 

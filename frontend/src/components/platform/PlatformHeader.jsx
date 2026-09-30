@@ -1,13 +1,16 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Search, MapPin, Bookmark, GitCompare, Menu, X, GraduationCap, Building2, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import LanguageToggle from '../student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
+import { districts } from '../../lib/colleges'
 
 export default function PlatformHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [currentStudent, setCurrentStudent] = useState(null)
+  const [district, setDistrict] = useState('All')
   const loc = useLocation()
+  const navigate = useNavigate()
   const { t } = useLanguage()
   const isCollegePage = loc.pathname.startsWith('/college/')
   const isAdminPage = loc.pathname.startsWith('/admin') || loc.pathname.startsWith('/platform-admin') || loc.pathname.startsWith('/student')
@@ -41,13 +44,20 @@ export default function PlatformHeader() {
 
           <div className="flex items-center gap-2">
             {currentStudent && <div className="hidden md:flex"><LanguageToggle variant="pill" /></div>}
-            <div className="hidden md:flex items-center gap-1.5 rounded-full bg-white border-2 border-[#E8E2DB] px-3 h-10 mr-1">
+            <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-white border-2 border-[#E8E2DB] px-3 h-10 mr-1">
               <MapPin size={14} className="text-[#547792]" />
-              <select className="bg-transparent text-[12px] font-medium outline-none text-[#1A3263]">
-                <option>{t('allDistricts')}</option>
-                <option>Coimbatore</option>
-                <option>Chennai</option>
-                <option>Madurai</option>
+              <select
+                value={district}
+                onChange={e => {
+                  const value = e.target.value
+                  setDistrict(value)
+                  navigate(value === 'All' ? '/search' : `/search?district=${encodeURIComponent(value)}`)
+                }}
+                className="bg-transparent text-[12px] font-medium outline-none text-[#1A3263] max-w-[150px]"
+                aria-label={t('allDistricts')}
+              >
+                <option value="All">{t('allDistricts')}</option>
+                {districts.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
             <Link to="/search" className="hidden md:grid h-10 w-10 place-items-center rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] hover:border-[#FAB95B]">
@@ -75,6 +85,23 @@ export default function PlatformHeader() {
         <div className="lg:hidden border-t-2 border-[#E8E2DB] bg-[#E8E2DB] p-6 space-y-4">
           {currentStudent && <div className="flex justify-center"><LanguageToggle variant="pill" /></div>}
           <Link to="/" className="block py-2 font-bold text-[#1A3263]">{t('home')} - Premium</Link>
+          <div className="flex items-center gap-2 rounded-[14px] bg-white border-2 border-[#E8E2DB] px-4 h-12">
+            <MapPin size={16} className="text-[#547792] shrink-0" />
+            <select
+              value={district}
+              onChange={e => {
+                const value = e.target.value
+                setDistrict(value)
+                setMobileOpen(false)
+                navigate(value === 'All' ? '/search' : `/search?district=${encodeURIComponent(value)}`)
+              }}
+              className="flex-1 bg-transparent text-[13px] font-bold outline-none text-[#1A3263]"
+              aria-label={t('allDistricts')}
+            >
+              <option value="All">{t('allDistricts')}</option>
+              {districts.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </div>
           <Link to="/search" className="block py-2 font-medium text-[#1A3263]">{t('explore')} - Real</Link>
           <Link to="/student/dashboard" className="block py-2 font-medium text-[#1A3263]">{t('dashboard')}</Link>
           <Link to="/student/saved" className="block py-2 font-medium text-[#1A3263]">{t('saved')}</Link>
