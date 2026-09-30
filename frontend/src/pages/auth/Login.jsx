@@ -1,13 +1,52 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Lock, ArrowRight, Building2, GraduationCap, Shield, Camera, Award, Users } from 'lucide-react'
-import { findCollegeByLoginId } from '../../lib/collegeStorage'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Mail, Lock, ArrowRight, Building2, GraduationCap, Shield, Camera, Award, Users, Eye } from 'lucide-react'
+import { findCollegeByLoginId, getRegisteredColleges } from '../../lib/collegeStorage'
+
+// Header-la irundhu varum /login?role=student|college|admin mapping
+const ROLE_FROM_PARAM = {
+  student: 'STUDENT',
+  college: 'COLLEGE',
+  admin: 'PLATFORM_ADMIN',
+  'platform-admin': 'PLATFORM_ADMIN',
+  platform_admin: 'PLATFORM_ADMIN'
+}
 
 export default function Login() {
   const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const roleParam = ROLE_FROM_PARAM[(params.get('role') || '').toLowerCase()] || 'STUDENT'
+  const demoParam = params.get('demo') === '1'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState('STUDENT')
+  const [role, setRole] = useState(roleParam)
+  const [demoNotice, setDemoNotice] = useState('')
+
+  const demoCredentials = (r = role) => {
+    if (r === 'STUDENT') return { email: 'demo.student@tncolleges.in', password: 'demo1234' }
+    if (r === 'COLLEGE') {
+      const c = getRegisteredColleges()[0]
+      return { email: c?.loginUsername || c?.email || '', password: c?.loginPassword || '' }
+    }
+    return { email: 'admin@tncolleges.in', password: 'admin1234' }
+  }
+
+  const fillDemo = (r = role) => {
+    const creds = demoCredentials(r)
+    if (r === 'COLLEGE' && !creds.email) {
+      setDemoNotice('Demo college innum illa - College Sign Up pannunga, appuram college demo login work aagum.')
+      return
+    }
+    setEmail(creds.email)
+    setPassword(creds.password)
+    setDemoNotice(`Demo credentials fill pannitten - "${creds.email}" - ippo Login button press pannunga.`)
+  }
+
+  // /login?role=college - role preselect
+  useEffect(() => { setRole(roleParam) }, [roleParam])
+
+  // /login?role=student&demo=1 - credentials auto fill
+  useEffect(() => { if (demoParam) fillDemo(roleParam) }, [demoParam, roleParam])
 
   const handleLogin = (e) => {
     e.preventDefault()
@@ -69,30 +108,30 @@ export default function Login() {
 
             {/* Role Cards - Responsive grid */}
             <div className="mt-6 sm:mt-8 space-y-2.5 sm:space-y-3">
-              <div className={`flex items-center gap-3 p-3 rounded-[12px] border transition-all ${role==='STUDENT' ? 'bg-[#FAB95B]/20 border-[#FAB95B]/30' : 'bg-white/5 border-white/10'}`}>
+              <button type="button" onClick={()=>setRole('STUDENT')} className={`w-full text-left flex items-center gap-3 p-3 rounded-[12px] border transition-all cursor-pointer ${role==='STUDENT' ? 'bg-[#FAB95B]/20 border-[#FAB95B]/30' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}>
                 <div className={`h-9 w-9 rounded-[10px] grid place-items-center shrink-0 ${role==='STUDENT' ? 'bg-[#FAB95B] text-[#1A3263]' : 'bg-white/10 text-white'}`}><GraduationCap size={16} /></div>
                 <div className="min-w-0 flex-1">
                   <div className={`font-semibold text-[11px] ${role==='STUDENT' ? 'text-[#FAB95B]' : ''}`}>Student Login</div>
                   <div className="text-[10px] text-white/60 truncate">Discover, save, compare, enquire</div>
                 </div>
                 {role==='STUDENT' && <div className="h-2 w-2 rounded-full bg-[#FAB95B] animate-pulse shrink-0" />}
-              </div>
-              <div className={`flex items-center gap-3 p-3 rounded-[12px] border transition-all ${role==='COLLEGE' ? 'bg-[#FAB95B]/20 border-[#FAB95B]/30' : 'bg-white/5 border-white/10'}`}>
+              </button>
+              <button type="button" onClick={()=>setRole('COLLEGE')} className={`w-full text-left flex items-center gap-3 p-3 rounded-[12px] border transition-all cursor-pointer ${role==='COLLEGE' ? 'bg-[#FAB95B]/20 border-[#FAB95B]/30' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}>
                 <div className={`h-9 w-9 rounded-[10px] grid place-items-center shrink-0 ${role==='COLLEGE' ? 'bg-[#FAB95B] text-[#1A3263]' : 'bg-white/10 text-white'}`}><Building2 size={16} /></div>
                 <div className="min-w-0 flex-1">
                   <div className={`font-semibold text-[11px] ${role==='COLLEGE' ? 'text-[#FAB95B]' : ''}`}>College Login</div>
                   <div className="text-[10px] text-white/60 truncate">Manage profile, courses, facilities</div>
                 </div>
                 {role==='COLLEGE' && <div className="h-2 w-2 rounded-full bg-[#FAB95B] animate-pulse shrink-0" />}
-              </div>
-              <div className={`flex items-center gap-3 p-3 rounded-[12px] border transition-all ${role==='PLATFORM_ADMIN' ? 'bg-[#FAB95B]/20 border-[#FAB95B]/30' : 'bg-white/5 border-white/10'}`}>
+              </button>
+              <button type="button" onClick={()=>setRole('PLATFORM_ADMIN')} className={`w-full text-left flex items-center gap-3 p-3 rounded-[12px] border transition-all cursor-pointer ${role==='PLATFORM_ADMIN' ? 'bg-[#FAB95B]/20 border-[#FAB95B]/30' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}>
                 <div className={`h-9 w-9 rounded-[10px] grid place-items-center shrink-0 ${role==='PLATFORM_ADMIN' ? 'bg-[#FAB95B] text-[#1A3263]' : 'bg-[#E8E2DB] text-[#1A3263]'}`}><Shield size={16} /></div>
                 <div className="min-w-0 flex-1">
                   <div className={`font-semibold text-[11px] ${role==='PLATFORM_ADMIN' ? 'text-[#FAB95B]' : ''}`}>Platform Admin</div>
                   <div className="text-[10px] text-white/60 truncate">Verification, analytics, reports</div>
                 </div>
                 {role==='PLATFORM_ADMIN' && <div className="h-2 w-2 rounded-full bg-[#FAB95B] animate-pulse shrink-0" />}
-              </div>
+              </button>
             </div>
 
             {/* IMAGES SECTION - Responsive: mobile shows 1 large + 2 small, tablet larger, laptop optimized */}
@@ -227,6 +266,21 @@ export default function Login() {
                 </button>
               ))}
             </div>
+
+            {/* Demo helper - quick fill */}
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => fillDemo(role)}
+                className="h-9 px-4 rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] font-bold text-[11px] inline-flex items-center gap-1.5 hover:brightness-105 transition-all"
+              >
+                <Eye size={13} /> Demo credentials fill
+              </button>
+              <span className="text-[10px] text-[#547792]">Student / College / Admin - demo login instant</span>
+            </div>
+            {demoNotice && (
+              <div className="mt-2 rounded-[12px] bg-[#FAB95B]/15 border-2 border-[#FAB95B]/40 px-3 py-2 text-[11px] font-medium text-[#1A3263] leading-[1.5]">{demoNotice}</div>
+            )}
 
             {/* Form */}
             <form onSubmit={handleLogin} className="mt-6 sm:mt-7 space-y-4 sm:space-y-5">
