@@ -101,21 +101,21 @@ public class EnquiryController {
         }
 
         List<Map<String, Object>> enquiries = List.of(
-            Map.of(
-                "id", 1,
-                "student_id", 1,
-                "student_name", "Rahul Kumar",
-                "student_email", "rahul@example.com",
-                "student_phone", "9876543210",
-                "student_education", "12th",
-                "student_district", "Coimbatore",
-                "student_course_interest", "B.E Computer Science",
-                "college_id", collegeId,
-                "question", "Admission process for CSE?",
-                "status", "New",
-                "consent_given", true,
-                "personal_info_shared", true,
-                "date", "2026-09-20"
+            Map.ofEntries(
+                Map.entry("id", 1),
+                Map.entry("student_id", 1),
+                Map.entry("student_name", "Rahul Kumar"),
+                Map.entry("student_email", "rahul@example.com"),
+                Map.entry("student_phone", "9876543210"),
+                Map.entry("student_education", "12th"),
+                Map.entry("student_district", "Coimbatore"),
+                Map.entry("student_course_interest", "B.E Computer Science"),
+                Map.entry("college_id", collegeId),
+                Map.entry("question", "Admission process for CSE?"),
+                Map.entry("status", "New"),
+                Map.entry("consent_given", true),
+                Map.entry("personal_info_shared", true),
+                Map.entry("date", "2026-09-20")
             )
         );
         return ResponseEntity.ok(Map.of(
