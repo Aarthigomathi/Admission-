@@ -148,7 +148,8 @@ public class CollegeService {
 
     @Transactional(readOnly = true)
     public Map<String, Object> enriched(College college, boolean includePrivateFields) {
-        Map<String, Object> result = new LinkedHashMap<>(mapper.convertValue(CollegeResponse.from(college), Map.class));
+        Map<String, Object> base = mapper.convertValue(CollegeResponse.from(college), new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
+        Map<String, Object> result = new LinkedHashMap<>(base);
         Map<String, Object> custom = content.getAll(college.getId());
         result.put("branding", custom.get("branding"));
         result.put("about", custom.get("about"));
