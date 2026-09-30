@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Sparkles, GraduationCap, Users, Building2, ArrowUpRight, Star, SlidersHorizontal, Image as ImageIcon, Shield, FileText, BarChart3, Bookmark, GitCompare, MessageCircle } from 'lucide-react'
+import { Sparkles, GraduationCap, Users, Building2, ArrowUpRight, Star, SlidersHorizontal, Image as ImageIcon, Shield, FileText, BarChart3, Bookmark, GitCompare, MessageCircle, MapPin } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
 import { getPublicColleges } from '../../lib/collegeStorage'
+import { districts } from '../../lib/colleges'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
 
@@ -122,6 +123,52 @@ export default function PlatformHome() {
           </div>
         </div>
       </div>
+
+      {/* All 38 Tamil Nadu Districts - browse district-wise */}
+      <section id="districts" className="border-b-2 border-[#E8E2DB] bg-white">
+        <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-14">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="max-w-[720px]">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1A3263] border-2 border-[#FAB95B] text-[11px] font-bold uppercase tracking-wide text-[#FAB95B]">
+                <MapPin size={12} /> All {districts.length} Districts • Tamil Nadu
+              </div>
+              <h2 className="font-display text-[30px] lg:text-[42px] font-bold leading-[0.95] tracking-tight mt-5 text-[#1A3263]">
+                Explore colleges <span className="font-serif italic font-[400] text-[#547792]">district by district</span>
+              </h2>
+              <p className="text-[14px] text-[#1A3263]/70 mt-3 leading-[1.6]">
+                Tamil Nadu's {districts.length} districts - click pannunga, antha district colleges filter aagi kaatum. Header la 📍 All Districts dropdown la-um iathe list irukku.
+              </p>
+            </div>
+            <div className="rounded-[16px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 px-5 py-3">
+              <div className="font-display text-[26px] font-bold leading-none text-[#1A3263]">{districts.length}</div>
+              <div className="text-[11px] font-bold uppercase tracking-wide text-[#547792] mt-1">Districts Covered</div>
+            </div>
+          </div>
+
+          <div className="mt-9 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
+            {districts.map(d => {
+              const count = colleges.filter(c => c.district === d).length
+              return (
+                <Link
+                  key={d}
+                  to={`/search?district=${encodeURIComponent(d)}`}
+                  className="group flex items-center justify-between gap-2 h-11 px-4 rounded-[14px] bg-[#E8E2DB]/60 border-2 border-[#E8E2DB] hover:border-[#FAB95B] hover:bg-[#FAB95B]/20 transition-colors"
+                >
+                  <span className="flex items-center gap-2 min-w-0">
+                    <MapPin size={12} className="text-[#547792] group-hover:text-[#1A3263] shrink-0" />
+                    <span className="text-[12.5px] font-bold text-[#1A3263] truncate">{d}</span>
+                  </span>
+                  <span className={`text-[11px] font-bold shrink-0 ${count > 0 ? 'text-[#1A3263]' : 'text-[#547792]/60'}`}>{count}</span>
+                </Link>
+              )
+            })}
+          </div>
+
+          <div className="mt-6 text-[11px] text-[#547792] font-medium">
+            Count = antha district la ippo irukkura colleges. Puthu college sign up pannumpothu automatic-a update aagum.
+          </div>
+        </div>
+      </section>
 
       {/* Three Roles Section */}
       <div className="bg-white border-b-2 border-[#E8E2DB]">
