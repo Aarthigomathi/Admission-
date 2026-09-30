@@ -12,11 +12,13 @@ public interface CollegeRepository extends JpaRepository<College, Long> {
     boolean existsByEmailIgnoreCase(String email);
     boolean existsByLoginUsernameIgnoreCase(String loginUsername);
 
-    List<College> findAllByRegisteredTrueAndActiveTrueOrderByNameAsc();
+    List<College> findAllByRegisteredTrueAndActiveTrueAndVerifiedTrueOrderByNameAsc();
     List<College> findByDistrictIgnoreCaseAndRegisteredTrueAndActiveTrue(String district);
     List<College> findByTypeContainingIgnoreCaseAndRegisteredTrueAndActiveTrue(String type);
     List<College> findAllByRegisteredTrueOrderByCreatedAtDesc();
+    long countByRegisteredTrueAndActiveTrue();
+    long countByRegisteredTrueAndVerificationStatus(College.VerificationStatus status);
 
-    @Query("SELECT c FROM College c WHERE c.registered = true AND c.active = true AND (LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(c.shortName) LIKE LOWER(CONCAT('%', :query, '%')))")
+    @Query("SELECT c FROM College c WHERE c.registered = true AND c.active = true AND c.verified = true AND (LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(c.shortName) LIKE LOWER(CONCAT('%', :query, '%')))")
     List<College> searchByName(String query);
 }

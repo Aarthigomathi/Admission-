@@ -4,6 +4,9 @@ dist/
 target/
 
 # Runtime and local environment files
+/backend/data/
+*.mv.db
+*.trace.db
 *.log
 .env
 .env.*

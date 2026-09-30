@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, saveCollegeDataSafe, getProfileCompletion, findCollegeByLoginId } from '../../lib/collegeStorage'
+import { getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, saveCollegeDataSafe, getProfileCompletion, findCollegeByLoginId } from '../../lib/collegeStorage'
 import CollegeAnalytics from '../../components/admin/CollegeAnalytics'
 import AboutPagesAdmin from '../../components/admin/AboutPagesAdmin.jsx'
 import DeptPagesAdmin from '../../components/admin/DeptPagesAdmin.jsx'
@@ -21,6 +21,9 @@ export default function AdminDashboard() {
   return saveCollegeDataSafe(selectedCollegeId, section, data).then(ok => {
     if (!ok) alert('Storage full - irukkura images-ellam auto-compress pannitom; innorum full-aa irundha photo-ku URL use pannunga')
     return ok
+  }).catch(error => {
+    alert(error.message || 'Backend save failed. Please check your connection and try again.')
+    return false
   })
  }
  const [customData, setCustomData] = useState({})
@@ -661,7 +664,7 @@ export default function AdminDashboard() {
  }
 
  if (!isLoggedIn) {
-  const allColleges = getPublicColleges()
+  const allColleges = getRegisteredColleges()
   return (
    <div className="min-h-screen bg-[#E8E2DB] grid place-items-center p-6">
     <div className="w-full max-w-[560px] rounded-[28px] bg-white border-2 border-[#E8E2DB] shadow-[0_16px_48px_rgba(0,0,0,0.08)] p-8">

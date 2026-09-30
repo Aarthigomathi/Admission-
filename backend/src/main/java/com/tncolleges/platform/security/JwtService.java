@@ -1,6 +1,7 @@
 package com.tncolleges.platform.security;
 
 import io.jsonwebtoken.*;
+import jakarta.annotation.PostConstruct;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,11 @@ public class JwtService {
 
     @Value("${app.jwt.expiration-ms}")
     private long jwtExpiration;
+
+    @PostConstruct
+    void validateSigningKey() {
+        getSignInKey();
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

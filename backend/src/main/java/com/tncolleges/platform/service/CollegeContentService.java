@@ -15,15 +15,19 @@ import java.util.*;
 public class CollegeContentService {
     private static final List<String> SECTIONS = List.of(
             "about", "aboutPages", "branding", "departments", "deptPages", "homePage", "tagline", "courses",
-            "admissions", "contactDetails", "contacts", "placements", "events", "announcements", "gallery",
-            "campus", "campusEnvironment", "library", "sports", "hostels", "facilities", "customFacilities", "alumni",
-            "achievements", "management", "principal", "principalDetails", "research", "researchCentres",
-            "accreditations", "settings", "updatedAt"
+            "admissions", "admissionProcess", "contactDetails", "contacts", "faculty", "placements", "careers",
+            "events", "announcements", "news", "gallery", "documents", "campus", "campusEnvironment", "library",
+            "sports", "hostels", "facilities", "customFacilities", "studentServices", "transport", "clubs", "alumni",
+            "achievements", "awards", "testimonials", "scholarships", "management", "principal", "principalDetails",
+            "research", "researchCentres", "accreditations", "rankings", "committees", "faqs", "importantLinks",
+            "socialLinks", "grievance", "antiRagging", "settings", "updatedAt"
     );
 
     private static final Set<String> ARRAY_SECTIONS = Set.of(
-            "departments", "courses", "contacts", "placements", "events", "announcements", "gallery", "hostels",
-            "customFacilities", "alumni", "achievements", "research", "researchCentres", "accreditations"
+            "departments", "courses", "contacts", "faculty", "placements", "careers", "events", "announcements",
+            "news", "gallery", "documents", "hostels", "customFacilities", "studentServices", "clubs", "alumni",
+            "achievements", "awards", "testimonials", "scholarships", "research", "researchCentres", "accreditations",
+            "rankings", "committees", "faqs", "importantLinks", "socialLinks", "grievance", "antiRagging"
     );
 
     private final CollegeContentRepository repository;
@@ -115,6 +119,9 @@ public class CollegeContentService {
         Object stableId = current.getOrDefault("id", departmentId);
         current.putAll(updates);
         current.put("id", stableId);
+        if (current.get("name") == null || String.valueOf(current.get("name")).isBlank()) {
+            throw new IllegalArgumentException("Department name is required");
+        }
         saveSection(collegeId, "departments", departments);
         return current;
     }
@@ -129,6 +136,18 @@ public class CollegeContentService {
         Map<String, Object> pages = currentPages instanceof Map<?, ?> ? asMap(currentPages) : new LinkedHashMap<>();
         pages.remove(departmentId);
         saveSection(collegeId, "deptPages", pages);
+    }
+
+    @Transactional
+    public Object saveDepartmentPage(Long collegeId, String departmentId, Object page) {
+        boolean exists = departments(collegeId).stream()
+                .anyMatch(department -> Objects.equals(String.valueOf(department.get("id")), departmentId));
+        if (!exists) throw new NoSuchElementException("Department not found");
+        Object currentPages = getSection(collegeId, "deptPages");
+        Map<String, Object> pages = currentPages instanceof Map<?, ?> ? asMap(currentPages) : new LinkedHashMap<>();
+        pages.put(departmentId, page);
+        saveSection(collegeId, "deptPages", pages);
+        return page;
     }
 
     @Transactional

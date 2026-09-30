@@ -1,5 +1,6 @@
 package com.tncolleges.platform.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +29,8 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
+    @Value("${app.cors.allowed-origin-patterns:http://localhost:5173,http://localhost:3000}")
+    private String allowedOriginPatterns;
 
     public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserDetailsService userDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
@@ -41,7 +44,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**", "/api/colleges/**", "/api/courses/**", "/api/search/**", "/h2-console/**", "/api/public/**").permitAll()
-                .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN", "COLLEGE_ADMIN", "COLLEGE_EDITOR")
+                .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN", "PLATFORM_ADMIN", "COLLEGE_ADMIN", "COLLEGE_EDITOR")
                 .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
                 .anyRequest().authenticated()
             )
@@ -49,8 +52,8 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // For H2 console
-        http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
+        // Permit same-origin frames for the optional local H2 console without allowing clickjacking.
+        http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
     }
@@ -58,7 +61,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*"));
+        List<String> origins = java.util.Arrays.stream(allowedOriginPatterns.split(","))
+                .map(String::trim).filter(origin -> !origin.isEmpty()).toList();
+        config.setAllowedOriginPatterns(origins);
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

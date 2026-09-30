@@ -1,6 +1,7 @@
 package com.tncolleges.platform.controller;
 
 import com.tncolleges.platform.model.College;
+import com.tncolleges.platform.model.Course;
 import com.tncolleges.platform.repository.CollegeRepository;
 import com.tncolleges.platform.repository.CourseRepository;
 import com.tncolleges.platform.security.CollegeAccessService;
@@ -17,7 +18,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/colleges")
-@CrossOrigin(origins = "*")
 public class CollegeController {
     private final CollegeRepository collegeRepo;
     private final CourseRepository courseRepo;
@@ -55,37 +55,28 @@ public class CollegeController {
 
     @GetMapping("/{slug}/courses")
     public ResponseEntity<List<Map<String, Object>>> getCourses(@PathVariable String slug) {
-        Optional<College> college = collegeRepo.findBySlug(slug).filter(c -> c.isRegistered() && c.isActive());
+        Optional<College> college = collegeRepo.findBySlug(slug).filter(c -> c.isRegistered() && c.isActive() && c.isVerified());
         if (college.isEmpty()) return ResponseEntity.notFound().build();
+        List<Map<String, Object>> courses = new ArrayList<>();
+        Set<String> seenIds = new HashSet<>();
         Object savedCourses = contentService.getSection(college.get().getId(), "courses");
-        if (savedCourses instanceof List<?> list && !list.isEmpty()) {
-            return ResponseEntity.ok(list.stream().map(item -> item instanceof Map<?, ?> ? contentService.asMap(item) : Map.of("value", item)).toList());
+        if (savedCourses instanceof List<?> list) {
+            for (Object item : list) {
+                Map<String, Object> course;
+                if (item instanceof Map<?, ?>) course = contentService.asMap(item);
+                else {
+                    course = new LinkedHashMap<>();
+                    course.put("value", item);
+                }
+                if (Boolean.FALSE.equals(course.get("active"))) continue;
+                courses.add(course);
+                if (course.get("id") != null) seenIds.add(String.valueOf(course.get("id")));
+            }
         }
-        List<Map<String, Object>> courses = courseRepo.findByCollegeIdAndActiveTrue(college.get().getId())
-                .stream().map(course -> {
-                    Map<String, Object> item = new LinkedHashMap<>();
-                    item.put("id", course.getId());
-                    item.put("collegeId", course.getCollege().getId());
-                    item.put("departmentId", course.getDepartment() == null ? null : course.getDepartment().getId());
-                    item.put("name", course.getName());
-                    item.put("degreeType", course.getDegreeType());
-                    item.put("level", course.getLevel());
-                    item.put("duration", course.getDuration());
-                    item.put("eligibility", course.getEligibility());
-                    item.put("admissionProcess", course.getAdmissionProcess());
-                    item.put("intake", course.getIntake());
-                    item.put("fees", course.getFees());
-                    item.put("description", course.getDescription());
-                    item.put("curriculum", course.getCurriculum());
-                    item.put("careerOpportunities", course.getCareerOpportunities());
-                    item.put("brochureUrl", course.getBrochureUrl());
-                    item.put("admissionLink", course.getAdmissionLink());
-                    item.put("contactInfo", course.getContactInfo());
-                    item.put("imageUrl", course.getImageUrl());
-                    item.put("active", course.isActive());
-                    item.put("featured", course.isFeatured());
-                    return item;
-                }).toList();
+        for (Course course : courseRepo.findByCollegeIdAndActiveTrue(college.get().getId())) {
+            if (seenIds.contains(String.valueOf(course.getId()))) continue;
+            courses.add(courseMap(course));
+        }
         return ResponseEntity.ok(courses);
     }
 
@@ -161,6 +152,10 @@ public class CollegeController {
     public ResponseEntity<?> getDepartmentPage(@PathVariable Long collegeId, @PathVariable String departmentId,
                                                @AuthenticationPrincipal UserDetails user) {
         if (!canReadContent(collegeId, user)) return ResponseEntity.status(404).body(Map.of("error", "College not found"));
+        if (contentService.departments(collegeId).stream()
+                .noneMatch(department -> Objects.equals(String.valueOf(department.get("id")), departmentId))) {
+            return ResponseEntity.notFound().build();
+        }
         Object pagesValue = contentService.getSection(collegeId, "deptPages");
         Map<String, Object> pages = pagesValue instanceof Map<?, ?> ? contentService.asMap(pagesValue) : Map.of();
         return ResponseEntity.ok(pages.getOrDefault(departmentId, Map.of()));
@@ -171,16 +166,37 @@ public class CollegeController {
                                                @RequestBody Object page,
                                                @AuthenticationPrincipal UserDetails user) {
         if (!canManage(collegeId, user)) return ResponseEntity.status(403).body(Map.of("error", "You cannot edit this college"));
-        Object pagesValue = contentService.getSection(collegeId, "deptPages");
-        Map<String, Object> pages = pagesValue instanceof Map<?, ?> ? contentService.asMap(pagesValue) : new LinkedHashMap<>();
-        pages.put(departmentId, page);
-        contentService.saveSection(collegeId, "deptPages", pages);
-        return ResponseEntity.ok(page);
+        return ResponseEntity.ok(contentService.saveDepartmentPage(collegeId, departmentId, page));
+    }
+
+    private Map<String, Object> courseMap(Course course) {
+        Map<String, Object> item = new LinkedHashMap<>();
+        item.put("id", course.getId());
+        item.put("collegeId", course.getCollege() == null ? null : course.getCollege().getId());
+        item.put("departmentId", course.getDepartment() == null ? null : course.getDepartment().getId());
+        item.put("name", course.getName());
+        item.put("degreeType", course.getDegreeType());
+        item.put("level", course.getLevel());
+        item.put("duration", course.getDuration());
+        item.put("eligibility", course.getEligibility());
+        item.put("admissionProcess", course.getAdmissionProcess());
+        item.put("intake", course.getIntake());
+        item.put("fees", course.getFees());
+        item.put("description", course.getDescription());
+        item.put("curriculum", course.getCurriculum());
+        item.put("careerOpportunities", course.getCareerOpportunities());
+        item.put("brochureUrl", course.getBrochureUrl());
+        item.put("admissionLink", course.getAdmissionLink());
+        item.put("contactInfo", course.getContactInfo());
+        item.put("imageUrl", course.getImageUrl());
+        item.put("active", course.isActive());
+        item.put("featured", course.isFeatured());
+        return item;
     }
 
     private boolean canReadContent(Long collegeId, UserDetails user) {
         if (user != null && collegeAccessService.canManageCollege(user.getUsername(), collegeId)) return true;
-        return collegeRepo.findById(collegeId).filter(c -> c.isRegistered() && c.isActive()).isPresent();
+        return collegeRepo.findById(collegeId).filter(c -> c.isRegistered() && c.isActive() && c.isVerified()).isPresent();
     }
 
     private boolean canManage(Long collegeId, UserDetails user) {

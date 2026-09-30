@@ -4,8 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tncolleges.platform.dto.CollegeResponse;
 import com.tncolleges.platform.model.College;
 import com.tncolleges.platform.model.User;
+import com.tncolleges.platform.model.Verification;
+import com.tncolleges.platform.model.Notification;
 import com.tncolleges.platform.repository.CollegeRepository;
 import com.tncolleges.platform.repository.UserRepository;
+import com.tncolleges.platform.repository.VerificationRepository;
+import com.tncolleges.platform.repository.NotificationRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +20,22 @@ import java.util.regex.Pattern;
 @Service
 public class CollegeService {
     private static final Pattern NON_SLUG = Pattern.compile("[^a-z0-9]+", Pattern.CASE_INSENSITIVE);
+    private static final Pattern EMAIL = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
     private final CollegeRepository colleges;
     private final UserRepository users;
+    private final VerificationRepository verifications;
+    private final NotificationRepository notifications;
     private final CollegeContentService content;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper mapper;
 
-    public CollegeService(CollegeRepository colleges, UserRepository users, CollegeContentService content,
+    public CollegeService(CollegeRepository colleges, UserRepository users, VerificationRepository verifications,
+                          NotificationRepository notifications, CollegeContentService content,
                           PasswordEncoder passwordEncoder, ObjectMapper mapper) {
         this.colleges = colleges;
         this.users = users;
+        this.verifications = verifications;
+        this.notifications = notifications;
         this.content = content;
         this.passwordEncoder = passwordEncoder;
         this.mapper = mapper;
@@ -35,7 +45,7 @@ public class CollegeService {
     public List<Map<String, Object>> publicColleges(String district, String type, String search) {
         List<College> records;
         if (search != null && !search.isBlank()) records = colleges.searchByName(search.trim());
-        else records = colleges.findAllByRegisteredTrueAndActiveTrueOrderByNameAsc();
+        else records = colleges.findAllByRegisteredTrueAndActiveTrueAndVerifiedTrueOrderByNameAsc();
         if (district != null && !district.isBlank() && !district.equalsIgnoreCase("All")) {
             records = records.stream().filter(c -> district.equalsIgnoreCase(c.getDistrict())).toList();
         }
@@ -52,13 +62,13 @@ public class CollegeService {
 
     @Transactional(readOnly = true)
     public Optional<Map<String, Object>> publicBySlug(String slug) {
-        return colleges.findBySlug(slug).filter(c -> c.isRegistered() && c.isActive()).map(c -> enriched(c, false));
+        return colleges.findBySlug(slug).filter(c -> c.isRegistered() && c.isActive() && c.isVerified()).map(c -> enriched(c, false));
     }
 
     @Transactional(readOnly = true)
     public Optional<Map<String, Object>> byId(Long id, boolean includeUnverified) {
         return colleges.findById(id)
-                .filter(c -> c.isRegistered() && (includeUnverified || c.isActive()))
+                .filter(c -> c.isRegistered() && (includeUnverified || (c.isActive() && c.isVerified())))
                 .map(c -> enriched(c, includeUnverified));
     }
 
@@ -68,13 +78,13 @@ public class CollegeService {
         String officialEmail = firstText(request, "email", "officialEmail", "collegeEmail", "adminEmail", "loginEmail");
         String username = firstText(request, "loginUsername", "adminUsername", "username", "email", "officialEmail", "collegeEmail", "adminEmail");
         String password = firstText(request, "loginPassword", "adminPassword", "password");
-        if (officialEmail == null || !officialEmail.contains("@")) throw new IllegalArgumentException("A valid college email is required");
+        if (officialEmail == null || !EMAIL.matcher(officialEmail.trim()).matches()) throw new IllegalArgumentException("A valid college email is required");
         if (username == null || username.isBlank()) throw new IllegalArgumentException("A login username is required");
         if (password == null || password.length() < 8) throw new IllegalArgumentException("Login password must contain at least 8 characters");
         officialEmail = officialEmail.trim().toLowerCase(Locale.ROOT);
         username = username.trim();
-        if (users.existsByEmail(officialEmail) || users.existsByUsernameIgnoreCase(username)
-                || colleges.existsByLoginUsernameIgnoreCase(username)) {
+        if (users.existsByEmailIgnoreCase(officialEmail) || users.existsByUsernameIgnoreCase(username)
+                || colleges.existsByEmailIgnoreCase(officialEmail) || colleges.existsByLoginUsernameIgnoreCase(username)) {
             throw new IllegalArgumentException("Email or login username is already registered");
         }
 
@@ -105,6 +115,11 @@ public class CollegeService {
         college = colleges.saveAndFlush(college);
         college.setSlug(uniqueSlug(name, college.getId()));
         college = colleges.save(college);
+        verifications.save(Verification.builder()
+                .collegeId(college.getId())
+                .status(Verification.VerificationStatus.PENDING)
+                .createdAt(java.time.LocalDateTime.now())
+                .build());
 
         User admin = User.builder()
                 .email(officialEmail)
@@ -117,6 +132,15 @@ public class CollegeService {
                 .enabled(true)
                 .build();
         users.save(admin);
+        for (User platformAdmin : users.findAllByRoleIn(List.of(User.Role.PLATFORM_ADMIN, User.Role.SUPER_ADMIN))) {
+            notifications.save(Notification.builder()
+                    .userId(platformAdmin.getId())
+                    .title("New college registration")
+                    .message(name + " registered and is pending verification.")
+                    .type("VERIFICATION")
+                    .collegeId(college.getId())
+                    .build());
+        }
 
         Map<String, Object> supplied = new LinkedHashMap<>(request);
         if (request.get("customData") instanceof Map<?, ?> raw) {
@@ -129,15 +153,42 @@ public class CollegeService {
 
     @Transactional
     public Map<String, Object> verify(Long collegeId, String requestedStatus, String remarks) {
+        return verify(collegeId, requestedStatus, remarks, null);
+    }
+
+    @Transactional
+    public Map<String, Object> verify(Long collegeId, String requestedStatus, String remarks, Long verifiedBy) {
         College college = colleges.findById(collegeId).filter(College::isRegistered)
                 .orElseThrow(() -> new NoSuchElementException("Registered college not found"));
         College.VerificationStatus status;
         try { status = College.VerificationStatus.valueOf(requestedStatus == null ? "VERIFIED" : requestedStatus.trim().toUpperCase(Locale.ROOT)); }
         catch (IllegalArgumentException exception) { throw new IllegalArgumentException("Invalid verification status"); }
+        College.VerificationStatus previousStatus = college.getVerificationStatus();
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
         college.setVerificationStatus(status);
         college.setVerified(status == College.VerificationStatus.VERIFIED);
-        college.setUpdatedAt(java.time.LocalDateTime.now());
+        college.setUpdatedAt(now);
         colleges.save(college);
+        Verification verification = verifications.findByCollegeId(collegeId)
+                .orElseGet(() -> Verification.builder().collegeId(collegeId).createdAt(now).build());
+        verification.setStatus(Verification.VerificationStatus.valueOf(status.name()));
+        verification.setRemarks(remarks);
+        verification.setVerifiedBy(verifiedBy);
+        verification.setVerifiedAt(status == College.VerificationStatus.VERIFIED ? now : null);
+        verification.setUpdatedAt(now);
+        verifications.save(verification);
+        if (previousStatus != status) {
+            String statusMessage = "College verification status changed to " + status.name().replace('_', ' ').toLowerCase(Locale.ROOT) + ".";
+            for (User collegeAdmin : users.findAllByCollegeIdAndRoleIn(collegeId, List.of(User.Role.COLLEGE_ADMIN, User.Role.COLLEGE_EDITOR))) {
+                notifications.save(Notification.builder()
+                        .userId(collegeAdmin.getId())
+                        .title("College verification update")
+                        .message(statusMessage)
+                        .type("VERIFICATION")
+                        .collegeId(collegeId)
+                        .build());
+            }
+        }
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("message", "College verification status updated");
         result.put("college_id", collegeId);
@@ -151,7 +202,13 @@ public class CollegeService {
     public Map<String, Object> enriched(College college, boolean includePrivateFields) {
         Map<String, Object> base = mapper.convertValue(CollegeResponse.from(college), new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
         Map<String, Object> result = new LinkedHashMap<>(base);
-        Map<String, Object> custom = content.getAll(college.getId());
+        Map<String, Object> custom = new LinkedHashMap<>(content.getAll(college.getId()));
+        if (!includePrivateFields && custom.get("courses") instanceof List<?> courses) {
+            custom.put("courses", courses.stream().filter(item -> {
+                if (item instanceof Map<?, ?> map) return !Boolean.FALSE.equals(map.get("active"));
+                return true;
+            }).toList());
+        }
         result.put("branding", custom.get("branding"));
         result.put("about", custom.get("about"));
         for (Map.Entry<String, Object> entry : custom.entrySet()) result.put(entry.getKey(), entry.getValue());

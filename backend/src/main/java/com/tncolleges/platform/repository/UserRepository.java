@@ -10,6 +10,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsernameIgnoreCase(String username);
     boolean existsByEmail(String email);
     boolean existsByUsernameIgnoreCase(String username);
+    long countByRole(User.Role role);
+    java.util.List<User> findAllByCollegeIdAndRoleIn(Long collegeId, java.util.Collection<User.Role> roles);
+    java.util.List<User> findAllByRoleIn(java.util.Collection<User.Role> roles);
 
     default Optional<User> findByLoginIdentifier(String identifier) {
         if (identifier == null || identifier.isBlank()) return Optional.empty();

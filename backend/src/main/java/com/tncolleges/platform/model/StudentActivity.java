@@ -11,7 +11,8 @@ import java.time.LocalTime;
     @Index(name = "idx_activity_student", columnList = "student_id"),
     @Index(name = "idx_activity_college", columnList = "college_id"),
     @Index(name = "idx_activity_type", columnList = "activity_type"),
-    @Index(name = "idx_activity_date", columnList = "date")
+    @Index(name = "idx_activity_date", columnList = "date"),
+    @Index(name = "idx_activity_visit_audit", columnList = "activity_type, college_id, created_at, student_id")
 })
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class StudentActivity {

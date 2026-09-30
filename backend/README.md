@@ -1,46 +1,72 @@
-# Backend (Spring Boot)
+# Backend — Tamil Nadu College Discovery Platform
 
-## Requirements
+Spring Boot 3 / Java 17+ REST API. You can use an installed Maven 3.9+ (`mvn`) or the checked-in Maven Wrapper.
 
-- JDK 17 (install a full JDK, not only a JRE)
-- Internet access the first time you run the Maven Wrapper so it can download Maven and project dependencies
+## Run locally
 
-You do **not** need to install Maven globally; use the checked-in wrapper.
+Set a unique Base64-encoded JWT secret before starting the API. It is deliberately required; no known fallback signing key is shipped.
 
-## Start locally
-
-Linux/macOS/Git Bash:
-
-```bash
-cd backend
-java -version
-./mvnw clean test
-./mvnw spring-boot:run
-```
-
-Windows PowerShell:
+PowerShell:
 
 ```powershell
 cd backend
-java -version
-.\mvnw.cmd clean test
+$bytes = [byte[]]::new(48)
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$rng.GetBytes($bytes)
+$rng.Dispose()
+$env:APP_JWT_SECRET = [Convert]::ToBase64String($bytes)
+mvn clean test
+mvn spring-boot:run
+```
+
+Bash:
+
+```bash
+cd backend
+export APP_JWT_SECRET="$(openssl rand -base64 48)"
+mvn clean test
+mvn spring-boot:run
+```
+
+Default API URL: `http://localhost:8080`. To use port 8081, add `--server.port=8081` to the Spring Boot run arguments. Local development uses a file-backed H2 database at `backend/data/tn_colleges`, so data survives application restarts. Tests explicitly use an isolated in-memory H2 database. The optional H2 console is disabled by default; set `H2_CONSOLE_ENABLED=true` for local inspection, then use `/h2-console` with the configured JDBC URL, username `sa`, and blank password.
+
+Bootstrap accounts are disabled unless credentials are provided via environment variables. For local verification workflows, configure `APP_BOOTSTRAP_ADMIN_EMAIL` and a strong `APP_BOOTSTRAP_ADMIN_PASSWORD`; optional demo-student credentials use `APP_BOOTSTRAP_STUDENT_EMAIL` and `APP_BOOTSTRAP_STUDENT_PASSWORD`. PowerShell example (use private local values, not shared or production credentials):
+
+```powershell
+$env:APP_BOOTSTRAP_ADMIN_EMAIL = "admin@example.test"
+$env:APP_BOOTSTRAP_ADMIN_PASSWORD = "replace-with-a-unique-strong-password"
+$env:APP_BOOTSTRAP_STUDENT_EMAIL = "student@example.test"
+$env:APP_BOOTSTRAP_STUDENT_PASSWORD = "replace-with-another-unique-password"
 .\mvnw.cmd spring-boot:run
 ```
 
-The API listens on `http://localhost:8080` by default. For a different port, run `./mvnw spring-boot:run -Dspring-boot.run.arguments=--server.port=8081` (Windows: `.\\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"`). The development profile uses in-memory H2; college/content/user changes are lost when the process stops. H2 console: `/h2-console`, JDBC URL `jdbc:h2:mem:tn_colleges`, username `sa`, blank password.
+The initializer creates only explicitly configured bootstrap accounts; without bootstrap environment variables, it creates no user accounts. It does **not** seed template colleges. Do not reuse development credentials in production.
 
-## College CMS API
+## Main API
 
-- `POST /api/colleges/signup` — creates a college and its `COLLEGE_ADMIN` user; starts `PENDING` and never returns the password.
-- `POST /api/auth/login` — accepts `email`, `loginId`, or `username`; login identifiers may be slash/comma-separated.
-- `GET /api/colleges` and `GET /api/colleges/{slug}` — only active, registered colleges (including pending registrations, with `verified: false` until approval); no template colleges are seeded.
-- `GET/PUT /api/colleges/{id}/content/{section}` — stores section JSON in `college_content`; edits require the owning college admin/editor or platform admin.
-- `GET/POST/PUT/DELETE /api/colleges/{id}/departments` — department JSON CRUD. Deleting a department also removes its `deptPages` entry.
-- `GET/PUT /api/colleges/{id}/departments/{departmentId}/page` — department page JSON.
-- `GET /api/platform-admin/colleges` and `PATCH /api/platform-admin/colleges/{id}/verify` — list pending/registered colleges and persist verification status; platform-admin JWT required.
+### College CMS
+- `POST /api/colleges/signup` — register a college and its college-admin login. The record begins `PENDING` / `verified:false`; passwords are BCrypt-hashed and never returned.
+- `POST /api/auth/login` — accepts `email`, `loginId`, or `username`; login ID candidates can be slash/comma separated.
+- `GET /api/colleges`, `GET /api/colleges/{slug}`, `GET /api/colleges/{slug}/courses` — active, registered, verified colleges only. Pending registrations stay private until platform verification; public lists never include unregistered/template records.
+- `GET/PUT /api/colleges/{id}/content/{section}` and `GET /api/colleges/{id}/content` — persist nested section JSON in `college_content`.
+- `GET/POST/PUT/DELETE /api/colleges/{id}/departments` and `GET/PUT /api/colleges/{id}/departments/{departmentId}/page` — department content CRUD; deleting a department also deletes `deptPages[id]`.
+- `PATCH /api/platform-admin/colleges/{id}/verify` — persist verification status and audit fields.
+- `GET/POST/PUT/DELETE /api/admin/college/{id}/courses` — relational course admin API; course changes are also synced into college content JSON.
 
-New signups start with `departments: []`, `deptPages: {}`, and the KCE palette (`#1A3263`, `#547792`, `#FAB95B`). All supported custom sections are stored as JSON records, so the frontend's nested page data is preserved. The development bootstrap creates `superadmin@tncolleges.com / superadmin123` and `student@test.com / student123`; no example colleges are seeded.
+New colleges start with empty `departments` and `deptPages`, the `#1A3263 / #547792 / #FAB95B` brand palette, and the section keys documented in `CollegeContentService`. An explicit `registered` database flag defaults to false; signup is the path that marks a college registered. College, content, department, admin, and verification operations are scoped to registered colleges and checked against the signed-in user’s account.
 
-## Verification and limitations
+### Students, activity, and enquiries
+- `POST /api/auth/register` creates the user and student profile; student profile routes are under `/api/students/me` (profile, education, preferences, saved colleges, comparisons).
+- `POST /api/activity/track` stores authenticated student activity. Client-supplied student IDs are ignored; metadata is stripped of direct contact identifiers.
+- `GET /api/activity/college/{id}/aggregated` returns persisted, aggregate-only analytics to that college’s admins/platform admins.
+- `POST /api/enquiries` requires an authenticated student and explicit consent. Enquiry status/list routes are under `/api/enquiries`; contact details are only exposed on consented enquiries to the owning college.
+- `GET /api/notifications` and read routes return notifications belonging to the authenticated account only. Enquiry status changes notify the student.
 
-Tests cover H2 table creation, pending signup, default section values, username login lookup, department/page deletion behavior, and verification-to-public-list flow. Run `./mvnw clean test` before using the frontend. Student activity, enquiries, and several analytics/report endpoints are still demonstration implementations; production deployment also needs a persistent database, environment-managed JWT secrets, production CORS settings, and integration/security tests.
+### Platform administration
+Dashboard counters and charts read persisted colleges, users, activities, and enquiries. `GET /api/platform-admin/student-visits` provides a paginated, filterable student-to-college visit register (student contact/profile details, visit counts, and last visit) for platform admins only; filters include `collegeId`, `studentId`, `from`, `to`, and `search`. College-facing analytics remain aggregate-only. Interest reports are saved to the database and downloadable as generated PDF snapshots. Student dashboard endpoints expose only the authenticated student’s own activity.
+
+## Verification
+
+Run `mvn clean test` from `backend/` (or `./mvnw clean test` / `mvnw.cmd clean test` if the wrapper distribution is available). The test suite covers H2 schema creation, signup/default content, excluding unverified and unregistered colleges from public lists, username login, consent-based enquiries, private activity metadata, department/page deletion, verification notifications, platform-wide visit register access for platform admins only, and registered-college verification flow.
+
+Before production, configure a managed MySQL database using `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`, and `SPRING_DATASOURCE_DRIVER=com.mysql.cj.jdbc.Driver`; use an environment-provided strong `APP_JWT_SECRET`, optional strong bootstrap credentials, restricted frontend CORS origins, schema migrations/backups, rate limiting, and deployment-grade security/privacy review. The frontend uses the public-college, authentication, content, activity, dashboard, and audit APIs through the Vite `/api` proxy.

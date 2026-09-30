@@ -54,7 +54,7 @@ class AuthControllerTests {
         request.setPassword("secure-pass-123");
         request.setFullName(" Student Name ");
 
-        when(userRepository.existsByEmail("student@example.com")).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase("student@example.com")).thenReturn(false);
         when(passwordEncoder.encode("secure-pass-123")).thenReturn("encoded-password");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
             User user = invocation.getArgument(0);

@@ -1,6 +1,8 @@
 package com.tncolleges.platform.controller;
 
+import com.tncolleges.platform.model.Student;
 import com.tncolleges.platform.model.User;
+import com.tncolleges.platform.repository.StudentRepository;
 import com.tncolleges.platform.repository.UserRepository;
 import com.tncolleges.platform.security.JwtService;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,24 +22,33 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authManager;
+    private final StudentRepository studentRepository;
 
-    public AuthController(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authManager) {
+    @Autowired
+    public AuthController(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtService jwtService,
+                          AuthenticationManager authManager, StudentRepository studentRepository) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authManager = authManager;
+        this.studentRepository = studentRepository;
+    }
+
+    /** Preserves the lightweight unit-test constructor; production uses the autowired constructor. */
+    public AuthController(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtService jwtService,
+                          AuthenticationManager authManager) {
+        this(userRepo, passwordEncoder, jwtService, authManager, null);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
         String email = req.getEmail().trim().toLowerCase();
-        if (userRepo.existsByEmail(email)) return ResponseEntity.badRequest().body(Map.of("error", "Email already exists"));
+        if (userRepo.existsByEmailIgnoreCase(email)) return ResponseEntity.badRequest().body(Map.of("error", "Email already exists"));
         User user = User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(req.getPassword()))
@@ -45,6 +57,17 @@ public class AuthController {
                 .enabled(true)
                 .build();
         userRepo.save(user);
+        if (studentRepository != null) {
+            studentRepository.save(Student.builder()
+                    .user(user)
+                    .fullName(user.getFullName())
+                    .email(user.getEmail())
+                    .mobile(req.getMobile())
+                    .district(req.getDistrict())
+                    .city(req.getCity())
+                    .updatedAt(java.time.LocalDateTime.now())
+                    .build());
+        }
         return ResponseEntity.ok(tokenResponse(user));
     }
 
@@ -84,6 +107,9 @@ public class AuthController {
         @NotBlank @Email private String email;
         @NotBlank @Size(min = 8, max = 100) private String password;
         @NotBlank @Size(max = 120) private String fullName;
+        private String mobile;
+        private String district;
+        private String city;
     }
 
     @Getter @Setter

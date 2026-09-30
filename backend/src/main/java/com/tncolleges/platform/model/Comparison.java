@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comparisons")
+@Table(name = "comparisons", uniqueConstraints = @UniqueConstraint(name = "uk_comparison_student_college", columnNames = {"student_id", "college_id"}))
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Comparison {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

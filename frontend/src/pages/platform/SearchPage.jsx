@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { Search, MapPin, Filter, GraduationCap, Bookmark, GitCompare, ArrowUpRight, Building2, Sparkles, Shield } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { getPublicColleges } from '../../lib/collegeStorage'
+import { fetchPublicColleges } from '../../lib/collegeStorage'
 import { activityTracker, ACTIVITY_TYPES } from '../../lib/activityTracker'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
@@ -25,11 +25,13 @@ export default function SearchPage() {
     setSavedIds(saved.map(c=>c.id))
     const compare = JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]')
     setCompareIds(compare.map(c=>c.id))
-    setColleges(getPublicColleges())
-    const handle = () => setColleges(getPublicColleges())
+    let cancelled = false
+    const handle = () => fetchPublicColleges().then(items => { if (!cancelled) setColleges(items) }).catch(() => { if (!cancelled) setColleges([]) })
+    handle()
     window.addEventListener('collegeRegistered', handle)
     window.addEventListener('storage', handle)
     return () => {
+      cancelled = true
       window.removeEventListener('collegeRegistered', handle)
       window.removeEventListener('storage', handle)
     }

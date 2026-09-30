@@ -13,9 +13,25 @@ export function getRegisteredColleges() {
 }
 
 export function getPublicColleges() {
-  // ONLY colleges that signed up via CollegeSignup - no default PSG etc
-  const registered = getRegisteredColleges()
-  return registered.map(c => enrichCollege(c))
+  // This synchronous helper is retained for admin/local workflows only.
+  // Public discovery uses fetchPublicColleges so backend verification is authoritative.
+  return getRegisteredColleges()
+    .filter(college => college.verified === true || college.verificationStatus === 'VERIFIED')
+    .map(college => enrichCollege(college))
+}
+
+export async function fetchPublicColleges(filters = {}) {
+  const params = new URLSearchParams()
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value && value !== 'All') params.set(key, value)
+  })
+  const query = params.toString()
+  const response = await fetch(`/api/colleges${query ? `?${query}` : ''}`)
+  if (!response.ok) throw new Error('Could not load verified colleges.')
+  const colleges = await response.json()
+  return (Array.isArray(colleges) ? colleges : [])
+    .filter(college => college.registered !== false && college.active !== false && (college.verified === true || college.verificationStatus === 'VERIFIED'))
+    .map(enrichCollege)
 }
 
 export function getAllCollegesMerged() {
@@ -143,9 +159,33 @@ export function getCollegeCustomData(collegeId) {
   } catch { return {} }
 }
 
+export function cacheBackendCollege(backendCollege) {
+  if (!backendCollege?.id) throw new Error('The backend did not return a college ID.')
+  const registered = getRegisteredColleges()
+  const index = registered.findIndex(item => String(item.id) === String(backendCollege.id))
+  const existing = index >= 0 ? registered[index] : {}
+  const college = { ...existing, ...enrichCollege({ ...existing, ...backendCollege }), ...backendCollege }
+  if (!college.slug) college.slug = existing.slug || `college-${college.id}`
+  if (index >= 0) registered[index] = college
+  else registered.push(college)
+  localStorage.setItem(REGISTERED_KEY, JSON.stringify(registered))
+
+  if (backendCollege.customData && typeof backendCollege.customData === 'object') {
+    const localContent = getCollegeCustomData(backendCollege.id)
+    localStorage.setItem(`${COLLEGE_DATA_PREFIX}${backendCollege.id}`, JSON.stringify({
+      ...backendCollege.customData,
+      ...localContent,
+      updatedAt: localContent.updatedAt || backendCollege.customData.updatedAt
+    }))
+  }
+  localStorage.setItem('tn_current_college', JSON.stringify(college))
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('collegeRegistered'))
+  return college
+}
+
 export function createNewCollegeFromSignup(formData) {
-  const id = Date.now()
-  const slug = formData.collegeName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0,50) + '-' + id.toString().slice(-4)
+  const id = formData.id ?? Date.now()
+  const slug = formData.slug || (formData.collegeName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0,50) + '-' + id.toString().slice(-4))
   const college = {
     id,
     slug,
@@ -329,23 +369,49 @@ export async function compactAllCollegeStores() {
   return freed
 }
 
+async function syncCollegeSection(collegeId, section, data) {
+  const token = localStorage.getItem('tn_auth_token')
+  let currentCollege = null
+  try { currentCollege = JSON.parse(localStorage.getItem('tn_current_college') || 'null') } catch {}
+  if (!token || !currentCollege || String(currentCollege.id) !== String(collegeId)) return
+
+  let payload = data
+  if (section === 'settings' && data && typeof data === 'object' && !Array.isArray(data)) {
+    payload = { ...data }
+    delete payload.loginPassword
+    delete payload.loginUsername
+  }
+  const response = await fetch(`/api/colleges/${encodeURIComponent(collegeId)}/content/${encodeURIComponent(section)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload)
+  })
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}))
+    throw new Error(body.error || `Saved locally, but backend could not save the ${section} section.`)
+  }
+}
+
 export async function saveCollegeDataSafe(collegeId, section, data) {
   const compressed = await compressDeep(data)
+  let saved = false
   try {
     saveCollegeData(collegeId, section, compressed)
-    return true
-  } catch (e) {
+    saved = true
+  } catch {
     await compactAllCollegeStores()
     try {
       saveCollegeData(collegeId, section, compressed)
-      return true
-    } catch (e2) {
+      saved = true
+    } catch {
       try {
         saveCollegeData(collegeId, section, stripHeavyImages(compressed, 200000))
-        return true
-      } catch (e3) {
+        saved = true
+      } catch {
         return false
       }
     }
   }
+  if (saved) await syncCollegeSection(collegeId, section, compressed)
+  return saved
 }

@@ -3,15 +3,11 @@ server:
 
 spring:
   datasource:
-    # For production: MySQL
-    # url: jdbc:mysql://localhost:3306/tn_colleges?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
-    # username: root
-    # password: root
-    # Development: H2 in-memory for easy startup
-    url: jdbc:h2:mem:tn_colleges
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    # Durable local development database. Override these variables for MySQL deployments.
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:file:./data/tn_colleges}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.h2.Driver}
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,7 +18,7 @@ spring:
         format_sql: true
   h2:
     console:
-      enabled: true
+      enabled: ${H2_CONSOLE_ENABLED:false}
       path: /h2-console
 
   jackson:
@@ -31,9 +27,18 @@ spring:
 
 app:
   jwt:
-    secret: ${APP_JWT_SECRET:5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437}
+    secret: ${APP_JWT_SECRET}
     expiration-ms: 86400000
+  cors:
+    allowed-origin-patterns: ${APP_CORS_ALLOWED_ORIGIN_PATTERNS:http://localhost:5173,http://localhost:3000}
+  bootstrap:
+    platform-admin:
+      email: ${APP_BOOTSTRAP_ADMIN_EMAIL:}
+      password: ${APP_BOOTSTRAP_ADMIN_PASSWORD:}
+    demo-student:
+      email: ${APP_BOOTSTRAP_STUDENT_EMAIL:}
+      password: ${APP_BOOTSTRAP_STUDENT_PASSWORD:}
 
 logging:
   level:
-    com.tncolleges: DEBUG
+    com.tncolleges: ${APP_LOG_LEVEL:INFO}

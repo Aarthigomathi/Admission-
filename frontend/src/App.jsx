@@ -14,26 +14,42 @@ import StudentCompare from './pages/student/Compare'
 import StudentEnquiries from './pages/student/Enquiries'
 import StudentProfile from './pages/student/Profile'
 import PlatformAdminDashboard from './pages/platformAdmin/PlatformAdminDashboard'
-import { activityTracker, ACTIVITY_TYPES } from './lib/activityTracker'
+import StudentVisitAuditPage from './pages/platformAdmin/StudentVisitAuditPage'
+
 import { LanguageProvider } from './lib/languageContext'
 
 function ActivityTrackerWrapper({ children }) {
   const location = useLocation()
   useEffect(() => {
-    const match = location.pathname.match(/\/college\/([^/]+)/)
-    if (match) {
-      const slug = match[1]
-      import('./lib/colleges').then(({ colleges }) => {
-        const college = colleges.find(c => c.slug === slug)
-        if (college) {
-          activityTracker.recordActivity({
-            collegeId: college.id,
-            activityType: ACTIVITY_TYPES.COLLEGE_VIEW,
-            metadata: { collegeName: college.name, slug, url: location.pathname }
+    const match = location.pathname.match(/^\/college\/([^/]+)(?:\/.*)?$/)
+    const token = localStorage.getItem('tn_auth_token')
+    const student = JSON.parse(localStorage.getItem('tn_current_student') || 'null')
+    if (!match || !token || student?.role !== 'STUDENT') return
+    const slug = match[1]
+    let cancelled = false
+    const track = async () => {
+      try {
+        const collegeResponse = await fetch(`/api/colleges/${encodeURIComponent(slug)}`)
+        if (!collegeResponse.ok || cancelled) return
+        const college = await collegeResponse.json()
+        await fetch('/api/activity/track', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            college_id: college.id,
+            activity_type: 'COLLEGE_VIEW',
+            metadata: { slug, path: location.pathname }
           })
-        }
-      })
+        })
+      } catch {
+        // Browsing can continue if analytics are temporarily unavailable.
+      }
     }
+    track()
+    return () => { cancelled = true }
   }, [location.pathname])
   return children
 }
@@ -74,6 +90,7 @@ export default function App() {
           <Route path="/admin/:section" element={<AdminDashboard />} />
           
           <Route path="/platform-admin" element={<PlatformAdminDashboard />} />
+          <Route path="/platform-admin/student-visits" element={<StudentVisitAuditPage />} />
           
           <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
