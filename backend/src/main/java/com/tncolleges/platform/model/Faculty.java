@@ -28,6 +28,8 @@ public class Faculty {
     private String qualification;
     private String experience;
     private String specialization;
+    @Builder.Default
     private boolean isHod = false;
+    @Builder.Default
     private Integer displayOrder = 0;
 }

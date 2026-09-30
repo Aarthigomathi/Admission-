@@ -26,11 +26,17 @@ public class CollegeSection {
     private String documentUrl;
     private String linkUrl;
 
+    @Builder.Default
     private Integer displayOrder = 0;
+    @Builder.Default
     private boolean isPublished = false;
+    @Builder.Default
     private boolean isDraft = true;
+    @Builder.Default
     private String status = "DRAFT"; // DRAFT, PENDING_REVIEW, PUBLISHED
 
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+    @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 }

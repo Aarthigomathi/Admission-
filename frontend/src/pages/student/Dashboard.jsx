@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { getPublicColleges } from '../../lib/collegeStorage'
+import { fetchPublicColleges } from '../../lib/collegeStorage'
 import { activityTracker } from '../../lib/activityTracker'
 import CollegeCard from '../../components/platform/CollegeCard'
 import { GraduationCap, Bookmark, GitCompare, Clock, MapPin, TrendingUp, MessageCircle, Search, BookOpen, Heart, User, Award, FileText, Edit3 } from 'lucide-react'
@@ -22,11 +22,13 @@ export default function StudentDashboard() {
     setRecentlyViewedIds(activityTracker.getRecentlyViewed())
     setSaved(JSON.parse(localStorage.getItem('tn_saved_colleges') || '[]'))
     setCompare(JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]'))
-    setColleges(getPublicColleges())
-    const handle = () => setColleges(getPublicColleges())
+    let cancelled = false
+    const handle = () => fetchPublicColleges().then(items => { if (!cancelled) setColleges(items) }).catch(() => { if (!cancelled) setColleges([]) })
+    handle()
     window.addEventListener('collegeRegistered', handle)
     window.addEventListener('storage', handle)
     return () => {
+      cancelled = true
       window.removeEventListener('collegeRegistered', handle)
       window.removeEventListener('storage', handle)
     }

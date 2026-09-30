@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, MapPin, Sparkles, GraduationCap, Users, Building2, ArrowUpRight, Star, SlidersHorizontal, Image as ImageIcon, Shield, FileText, BarChart3, Bookmark, GitCompare, MessageCircle } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { getPublicColleges } from '../../lib/collegeStorage'
+import { fetchPublicColleges } from '../../lib/collegeStorage'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
 
@@ -14,14 +14,17 @@ export default function PlatformHome() {
   const { t, language, isStudent } = useLanguage()
 
   useEffect(() => {
-    // Automatic default college name kattama - only colleges that signed up and added details themselves
-    setColleges(getPublicColleges())
-    const handleStorage = () => setColleges(getPublicColleges())
-    window.addEventListener('storage', handleStorage)
-    window.addEventListener('collegeRegistered', handleStorage)
+    let cancelled = false
+    const loadColleges = () => fetchPublicColleges()
+      .then(items => { if (!cancelled) setColleges(items) })
+      .catch(() => { if (!cancelled) setColleges([]) })
+    loadColleges()
+    window.addEventListener('storage', loadColleges)
+    window.addEventListener('collegeRegistered', loadColleges)
     return () => {
-      window.removeEventListener('storage', handleStorage)
-      window.removeEventListener('collegeRegistered', handleStorage)
+      cancelled = true
+      window.removeEventListener('storage', loadColleges)
+      window.removeEventListener('collegeRegistered', loadColleges)
     }
   }, [])
 

@@ -22,5 +22,6 @@ public class Management {
     private String phone;
     @Column(columnDefinition = "TEXT")
     private String description;
+    @Builder.Default
     private Integer displayOrder = 0;
 }

@@ -20,6 +20,8 @@ public class Gallery {
     private String imageUrl;
     private String videoUrl;
     private String caption;
+    @Builder.Default
     private Integer displayOrder = 0;
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

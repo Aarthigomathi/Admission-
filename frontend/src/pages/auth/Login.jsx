@@ -1,38 +1,96 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Mail, Lock, ArrowRight, Building2, GraduationCap, Shield, Camera, Award, Users } from 'lucide-react'
-import { findCollegeByLoginId } from '../../lib/collegeStorage'
+import { cacheBackendCollege, findCollegeByLoginId } from '../../lib/collegeStorage'
 
 export default function Login() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('STUDENT')
+  const [loginError, setLoginError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
+    setLoginError('')
+    if (role === 'PLATFORM_ADMIN') {
+      setSubmitting(true)
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ loginId: email.trim(), password })
+        })
+        const result = await response.json().catch(() => ({}))
+        if (!response.ok) throw new Error(result.error || 'Invalid platform administrator credentials.')
+        if (!['PLATFORM_ADMIN', 'SUPER_ADMIN'].includes(result.role)) throw new Error('This account is not authorized for platform administration.')
+        localStorage.setItem('tn_auth_token', result.token)
+        localStorage.setItem('tn_platform_admin', JSON.stringify({
+          id: result.userId,
+          email: result.email,
+          role: result.role,
+          fullName: result.fullName
+        }))
+        navigate('/platform-admin')
+      } catch (error) {
+        setLoginError(error.message || 'Unable to contact the backend.')
+      } finally {
+        setSubmitting(false)
+      }
+      return
+    }
     if (role === 'STUDENT') {
-      const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
-      const student = students.find(s => s.email === email) || { id: 1, email, fullName: 'Demo Student', district: 'Coimbatore', educationLevel: '12th', interestedCourse: 'B.E Computer Science', role: 'STUDENT', percentage: '85', city: 'Coimbatore', preferredDistrict: 'Coimbatore', groupStream: 'Computer Science' }
-      localStorage.setItem('tn_current_student', JSON.stringify(student))
-      navigate('/student/dashboard')
+      setSubmitting(true)
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ loginId: email.trim(), password })
+        })
+        const result = await response.json().catch(() => ({}))
+        if (!response.ok) throw new Error(result.error || 'Invalid student credentials.')
+        if (result.role !== 'STUDENT') throw new Error('This account is not a student account.')
+        localStorage.setItem('tn_auth_token', result.token)
+        localStorage.setItem('tn_current_student', JSON.stringify({
+          id: result.userId,
+          userId: result.userId,
+          email: result.email,
+          fullName: result.fullName,
+          role: result.role
+        }))
+        navigate('/student/dashboard')
+      } catch (error) {
+        setLoginError(error.message || 'Unable to contact the backend.')
+      } finally {
+        setSubmitting(false)
+      }
+      return
     } else if (role === 'COLLEGE') {
-      const id = email.trim().toLowerCase()
-      const college = findCollegeByLoginId(id)
-      if (!college) {
-        alert('College with this username/email not found!\n\nIf you just signed up, use your college email or the username you created. If still not found, please sign up first.')
-        navigate('/college/signup')
-        return
+      setSubmitting(true)
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ loginId: email.trim(), password })
+        })
+        const result = await response.json().catch(() => ({}))
+        if (!response.ok) throw new Error(result.error || 'Invalid college login credentials.')
+        if (!['COLLEGE_ADMIN', 'COLLEGE_EDITOR'].includes(result.role)) throw new Error('This account is not a college account.')
+        localStorage.setItem('tn_auth_token', result.token)
+        const collegeResponse = await fetch('/api/colleges/admin/my-college', {
+          headers: { Authorization: `Bearer ${result.token}` }
+        })
+        const college = await collegeResponse.json().catch(() => ({}))
+        if (!collegeResponse.ok) throw new Error(college.error || 'Could not load your college workspace.')
+        cacheBackendCollege(college)
+        navigate('/admin')
+      } catch (error) {
+        setLoginError(error.message || 'Unable to contact the backend.')
+      } finally {
+        setSubmitting(false)
       }
-      if (college.loginPassword && college.loginPassword !== password) {
-        alert('Wrong password for ' + college.name + '! Please try again.')
-        return
-      }
-      localStorage.setItem('tn_current_college', JSON.stringify(college))
-      navigate('/admin')
-    } else {
-      localStorage.setItem('tn_platform_admin', JSON.stringify({ email, role: 'PLATFORM_ADMIN' }))
-      navigate('/platform-admin')
+      return
     }
   }
 
@@ -257,8 +315,9 @@ export default function Login() {
                 />
               </div>
 
-              <button type="submit" className="w-full h-11 sm:h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] sm:text-[14px] flex items-center justify-center gap-2 hover:bg-[#1A3263]/90 transition-colors shadow-lg">
-                Login as {role.replace('_', ' ')} <ArrowRight size={16} className="sm:hidden" /><ArrowRight size={18} className="hidden sm:block" />
+              {loginError && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-800">{loginError}</div>}
+              <button type="submit" disabled={submitting} className="w-full h-11 sm:h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] sm:text-[14px] flex items-center justify-center gap-2 hover:bg-[#1A3263]/90 transition-colors shadow-lg disabled:opacity-60">
+                {submitting ? 'Signing in…' : `Login as ${role.replace('_', ' ')}`} <ArrowRight size={16} className="sm:hidden" /><ArrowRight size={18} className="hidden sm:block" />
               </button>
 
               {/* Sign Up Links - Responsive grid */}

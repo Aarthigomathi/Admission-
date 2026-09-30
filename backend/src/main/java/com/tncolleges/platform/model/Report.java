@@ -26,7 +26,7 @@ public class Report {
     private Integer totalComparisons;
     private Integer totalEnquiries;
 
-    @Column(length = 5000)
+    @Column(columnDefinition = "TEXT")
     private String breakdownJson; // Full breakdown for PDF generation
 
     @Builder.Default

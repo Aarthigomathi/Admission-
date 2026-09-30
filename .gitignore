@@ -1,38 +1,27 @@
-<<<<<<< HEAD
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Dependencies and build output
+node_modules/
+dist/
+target/
 
-node_modules
-dist
-dist-ssr
+# Runtime and local environment files
+/backend/data/
+*.mv.db
+*.trace.db
+*.log
+.env
+.env.*
+!.env.example
 *.local
 
-# local design preview pages (not part of the build)
-design-preview
-
-# Editor directories and files
+# Local previews and editor/OS files
+design-preview/
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
+*.iml
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-=======
-frontend/node_modules
-frontend/dist
-backend/target
-*.log
-.env
-.DS_Store
-.idea
-*.iml
->>>>>>> 720df147e5ffac5ad32401c98e3d5f91323469cb

@@ -1,7 +1,9 @@
 package com.tncolleges.platform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -29,6 +31,10 @@ public class College {
     private String pincode;
     private String phone;
     private String email; // official email
+
+    @Column(unique = true)
+    private String loginUsername;
+
     private String website;
     private String affiliation; // university
     private String university;
@@ -47,20 +53,29 @@ public class College {
     private boolean active = true;
 
     @Builder.Default
+    @ColumnDefault("false")
+    @Column(nullable = false)
+    private boolean registered = false;
+
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @JsonIgnore
     @OneToOne(mappedBy = "college", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private CollegeProfile profile;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "college", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private CollegeBranding branding;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "college", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Department> departments = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "college", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Course> courses = new ArrayList<>();

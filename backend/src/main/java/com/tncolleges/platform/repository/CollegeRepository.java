@@ -7,10 +7,18 @@ import java.util.*;
 
 public interface CollegeRepository extends JpaRepository<College, Long> {
     Optional<College> findBySlug(String slug);
-    List<College> findByDistrict(String district);
-    List<College> findByTypeContainingIgnoreCase(String type);
-    List<College> findByVerifiedTrue();
-    
-    @Query("SELECT c FROM College c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(c.shortName) LIKE LOWER(CONCAT('%', :query, '%'))")
+    Optional<College> findByLoginUsernameIgnoreCase(String loginUsername);
+    boolean existsBySlugIgnoreCase(String slug);
+    boolean existsByEmailIgnoreCase(String email);
+    boolean existsByLoginUsernameIgnoreCase(String loginUsername);
+
+    List<College> findAllByRegisteredTrueAndActiveTrueAndVerifiedTrueOrderByNameAsc();
+    List<College> findByDistrictIgnoreCaseAndRegisteredTrueAndActiveTrue(String district);
+    List<College> findByTypeContainingIgnoreCaseAndRegisteredTrueAndActiveTrue(String type);
+    List<College> findAllByRegisteredTrueOrderByCreatedAtDesc();
+    long countByRegisteredTrueAndActiveTrue();
+    long countByRegisteredTrueAndVerificationStatus(College.VerificationStatus status);
+
+    @Query("SELECT c FROM College c WHERE c.registered = true AND c.active = true AND c.verified = true AND (LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(c.shortName) LIKE LOWER(CONCAT('%', :query, '%')))")
     List<College> searchByName(String query);
 }

@@ -1,14 +1,23 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles } from 'lucide-react'
-import { getPublicColleges } from '../../lib/collegeStorage'
+import { fetchPublicColleges } from '../../lib/collegeStorage'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
 export default function StudentSignup() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [publicColleges, setPublicColleges] = useState([])
   const { t, language } = useLanguage()
+
+  useEffect(() => {
+    let cancelled = false
+    fetchPublicColleges().then(items => { if (!cancelled) setPublicColleges(items) }).catch(() => { if (!cancelled) setPublicColleges([]) })
+    return () => { cancelled = true }
+  }, [])
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -150,7 +159,7 @@ export default function StudentSignup() {
 
   const topCollegesByPercentage = useMemo(() => {
     const perc = parseFloat(formData.percentage) || 0
-    let filtered = getPublicColleges()
+    let filtered = publicColleges
     if (filtered.length===0) return []
     filtered = [...filtered].sort((a, b) => {
       const placeA = parseInt(a.placements?.percentage || 0)
@@ -170,11 +179,59 @@ export default function StudentSignup() {
       return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Eligible - Apply with counselling', matchPercent: 55, reason: `Your ${perc}% - Don't worry, ${c.shortName} has options - Contact admission` }))
     }
     return filtered.slice(0, 4).map(c => ({ ...c, eligibilityMatch: 'Top Rated Colleges in Tamil Nadu', matchPercent: 80, reason: `${c.shortName} - ${c.placements.percentage} placement - ${c.accreditation}` }))
-  }, [formData.percentage, formData.interestedCourse])
+  }, [formData.percentage, formData.interestedCourse, publicColleges])
 
-  const handleSubmit = () => {
-    const student = {
-      id: Date.now(),
+  const handleSubmit = async () => {
+    if (submitting) return
+    setSubmitting(true)
+    setSubmitError('')
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          mobile: formData.mobile,
+          district: formData.district,
+          city: formData.city
+        })
+      })
+      const auth = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(auth.error || 'Could not create the student account.')
+      localStorage.setItem('tn_auth_token', auth.token)
+
+      const authHeaders = { Authorization: `Bearer ${auth.token}`, 'Content-Type': 'application/json' }
+      await Promise.allSettled([
+        fetch('/api/students/me/education', {
+          method: 'POST',
+          headers: authHeaders,
+          body: JSON.stringify({
+            level: formData.educationLevel,
+            schoolCollege: formData.schoolCollege,
+            marks: `${formData.marksObtained}/${formData.totalMarks}`,
+            percentage: formData.percentage,
+            groupStream: formData.groupStream,
+            interestedSubject: formData.interestedSubject
+          })
+        }),
+        fetch('/api/students/me/preferences', {
+          method: 'PUT',
+          headers: authHeaders,
+          body: JSON.stringify({
+            interestedCourse: formData.interestedCourse,
+            preferredDistrict: formData.preferredDistrict,
+            collegeType: formData.collegeType,
+            hostelRequired: formData.hostelRequired === 'Yes',
+            transportRequired: formData.transportRequired === 'Yes'
+          })
+        })
+      ])
+
+      const student = {
+      id: auth.userId,
+      userId: auth.userId,
       ...formData,
       role: 'STUDENT',
       profileCompletion: 100,
@@ -196,12 +253,17 @@ export default function StudentSignup() {
       documentsUploaded: Object.keys(formData.documentNames).filter(k => formData.documentNames[k]).length,
       createdAt: new Date().toISOString()
     }
-    localStorage.setItem('tn_current_student', JSON.stringify(student))
-    const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
-    students.push(student)
-    localStorage.setItem('tn_students', JSON.stringify(students))
-    localStorage.setItem(`tn_student_docs_${student.id}`, JSON.stringify(formData.documentNames))
-    navigate('/student/dashboard')
+      localStorage.setItem('tn_current_student', JSON.stringify(student))
+      const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
+      students.push(student)
+      localStorage.setItem('tn_students', JSON.stringify(students))
+      localStorage.setItem(`tn_student_docs_${student.id}`, JSON.stringify(formData.documentNames))
+      navigate('/student/dashboard')
+    } catch (error) {
+      setSubmitError(error.message || 'Unable to contact the backend.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const steps = [
@@ -720,10 +782,11 @@ export default function StudentSignup() {
                   </div>
                 </div>
 
+                {submitError && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-800">{submitError}</div>}
                 <div className="flex gap-3">
-                  <button onClick={()=>setStep(4)} className="h-12 px-6 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-semibold text-[13px] flex items-center gap-2"><ArrowLeft size={16} /> Back</button>
-                  <button onClick={handleSubmit} className="flex-1 h-12 rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] font-bold text-[13px] flex items-center justify-center gap-2">
-                    Create Account & Discover Top Colleges for {formData.percentage}% <Check size={18} />
+                  <button onClick={()=>setStep(4)} disabled={submitting} className="h-12 px-6 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-semibold text-[13px] flex items-center gap-2 disabled:opacity-50"><ArrowLeft size={16} /> Back</button>
+                  <button onClick={handleSubmit} disabled={submitting} className="flex-1 h-12 rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] font-bold text-[13px] flex items-center justify-center gap-2 disabled:opacity-60">
+                    {submitting ? 'Creating account…' : `Create Account & Discover Top Colleges for ${formData.percentage}%`} {!submitting && <Check size={18} />}
                   </button>
                 </div>
               </div>

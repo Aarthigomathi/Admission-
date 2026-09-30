@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
-import { getCollegeBySlug, getCollegeCustomData, getPublicColleges } from '../../lib/collegeStorage'
+import { enrichCollege, getCollegeBySlug, getCollegeCustomData } from '../../lib/collegeStorage'
 import CollegeHeader from '../../components/college/CollegeHeader'
 import AboutPages from '../../components/college/AboutPages.jsx'
 import DeptPage from '../../components/college/DeptPage.jsx'
@@ -756,17 +756,34 @@ export default function CollegePage() {
   const [customData, setCustomData] = useState({})
 
   useEffect(() => {
-    const found = getCollegeBySlug(slug)
-    if (found) {
-      setCollege(found)
-      setCustomData(getCollegeCustomData(found.id))
-    } else {
-      // Also check public colleges
-      const publicCols = getPublicColleges()
-      const pubFound = publicCols.find(c => c.slug === slug)
-      setCollege(pubFound || null)
-      if (pubFound) setCustomData(getCollegeCustomData(pubFound.id))
-    }
+    let cancelled = false
+    setCollege(null)
+    setCustomData({})
+    fetch(`/api/colleges/${encodeURIComponent(slug)}`)
+      .then(async response => {
+        if (!response.ok) return null
+        return response.json()
+      })
+      .then(data => {
+        if (cancelled) return
+        if (!data) {
+          setCollege(null)
+          return
+        }
+        const backendCollege = enrichCollege(data)
+        const localCollege = getCollegeBySlug(slug)
+        const backendContent = data.customData || data
+        const localContent = localCollege ? getCollegeCustomData(localCollege.id) : {}
+        const backendUpdatedAt = Date.parse(backendContent.updatedAt || data.updatedAt || '') || 0
+        const localUpdatedAt = Date.parse(localContent.updatedAt || '') || 0
+        const localIsNewer = localUpdatedAt > backendUpdatedAt
+        setCollege(localCollege ? { ...localCollege, ...backendCollege } : backendCollege)
+        setCustomData(localIsNewer
+          ? { ...backendContent, ...localContent }
+          : { ...localContent, ...backendContent })
+      })
+      .catch(() => { if (!cancelled) setCollege(null) })
+    return () => { cancelled = true }
   }, [slug])
 
   if (!college) {

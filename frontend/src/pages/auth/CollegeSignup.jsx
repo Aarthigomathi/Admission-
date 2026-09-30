@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Building2, Mail, Phone, Globe, MapPin, Calendar, User, Lock, Upload, CheckCircle2, AlertCircle, Sparkles, Image as ImageIcon, Award, Users, BookOpen } from 'lucide-react'
-import { createNewCollegeFromSignup } from '../../lib/collegeStorage'
+import { cacheBackendCollege, createNewCollegeFromSignup } from '../../lib/collegeStorage'
 
 export default function CollegeSignup() {
   const navigate = useNavigate()
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [formData, setFormData] = useState({
     collegeName: '',
     email: '',
@@ -24,12 +26,62 @@ export default function CollegeSignup() {
 
   const updateField = (f, v) => setFormData(p => ({ ...p, [f]: v }))
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const college = createNewCollegeFromSignup(formData)
-    window.dispatchEvent(new Event('collegeRegistered'))
-    alert(`College registered! ${college.name} - ID: ${college.id} - Status: PENDING. You can now login and add your college details.`)
-    navigate('/admin')
+    if (submitting) return
+    setSubmitting(true)
+    setSubmitError('')
+    try {
+      const response = await fetch('/api/colleges/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.collegeName,
+          email: formData.email,
+          loginUsername: formData.username,
+          loginPassword: formData.password,
+          phone: formData.phone,
+          website: formData.website,
+          address: formData.address,
+          district: formData.district,
+          city: formData.city,
+          pincode: formData.pincode,
+          type: formData.collegeType,
+          collegeType: formData.collegeType,
+          university: formData.university,
+          affiliation: formData.university,
+          established: formData.establishedYear,
+          principalName: formData.principalName
+        })
+      })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(data.error || data.message || 'College registration failed. Please check your details.')
+      const college = createNewCollegeFromSignup({ ...formData, id: data.id, slug: data.slug })
+      try {
+        const loginResponse = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ loginId: formData.username, password: formData.password })
+        })
+        const session = await loginResponse.json().catch(() => ({}))
+        if (loginResponse.ok && ['COLLEGE_ADMIN', 'COLLEGE_EDITOR'].includes(session.role)) {
+          localStorage.setItem('tn_auth_token', session.token)
+          const profileResponse = await fetch('/api/colleges/admin/my-college', {
+            headers: { Authorization: `Bearer ${session.token}` }
+          })
+          if (profileResponse.ok) cacheBackendCollege(await profileResponse.json())
+        }
+      } catch {
+        // The registration is already saved; users can sign in from the login page if auto-login is unavailable.
+      }
+      window.dispatchEvent(new Event('collegeRegistered'))
+      alert(`College registered! ${college.name} - ID: ${college.id} - Status: PENDING. It will appear publicly after platform verification.`)
+      navigate('/admin')
+    } catch (error) {
+      setSubmitError(error.message || 'Could not connect to the registration service.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -169,7 +221,7 @@ export default function CollegeSignup() {
                 </div>
                 <div>
                   <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Lock size={12} className="text-[#FAB95B]" /> Login Password *</label>
-                  <input required type="password" value={formData.password} onChange={e=>updateField('password', e.target.value)} placeholder="Create password" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]" />
+                  <input required minLength={8} type="password" value={formData.password} onChange={e=>updateField('password', e.target.value)} placeholder="Create password" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[14px]" />
                 </div>
               </div>
 
@@ -182,8 +234,9 @@ export default function CollegeSignup() {
                 </div>
               </div>
 
-              <button type="submit" className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center justify-center gap-2 hover:bg-[#1A3263]/90">
-                Register College <CheckCircle2 size={18} />
+              {submitError && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{submitError}</div>}
+              <button type="submit" disabled={submitting} className="w-full h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[14px] flex items-center justify-center gap-2 hover:bg-[#1A3263]/90 disabled:cursor-wait disabled:opacity-60">
+                {submitting ? 'Registering…' : 'Register College'} <CheckCircle2 size={18} />
               </button>
 
               <div className="rounded-[12px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4">
