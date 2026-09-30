@@ -288,7 +288,7 @@ export default function StudentSignup() {
   const steps = [
     { id: 1, title: language==='ta' ? 'அடிப்படை விவரங்கள் & கனவு பாடம்' : 'Basic Details & Dream Course', icon: Heart, desc: language==='ta' ? 'பெயர், மின்னஞ்சல், கைபேசி, மாவட்டம், நகரம், கனவு பாடம்' : 'Name, Email, Mobile, District, City, Dream Course' },
     { id: 2, title: language==='ta' ? 'தனிப்பட்ட & குடும்ப விவரங்கள்' : 'Personal & Family Details', icon: Users, desc: 'DOB, Gender, Parents, Aadhar, Address' },
-    { id: 3, title: language==='ta' ? 'கல்வி & ஆவணங்கள்' : 'Education & Documents', icon: FileText, desc: 'Marks Auto %, Percentage, Original Documents' },
+    { id: 3, title: language==='ta' ? 'கல்வி & ஆவணங்கள்' : 'Education & Documents', icon: FileText, desc: 'Marks, percentage and original documents' },
     { id: 4, title: language==='ta' ? 'விருப்பங்கள் & சிறந்த கல்லூரிகள்' : 'Preferences & Top Colleges', icon: Trophy, desc: 'Your % ku etha top colleges' },
     { id: 5, title: language==='ta' ? 'சரிபார்ப்பு & சமர்ப்பி' : 'Review & Submit', icon: BadgeCheck, desc: 'Verify all info and create account' }
   ]
@@ -583,7 +583,7 @@ export default function StudentSignup() {
               <div className="space-y-5 animate-fadeIn">
                 <div>
                   <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><FileText size={20} className="text-[#547792]" /> {language==='ta' ? 'கல்வி & அசல் ஆவணங்கள்' : 'Education & Original Documents'}</h2>
-                  <p className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'மதிப்பெண் போட்டவுடன் தானியங்கி சதவீதம் - அசல் ஆவணங்கள் பதிவேற்றம்' : 'Mark potta odaney automatic percentage - Original documents upload'}</p>
+                  <p className="text-[11px] text-[#547792] mt-1">{language==='ta' ? 'மதிப்பெண்களை உள்ளிடவும் - சதவீதம் தானாக கணக்கிடப்படும். அசல் ஆவணங்களை கீழே பதிவேற்றவும்.' : 'Enter your marks and the percentage is calculated automatically. Upload your original documents below.'}</p>
                 </div>
 
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6 shadow-sm space-y-5">
@@ -659,7 +659,7 @@ export default function StudentSignup() {
                       <div>
                         <label className="text-[10px] font-bold uppercase text-[#FAB95B]">{t('percentage')} %</label>
                         <div className="mt-1 w-full h-11 px-3 rounded-[10px] bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] grid place-items-center font-bold text-[16px]">
-                          {formData.percentage ? `${formData.percentage}% - ${formData.grade}` : 'Enter marks - Auto %'}
+                          {formData.percentage ? `${formData.percentage}% - ${formData.grade}` : 'Enter marks to calculate %'}
                         </div>
                       </div>
                     </div>
@@ -693,7 +693,7 @@ export default function StudentSignup() {
                     <div className="flex items-center gap-2 font-bold text-[14px] text-[#1A3263]"><Upload size={18} className="text-[#FAB95B]" /> {t('originalDocs')} - {t('documents')}</div>
                     <div className="text-[11px] text-[#547792] mt-1">
                       {language==='ta'
-                        ? 'புகைப்படம் அல்லது PDF - கோப்பு ஒன்றுக்கு 4MB க்கு கீழ். பதிவேற்றியதும் "பார்" கொடுத்து சரிபார்க்கலாம்.'
+                        ? 'புகைப்படம் அல்லது PDF, கோப்பு ஒன்றுக்கு 4 MB-க்கு கீழ். சமர்ப்பிப்பதற்கு முன் "பார்வை" மூலம் சரிபார்க்கவும்.'
                         : 'Photo or PDF, under 4 MB per file. Use "View" to check a document before submitting.'}
                     </div>
                     {docError && (
@@ -884,7 +884,7 @@ export default function StudentSignup() {
                       <div><span className="text-[#547792]">City:</span> <span className="font-bold text-[#1A3263]">{formData.city}</span> · <span className="text-[#547792]">Dream Course:</span> <span className="font-bold bg-[#FAB95B] px-2 py-0.5 rounded-full">{formData.interestedCourse}</span></div>
                     </div>
                     <div className="space-y-2">
-                      <div className="font-bold text-[#1A3263] text-[12px]">Marks Auto %</div>
+                      <div className="font-bold text-[#1A3263] text-[12px]">Marks &amp; Percentage</div>
                       <div><span className="text-[#547792]">Marks:</span> <span className="font-bold">{formData.marksObtained}/{formData.totalMarks}</span></div>
                       <div><span className="text-[#547792]">Percentage:</span> <span className="font-bold text-[#1A3263] bg-[#FAB95B] px-3 py-1 rounded-full">{formData.percentage}% - {formData.grade}</span></div>
                     </div>

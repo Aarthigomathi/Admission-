@@ -152,4 +152,14 @@ describe('signup step 3 - Tamil Nadu education', () => {
     expect(collegeNames).toContain('Anna University (CEG Campus), Guindy')
     expect(collegeNames).not.toContain('PSG Public Schools, Peelamedu')
   })
+
+  it('uses quiet, formal copy (no "Mark potta odaney" phrasing)', async () => {
+    await render(<StudentSignup />)
+    await goToStep3()
+    const text = container.textContent
+    expect(text).not.toContain('Mark potta odaney')
+    expect(text).not.toContain('Auto %')
+    expect(text).toContain('Enter your marks and the percentage is calculated automatically. Upload your original documents below.')
+    expect(text).toContain('Marks and Percentage Calculation')
+  })
 })
