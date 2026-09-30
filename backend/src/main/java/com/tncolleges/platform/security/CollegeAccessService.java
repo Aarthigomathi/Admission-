@@ -24,7 +24,7 @@ public class CollegeAccessService {
             return false;
         }
 
-        return userRepository.findByEmail(username)
+        return userRepository.findByLoginIdentifier(username)
                 .map(user -> switch (user.getRole()) {
                     case PLATFORM_ADMIN, SUPER_ADMIN -> true;
                     case COLLEGE_ADMIN, COLLEGE_EDITOR -> Objects.equals(user.getCollegeId(), requestedCollegeId);
@@ -37,7 +37,7 @@ public class CollegeAccessService {
         if (username == null) {
             return Optional.empty();
         }
-        return userRepository.findByEmail(username)
+        return userRepository.findByLoginIdentifier(username)
                 .filter(user -> user.getRole() == User.Role.COLLEGE_ADMIN || user.getRole() == User.Role.COLLEGE_EDITOR)
                 .map(User::getCollegeId);
     }

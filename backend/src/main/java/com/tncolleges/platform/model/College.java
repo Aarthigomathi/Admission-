@@ -29,6 +29,10 @@ public class College {
     private String pincode;
     private String phone;
     private String email; // official email
+
+    @Column(unique = true)
+    private String loginUsername;
+
     private String website;
     private String affiliation; // university
     private String university;
@@ -45,6 +49,9 @@ public class College {
     private boolean verified = false;
     @Builder.Default
     private boolean active = true;
+
+    @Builder.Default
+    private boolean registered = false;
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

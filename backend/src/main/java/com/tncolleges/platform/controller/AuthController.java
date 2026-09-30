@@ -3,16 +3,17 @@ package com.tncolleges.platform.controller;
 import com.tncolleges.platform.model.User;
 import com.tncolleges.platform.repository.UserRepository;
 import com.tncolleges.platform.security.JwtService;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 import java.util.Map;
 
@@ -20,7 +21,6 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
 public class AuthController {
-
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -36,82 +36,67 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
         String email = req.getEmail().trim().toLowerCase();
-        if (userRepo.existsByEmail(email)) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Email already exists"));
-        }
-        // Self-service registration must never accept an elevated role or tenant ID
-        // from the request body. Admin accounts are provisioned separately.
+        if (userRepo.existsByEmail(email)) return ResponseEntity.badRequest().body(Map.of("error", "Email already exists"));
         User user = User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(req.getPassword()))
                 .fullName(req.getFullName().trim())
                 .role(User.Role.STUDENT)
-                .collegeId(null)
                 .enabled(true)
                 .build();
         userRepo.save(user);
-
-        String token = jwtService.generateToken(user.getEmail(), Map.of(
-                "role", user.getRole().name(),
-                "collegeId", user.getCollegeId() != null ? user.getCollegeId().toString() : "",
-                "userId", user.getId().toString()
-        ));
-
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "role", user.getRole().name(),
-                "collegeId", user.getCollegeId() != null ? user.getCollegeId() : "",
-                "email", user.getEmail()
-        ));
+        return ResponseEntity.ok(tokenResponse(user));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
-        String email = req.getEmail().trim().toLowerCase();
+        String identifier = req.identifier();
+        if (identifier == null || identifier.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Email or login username is required"));
+        }
+        identifier = identifier.trim();
         try {
-            authManager.authenticate(new UsernamePasswordAuthenticationToken(email, req.getPassword()));
-        } catch (Exception e) {
+            authManager.authenticate(new UsernamePasswordAuthenticationToken(identifier, req.getPassword()));
+        } catch (Exception exception) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
+        User user = userRepo.findByLoginIdentifier(identifier).orElseThrow();
+        return ResponseEntity.ok(tokenResponse(user));
+    }
 
-        User user = userRepo.findByEmail(email).orElseThrow();
+    private Map<String, Object> tokenResponse(User user) {
         String token = jwtService.generateToken(user.getEmail(), Map.of(
                 "role", user.getRole().name(),
-                "collegeId", user.getCollegeId() != null ? user.getCollegeId().toString() : "",
-                "userId", user.getId().toString()
-        ));
-
-        return ResponseEntity.ok(Map.of(
+                "collegeId", user.getCollegeId() == null ? "" : user.getCollegeId().toString(),
+                "userId", user.getId().toString()));
+        return Map.of(
                 "token", token,
                 "role", user.getRole().name(),
-                "collegeId", user.getCollegeId() != null ? user.getCollegeId() : "",
+                "collegeId", user.getCollegeId() == null ? "" : user.getCollegeId(),
                 "email", user.getEmail(),
-                "fullName", user.getFullName() != null ? user.getFullName() : ""
-        ));
+                "username", user.getUsername() == null ? user.getEmail() : user.getUsername(),
+                "fullName", user.getFullName() == null ? "" : user.getFullName(),
+                "userId", user.getId());
     }
 
     @Getter @Setter
     public static class RegisterRequest {
-        @NotBlank
-        @Email
-        private String email;
-
-        @NotBlank
-        @Size(min = 8, max = 100)
-        private String password;
-
-        @NotBlank
-        @Size(max = 120)
-        private String fullName;
+        @NotBlank @Email private String email;
+        @NotBlank @Size(min = 8, max = 100) private String password;
+        @NotBlank @Size(max = 120) private String fullName;
     }
 
     @Getter @Setter
     public static class LoginRequest {
-        @NotBlank
-        @Email
         private String email;
+        private String loginId;
+        private String username;
+        @NotBlank private String password;
 
-        @NotBlank
-        private String password;
+        public String identifier() {
+            if (loginId != null && !loginId.isBlank()) return loginId;
+            if (username != null && !username.isBlank()) return username;
+            return email;
+        }
     }
 }

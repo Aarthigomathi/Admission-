@@ -3,6 +3,7 @@ package com.tncolleges.platform.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import com.tncolleges.platform.service.CollegeService;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -25,6 +26,11 @@ import java.util.*;
 @RequestMapping("/api/platform-admin")
 @CrossOrigin(origins = "*")
 public class PlatformAdminController {
+    private final CollegeService collegeService;
+
+    public PlatformAdminController(CollegeService collegeService) {
+        this.collegeService = collegeService;
+    }
 
     @GetMapping("/dashboard")
     @PreAuthorize("hasAnyRole('PLATFORM_ADMIN','SUPER_ADMIN')")
@@ -164,26 +170,23 @@ public class PlatformAdminController {
     @GetMapping("/colleges")
     @PreAuthorize("hasAnyRole('PLATFORM_ADMIN','SUPER_ADMIN')")
     public ResponseEntity<?> getAllCollegesForVerification() {
-        List<Map<String, Object>> colleges = List.of(
-            Map.of("id", 101, "name", "PSG College of Technology", "district", "Coimbatore", "type", "Autonomous", "verification_status", "VERIFIED", "verified", true),
-            Map.of("id", 102, "name", "Coimbatore Institute of Technology", "district", "Coimbatore", "type", "Government Aided", "verification_status", "PENDING", "verified", false),
-            Map.of("id", 103, "name", "Kumaraguru College of Technology", "district", "Coimbatore", "type", "Private", "verification_status", "UNDER_REVIEW", "verified", false)
-        );
-        return ResponseEntity.ok(colleges);
+        return ResponseEntity.ok(collegeService.allForPlatformAdmin());
+    }
+
+    @PatchMapping("/colleges/{collegeId}/verify")
+    @PreAuthorize("hasAnyRole('PLATFORM_ADMIN','SUPER_ADMIN')")
+    public ResponseEntity<?> verifyRegisteredCollege(@PathVariable Long collegeId, @RequestBody(required = false) Map<String, String> body) {
+        String status = body == null ? "VERIFIED" : body.getOrDefault("status", "VERIFIED");
+        String remarks = body == null ? "" : body.getOrDefault("remarks", "");
+        return ResponseEntity.ok(collegeService.verify(collegeId, status, remarks));
     }
 
     @PutMapping("/college/{collegeId}/verify")
     @PreAuthorize("hasAnyRole('PLATFORM_ADMIN','SUPER_ADMIN')")
-    public ResponseEntity<?> verifyCollege(@PathVariable Long collegeId, @RequestBody Map<String, String> body) {
-        String status = body.getOrDefault("status", "VERIFIED"); // VERIFIED, REJECTED, NEEDS_CHANGES, UNDER_REVIEW
-        String remarks = body.getOrDefault("remarks", "");
-        return ResponseEntity.ok(Map.of(
-            "message", "College " + collegeId + " status updated to " + status,
-            "college_id", collegeId,
-            "verification_status", status,
-            "remarks", remarks,
-            "verified_badge", "VERIFIED".equals(status) ? "Real badge shown" : "Not verified"
-        ));
+    public ResponseEntity<?> verifyCollege(@PathVariable Long collegeId, @RequestBody(required = false) Map<String, String> body) {
+        String status = body == null ? "VERIFIED" : body.getOrDefault("status", "VERIFIED");
+        String remarks = body == null ? "" : body.getOrDefault("remarks", "");
+        return ResponseEntity.ok(collegeService.verify(collegeId, status, remarks));
     }
 
     @GetMapping("/students")

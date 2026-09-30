@@ -11,7 +11,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> findByCollegeIdAndActiveTrue(Long collegeId);
     
     @EntityGraph(attributePaths = "college")
-    @Query("SELECT c FROM Course c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(c.degreeType) LIKE LOWER(CONCAT('%', :query, '%'))")
+    @Query("SELECT c FROM Course c WHERE c.active = true AND c.college.registered = true AND c.college.active = true AND (LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(c.degreeType) LIKE LOWER(CONCAT('%', :query, '%')))")
     List<Course> searchByName(String query);
 
     List<Course> findByDegreeTypeContainingIgnoreCase(String degreeType);
