@@ -46,12 +46,6 @@ export default function PlatformHome() {
             <p className="mt-6 text-[18px] lg:text-[20px] leading-[1.5] text-[#1A3263]/70 max-w-[700px]">
               Centralized discovery across all districts. Students <span className="font-bold text-[#1A3263]">SIGN UP & discover</span>, Colleges <span className="font-bold text-[#1A3263]">SIGN UP & add/manage own info</span>, Platform <span className="font-bold text-[#1A3263]">securely collects activity & generates college-wise PDF reports</span>. Premium SaaS feel.
             </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/student/signup" className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] font-bold text-[13px] inline-flex items-center gap-2"><GraduationCap size={16} /> Student Sign Up - Multi Step</Link>
-              <Link to="/college/signup" className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#FAB95B] font-bold text-[13px] inline-flex items-center gap-2"><Building2 size={16} /> College Sign Up - Verification</Link>
-              <Link to="/login" className="h-11 px-6 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[13px] inline-flex items-center gap-2"><Shield size={16} /> Login - 3 Roles</Link>
-            </div>
           </div>
 
           <div className="mt-14 grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-[900px]">

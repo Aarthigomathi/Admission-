@@ -51,11 +51,15 @@ describe('home page', () => {
     expect(container.textContent).not.toContain('district by district')
   })
 
-  it('keeps the signup / login entry points', async () => {
+  it('hero has no signup / login CTA buttons', async () => {
     await render(<PlatformHome />)
-    const text = container.textContent
-    expect(text).toContain('Student Sign Up')
-    expect(text).toContain('Login - 3 Roles')
+    const hero = container.firstElementChild.children[0]   // hero block, before the Three Roles section
+    expect(hero.textContent).toContain('most trusted')
+    expect(hero.textContent).not.toContain('Sign Up')      // the CTA labels are gone (paragraph keeps "SIGN UP")
+    expect(hero.textContent).not.toContain('Login')
+    expect(hero.querySelector('a[href="/student/signup"]')).toBeNull()
+    expect(hero.querySelector('a[href="/college/signup"]')).toBeNull()
+    expect(hero.querySelector('a[href="/login"]')).toBeNull()
   })
 
   it('has no college-type filter chip bar', async () => {
