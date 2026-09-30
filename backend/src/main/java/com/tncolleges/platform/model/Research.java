@@ -20,6 +20,7 @@ public class Research {
     private String centreName; // Advanced Centre name
     private String facultyName;
     private String fundingAgency;
+    @Column(name = "research_year")
     private String year;
     private String imageUrl;
 
