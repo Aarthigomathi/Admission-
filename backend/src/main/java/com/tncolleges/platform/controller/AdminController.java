@@ -1,5 +1,7 @@
 package com.tncolleges.platform.controller;
 
+import com.tncolleges.platform.dto.CollegeResponse;
+import com.tncolleges.platform.dto.CourseResponse;
 import com.tncolleges.platform.model.College;
 import com.tncolleges.platform.model.CollegeBranding;
 import com.tncolleges.platform.model.Course;
@@ -45,6 +47,7 @@ public class AdminController {
             return ResponseEntity.status(403).body(Map.of("error", "You can only manage your own college"));
         }
         return collegeRepo.findById(collegeId)
+                .map(CollegeResponse::from)
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -77,7 +80,8 @@ public class AdminController {
             return ResponseEntity.notFound().build();
         }
         course.setCollege(college.get());
-        return ResponseEntity.ok(courseRepo.save(course));
+        Course saved = courseRepo.save(course);
+        return ResponseEntity.ok(CourseResponse.from(saved));
     }
 
     @GetMapping("/analytics/{collegeId}")
