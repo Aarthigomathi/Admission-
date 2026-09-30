@@ -33,6 +33,7 @@ public class Department {
     @Builder.Default
     private List<Faculty> faculties = new ArrayList<>();
 
+    @Builder.Default
     private boolean active = true;
     @Builder.Default
     private Integer displayOrder = 0;
