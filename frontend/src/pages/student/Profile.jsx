@@ -6,6 +6,7 @@ import { User, Mail, Phone, MapPin, GraduationCap, BookOpen, Heart, Home, Save, 
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 import StudentHeader from '../../components/student/StudentHeader'
+import StudentDocuments from '../../components/student/StudentDocuments'
 
 export default function StudentProfile() {
   const { t, language } = useLanguage()
@@ -15,6 +16,12 @@ export default function StudentProfile() {
   const [formData, setFormData] = useState({})
   const [allColleges, setAllColleges] = useState(staticColleges)
   const [savedMessage, setSavedMessage] = useState('')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#documents') {
+      setTimeout(() => document.getElementById('documents')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120)
+    }
+  }, [])
 
   useEffect(() => {
     const s = JSON.parse(localStorage.getItem('tn_current_student') || 'null')
@@ -378,6 +385,9 @@ export default function StudentProfile() {
                 </div>
               )}
             </div>
+
+            {/* My Documents & Certificates - upload, view (preview with zoom), download, replace, delete */}
+            <StudentDocuments studentId={student.id} />
           </div>
 
           {/* Right - Chennai Colleges First Preview */}

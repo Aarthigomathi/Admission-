@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { getPublicColleges } from '../../lib/collegeStorage'
 import { activityTracker } from '../../lib/activityTracker'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { GraduationCap, Bookmark, GitCompare, Clock, MapPin, TrendingUp, MessageCircle, Search, BookOpen, Heart, User, Award, FileText, Edit3 } from 'lucide-react'
+import { GraduationCap, Bookmark, GitCompare, Clock, MapPin, TrendingUp, MessageCircle, Search, BookOpen, Heart, User, Award, FileText, Edit3, Eye } from 'lucide-react'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
@@ -106,7 +106,7 @@ export default function StudentDashboard() {
                 <span className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{student.educationLevel} - {student.percentage}% - {student.grade}</span>
                 <span className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[11px]">{student.district} • {student.city}</span>
                 <span className="px-3 py-1 rounded-full bg-white/10 border text-[11px]">{student.interestedCourse}</span>
-                <span className="px-3 py-1 rounded-full bg-emerald-500 text-white text-[11px] font-bold">{t('profileComplete')} - {docsCount}/10 {t('documents')}</span>
+                <Link to="/student/profile#documents" className="px-3 py-1 rounded-full bg-emerald-500 text-white text-[11px] font-bold inline-flex items-center gap-1.5 hover:bg-emerald-600 transition-colors">{t('profileComplete')} - {docsCount}/10 {t('documents')} <Eye size={12} /> {language==='ta' ? 'பார்' : 'View'}</Link>
               </div>
               <div className="mt-4 flex gap-2 flex-wrap">
                 <button onClick={()=>setShowFullDetails(!showFullDetails)} className="h-10 px-5 rounded-full bg-white text-[#1A3263] font-bold text-[12px] flex items-center gap-2">

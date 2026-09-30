@@ -1,7 +1,12 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles, Eye, Trash2, RefreshCw, Loader2, Image as ImageIcon, AlertTriangle } from 'lucide-react'
 import { getPublicColleges } from '../../lib/collegeStorage'
+import {
+  ACCEPTED_MIME, STUDENT_DOCUMENTS, prepareDocument, formatFileSize,
+  hasFile, isPdfDoc, saveStudentDocumentsWithFallback, syncStudentDocumentCounters
+} from '../../lib/studentDocuments'
+import StudentDocumentPreview from '../../components/student/StudentDocumentPreview'
 import { districts } from '../../lib/colleges'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
@@ -104,6 +109,37 @@ export default function StudentSignup() {
   })
 
   const updateField = (field, value) => setFormData(prev => ({ ...prev, [field]: value }))
+
+  // Real certificate files (data URLs) kept while filling the form
+  const [docFiles, setDocFiles] = useState({})
+  const [docBusy, setDocBusy] = useState('')
+  const [docError, setDocError] = useState('')
+  const [docPreview, setDocPreview] = useState(null)
+
+  const handleDocFile = async (docKey, file) => {
+    if (!file) return
+    setDocBusy(docKey)
+    setDocError('')
+    try {
+      const payload = await prepareDocument(file)
+      setDocFiles(prev => ({ ...prev, [docKey]: payload }))
+      updateDocName(docKey, payload.name)
+    } catch (error) {
+      const reason = error?.message
+      setDocError(reason === 'too-large'
+        ? (language==='ta' ? 'கோப்பு மிகப் பெரியது - 4MB க்கு கீழ் இருக்க வேண்டும்' : 'That file is too large - keep it under 4 MB')
+        : reason === 'unsupported'
+          ? (language==='ta' ? 'PDF, JPG, PNG மட்டும்' : 'Only PDF, JPG, PNG and WEBP are supported')
+          : (language==='ta' ? 'கோப்பை படிக்க முடியவில்லை' : 'Could not read that file'))
+    } finally {
+      setDocBusy('')
+    }
+  }
+
+  const removeDoc = docKey => {
+    setDocFiles(prev => { const next = { ...prev }; delete next[docKey]; return next })
+    updateDocName(docKey, '')
+  }
   const updateDocName = (docKey, fileName) => setFormData(prev => ({
     ...prev,
     documentNames: { ...prev.documentNames, [docKey]: fileName },
@@ -222,7 +258,8 @@ export default function StudentSignup() {
     const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
     students.push(student)
     localStorage.setItem('tn_students', JSON.stringify(students))
-    localStorage.setItem(`tn_student_docs_${student.id}`, JSON.stringify(formData.documentNames))
+    const saved = saveStudentDocumentsWithFallback(student.id, docFiles)
+    if (saved.ok) syncStudentDocumentCounters(student.id, saved.docs)
     navigate('/student/dashboard')
   }
 
@@ -601,46 +638,82 @@ export default function StudentSignup() {
 
                   <div>
                     <div className="flex items-center gap-2 font-bold text-[14px] text-[#1A3263]"><Upload size={18} className="text-[#FAB95B]" /> {t('originalDocs')} - {t('documents')}</div>
+                    <div className="text-[11px] text-[#547792] mt-1">
+                      {language==='ta'
+                        ? 'புகைப்படம் அல்லது PDF - கோப்பு ஒன்றுக்கு 4MB க்கு கீழ். பதிவேற்றியதும் "பார்" கொடுத்து சரிபார்க்கலாம்.'
+                        : 'Photo or PDF, under 4 MB per file. Use "View" to check a document before submitting.'}
+                    </div>
+                    {docError && (
+                      <div className="mt-3 rounded-[12px] bg-red-50 border-2 border-red-200 px-3 py-2 text-[11.5px] font-medium text-red-700 flex items-center gap-2">
+                        <AlertTriangle size={13} /> {docError}
+                      </div>
+                    )}
                     <div className="grid md:grid-cols-2 gap-3 mt-4">
-                      {[
-                        { key: 'tenthMarksheet', label: `${t('tenthMarksheet')} *`, desc: 'SSLC Original', required: true, icon: '' },
-                        { key: 'twelfthMarksheet', label: `${t('twelfthMarksheet')} *`, desc: 'HSC Original', required: true, icon: '' },
-                        { key: 'tc', label: `${t('tc')} *`, desc: 'School/College TC', required: true, icon: '' },
-                        { key: 'communityCertificate', label: `${t('communityCertificate')} *`, desc: 'BC/MBC/SC/ST', required: true, icon: '' },
-                        { key: 'incomeCertificate', label: t('incomeCertificate'), desc: 'For scholarship', required: false, icon: '' },
-                        { key: 'aadharCard', label: `${t('aadharCard')} *`, desc: 'ID Proof', required: true, icon: '' },
-                        { key: 'photo', label: `${t('photo')} *`, desc: 'Recent Photo', required: true, icon: '' },
-                        { key: 'nativityCertificate', label: t('nativityCertificate'), desc: 'TN Nativity', required: false, icon: '' },
-                        { key: 'firstGraduateCertificate', label: t('firstGraduateCertificate'), desc: 'First graduate', required: false, icon: '' },
-                        { key: 'specialReservation', label: t('specialReservation'), desc: 'Sports/PH', required: false, icon: '' },
-                      ].map(doc=>(
-                        <div key={doc.key} className={`rounded-[14px] border-2 p-3 ${formData.documentNames[doc.key] ? 'bg-[#FAB95B]/20 border-[#FAB95B]' : 'bg-[#E8E2DB]/50 border-[#E8E2DB]'} `}>
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex gap-2">
-                              <span className="text-[16px]">{doc.icon}</span>
-                              <div>
-                                <div className="text-[11px] font-semibold text-[#547792] flex items-center gap-1">{doc.label} {formData.documentNames[doc.key] && <Check size={12} className="text-green-600" />}</div>
-                                <div className="text-[10px] text-[#547792]">{doc.desc}</div>
-                                {formData.documentNames[doc.key] && <div className="text-[10px] font-bold text-[#1A3263] mt-1">✓ {formData.documentNames[doc.key]}</div>}
+                      {STUDENT_DOCUMENTS.map(meta => {
+                        const savedDoc = docFiles[meta.key]
+                        const isBusy = docBusy === meta.key
+                        const uploaded = !!savedDoc || !!formData.documentNames[meta.key]
+                        return (
+                          <div key={meta.key} className={`rounded-[14px] border-2 p-3 ${uploaded ? 'bg-[#FAB95B]/20 border-[#FAB95B]' : 'bg-[#E8E2DB]/50 border-[#E8E2DB]'}`}>
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0">
+                                <div className="text-[11px] font-semibold text-[#547792] flex items-center gap-1">
+                                  {t(meta.labelKey)} {meta.required && <span>*</span>}
+                                  {uploaded && <Check size={12} className="text-green-600 shrink-0" />}
+                                </div>
+                                <div className="text-[10px] text-[#547792]">{meta.desc}</div>
+                                {uploaded && (
+                                  <div className="text-[10px] font-bold text-[#1A3263] mt-1 flex items-center gap-1.5 min-w-0">
+                                    {isPdfDoc(savedDoc) ? <FileText size={10} className="shrink-0" /> : <ImageIcon size={10} className="shrink-0" />}
+                                    <span className="truncate max-w-[150px]">{savedDoc?.name || formData.documentNames[meta.key]}</span>
+                                    {savedDoc && <span className="font-medium text-[#547792] shrink-0">{formatFileSize(savedDoc.size)}</span>}
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="flex flex-col items-end gap-1.5 shrink-0">
+                                <label className={`h-7 px-3 rounded-full text-[10px] font-bold grid place-items-center cursor-pointer ${uploaded ? 'bg-white border-2 border-[#E8E2DB] text-[#1A3263]' : 'bg-[#1A3263] text-[#FAB95B]'}`}>
+                                  <span className="flex items-center gap-1.5">
+                                    {isBusy ? <Loader2 size={11} className="animate-spin" /> : uploaded ? <RefreshCw size={11} /> : <Upload size={11} />}
+                                    {isBusy ? (language==='ta' ? 'படிக்கிறது' : 'Reading') : uploaded ? (language==='ta' ? 'மாற்று' : 'Replace') : 'Upload'}
+                                  </span>
+                                  <input
+                                    type="file"
+                                    accept={ACCEPTED_MIME}
+                                    className="hidden"
+                                    disabled={isBusy}
+                                    onChange={e => { const file = e.target.files?.[0]; if (file) handleDocFile(meta.key, file); e.target.value = '' }}
+                                  />
+                                </label>
+                                {uploaded && (
+                                  <div className="flex items-center gap-1">
+                                    {hasFile(savedDoc) && (
+                                      <button type="button" onClick={()=>setDocPreview({ doc: savedDoc, key: meta.key })} title={language==='ta' ? 'பார்' : 'View'} aria-label="View document" className="h-6 w-6 grid place-items-center rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] hover:border-[#FAB95B]">
+                                        <Eye size={11} />
+                                      </button>
+                                    )}
+                                    <button type="button" onClick={()=>removeDoc(meta.key)} title={language==='ta' ? 'நீக்கு' : 'Remove'} aria-label="Remove document" className="h-6 w-6 grid place-items-center rounded-full bg-red-500 text-white">
+                                      <Trash2 size={11} />
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </div>
-                            {formData.documentNames[doc.key] ? (
-                              <button onClick={()=>updateDocName(doc.key, '')} className="h-6 w-6 rounded-full bg-red-500 text-white grid place-items-center"><X size={12} /></button>
-                            ) : (
-                              <label className="h-7 px-3 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold grid place-items-center cursor-pointer">
-                                Upload
-                                <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" onChange={e=>{
-                                  const file = e.target.files?.[0]
-                                  if(file) updateDocName(doc.key, file.name)
-                                }} />
-                              </label>
-                            )}
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </div>
                 </div>
+
+                {docPreview && (
+                  <StudentDocumentPreview
+                    doc={docPreview.doc}
+                    docKey={docPreview.key}
+                    label={t(STUDENT_DOCUMENTS.find(d => d.key === docPreview.key)?.labelKey || docPreview.key)}
+                    onClose={()=>setDocPreview(null)}
+                  />
+                )}
 
                 <div className="flex gap-3">
                   <button onClick={()=>setStep(2)} className="h-11 px-6 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-semibold text-[12px] flex items-center gap-2"><ArrowLeft size={16} /> Back</button>
