@@ -23,7 +23,8 @@ export default function StudentProfile() {
       return
     }
     setStudent(s)
-    setFormData(s)
+    // Older records stored a single parentMobile - carry it into the father number field
+    setFormData({ ...s, fatherMobile: s.fatherMobile || s.parentMobile || '', motherMobile: s.motherMobile || '' })
     setAllColleges(getAllCollegesMerged())
   }, [])
 
@@ -234,6 +235,18 @@ export default function StudentProfile() {
                       <input value={formData.motherName} onChange={e=>updateField('motherName', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] outline-none text-[12px]" />
                     </div>
                     <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">{t('fatherMobile')}</label>
+                      <input type="tel" value={formData.fatherMobile || ''} onChange={e=>updateField('fatherMobile', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] outline-none text-[12px]" />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">{t('motherMobile')}</label>
+                      <input type="tel" value={formData.motherMobile || ''} onChange={e=>updateField('motherMobile', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] outline-none text-[12px]" />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold uppercase text-[#1A3263]">{t('alternateMobile')}</label>
+                      <input type="tel" value={formData.alternateMobile || ''} onChange={e=>updateField('alternateMobile', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] outline-none text-[12px]" />
+                    </div>
+                    <div>
                       <label className="text-[11px] font-bold uppercase text-[#1A3263]">{t('community')}</label>
                       <select value={formData.community} onChange={e=>updateField('community', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] outline-none text-[12px]">
                         <option>OC</option><option>BC</option><option>BCM</option><option>MBC</option><option>SC</option><option>ST</option>
@@ -256,6 +269,8 @@ export default function StudentProfile() {
                 <div className="mt-4 space-y-2 text-[12px]">
                   <div className="flex justify-between"><span className="text-[#547792]">{t('fatherName')}:</span><span className="font-medium">{student.fatherName || 'Not set'}</span></div>
                   <div className="flex justify-between"><span className="text-[#547792]">{t('motherName')}:</span><span>{student.motherName || 'Not set'}</span></div>
+                  <div className="flex justify-between"><span className="text-[#547792]">{t('fatherMobile')}:</span><span className="font-medium">{student.fatherMobile || student.parentMobile || 'Not set'}</span></div>
+                  <div className="flex justify-between"><span className="text-[#547792]">{t('motherMobile')}:</span><span className="font-medium">{student.motherMobile || 'Not set'}</span></div>
                   <div className="flex justify-between"><span className="text-[#547792]">{t('community')}:</span><span>{student.community}</span></div>
                   <div className="flex justify-between"><span className="text-[#547792]">{t('annualIncome')}:</span><span>{student.annualIncome || 'Not set'}</span></div>
                 </div>
