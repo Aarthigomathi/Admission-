@@ -8,6 +8,10 @@ import {
 } from '../../lib/studentDocuments'
 import StudentDocumentPreview from '../../components/student/StudentDocumentPreview'
 import { districts } from '../../lib/colleges'
+import {
+  EDUCATION_LEVELS, isSchoolLevel, qualificationOptionsFor,
+  institutionSuggestions, districtHighlights
+} from '../../lib/tnEducation'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
@@ -191,12 +195,12 @@ export default function StudentSignup() {
   const handleEducationLevelChange = (level) => {
     let total = ''
     if (level === '10th') total = '500'
-    else if (level === '11th') total = '600'
     else if (level === '12th') total = '600'
-    else if (level === 'Diploma') total = '1000'
-    else if (level === 'Undergraduate') total = '1000'
     else total = '1000'
-    const newData = { ...formData, educationLevel: level, totalMarks: total }
+    // school levels -> TN board, higher levels -> TN university; keep the choice when it still applies
+    const options = qualificationOptionsFor(level, formData.district)
+    const board = options.includes(formData.board) ? formData.board : options[0]
+    const newData = { ...formData, educationLevel: level, totalMarks: total, board }
     if (formData.marksObtained) {
       const { percentage, grade } = calculatePercentage(formData.marksObtained, total)
       newData.percentage = percentage
@@ -228,6 +232,24 @@ export default function StudentSignup() {
     }
     return filtered.slice(0, 4).map(c => ({ ...c, eligibilityMatch: 'Top Rated Colleges in Tamil Nadu', matchPercent: 80, reason: `${c.shortName} - ${c.placements.percentage} placement - ${c.accreditation}` }))
   }, [formData.percentage, formData.interestedCourse])
+
+  /* ---- Tamil Nadu education helpers (step 3) ---- */
+  const schoolLevel = isSchoolLevel(formData.educationLevel)
+  const qualificationOptions = useMemo(
+    () => qualificationOptionsFor(formData.educationLevel, formData.district),
+    [formData.educationLevel, formData.district]
+  )
+  const institutionNames = useMemo(
+    () => institutionSuggestions(formData.educationLevel, formData.district),
+    [formData.educationLevel, formData.district]
+  )
+  const institutionPicks = useMemo(
+    () => districtHighlights(formData.educationLevel, formData.district, 3),
+    [formData.educationLevel, formData.district]
+  )
+  const shortInstitution = (name) => name
+    .replace('Government Girls Higher Secondary School, ', 'GGHSS ')
+    .replace('Government Higher Secondary School, ', 'GHSS ')
 
   const handleSubmit = () => {
     const student = {
@@ -569,20 +591,51 @@ export default function StudentSignup() {
                     <div>
                       <label className="text-[11px] font-semibold text-[#547792] flex items-center gap-1.5"><GraduationCap size={12} className="text-[#547792]" /> {t('educationLevel')} *</label>
                       <div className="mt-2 grid grid-cols-3 gap-2">
-                        {['10th','11th','12th','Diploma','Undergraduate','Postgraduate'].map(level=>(
+                        {EDUCATION_LEVELS.map(level=>(
                           <button key={level} onClick={()=>handleEducationLevelChange(level)} className={`h-10 rounded-[10px] border-2 text-[11px] font-semibold transition-all ${formData.educationLevel===level?'bg-[#1A3263] text-[#FAB95B] border-[#1A3263]':'bg-[#E8E2DB] border-[#E8E2DB] text-[#1A3263] hover:border-[#FAB95B]'}`}>{level}</button>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <label className="text-[11px] font-semibold text-[#547792]">{t('board')}</label>
-                      <select value={formData.board} onChange={e=>updateField('board', e.target.value)} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]">
-                        <option>Tamil Nadu State Board</option><option>CBSE</option><option>ICSE</option><option>Anna University</option><option>Bharathiar University</option><option>Other</option>
+                      <label className="text-[11px] font-semibold text-[#547792]">{schoolLevel ? (language==='ta' ? 'கல்வி வாரியம்' : 'Board of Education') : (language==='ta' ? 'பல்கலைக்கழகம்' : 'University')}</label>
+                      <select value={qualificationOptions.includes(formData.board) ? formData.board : qualificationOptions[0]} onChange={e=>updateField('board', e.target.value)} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]">
+                        {qualificationOptions.map(option=>(<option key={option}>{option}</option>))}
                       </select>
+                      <div className="text-[10px] text-[#547792] mt-1.5">
+                        {schoolLevel
+                          ? (language==='ta' ? 'தமிழ்நாடு பள்ளி வாரியங்கள்' : 'Tamil Nadu school boards')
+                          : (language==='ta' ? 'தமிழ்நாடு பல்கலைக்கழகங்கள் - உங்கள் மாவட்டம் முதலில்' : `Tamil Nadu universities${formData.district ? ` - ${formData.district} first` : ''}`)}
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-[11px] font-semibold text-[#547792] flex items-center gap-1.5"><School size={12} className="text-[#547792]" /> {t('schoolCollege')} *</label>
-                      <input value={formData.schoolCollege} onChange={e=>updateField('schoolCollege', e.target.value)} className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]" />
+                    <div className="md:col-span-2">
+                      <label className="text-[11px] font-semibold text-[#547792] flex items-center gap-1.5"><School size={12} className="text-[#547792]" /> {schoolLevel ? (language==='ta' ? 'பள்ளி பெயர்' : 'School Name') : (language==='ta' ? 'கல்லூரி / நிறுவனம்' : 'College / Institution Name')} *</label>
+                      <input
+                        list="tnInstitutionSuggestions"
+                        value={formData.schoolCollege}
+                        onChange={e=>updateField('schoolCollege', e.target.value)}
+                        placeholder={schoolLevel ? (language==='ta' ? 'உ.ம்: GHSS, சூலூர்' : 'Ex: Government Higher Secondary School, Sulur') : (language==='ta' ? 'உ.ம்: PSG College of Technology' : 'Ex: PSG College of Technology')}
+                        className="mt-2 w-full h-10 px-3 rounded-[10px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[12px]"
+                      />
+                      <datalist id="tnInstitutionSuggestions">
+                        {institutionNames.map(name=>(<option key={name} value={name} />))}
+                      </datalist>
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] font-semibold text-[#547792]">{formData.district ? `${formData.district}:` : (schoolLevel ? 'Tamil Nadu schools:' : 'Tamil Nadu colleges:')}</span>
+                        {institutionPicks.map(name=>(
+                          <button
+                            type="button"
+                            key={name}
+                            onClick={()=>updateField('schoolCollege', name)}
+                            title={name}
+                            className="px-2.5 py-1 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[10px] font-semibold text-[#1A3263] hover:border-[#FAB95B] max-w-[220px] truncate"
+                          >{shortInstitution(name)}</button>
+                        ))}
+                      </div>
+                      <div className="text-[10px] text-[#547792] mt-1.5">
+                        {schoolLevel
+                          ? (language==='ta' ? 'தமிழ்நாடு பள்ளிகளின் பெயர்கள் - type பண்ணி தேர்வு செய்யலாம்' : 'Tamil Nadu school names - type to search or pick a suggestion')
+                          : (language==='ta' ? 'தமிழ்நாடு கல்லூரி பெயர்கள் - type பண்ணி தேர்வு செய்யலாம்' : 'Tamil Nadu college names - type to search or pick a suggestion')}
+                      </div>
                     </div>
                     <div>
                       <label className="text-[11px] font-semibold text-[#547792]">{t('yearOfPassing')}</label>
