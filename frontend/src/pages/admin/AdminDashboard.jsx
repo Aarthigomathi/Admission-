@@ -581,17 +581,43 @@ export default function AdminDashboard() {
  }
 
  const handleSaveBranding = () => {
+  // no hero image chosen? fall back to the first campus image so the dashboard
+  // preview and the website banner are never empty
+  const heroImage = brandingForm.heroImage || (brandingForm.collegeImages || [])[0]?.url || ''
   const branding = {
    logo: brandingForm.logo,
-   heroImage: brandingForm.heroImage,
+   heroImage,
    collegeImages: brandingForm.collegeImages || [],
    colors: { primary: brandingForm.primary, secondary: brandingForm.secondary, accent: brandingForm.accent },
    preset: 'custom'
   }
   saveSafe('branding', branding)
   saveSafe('tagline', brandingForm.tagline)
+  setBrandingForm(prev => ({ ...prev, heroImage }))
   setCustomData({ ...customData, branding, tagline: brandingForm.tagline })
-  alert(`Branding saved successfully`)
+  alert(`Branding saved successfully${!brandingForm.heroImage && heroImage ? ' - first campus image hero-a use aaguthu' : ''}`)
+ }
+
+ const handleSaveAll = async (publish = false) => {
+  if (!selectedCollegeId) return alert('College login first - pakkathula Login / college account select pannunga')
+  const sections = Object.keys(customData || {}).filter(k => k !== 'updatedAt')
+  if (sections.length === 0) return alert('Innum edhuvum save panna illa - section open panni adhoda Save button click pannunga')
+  let saved = 0
+  for (const section of sections) {
+    const ok = await saveSafe(section, customData[section])
+    if (ok) saved += 1
+  }
+  alert(publish
+    ? `Published - ${saved} sections saved. Website la udane theriyum: /college/${college?.slug || ''}`
+    : `Draft saved - ${saved} sections safe-a irukku`)
+ }
+
+ const handleHeroImageUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => setBrandingForm(prev => ({ ...prev, heroImage: ev.target.result }))
+  reader.readAsDataURL(file)
  }
 
  const handleAddCollegeImage = () => {
@@ -829,8 +855,32 @@ export default function AdminDashboard() {
      </div>
      <div className="flex items-center gap-2">
       <span className="hidden lg:flex items-center gap-2 text-[11px] text-[#547792]"><Shield size={12} /> College ID {college.id}</span>
-      <button className="h-10 px-5 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">Save Draft</button>
-      <button className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold flex items-center gap-2"><Save size={14} /> Publish</button>
+      <button onClick={()=>handleSaveAll(false)} className="h-10 px-5 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">Save Draft</button>
+      <button onClick={()=>handleSaveAll(true)} className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold flex items-center gap-2"><Save size={14} /> Publish</button>
+     </div>
+    </div>
+
+    {/* The full sidebar is hidden below lg, so narrow screens / preview panes get their own switcher */}
+    <div className="lg:hidden sticky top-[72px] z-10 bg-white/95 backdrop-blur border-b-2 border-[#E8E2DB] px-4 py-3 space-y-2">
+     <div className="flex items-center gap-2">
+      <Layers size={14} className="text-[#FAB95B] shrink-0" />
+      <select
+        aria-label="College admin section"
+        value={activeSection}
+        onChange={e=>setActiveSection(e.target.value)}
+        className="flex-1 h-10 px-3 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[12px] font-bold text-[#1A3263]"
+      >
+        {menu.filter(m => m.id).map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
+      </select>
+     </div>
+     <div className="flex gap-2 overflow-x-auto pb-1">
+      {['branding','homepage','deptpages','courses','placements','events','gallery','settings'].map(id => {
+        const item = menu.find(m => m.id === id)
+        if (!item) return null
+        return (
+          <button key={id} onClick={()=>setActiveSection(id)} className={`h-8 px-3 rounded-full border-2 text-[11px] font-bold whitespace-nowrap ${activeSection===id ? 'bg-[#1A3263] text-[#FAB95B] border-[#1A3263]' : 'bg-[#E8E2DB] border-[#E8E2DB] text-[#1A3263]'}`}>{item.label}</button>
+        )
+      })}
      </div>
     </div>
 
@@ -867,7 +917,7 @@ export default function AdminDashboard() {
           {allCustomData.branding?.logo ? (
            <img src={allCustomData.branding.logo} className="h-16 w-16 rounded-[12px] object-cover border-2 border-[#FAB95B] bg-white" alt="Your Logo" />
           ) : (
-           <div className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[10px] font-bold text-center">College Logo</div>
+           <button onClick={()=>setActiveSection('branding')} className="h-16 w-16 rounded-[12px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[10px] font-bold text-center hover:border-[#FAB95B]">College Logo</button>
           )}
           <div>
            <div className="font-bold text-[#1A3263]">{college.name}</div>
@@ -878,7 +928,7 @@ export default function AdminDashboard() {
          {allCustomData.branding?.heroImage ? (
           <img src={allCustomData.branding.heroImage} className="mt-4 h-[160px] w-full rounded-[16px] object-cover border-2 border-[#E8E2DB]" alt="Your Campus" />
          ) : (
-          <div className="mt-4 h-[160px] rounded-[16px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[12px] font-bold">Campus Image </div>
+          <button onClick={()=>setActiveSection('branding')} className="mt-4 h-[160px] w-full rounded-[16px] bg-[#E8E2DB] border-2 border-dashed border-[#1A3263]/20 grid place-items-center text-[#547792] text-[12px] font-bold hover:border-[#FAB95B]">Campus Image - click panni Branding tab-la add pannunga</button>
          )}
          <div className="mt-4 flex gap-2">
           <Link to={`/college/${college.slug}`} className="flex-1 h-9 rounded-full bg-[#1A3263] text-[#FAB95B] text-[12px] font-bold grid place-items-center">Preview Website</Link>
@@ -948,6 +998,25 @@ export default function AdminDashboard() {
              </div>
             )}
            </div>
+          </div>
+
+          <div className="rounded-[16px] bg-[#E8E2DB]/30 border-2 border-[#E8E2DB] p-5">
+           <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><ImageIcon size={12} className="text-[#FAB95B]" /> Hero / Banner Image</label>
+           <div className="mt-3 flex gap-3">
+            <input value={brandingForm.heroImage} onChange={e=>setBrandingForm({...brandingForm, heroImage: e.target.value})} placeholder="Paste banner image URL https://yourcollege.edu/campus.jpg" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+            <label className="h-11 px-4 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-2 cursor-pointer hover:bg-[#1A3263]/90">
+              <Upload size={14} /> Upload
+              <input type="file" accept="image/*" className="hidden" onChange={handleHeroImageUpload} />
+            </label>
+           </div>
+           <div className="mt-3 rounded-[12px] border-2 border-dashed border-[#1A3263]/20 bg-white p-3">
+            {brandingForm.heroImage ? (
+             <img src={brandingForm.heroImage} className="h-[120px] w-full object-cover rounded-[10px]" alt="Hero banner" />
+            ) : (
+             <div className="h-[120px] grid place-items-center text-[11px] text-[#547792] font-bold text-center px-4">Dashboard preview &amp; website banner la idhu varum - add pannunga</div>
+            )}
+           </div>
+           <div className="text-[10.5px] text-[#547792] mt-2">Empty-a vittaa, campus images-la first image hero-a use aagum.</div>
           </div>
 
           <div>
