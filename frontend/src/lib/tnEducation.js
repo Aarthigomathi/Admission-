@@ -80,7 +80,94 @@ const GGHS = 'Government Girls Higher Secondary School'
 const govt = (district, prefix, places) => places.map(place => ({ name: `${prefix}, ${place}`, district }))
 const named = (district, names) => names.map(name => ({ name, district }))
 
+/* ------------------------------------------------------------------ *
+ * Popular, well-known Tamil Nadu schools (real institutions, taken from
+ * public district-wise school lists) - listed ahead of the generic
+ * government-school entries so they show up first in the suggestions.
+ * ------------------------------------------------------------------ */
+export const POPULAR_SCHOOLS = [
+  ...named('Coimbatore', [
+    'Mani Higher Secondary School, Coimbatore',
+    'Stanes Higher Secondary School, Coimbatore',
+    'GKD Matriculation Higher Secondary School, Coimbatore',
+    'PSG Sarvajana Higher Secondary School, Coimbatore',
+    'Sri Baldevdas Kikani Vidyamandir High School, Coimbatore',
+    'CSI Higher Secondary School, Coimbatore',
+    "St. Joseph's Matriculation Higher Secondary School, Coimbatore",
+    'Alvernia Matriculation Higher Secondary School, Coimbatore',
+    'Carmel Garden Matriculation Higher Secondary School, Coimbatore',
+    'Bharatiya Vidya Bhavan Matriculation Higher Secondary School, Coimbatore',
+    'G. D. Naidu Matriculation Higher Secondary School, Coimbatore',
+    'SBOA Matriculation Higher Secondary School, Coimbatore',
+    'Ramakrishna Mission Vidyalaya, Coimbatore',
+    'Chinmaya International Residential School, Coimbatore'
+  ]),
+  ...named('Salem', [
+    'Cluny Matriculation Higher Secondary School, Salem',
+    'Holy Cross Matriculation Higher Secondary School, Salem',
+    'Sri Vidya Mandir Higher Secondary School, Meyyanur, Salem',
+    'Little Flower Higher Secondary School, Salem',
+    'Montfort Higher Secondary School, Yercaud',
+    'Municipal Boys Higher Secondary School, Ammapet, Salem',
+    'G.V. Higher Secondary School, Mettur Dam',
+    'Jairam Public School, Salem'
+  ]),
+  ...named('Madurai', [
+    'American College Higher Secondary School, Madurai',
+    'Capron Hall Higher Secondary School, Madurai',
+    'Fatima Matriculation Higher Secondary School, Madurai',
+    'Maharishi Vidya Mandir, Madurai',
+    'Dolphin Matriculation Higher Secondary School, Madurai'
+  ]),
+  ...named('Tiruchirappalli', [
+    'Bishop Heber Higher Secondary School, Tiruchirappalli',
+    'Holy Cross Higher Secondary School, Tiruchirappalli',
+    "St. Joseph's Anglo-Indian Higher Secondary School, Tiruchirappalli",
+    'National Higher Secondary School, Tiruchirappalli',
+    "St. Anne's Girls Higher Secondary School, Tiruchirappalli"
+  ]),
+  ...named('Karur', [
+    'Venus Matriculation Higher Secondary School, Karur',
+    'Vivekananda Matriculation Higher Secondary School, Karur',
+    'Vidya Mandir Matriculation Higher Secondary School, Karur'
+  ]),
+  ...named('Namakkal', [
+    'Anna Nehru Matriculation Higher Secondary School, Namakkal',
+    'Avvai KSR Matriculation School, Namakkal',
+    'Bharath Matriculation School, Namakkal'
+  ]),
+  ...named('Nagapattinam', [
+    'Modern Matriculation Higher Secondary School, Nagapattinam',
+    'Nehru Matriculation Higher Secondary School, Nagapattinam'
+  ]),
+  ...named('Chennai', [
+    'Don Bosco Matriculation Higher Secondary School, Egmore, Chennai',
+    'Kendriya Vidyalaya, CLRI, Adyar, Chennai',
+    'PSBB Senior Secondary School, Nungambakkam, Chennai'
+  ]),
+  ...named('Dindigul', [
+    'MSP Solai Nadar Memorial Higher Secondary School, Dindigul',
+    "St. Mary's Higher Secondary School, Dindigul",
+    'Soundararaja Vidyalaya Higher Secondary School, Dindigul',
+    "St. Joseph's Matriculation Higher Secondary School, Dindigul"
+  ]),
+  ...named('Tirunelveli', [
+    'Caldwell Centenary Memorial Higher Secondary School, Idaiyangudi, Tirunelveli',
+    'Chinmaya Vidyalaya Matriculation School, Palayamkottai'
+  ]),
+  ...named('Erode', [
+    'Navarasam Matriculation Higher Secondary School, Erode',
+    'Erode Hindu Matriculation Higher Secondary School, Erode',
+    'Kongu Matriculation Higher Secondary School, Erode'
+  ]),
+  ...named('Dharmapuri', [
+    'Paramveer Matriculation Higher Secondary School, Dharmapuri',
+    'Sri Vidya Mandir Matriculation Higher Secondary School, Dharmapuri'
+  ])
+]
+
 export const TN_SCHOOLS = [
+  ...POPULAR_SCHOOLS,
   ...named('Ariyalur', ['Government Higher Secondary School, Jayankondam', 'Government Higher Secondary School, Sendurai', 'Government Higher Secondary School, Udayarpalayam']),
   ...govt('Ariyalur', GHSS, ['Ariyalur']), ...govt('Ariyalur', GGHS, ['Ariyalur']),
 
@@ -172,7 +259,92 @@ export const TN_SCHOOLS = [
 /* ------------------------------------------------------------------ *
  * Tamil Nadu college names (Diploma / UG / PG)
  * ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
+ * Popular Tamil Nadu colleges (real institutions: Anna University campuses,
+ * government engineering colleges, arts & science colleges and deemed
+ * universities) - district-first suggestions use these before the rest.
+ * Source: public lists of Anna University affiliated / TN government colleges.
+ * ------------------------------------------------------------------ */
+export const POPULAR_COLLEGES = [
+  ...named('Chennai', [
+    'Madras Institute of Technology (MIT), Chromepet, Chennai',
+    'Easwari Engineering College, Ramapuram, Chennai',
+    'Loyola-ICAM College of Engineering and Technology, Chennai',
+    'KCG College of Engineering, Chennai',
+    'Meenakshi Sundararajan Engineering College, Kodambakkam',
+    'Ethiraj College for Women, Chennai',
+    "Queen Mary's College, Chennai"
+  ]),
+  ...named('Chengalpattu', [
+    'B.S. Abdur Rahman Crescent Institute of Science and Technology, Vandalur',
+    'SRM Valliammai Engineering College, Kattankulathur',
+    'Sri Sairam Institute of Technology, West Tambaram',
+    'Agni College of Technology, Thalambur'
+  ]),
+  ...named('Kancheepuram', ['University College of Engineering, Kanchipuram']),
+  ...named('Tiruvallur', [
+    'RMK Engineering College, Kavaraipettai',
+    'Vel Tech Rangarajan Dr. Sagunthala R&D Institute of Science and Technology, Avadi'
+  ]),
+  ...named('Coimbatore', [
+    'KPR Institute of Engineering and Technology, Coimbatore',
+    'Sri Ramakrishna Engineering College, Coimbatore',
+    'Karpagam College of Engineering, Coimbatore',
+    'SNS College of Technology, Coimbatore',
+    'Dr. Mahalingam College of Engineering and Technology, Pollachi',
+    'Rathinam Technical Campus, Coimbatore',
+    'V.S.B. College of Engineering Technical Campus, Coimbatore'
+  ]),
+  ...named('Erode', [
+    'Government College of Engineering, Erode',
+    'Erode Sengunthar Engineering College, Thudupathi'
+  ]),
+  ...named('Dharmapuri', ['Government College of Engineering, Dharmapuri']),
+  ...named('Krishnagiri', ['Adhiyamaan College of Engineering, Hosur']),
+  ...named('Namakkal', ['Mahendra Engineering College, Mallasamudram']),
+  ...named('Tiruchirappalli', [
+    'Saranathan College of Engineering, Tiruchirappalli',
+    'Anna University (BIT Campus), Tiruchirappalli',
+    'Indian Institute of Information Technology (IIIT), Tiruchirappalli'
+  ]),
+  ...named('Madurai', [
+    'Anna University Campus, Madurai',
+    'Velammal College of Engineering and Technology, Madurai',
+    'Fatima College, Madurai'
+  ]),
+  ...named('Dindigul', ['Anna University Campus, Dindigul']),
+  ...named('Sivaganga', ['Alagappa Chettiar College of Engineering and Technology, Karaikudi']),
+  ...named('Virudhunagar', ['Sethu Institute of Technology, Kariapatti']),
+  ...named('Thoothukudi', ['Anna University V.O. Chidambaranar College of Engineering, Thoothukudi']),
+  ...named('Kanniyakumari', ['Noorul Islam Centre for Higher Education, Kumaracoil']),
+  ...named('Cuddalore', [
+    'Anna University Campus, Panruti',
+    'CK College of Engineering and Technology, Cuddalore'
+  ]),
+  ...named('Viluppuram', [
+    'Anna University College of Engineering, Viluppuram',
+    'Anna University College of Engineering, Tindivanam'
+  ]),
+  ...named('Tiruvannamalai', ['University College of Engineering, Arni']),
+  ...named('Ranipet', ['C. Abdul Hakeem College, Melvisharam']),
+  ...named('Tirupathur', ['Sacred Heart College, Tirupattur']),
+  ...named('Nagapattinam', [
+    'Anna University Campus, Thirukkuvalai',
+    'E.G.S. Pillay Arts and Science College, Nagapattinam'
+  ]),
+  ...named('Ariyalur', ['Anna University Campus, Ariyalur']),
+  ...named('Ramanathapuram', [
+    'Anna University Campus, Ramanathapuram',
+    'Mohamed Sathak Engineering College, Kilakarai'
+  ]),
+  ...named('Mayiladuthurai', ['Dharmapuram Adhinam Arts College, Mayiladuthurai']),
+  ...named('Tiruvarur', ['Central University of Tamil Nadu, Thiruvarur']),
+  ...named('Kallakurichi', ['Government Arts and Science College, Kallakurichi']),
+  ...named('Tirunelveli', ['Anna University Campus, Tirunelveli'])
+]
+
 export const TN_COLLEGES = [
+  ...POPULAR_COLLEGES,
   /* Chennai */
   ...named('Chennai', [
     'Anna University (CEG Campus), Guindy',
@@ -315,7 +487,7 @@ export const TN_COLLEGES = [
 const sourceFor = level => (isSchoolLevel(level) ? TN_SCHOOLS : TN_COLLEGES)
 
 /** Institution names to offer in the datalist - the student's district first. */
-export function institutionSuggestions(level, district, limit = 80) {
+export function institutionSuggestions(level, district, limit = 400) {
   const source = sourceFor(level)
   const local = source.filter(item => item.district === district)
   const rest = source.filter(item => item.district !== district)

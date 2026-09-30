@@ -12,7 +12,7 @@ import { createRoot } from 'react-dom/client'
 import { MemoryRouter } from 'react-router-dom'
 import StudentSignup from '../pages/auth/StudentSignup.jsx'
 import { LanguageProvider } from '../lib/languageContext.jsx'
-import { EDUCATION_LEVELS } from '../lib/tnEducation.js'
+import { EDUCATION_LEVELS, TN_SCHOOLS, TN_COLLEGES } from '../lib/tnEducation.js'
 
 let container, root
 
@@ -81,6 +81,7 @@ const qualificationSelect = () =>
 const optionTexts = select => [...select.options].map(o => o.text)
 const labelFor = select => select.closest('div')?.querySelector('label')?.textContent?.trim()
 const institutionInput = () => container.querySelector('input[list="tnInstitutionSuggestions"]')
+const collegeNamesFor = () => [...container.querySelector('datalist').querySelectorAll('option')].map(o => o.getAttribute('value'))
 
 describe('signup step 3 - Tamil Nadu education', () => {
   it('drops 11th and keeps the 10th / 12th / Diploma / UG / PG choices', async () => {
@@ -138,11 +139,14 @@ describe('signup step 3 - Tamil Nadu education', () => {
     expect(names).toContain('Government Higher Secondary School, Sulur')
     expect(names.some(n => n.includes('Anna University'))).toBe(false) // schools only while on 12th
 
-    // picking a chip fills the field
-    const chip = [...container.querySelectorAll('button[title]')].find(b => b.getAttribute('title') === 'PSG Public Schools, Peelamedu')
+    // picking the first quick-pick chip fills the field with that suggestion
+    const chip = [...container.querySelectorAll('button[title]')][0]
     expect(chip).toBeTruthy()
+    const chipName = chip.getAttribute('title')
+    expect(chipName).toBeTruthy()
     await click(chip)
-    expect(institutionInput().value).toBe('PSG Public Schools, Peelamedu')
+    expect(institutionInput().value).toBe(chipName)
+    expect(collegeNamesFor('12th')).toContain(chipName)
 
     // switching to UG swaps the suggestions to Tamil Nadu colleges
     await click(buttonWithText('Undergraduate'))
@@ -175,5 +179,16 @@ describe('signup step 3 - Tamil Nadu education', () => {
     expect(years[0]).toBe(Math.max(new Date().getFullYear(), 2026))     // latest year first
     expect(years[years.length - 1]).toBe(2000)                          // goes down to 2000
     expect(years).toEqual([...years].sort((a, b) => b - a))
+  })
+
+  it('ships a bigger, Tamil Nadu wide suggestion set (all 38 districts, no duplicates)', () => {
+    const schoolDistricts = new Set(TN_SCHOOLS.map(x => x.district))
+    const collegeDistricts = new Set(TN_COLLEGES.map(x => x.district))
+    expect(TN_SCHOOLS.length).toBeGreaterThanOrEqual(250)
+    expect(TN_COLLEGES.length).toBeGreaterThanOrEqual(120)
+    expect(schoolDistricts.size).toBe(38)
+    expect(collegeDistricts.size).toBe(38)
+    expect(new Set(TN_SCHOOLS.map(x => x.name)).size).toBe(TN_SCHOOLS.length)
+    expect(new Set(TN_COLLEGES.map(x => x.name)).size).toBe(TN_COLLEGES.length)
   })
 })
