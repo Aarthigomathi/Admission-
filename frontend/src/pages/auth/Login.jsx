@@ -336,7 +336,7 @@ export default function Login() {
                   <div>• <span className="font-semibold text-[#1A3263]">Students:</span> Sign up, discover colleges, save, compare, enquire</div>
                   <div>• <span className="font-semibold text-[#1A3263]">Colleges:</span> Sign up, add complete profile - logo, campus, departments with HOD, courses, facilities</div>
                   <div>• <span className="font-semibold text-[#1A3263]">Platform:</span> Verifies colleges, generates analytics & PDF reports</div>
-                  <div className="hidden sm:block">• Only registered colleges appear - No default colleges</div>
+                  <div className="hidden sm:block">• Student discovery includes starter listings and college-managed profiles</div>
                 </div>
               </div>
             </form>

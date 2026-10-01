@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { Search, MapPin, Filter, GraduationCap, Bookmark, GitCompare, ArrowUpRight, Building2, Sparkles, Shield } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { getPublicColleges } from '../../lib/collegeStorage'
+import { getDiscoveryColleges } from '../../lib/collegeStorage'
 import { activityTracker, ACTIVITY_TYPES } from '../../lib/activityTracker'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
@@ -27,8 +27,8 @@ export default function SearchPage() {
     setSavedIds(saved.map(c=>c.id))
     const compare = JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]')
     setCompareIds(compare.map(c=>c.id))
-    setColleges(getPublicColleges())
-    const handle = () => setColleges(getPublicColleges())
+    setColleges(getDiscoveryColleges())
+    const handle = () => setColleges(getDiscoveryColleges())
     window.addEventListener('collegeRegistered', handle)
     window.addEventListener('storage', handle)
     return () => {
@@ -150,8 +150,8 @@ export default function SearchPage() {
             </div>
           </div>
           <div className="mt-3 flex items-center gap-2 text-[11px]">
-            <span className="px-2 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] font-bold flex items-center gap-1"><Filter size={10} /> No default colleges - only colleges that signed up & added themselves</span>
-            <span className="text-[#547792]">College signup → Add A-Z yourself → Publish → Students discover - Chennai filter: Chennai colleges first based on details</span>
+            <span className="px-2 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] font-bold flex items-center gap-1"><Filter size={10} /> Starter directory + college-managed profiles</span>
+            <span className="text-[#547792]">Your preferred district and course help rank results. Confirm current admission and fee details with each college.</span>
           </div>
         </div>
       </div>
@@ -160,16 +160,15 @@ export default function SearchPage() {
         <div className="grid lg:grid-cols-[1.7fr_1fr] gap-8">
           <div>
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><GraduationCap size={22} className="text-[#FAB95B]" /> {colleges.length===0 ? 'No Colleges Yet - Colleges Signup & Add Themselves' : `Colleges Added by Colleges - ${filtered.length} Found`} {q && `for "${q}"`}</h2>
+              <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><GraduationCap size={22} className="text-[#FAB95B]" /> {colleges.length===0 ? 'Tamil Nadu College Directory' : `Tamil Nadu Colleges - ${filtered.length} Found`} {q && `for "${q}"`}</h2>
             </div>
 
             {colleges.length===0 ? (
               <div className="mt-6 rounded-[28px] bg-white border-2 border-[#FAB95B]/30 p-12 text-center shadow-sm">
                 <div className="h-20 w-20 rounded-[24px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center mx-auto text-3xl"></div>
-                <h3 className="font-display text-[22px] font-bold text-[#1A3263] mt-6">No Colleges Yet - Automatic Default College Name Kattama</h3>
-                <p className="text-[13px] text-[#547792] mt-3 max-w-[500px] mx-auto leading-[1.6]">Platform la default PSG or vera college automatic ah kaatathu. College signup panni avunga college details - logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - ellam avangale add pannuvanga. Aprom thaan search la varum.</p>
+                <h3 className="font-display text-[22px] font-bold text-[#1A3263] mt-6">College directory is being updated</h3>
+                <p className="text-[13px] text-[#547792] mt-3 max-w-[500px] mx-auto leading-[1.6]">Try clearing the filters, or check again as more Tamil Nadu college profiles are added.</p>
                 <div className="mt-6 flex justify-center gap-2">
-                  <Link to="/college/signup" className="h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] inline-flex items-center gap-2"><Building2 size={14} /> College Sign Up - Add A-Z Yourself</Link>
                   <Link to="/" className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] font-bold text-[12px] inline-flex items-center gap-2">Back to Home</Link>
                 </div>
               </div>
@@ -207,13 +206,13 @@ export default function SearchPage() {
 
           <div>
             <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sticky top-[160px]">
-              <h3 className="font-bold text-[16px] text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> Courses - Only from colleges that signed up</h3>
-              <p className="text-[11px] text-[#547792] mt-1">Search BCA → shows College, Course, District - Only colleges added by colleges themselves - No default PSG</p>
+              <h3 className="font-bold text-[16px] text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> Courses in the college directory</h3>
+              <p className="text-[11px] text-[#547792] mt-1">Search BCA to see matching colleges, courses and districts.</p>
               <div className="mt-6 space-y-3 max-h-[700px] overflow-auto pr-1">
                 {coursesSearch.length===0 ? (
                   <div className="py-12 text-center text-[#547792]">
-                                        <div className="text-[13px] mt-3 font-medium text-[#1A3263]">{colleges.length===0 ? 'No colleges yet - colleges signup first' : 'Search for courses like BCA, B.E, MBA'}</div>
-                    <div className="text-[11px] mt-1">{colleges.length===0 ? 'College signup panni courses add pannina aprom thaan varum' : 'Only courses added by colleges themselves will show'}</div>
+                    <div className="text-[13px] mt-3 font-medium text-[#1A3263]">Search for a course like BCA, B.E or MBA</div>
+                    <div className="text-[11px] mt-1">Starter and college-managed course listings appear here.</div>
                   </div>
                 ) : coursesSearch.map(({ college, course }, i)=>(
                   <div key={i} className="group rounded-[16px] border-2 border-[#E8E2DB] bg-[#E8E2DB]/30 p-4 hover:bg-white hover:border-[#FAB95B]/40 hover:shadow-md transition-all">
@@ -235,8 +234,8 @@ export default function SearchPage() {
                 ))}
               </div>
               <div className="mt-6 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4">
-                <div className="text-[11px] font-bold text-[#1A3263] flex items-center gap-1"><Shield size={12} /> No Default Colleges</div>
-                <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.5]">Automatic default college name kattama - Only colleges that signup via /college/signup and add details A-Z themselves will appear here. College adds logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - Full A-Z. College content is fully managed by the college.</div>
+                <div className="text-[11px] font-bold text-[#1A3263] flex items-center gap-1"><Shield size={12} /> About these listings</div>
+                <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.5]">The directory includes starter profiles and information submitted by colleges. Starter profiles are labelled; confirm admissions, fees and course availability on the college's official website.</div>
               </div>
             </div>
           </div>

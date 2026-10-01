@@ -13,9 +13,35 @@ export function getRegisteredColleges() {
 }
 
 export function getPublicColleges() {
-  // ONLY colleges that signed up via CollegeSignup - no default PSG etc
+  // Only college-submitted profiles; used by platform-admin registration and approval screens.
   const registered = getRegisteredColleges()
   return registered.map(c => enrichCollege(c))
+}
+
+export function getDiscoveryColleges() {
+  // Student-facing directory: include the six curated starter profiles already in the app,
+  // then overlay real college-submitted profiles. Keep starter entries distinct so they
+  // are not counted as registrations or shown as verified.
+  const byId = new Map()
+  staticColleges.forEach(college => {
+    const profile = enrichCollege(college)
+    byId.set(String(profile.id), {
+      ...profile,
+      isStarterListing: true,
+      listingSource: 'starter',
+      verified: false,
+      verificationStatus: 'STARTER LISTING'
+    })
+  })
+  getRegisteredColleges().forEach(college => {
+    const profile = enrichCollege(college)
+    byId.set(String(profile.id), {
+      ...profile,
+      isStarterListing: false,
+      listingSource: 'college'
+    })
+  })
+  return Array.from(byId.values())
 }
 
 export function getAllCollegesMerged() {
@@ -61,8 +87,8 @@ export function enrichCollege(base) {
     type: base.type || base.collegeType || 'Engineering',
     collegeType: base.collegeType || base.type || 'Private',
     district: base.district || 'Coimbatore',
-    city: base.city || '',
-    address: base.address || '',
+    city: base.city || base.location?.city || base.district || 'Coimbatore',
+    address: base.address || base.location?.address || '',
     pincode: base.pincode || '',
     phone: base.phone || '',
     email: base.email || '',

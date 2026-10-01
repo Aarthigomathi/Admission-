@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles, Eye, Trash2, RefreshCw, Loader2, Image as ImageIcon, AlertTriangle } from 'lucide-react'
-import { getPublicColleges } from '../../lib/collegeStorage'
+import { getDiscoveryColleges } from '../../lib/collegeStorage'
 import {
   ACCEPTED_MIME, STUDENT_DOCUMENTS, prepareDocument, formatFileSize,
   hasFile, isPdfDoc, saveStudentDocumentsWithFallback, syncStudentDocumentCounters
@@ -218,7 +218,7 @@ export default function StudentSignup() {
 
   const topCollegesByPercentage = useMemo(() => {
     const perc = parseFloat(formData.percentage) || 0
-    let filtered = getPublicColleges()
+    let filtered = getDiscoveryColleges()
     if (filtered.length===0) return []
     filtered = [...filtered].sort((a, b) => {
       const placeA = parseInt(a.placements?.percentage || 0)
@@ -840,11 +840,12 @@ export default function StudentSignup() {
                       <div className="flex items-center gap-2 font-bold text-[14px] text-[#1A3263]"><Star size={18} className="text-[#FAB95B]" /> {t('topRatedColleges')} {formData.percentage}% - {formData.interestedCourse}</div>
                       <div className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{formData.percentage}% - {topCollegesByPercentage.length} Matched</div>
                     </div>
+                    <p className="text-[10px] text-[#547792] mt-2">Starter listings are suggestions; please confirm current courses, admissions and fees with the college.</p>
                     {topCollegesByPercentage.length===0 ? (
                       <div className="mt-4 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-8 text-center">
-                                                <div className="font-bold text-[#1A3263] mt-3">No Colleges Registered Yet - No Default Colleges</div>
-                        <div className="text-[11px] text-[#1A3263]/80 mt-2">{language==='ta' ? 'இப்போது பட்டியலில் கல்லூரிகள் இல்லை. கல்லூரிகள் பதிவு செய்து விவரங்களை சேர்த்த பிறகு, உங்களுக்கு ஏற்ற கல்லூரிகள் இங்கே தோன்றும்.' : 'No colleges are listed yet. Once colleges register and publish their details, your matched colleges will appear here.'}</div>
-                        <div className="text-[11px] text-[#547792] mt-2">Your {formData.percentage}% eligible - Once colleges register, top matches for {formData.interestedCourse} will appear here based on placement %.</div>
+                        <div className="font-bold text-[#1A3263] mt-3">No matching college listings yet</div>
+                        <div className="text-[11px] text-[#1A3263]/80 mt-2">{language==='ta' ? 'உங்கள் விருப்பத்திற்கு பொருந்தும் கல்லூரிகள் இன்னும் இல்லை. மாவட்டம் அல்லது பாடத்தை மாற்றிப் பாருங்கள்.' : 'There are no matching college listings yet. Try a different district or course.'}</div>
+                        <div className="text-[11px] text-[#547792] mt-2">Your {formData.percentage}% and course preferences are used to rank the starter and college-managed listings.</div>
                       </div>
                     ) : (
                     <div className="grid md:grid-cols-2 gap-3 mt-4">
@@ -855,6 +856,7 @@ export default function StudentSignup() {
                             <div className="flex-1">
                               <div className="font-bold text-[#1A3263] text-[13px]">{college.name}</div>
                               <div className="text-[10px] text-[#547792]">{college.district} • {college.type}</div>
+                              <div className="text-[9px] font-bold tracking-wide text-[#547792] mt-1">{college.isStarterListing ? 'STARTER LISTING' : 'COLLEGE-MANAGED LISTING'}</div>
                               <div className="text-[10px] font-bold text-[#1A3263] mt-1">{college.placements?.percentage || '—'} {t('placement')}</div>
                             </div>
                             <div className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{college.matchPercent}% Match</div>

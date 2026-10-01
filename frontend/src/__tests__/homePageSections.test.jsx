@@ -67,12 +67,12 @@ describe('home page', () => {
     const chipLabels = ['All Real', 'Engineering Real', 'Arts & Science', 'Management', 'Medical']
     const buttons = [...container.querySelectorAll('button')].map(b => b.textContent.trim())
     chipLabels.forEach(label => expect(buttons).not.toContain(label))
-    expect(buttons.length).toBe(0)                    // the chip bar was the only button group here
+    expect(buttons.some(label => /^(All Real|Engineering Real|Arts & Science|Management|Medical)$/.test(label))).toBe(false)
     expect(container.textContent).not.toContain('Verified Platform')
     expect(container.textContent).not.toContain('All Types')
   })
 
-  it('has no "No Colleges Yet" placeholder and no how-it-works flow sections', async () => {
+  it('shows starter listings without a no-colleges placeholder or how-it-works flow sections', async () => {
     await render(<PlatformHome />)
     const text = container.textContent
     expect(text).not.toContain('No Colleges Yet')
@@ -83,11 +83,12 @@ describe('home page', () => {
     expect(text).not.toContain('College Flow - Verification')
     expect(text).not.toContain('Platform Admin Flow - Analytics')
     expect(text).not.toContain('Colleges - No Default')
-    // with zero colleges the section renders nothing at all
+    expect(text).toContain('Tamil Nadu Colleges to Explore - 6 Listings')
+    expect(text).toContain('PSG College of Technology')
     expect(text).not.toContain('Colleges Added by Colleges Themselves')
   })
 
-  it('still shows the college list when colleges exist', async () => {
+  it('adds college-submitted profiles alongside the starter directory', async () => {
     localStorage.setItem('tn_registered_colleges', JSON.stringify([{
       id: 9001,
       slug: 'demo-check-college',
@@ -101,7 +102,7 @@ describe('home page', () => {
       branding: {}
     }]))
     await render(<PlatformHome />)
-    expect(container.textContent).toContain('Colleges Added by Colleges Themselves - 1 Colleges')
+    expect(container.textContent).toContain('Tamil Nadu Colleges to Explore - 7 Listings')
     expect(container.textContent).toContain('Demo Check College')
   })
 })

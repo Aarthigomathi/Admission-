@@ -42,7 +42,9 @@ export default function CollegeCard({ college, variant="default" }) {
         
         <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
           <div className="flex gap-2 flex-wrap">
-            {college.verified || college.verificationStatus === 'VERIFIED' ? (
+            {college.isStarterListing ? (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/95 backdrop-blur border border-[#FAB95B]/50 text-[#1A3263] text-[10px] font-bold">STARTER LISTING</span>
+            ) : college.verified || college.verificationStatus === 'VERIFIED' ? (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FAB95B] text-[#1A3263] border-2 border-[#FAB95B] text-[11px] font-bold tracking-wide shadow-lg">
                 <BadgeCheck size={14} /> VERIFIED
               </span>

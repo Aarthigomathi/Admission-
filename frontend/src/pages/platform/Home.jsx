@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { GraduationCap, Building2, ArrowUpRight, Image as ImageIcon, Shield, BarChart3 } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { getPublicColleges } from '../../lib/collegeStorage'
+import { getDiscoveryColleges } from '../../lib/collegeStorage'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
 
@@ -11,9 +11,9 @@ export default function PlatformHome() {
   const { t, language, isStudent } = useLanguage()
 
   useEffect(() => {
-    // Automatic default college name kattama - only colleges that signed up and added details themselves
-    setColleges(getPublicColleges())
-    const handleStorage = () => setColleges(getPublicColleges())
+    // Show starter profiles and college-managed profiles in the student-facing directory.
+    setColleges(getDiscoveryColleges())
+    const handleStorage = () => setColleges(getDiscoveryColleges())
     window.addEventListener('storage', handleStorage)
     window.addEventListener('collegeRegistered', handleStorage)
     return () => {
@@ -50,7 +50,7 @@ export default function PlatformHome() {
 
           <div className="mt-14 grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-[900px]">
             {[
-              { label: "Colleges", value: colleges.length===0 ? "0" : String(colleges.length), sub: colleges.length===0 ? "No default - signup & add" : "Added by colleges themselves", color: "bg-white border-[#FAB95B]/30" },
+              { label: "Colleges", value: colleges.length===0 ? "0" : String(colleges.length), sub: colleges.length===0 ? "Directory being updated" : "Starter + college-managed", color: "bg-white border-[#FAB95B]/30" },
               { label: "Students", value: "12.5k+", sub: "Secure tracking", color: "bg-white border-[#E8E2DB]" },
               { label: "Verified", value: String(colleges.filter(c=>c.verificationStatus==='VERIFIED'||c.verified).length), sub: "Verified badge", color: "bg-[#1A3263] text-white border-[#1A3263]" },
               { label: "PDF Reports", value: "Live", sub: "College-wise PDF", color: "bg-[#FAB95B] text-[#1A3263] border-[#FAB95B]" },
@@ -145,7 +145,7 @@ export default function PlatformHome() {
         <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-10">
           <div className="flex items-center justify-between mb-8">
             <h2 className="font-display text-[28px] font-bold tracking-tight text-[#1A3263]">
-              {`Colleges Added by Colleges Themselves - ${colleges.length} Colleges`}
+              {`Tamil Nadu Colleges to Explore - ${colleges.length} Listings`}
             </h2>
             <Link to="/search" className="hidden lg:inline-flex items-center gap-1.5 text-[13px] font-bold text-[#1A3263] hover:gap-2 transition-all">View all <ArrowUpRight size={16} /></Link>
           </div>
