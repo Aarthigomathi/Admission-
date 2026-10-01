@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { GraduationCap, Building2, Shield, X, ArrowRight, Eye, Sparkles, UserCheck, Lock } from 'lucide-react'
 import { getRegisteredColleges, createNewCollegeFromSignup } from '../../lib/collegeStorage'
@@ -124,10 +125,13 @@ export default function RoleLoginModal({ open, onClose }) {
     loginAsDemo(role, navigate)
   }
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center overflow-y-auto bg-[#1A3263]/60 backdrop-blur-sm p-3 sm:p-6" onClick={onClose}>
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] grid place-items-center overflow-y-auto bg-[#1A3263]/60 backdrop-blur-sm p-3 sm:p-6" onClick={onClose}>
       <div
-        className="relative w-full max-w-[1000px] rounded-[24px] sm:rounded-[28px] bg-[#E8E2DB] border-2 border-[#FAB95B]/50 shadow-[0_24px_80px_rgba(26,50,99,0.35)] my-4 sm:my-0"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="role-login-title"
+        className="relative my-0 w-full max-w-[1000px] max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)] overflow-y-auto rounded-[24px] sm:rounded-[28px] bg-[#E8E2DB] border-2 border-[#FAB95B]/50 shadow-[0_24px_80px_rgba(26,50,99,0.35)]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -145,7 +149,7 @@ export default function RoleLoginModal({ open, onClose }) {
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAB95B] text-[#1A3263] text-[10px] font-bold uppercase tracking-wide"><Lock size={11} /> Secure • Role Based</span>
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold uppercase tracking-wide text-[#FAB95B]"><Sparkles size={11} /> Demo + Real Login</span>
           </div>
-          <h2 className="relative font-display text-[24px] sm:text-[32px] font-bold leading-[1.05] mt-4 text-white">
+          <h2 id="role-login-title" className="relative font-display text-[24px] sm:text-[32px] font-bold leading-[1.05] mt-4 text-white">
             3 Logins - <span className="text-[#FAB95B]">Student / College / Platform Admin</span>
           </h2>
           <p className="relative text-[12px] sm:text-[13px] text-[#E8E2DB]/75 mt-2 max-w-[660px] leading-[1.6]">
@@ -202,6 +206,7 @@ export default function RoleLoginModal({ open, onClose }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

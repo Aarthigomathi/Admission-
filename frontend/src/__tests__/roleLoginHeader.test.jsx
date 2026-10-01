@@ -7,7 +7,7 @@
 // Dev-only deps (not in package.json):  npm i --no-save vitest jsdom
 // Run:  npx vitest run src/__tests__/roleLoginHeader.test.jsx
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import React, { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom'
@@ -20,10 +20,18 @@ let container, root
 
 beforeEach(() => {
   localStorage.clear()
+  document.body.innerHTML = ''
+  document.body.style.overflow = ''
   container = document.createElement('div')
   document.body.appendChild(container)
   root = createRoot(container)
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
+})
+
+afterEach(() => {
+  if (root) act(() => root.unmount())
+  document.body.innerHTML = ''
+  document.body.style.overflow = ''
 })
 
 function LocationProbe({ onChange }) {
@@ -49,7 +57,7 @@ const renderAt = (initialPath, ui) => {
 
 const click = el => act(() => { el.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
 const byText = (text, tag = 'button') =>
-  [...container.querySelectorAll(tag)].find(el => el.textContent.trim().includes(text))
+  [...document.body.querySelectorAll(tag)].find(el => el.textContent.trim().includes(text))
 
 describe('header matches the new design', () => {
   it('has Demo button, no College Sign Up, always-visible language toggle, 38 districts', () => {
@@ -69,19 +77,24 @@ describe('header matches the new design', () => {
 })
 
 describe('demo button opens 3 logins', () => {
-  it('shows Student / College / Platform Admin logins', () => {
+  it('shows the role picker in a viewport-level dialog above the sticky header', () => {
     renderAt('/', <PlatformHeader />)
     click(byText('Demo'))
-    const text = container.textContent
+    const dialog = document.body.querySelector('[role="dialog"]')
+    const text = document.body.textContent
     expect(text).toContain('3 Logins')
     expect(text).toContain('Student Login')
     expect(text).toContain('College Login')
     expect(text).toContain('Platform Admin')
+    expect(dialog).toBeTruthy()
+    expect(dialog.getAttribute('aria-modal')).toBe('true')
+    expect(container.contains(dialog)).toBe(false) // rendered outside the sticky/backdrop-filter header
+    expect(dialog.className).toContain('max-h-')
     expect(byText('Student Login')).toBeTruthy()   // Login button per role
     expect(byText('College Login')).toBeTruthy()
     expect(byText('Platform Admin')).toBeTruthy()
     // demo buttons per role
-    expect([...container.querySelectorAll('button')].filter(b => b.textContent.includes('Demo View')).length).toBe(3)
+    expect([...document.body.querySelectorAll('button')].filter(b => b.textContent.includes('Demo View')).length).toBe(3)
   })
 
   it('Login button routes to /login?role=college', () => {
@@ -94,7 +107,7 @@ describe('demo button opens 3 logins', () => {
   it('Demo View logs the student straight into the dashboard', () => {
     const getPath = renderAt('/', <PlatformHeader />)
     click(byText('Demo'))
-    const studentDemo = [...container.querySelectorAll('button')].find(b => b.textContent.includes('Demo View'))
+    const studentDemo = [...document.body.querySelectorAll('button')].find(b => b.textContent.includes('Demo View'))
     click(studentDemo)
     expect(getPath()).toBe('/student/dashboard')
     const stored = JSON.parse(localStorage.getItem('tn_current_student') || 'null')
@@ -105,8 +118,8 @@ describe('demo button opens 3 logins', () => {
   it('shield button also opens the 3 logins (platform admin demo goes inside)', () => {
     const getPath = renderAt('/', <PlatformHeader />)
     click(container.querySelector('button[aria-label="Login - 3 Roles"]'))
-    expect(container.textContent).toContain('3 Logins')
-    const demoButtons = [...container.querySelectorAll('button')].filter(b => b.textContent.includes('Demo View'))
+    expect(document.body.textContent).toContain('3 Logins')
+    const demoButtons = [...document.body.querySelectorAll('button')].filter(b => b.textContent.includes('Demo View'))
     click(demoButtons[2]) // platform admin card
     expect(getPath()).toBe('/platform-admin')
   })
