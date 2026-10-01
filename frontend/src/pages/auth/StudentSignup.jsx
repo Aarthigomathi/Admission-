@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles, Eye, Trash2, RefreshCw, Loader2, Image as ImageIcon, AlertTriangle } from 'lucide-react'
 import {
@@ -6,6 +6,11 @@ import {
   hasFile, isPdfDoc, saveStudentDocumentsWithFallback, syncStudentDocumentCounters
 } from '../../lib/studentDocuments'
 import StudentDocumentPreview from '../../components/student/StudentDocumentPreview'
+import {
+  loadStudentSignupDraft, saveStudentSignupDraft, clearStudentSignupDraft,
+  loadStudentSignupDraftFiles, saveStudentSignupDraftFile,
+  removeStudentSignupDraftFile, clearStudentSignupDraftFiles
+} from '../../lib/studentSignupDraft'
 import { districts } from '../../lib/colleges'
 import {
   EDUCATION_LEVELS, isSchoolLevel, qualificationOptionsFor,
@@ -42,10 +47,12 @@ const YEAR_OF_PASSING_OPTIONS = Array.from(
 
 export default function StudentSignup() {
   const navigate = useNavigate()
-  const [step, setStep] = useState(1)
+  const [initialDraft] = useState(() => loadStudentSignupDraft())
+  const [step, setStep] = useState(() => initialDraft?.step || 1)
   const { t, language } = useLanguage()
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => {
+    const defaults = {
     fullName: '',
     email: '',
     mobile: '',
@@ -116,15 +123,70 @@ export default function StudentSignup() {
     transportRequired: 'No',
     budgetRange: '1-2 Lakhs',
     scholarshipNeeded: 'No'
+    }
+    const draftData = initialDraft?.formData || {}
+    return {
+      ...defaults,
+      ...draftData,
+      password: '',
+      documents: { ...defaults.documents, ...(draftData.documents || {}) },
+      documentNames: { ...defaults.documentNames, ...(draftData.documentNames || {}) }
+    }
   })
 
   const updateField = (field, value) => setFormData(prev => ({ ...prev, [field]: value }))
 
-  // Real certificate files (data URLs) kept while filling the form
+  // Keep the in-progress form on this device so a refresh does not erase it.
+  const [draftStatus, setDraftStatus] = useState(initialDraft ? 'saved' : 'saving')
+  const [draftFileError, setDraftFileError] = useState(false)
+  const [draftFilesReady, setDraftFilesReady] = useState(false)
+  const touchedDocKeysRef = useRef(new Set())
+
+  // Real certificate files are stored in IndexedDB while signup is in progress.
   const [docFiles, setDocFiles] = useState({})
   const [docBusy, setDocBusy] = useState('')
   const [docError, setDocError] = useState('')
   const [docPreview, setDocPreview] = useState(null)
+
+  useEffect(() => {
+    const result = saveStudentSignupDraft({ step, formData })
+    setDraftStatus(result.ok ? 'saved' : 'error')
+  }, [formData, step])
+
+  useEffect(() => {
+    let active = true
+    const savedFiles = initialDraft
+      ? loadStudentSignupDraftFiles()
+      : clearStudentSignupDraftFiles().then(() => ({}))
+    savedFiles.then(restoredFiles => {
+      if (!active) return
+
+      setDocFiles(current => {
+        const restored = { ...restoredFiles }
+        touchedDocKeysRef.current.forEach(key => { delete restored[key] })
+        return { ...restored, ...current }
+      })
+      setFormData(current => {
+        const documents = { ...current.documents }
+        const documentNames = { ...current.documentNames }
+        STUDENT_DOCUMENTS.forEach(({ key }) => {
+          if (touchedDocKeysRef.current.has(key)) return
+          const file = restoredFiles[key]
+          documents[key] = file ? { name: file.name, uploadedAt: file.uploadedAt || '' } : null
+          documentNames[key] = file?.name || ''
+        })
+        return { ...current, documents, documentNames }
+      })
+    }).catch(() => {
+      if (!active) return
+      setDraftFileError(true)
+      setDocError('Could not restore saved documents / சேமித்த ஆவணங்களை மீட்டெடுக்க முடியவில்லை. Please upload those files again / கோப்புகளை மீண்டும் பதிவேற்றவும்.')
+    }).finally(() => {
+      if (active) setDraftFilesReady(true)
+    })
+
+    return () => { active = false }
+  }, [initialDraft])
 
   const handleDocFile = async (docKey, file) => {
     if (!file) return
@@ -132,8 +194,20 @@ export default function StudentSignup() {
     setDocError('')
     try {
       const payload = await prepareDocument(file)
+      touchedDocKeysRef.current.add(docKey)
+      const saved = await saveStudentSignupDraftFile(docKey, payload)
       setDocFiles(prev => ({ ...prev, [docKey]: payload }))
       updateDocName(docKey, payload.name)
+      if (saved.ok) {
+        setDraftFileError(false)
+        setDraftStatus('saved')
+      } else {
+        setDraftFileError(true)
+        setDraftStatus('error')
+        setDocError(language==='ta'
+          ? 'கோப்பு இப்போது பயன்படுத்தலாம்; ஆனால் இந்த சாதனத்தில் சேமிக்க முடியவில்லை. இந்தப் பக்கத்தை மூடாதீர்கள்.'
+          : 'The file is available for now, but could not be saved on this device. Please keep this page open.')
+      }
     } catch (error) {
       const reason = error?.message
       setDocError(reason === 'too-large'
@@ -146,9 +220,21 @@ export default function StudentSignup() {
     }
   }
 
-  const removeDoc = docKey => {
+  const removeDoc = async docKey => {
+    touchedDocKeysRef.current.add(docKey)
+    const removed = await removeStudentSignupDraftFile(docKey)
+    if (!removed.ok) {
+      setDraftFileError(true)
+      setDraftStatus('error')
+      setDocError(language==='ta'
+        ? 'கோப்பை சேமிப்பிலிருந்து நீக்க முடியவில்லை. பக்கத்தை refresh செய்ய வேண்டாம்.'
+        : 'Could not remove the saved file. Please do not refresh this page yet.')
+      return
+    }
     setDocFiles(prev => { const next = { ...prev }; delete next[docKey]; return next })
     updateDocName(docKey, '')
+    setDraftFileError(false)
+    setDraftStatus('saved')
   }
   const updateDocName = (docKey, fileName) => setFormData(prev => ({
     ...prev,
@@ -233,7 +319,7 @@ export default function StudentSignup() {
     .replace('Government Girls Higher Secondary School, ', 'GGHSS ')
     .replace('Government Higher Secondary School, ', 'GHSS ')
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const student = {
       id: Date.now(),
       ...formData,
@@ -258,12 +344,22 @@ export default function StudentSignup() {
       documentsUploaded: Object.keys(formData.documentNames).filter(k => formData.documentNames[k]).length,
       createdAt: new Date().toISOString()
     }
+    const saved = saveStudentDocumentsWithFallback(student.id, docFiles)
+    if (!saved.ok) {
+      setDocError(language==='ta'
+        ? 'ஆவணங்களை சேமிக்க முடியவில்லை. இடத்தை விடுவித்து மீண்டும் முயற்சிக்கவும்; உங்கள் பதிவு விவரங்கள் சேமிக்கப்பட்டுள்ளன.'
+        : 'Could not save the documents. Free some device storage and try again; your signup details are still saved.')
+      setStep(3)
+      return
+    }
+
     localStorage.setItem('tn_current_student', JSON.stringify(student))
     const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
     students.push(student)
     localStorage.setItem('tn_students', JSON.stringify(students))
-    const saved = saveStudentDocumentsWithFallback(student.id, docFiles)
-    if (saved.ok) syncStudentDocumentCounters(student.id, saved.docs)
+    syncStudentDocumentCounters(student.id, saved.docs)
+    clearStudentSignupDraft()
+    await clearStudentSignupDraftFiles()
     navigate('/student/dashboard#recommended-colleges')
   }
 
@@ -340,6 +436,16 @@ export default function StudentSignup() {
             <div className="hidden md:flex"><StudentLanguageToggleAlways variant="pill" /></div>
             <Link to="/login" className="text-[12px] font-semibold text-[#1A3263]">Have account? <span className="text-[#FAB95B] bg-[#1A3263] px-3 py-1 rounded-full ml-1">Login</span></Link>
           </div>
+        </div>
+
+        <div className="px-4 lg:px-10 pt-3">
+          <p role="status" className={`max-w-[760px] mx-auto text-[11px] ${draftStatus==='error' || draftFileError ? 'text-red-700' : 'text-[#547792]'}`}>
+            {!draftFilesReady
+              ? (language==='ta' ? 'சேமித்த விவரங்களையும் ஆவணங்களையும் மீட்டெடுக்கிறோம்…' : 'Restoring your saved details and files…')
+              : draftStatus==='error' || draftFileError
+                ? (language==='ta' ? 'தானாகச் சேமிக்க முடியவில்லை. இந்தப் பக்கத்தை திறந்தே வைத்திருந்து மீண்டும் முயற்சிக்கவும்.' : 'Could not auto-save on this device. Keep this page open and try again.')
+                : (language==='ta' ? 'உங்கள் விவரங்களும் ஆவணங்களும் இந்தச் சாதனத்தில் தானாகச் சேமிக்கப்படும். பாதுகாப்புக்காக கடவுச்சொல் சேமிக்கப்படாது.' : 'Your details and files auto-save on this device. Passwords are not saved for security.')}
+          </p>
         </div>
 
         <div className="flex-1 overflow-auto p-4 lg:p-8">
