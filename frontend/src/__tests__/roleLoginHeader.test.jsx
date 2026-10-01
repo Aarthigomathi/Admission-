@@ -97,6 +97,26 @@ describe('demo button opens 3 logins', () => {
     expect([...document.body.querySelectorAll('button')].filter(b => b.textContent.includes('Demo View')).length).toBe(3)
   })
 
+  it('translates every visible role picker label when Tamil is selected', () => {
+    renderAt('/', <PlatformHeader />)
+    click(byText('தமிழ்', 'button'))
+    click(byText('Demo'))
+
+    const dialog = document.body.querySelector('[role="dialog"]')
+    const text = dialog.textContent
+    expect(text).toContain('3 வகை உள்நுழைவுகள்')
+    expect(text).toContain('மாணவர் உள்நுழைவு')
+    expect(text).toContain('கல்லூரி உள்நுழைவு')
+    expect(text).toContain('தள நிர்வாகி')
+    expect(text).toContain('மாதிரி தளத்தைப் பாருங்கள்')
+    expect(text).toContain('தனியுரிமை')
+    expect(text).not.toContain('Student Login')
+    expect(text).not.toContain('Discover, save, compare, enquire')
+    expect(text).not.toContain('Demo View')
+    expect(text).not.toContain('ulla po')
+    expect([...dialog.querySelectorAll('button')].filter(button => button.textContent.includes('மாதிரி தளத்தைப் பாருங்கள்'))).toHaveLength(3)
+  })
+
   it('Login button routes to /login?role=college', () => {
     const getPath = renderAt('/', <PlatformHeader />)
     click(byText('Demo'))
