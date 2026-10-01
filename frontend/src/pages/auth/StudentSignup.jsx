@@ -289,7 +289,7 @@ export default function StudentSignup() {
     localStorage.setItem('tn_students', JSON.stringify(students))
     const saved = saveStudentDocumentsWithFallback(student.id, docFiles)
     if (saved.ok) syncStudentDocumentCounters(student.id, saved.docs)
-    navigate('/student/dashboard')
+    navigate('/student/dashboard#recommended-colleges')
   }
 
   const steps = [

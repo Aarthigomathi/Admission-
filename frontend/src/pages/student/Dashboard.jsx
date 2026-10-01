@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { getDiscoveryColleges } from '../../lib/collegeStorage'
 import { activityTracker } from '../../lib/activityTracker'
 import CollegeCard from '../../components/platform/CollegeCard'
@@ -8,6 +8,7 @@ import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
 export default function StudentDashboard() {
+  const location = useLocation()
   const [student, setStudent] = useState(null)
   const [recentlyViewedIds, setRecentlyViewedIds] = useState([])
   const [saved, setSaved] = useState([])
@@ -31,6 +32,11 @@ export default function StudentDashboard() {
       window.removeEventListener('storage', handle)
     }
   }, [])
+
+  useEffect(() => {
+    if (!student || location.hash !== '#recommended-colleges') return
+    document.getElementById('recommended-colleges')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
+  }, [student, colleges.length, location.hash])
 
   const recommended = useMemo(() => {
     if (!student) return []
@@ -204,7 +210,7 @@ export default function StudentDashboard() {
 
         <div className="mt-10 grid lg:grid-cols-[1.6fr_1fr] gap-8">
           <div className="space-y-10">
-            <div>
+            <div id="recommended-colleges" className="scroll-mt-24">
               <div className="flex items-center justify-between">
                 <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={20} className="text-[#FAB95B]" /> {t('recommendedForYou')} - {student.preferredDistrict} Colleges First</h2>
                 <Link to="/search" className="text-[12px] font-bold text-[#547792] hover:text-[#1A3263]">{t('viewAll')}</Link>

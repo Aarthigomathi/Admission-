@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Student discovery starts with curated Tamil Nadu profiles while keeping
 // registered-college counts separate for admin approval workflows.
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import React, { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { MemoryRouter } from 'react-router-dom'
@@ -12,9 +12,14 @@ import { getDiscoveryColleges, getPublicColleges } from '../lib/collegeStorage.j
 
 let container
 let root
+let scrollIntoView
+let originalScrollIntoView
 
 beforeEach(() => {
   localStorage.clear()
+  originalScrollIntoView = Element.prototype.scrollIntoView
+  scrollIntoView = vi.fn()
+  Object.defineProperty(Element.prototype, 'scrollIntoView', { configurable: true, value: scrollIntoView })
   container = document.createElement('div')
   document.body.appendChild(container)
   root = createRoot(container)
@@ -24,9 +29,14 @@ beforeEach(() => {
 afterEach(() => {
   if (root) act(() => root.unmount())
   container?.remove()
+  if (originalScrollIntoView) {
+    Object.defineProperty(Element.prototype, 'scrollIntoView', { configurable: true, value: originalScrollIntoView })
+  } else {
+    delete Element.prototype.scrollIntoView
+  }
 })
 
-async function renderDashboard() {
+async function renderDashboard(initialPath = '/student/dashboard') {
   localStorage.setItem('tn_current_student', JSON.stringify({
     id: 'test-student',
     fullName: 'Test Student',
@@ -45,7 +55,7 @@ async function renderDashboard() {
 
   await act(async () => {
     root.render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[initialPath]}>
         <LanguageProvider>
           <StudentDashboard />
         </LanguageProvider>
@@ -104,5 +114,13 @@ describe('student college discovery', () => {
     const activityCards = [...container.querySelectorAll('.student-activity-card')]
     expect(activityCards).toHaveLength(4)
     expect(activityCards.every(card => card.querySelector('img')?.getAttribute('src'))).toBe(true)
+  })
+
+  it('scrolls straight to matching colleges after signup', async () => {
+    await renderDashboard('/student/dashboard#recommended-colleges')
+
+    expect(container.querySelector('#recommended-colleges')).toBeTruthy()
+    expect(container.textContent).toContain('Recommended for You')
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' })
   })
 })
