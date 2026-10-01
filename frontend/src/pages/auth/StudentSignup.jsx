@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles, Eye, Trash2, RefreshCw, Loader2, Image as ImageIcon, AlertTriangle } from 'lucide-react'
-import { getDiscoveryColleges } from '../../lib/collegeStorage'
+import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles, Eye, Trash2, RefreshCw, Loader2, Image as ImageIcon, AlertTriangle } from 'lucide-react'
 import {
   ACCEPTED_MIME, STUDENT_DOCUMENTS, prepareDocument, formatFileSize,
   hasFile, isPdfDoc, saveStudentDocumentsWithFallback, syncStudentDocumentCounters
@@ -216,30 +215,6 @@ export default function StudentSignup() {
     setFormData(newData)
   }
 
-  const topCollegesByPercentage = useMemo(() => {
-    const perc = parseFloat(formData.percentage) || 0
-    let filtered = getDiscoveryColleges()
-    if (filtered.length===0) return []
-    filtered = [...filtered].sort((a, b) => {
-      const placeA = parseInt(a.placements?.percentage || 0)
-      const placeB = parseInt(b.placements?.percentage || 0)
-      if (placeB !== placeA) return placeB - placeA
-      return (b.established||0) - (a.established||0)
-    })
-    if (perc >= 90) {
-      return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Excellent Match - 90%+ Eligible for Top Colleges', matchPercent: 95, reason: `Your ${perc}% is outstanding - You are eligible for ${c.shortName} top rated college with ${c.placements.percentage} placement` }))
-    } else if (perc >= 80) {
-      return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Very Good Match - 80%+ Eligible', matchPercent: 85, reason: `Your ${perc}% is very good - ${c.shortName} recommends ${formData.interestedCourse} with ${c.placements.percentage} placement` }))
-    } else if (perc >= 70) {
-      return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Good Match - 70%+ Eligible', matchPercent: 75, reason: `Your ${perc}% is good - ${c.shortName} has courses for your percentage - ${c.placements.percentage} placement` }))
-    } else if (perc >= 60) {
-      return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Eligible - 60%+ Colleges', matchPercent: 65, reason: `Your ${perc}% - You can apply to ${c.shortName} - ${c.placements.percentage} placement, scholarship available` }))
-    } else if (perc > 0) {
-      return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Eligible - Apply with counselling', matchPercent: 55, reason: `Your ${perc}% - Don't worry, ${c.shortName} has options - Contact admission` }))
-    }
-    return filtered.slice(0, 4).map(c => ({ ...c, eligibilityMatch: 'Top Rated Colleges in Tamil Nadu', matchPercent: 80, reason: `${c.shortName} - ${c.placements.percentage} placement - ${c.accreditation}` }))
-  }, [formData.percentage, formData.interestedCourse])
-
   /* ---- Tamil Nadu education helpers (step 3) ---- */
   const schoolLevel = isSchoolLevel(formData.educationLevel)
   const qualificationOptions = useMemo(
@@ -296,7 +271,7 @@ export default function StudentSignup() {
     { id: 1, title: language==='ta' ? 'அடிப்படை விவரங்கள் & கனவு பாடம்' : 'Basic Details & Dream Course', icon: Heart, desc: language==='ta' ? 'பெயர், மின்னஞ்சல், கைபேசி, மாவட்டம், நகரம், கனவு பாடம்' : 'Name, Email, Mobile, District, City, Dream Course' },
     { id: 2, title: language==='ta' ? 'தனிப்பட்ட & குடும்ப விவரங்கள்' : 'Personal & Family Details', icon: Users, desc: 'DOB, Gender, Parents, Aadhar, Address' },
     { id: 3, title: language==='ta' ? 'கல்வி & ஆவணங்கள்' : 'Education & Documents', icon: FileText, desc: 'Marks, percentage and original documents' },
-    { id: 4, title: language==='ta' ? 'விருப்பங்கள் & சிறந்த கல்லூரிகள்' : 'Preferences & Top Colleges', icon: Trophy, desc: 'Your % ku etha top colleges' },
+    { id: 4, title: language==='ta' ? 'கல்லூரி விருப்பங்கள்' : 'College Preferences', icon: GraduationCap, desc: language==='ta' ? 'மாவட்டம், கல்லூரி வகை, பட்ஜெட்' : 'Choose district, college type and budget' },
     { id: 5, title: language==='ta' ? 'சரிபார்ப்பு & சமர்ப்பி' : 'Review & Submit', icon: BadgeCheck, desc: 'Verify all info and create account' }
   ]
 
@@ -315,7 +290,7 @@ export default function StudentSignup() {
 
           <div className="mt-10">
             <h1 className="font-display text-[28px] font-bold leading-[0.95]">{language==='ta' ? 'உங்கள் கனவு பாடத்திற்கு ஏற்ற கல்லூரி.' : 'The right college for your dream course.'}</h1>
-            <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">{language==='ta' ? '5 வழிகாட்டப்பட்ட படிகளில் பதிவு செய்யுங்கள். உங்கள் நகரத்திற்கு கீழேயே என்ன படிக்க விரும்புகிறீர்கள் என்று கேட்கிறோம் - அதன்படி கல்லூரிகள் பொருத்தப்படும்.' : 'Sign up in five guided steps. We ask what you want to study right below your city, so every college you see is matched to your goal.'}</p>
+            <p className="mt-4 text-[13px] leading-[1.6] text-[#E8E2DB]/70">{language==='ta' ? 'ஐந்து எளிய படிகளில் பதிவு செய்யுங்கள். கணக்கை உருவாக்கியதும், உங்கள் கனவு பாடத்திற்கும் விருப்பங்களுக்கும் பொருந்தும் கல்லூரிகளைப் பாருங்கள்.' : 'Sign up in five guided steps. After you create your account, you’ll see colleges matched to your dream course and preferences.'}</p>
           </div>
 
           <div className="mt-8 space-y-3">
@@ -336,12 +311,7 @@ export default function StudentSignup() {
             <div className="mt-6 rounded-[16px] bg-[#FAB95B] text-[#1A3263] p-4">
               <div className="flex items-center gap-2 font-bold text-[13px]"><Calculator size={16} /> Auto Percentage: {formData.percentage}%</div>
               <div className="text-[11px] mt-1">{formData.grade} - {formData.marksObtained}/{formData.totalMarks}</div>
-              <div className="text-[10px] mt-2 font-bold">Top Colleges for {formData.percentage}%:</div>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {topCollegesByPercentage.slice(0,3).map(c=>(
-                  <span key={c.id} className="px-2 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[9px] font-bold">{c.shortName} {c.placements.percentage}</span>
-                ))}
-              </div>
+              <div className="text-[10px] mt-2 font-bold">{language==='ta' ? 'கணக்கை உருவாக்கியதும் பொருத்தமான கல்லூரிகள் காட்டப்படும்.' : 'Matching colleges will appear after you create your account.'}</div>
             </div>
           )}
         </div>
@@ -453,8 +423,8 @@ export default function StudentSignup() {
                       <div className="text-[11.5px] leading-[1.55]">
                         <div className="text-[#1A3263]/80 mt-1.5">
                           {language==='ta'
-                            ? `${formData.city || 'உங்கள் நகரம்'}, ${formData.district} - ${formData.interestedCourse} படிக்க விரும்புகிறீர்கள். இதற்கு ஏற்ற கல்லூரிகள் அடுத்த படியில் காட்டப்படும்.`
-                            : `Based in ${formData.city || 'your city'}, ${formData.district}, aiming for ${formData.interestedCourse}. Matching colleges will be shown in the next steps.`}
+                            ? `${formData.city || 'உங்கள் நகரம்'}, ${formData.district} - ${formData.interestedCourse} படிக்க விரும்புகிறீர்கள். கணக்கை உருவாக்கியதும், இதற்கு ஏற்ற கல்லூரிகள் காட்டப்படும்.`
+                            : `Based in ${formData.city || 'your city'}, ${formData.district}, aiming for ${formData.interestedCourse}. Matching colleges will be shown after account creation.`}
                         </div>
                       </div>
                     </div>
@@ -777,7 +747,7 @@ export default function StudentSignup() {
 
                 <div className="flex gap-3">
                   <button onClick={()=>setStep(2)} className="h-11 px-6 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-semibold text-[12px] flex items-center gap-2"><ArrowLeft size={16} /> Back</button>
-                  <button onClick={()=>setStep(4)} disabled={!formData.marksObtained || !formData.totalMarks} className="flex-1 h-11 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center justify-center gap-2 disabled:opacity-50">Continue - Top Colleges for {formData.percentage || 'Your'}% <Trophy size={16} /></button>
+                  <button onClick={()=>setStep(4)} disabled={!formData.marksObtained || !formData.totalMarks} className="flex-1 h-11 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center justify-center gap-2 disabled:opacity-50">{language==='ta' ? 'தொடர்க - கல்லூரி விருப்பங்கள்' : 'Continue - College Preferences'} <ArrowRight size={16} /></button>
                 </div>
               </div>
             )}
@@ -785,7 +755,7 @@ export default function StudentSignup() {
             {step===4 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Trophy size={20} className="text-[#547792]" /> {language==='ta' ? `உங்கள் ${formData.percentage}% க்கான விருப்பங்கள் & சிறந்த கல்லூரிகள்` : `Preferences & Top Colleges for Your ${formData.percentage}%`}</h2>
+                  <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><GraduationCap size={20} className="text-[#547792]" /> {language==='ta' ? 'உங்கள் கல்லூரி விருப்பங்கள்' : 'Your College Preferences'}</h2>
                 </div>
 
                 <div className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-6 shadow-sm space-y-5">
@@ -836,39 +806,13 @@ export default function StudentSignup() {
                   </div>
 
                   <div className="pt-4 border-t-2 border-[#E8E2DB]">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-2 font-bold text-[14px] text-[#1A3263]"><Star size={18} className="text-[#FAB95B]" /> {t('topRatedColleges')} {formData.percentage}% - {formData.interestedCourse}</div>
-                      <div className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{formData.percentage}% - {topCollegesByPercentage.length} Matched</div>
-                    </div>
-                    <p className="text-[10px] text-[#547792] mt-2">Starter listings are suggestions; please confirm current courses, admissions and fees with the college.</p>
-                    {topCollegesByPercentage.length===0 ? (
-                      <div className="mt-4 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-8 text-center">
-                        <div className="font-bold text-[#1A3263] mt-3">No matching college listings yet</div>
-                        <div className="text-[11px] text-[#1A3263]/80 mt-2">{language==='ta' ? 'உங்கள் விருப்பத்திற்கு பொருந்தும் கல்லூரிகள் இன்னும் இல்லை. மாவட்டம் அல்லது பாடத்தை மாற்றிப் பாருங்கள்.' : 'There are no matching college listings yet. Try a different district or course.'}</div>
-                        <div className="text-[11px] text-[#547792] mt-2">Your {formData.percentage}% and course preferences are used to rank the starter and college-managed listings.</div>
+                    <div className="rounded-[16px] bg-[#E8E2DB]/60 border-2 border-[#E8E2DB] p-4 flex items-start gap-3">
+                      <div className="h-10 w-10 shrink-0 rounded-[12px] bg-[#1A3263] text-[#FAB95B] grid place-items-center"><GraduationCap size={18} /></div>
+                      <div>
+                        <div className="font-bold text-[12px] text-[#1A3263]">{language==='ta' ? 'கல்லூரி பரிந்துரைகள் கணக்கு உருவாக்கிய பிறகு கிடைக்கும்' : 'Your matched colleges will appear after account creation'}</div>
+                        <p className="text-[11px] text-[#547792] mt-1 leading-[1.5]">{language==='ta' ? 'உங்கள் மதிப்பெண்கள், கனவு பாடம் மற்றும் மாவட்ட விருப்பத்தின் அடிப்படையில் கல்லூரிகள் பரிந்துரைக்கப்படும்.' : 'We’ll use your marks, dream course and preferred district to rank colleges once your account is created.'}</p>
                       </div>
-                    ) : (
-                    <div className="grid md:grid-cols-2 gap-3 mt-4">
-                      {topCollegesByPercentage.map(college=>(
-                        <div key={college.id} className="rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4 hover:border-[#FAB95B] transition-colors">
-                          <div className="flex gap-3">
-                            <img src={college.branding?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(college.name)}&background=1A3263&color=FAB95B`} alt={college.shortName} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" />
-                            <div className="flex-1">
-                              <div className="font-bold text-[#1A3263] text-[13px]">{college.name}</div>
-                              <div className="text-[10px] text-[#547792]">{college.district} • {college.type}</div>
-                              <div className="text-[9px] font-bold tracking-wide text-[#547792] mt-1">{college.isStarterListing ? 'STARTER LISTING' : 'COLLEGE-MANAGED LISTING'}</div>
-                              <div className="text-[10px] font-bold text-[#1A3263] mt-1">{college.placements?.percentage || '—'} {t('placement')}</div>
-                            </div>
-                            <div className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{college.matchPercent}% Match</div>
-                          </div>
-                          <div className="mt-3 rounded-[10px] bg-white border border-[#E8E2DB] p-2.5">
-                            <div className="text-[10px] font-bold text-[#1A3263]">{college.eligibilityMatch}</div>
-                            <div className="text-[10px] text-[#547792] mt-1">{college.reason}</div>
-                          </div>
-                        </div>
-                      ))}
                     </div>
-                    )}
                   </div>
                 </div>
 
