@@ -21,8 +21,8 @@ export const colleges = [
         surface: "#ffffff",
       },
       logo: "https://www.psgtech.edu/images/psgtech-logo.png",
-      heroImage: "https://www.psgtech.edu/images/slider/foundationday_2026.jpg",
-      coverImage: "https://www.psgtech.edu/images/slider/TheConfluence-2026.jpg",
+      heroImage: "https://library.psgtech.ac.in/images/gallery/Digital%20Learning%20Centre%201.jpg",
+      coverImage: "https://library.psgtech.ac.in/images/gallery/Digital%20Library%201.jpg",
     },
     location: {
       address: "Post Box No: 1611, Peelamedu, Avinashi Road, Coimbatore - 641004 (8km from Railway Station, 5km from Airport)",
@@ -119,7 +119,11 @@ export const colleges = [
       { id: 7, title: "International Day of Yoga Celebration - 21 June 2026", date: "2026-06-21", venue: "Campus", category: "Cultural", image: "https://www.psgtech.edu/images/yogaDay2026.jpg" },
     ],
     gallery: [
-      // 100% Real images from www.psgtech.edu - no AI, real-time
+      // Official PSG Tech library facilities followed by official campus events.
+      "https://library.psgtech.ac.in/images/gallery/Digital%20Learning%20Centre%201.jpg",
+      "https://library.psgtech.ac.in/images/gallery/Digital%20Library%201.jpg",
+      "https://library.psgtech.ac.in/images/gallery/Engineering%20Section%201.jpg",
+      "https://library.psgtech.ac.in/images/gallery/Back%20Volume%20Section%201.jpg",
       "https://www.psgtech.edu/images/slider/foundationday_2026.jpg",
       "https://www.psgtech.edu/images/slider/Orientation_2026.jpg",
       "https://www.psgtech.edu/images/slider/RC2026.jpg",
@@ -407,8 +411,8 @@ export const colleges = [
         accent: "#ffd700",
       },
       logo: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=200&h=200&fit=crop",
-      heroImage: "https://images.unsplash.com/photo-1498243793694-111165e63a46?w=1600&h=900&fit=crop",
-      coverImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&h=600&fit=crop",
+      heroImage: "https://cit.edu.in/uploads/about/1769085095_about.png",
+      coverImage: "https://cit.edu.in/uploads/home/1767949157_CITAuditorium1.png",
     },
     location: {
       address: "Civil Aerodrome Post, Coimbatore - 641014",
@@ -467,8 +471,8 @@ export const colleges = [
       { id: 1, title: "Tech Symposium 2026", date: "2026-04-10", venue: "CIT Campus", category: "Technical", image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=400&fit=crop" },
     ],
     gallery: [
-      "https://images.unsplash.com/photo-1498243793694-111165e63a46?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop",
+      "https://cit.edu.in/uploads/about/1769085095_about.png",
+      "https://cit.edu.in/uploads/home/1767949157_CITAuditorium1.png",
     ],
     contact: {
       phone: "+91 422 257 4071",
@@ -499,8 +503,8 @@ export const colleges = [
         accent: "#f0c040",
       },
       logo: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=200&h=200&fit=crop",
-      heroImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&h=900&fit=crop",
-      coverImage: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1600&h=600&fit=crop",
+      heroImage: "https://kct.ac.in/wp-content/uploads/2024/06/Home-banner.webp",
+      coverImage: "https://kct.ac.in/wp-content/uploads/2024/06/Home-banner.webp",
     },
     location: {
       address: "Athipalayam Road, Chinnavedampatti, Coimbatore - 641049",
@@ -559,8 +563,7 @@ export const colleges = [
       { id: 1, title: "Yugam 2026 - Cultural Fest", date: "2026-03-15", venue: "KCT Campus", category: "Cultural", image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=400&fit=crop" },
     ],
     gallery: [
-      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=600&fit=crop",
+      "https://kct.ac.in/wp-content/uploads/2024/06/Home-banner.webp",
     ],
     contact: {
       phone: "+91 422 266 1100",
@@ -594,8 +597,8 @@ export const colleges = [
         accent: "#c9a86a",
       },
       logo: "https://images.unsplash.com/photo-1498243793694-111165e63a46?w=200&h=200&fit=crop",
-      heroImage: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1600&h=900&fit=crop",
-      coverImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&h=600&fit=crop",
+      heroImage: "https://images.shiksha.com/mediadata/images/1706873706php1j6bCT_g.jpg",
+      coverImage: "https://images.shiksha.com/mediadata/images/1745482649phplli3uy_g.jpg",
     },
     location: {
       address: "Civil Aerodrome Post, Coimbatore - 641014",
@@ -647,7 +650,10 @@ export const colleges = [
       { id: 1, title: "Literary Fest 2026", date: "2026-03-18", venue: "Main Hall", category: "Cultural", image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=400&fit=crop" },
     ],
     gallery: [
-      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop",
+      "https://images.shiksha.com/mediadata/images/1706873706php1j6bCT_g.jpg",
+      "https://images.shiksha.com/mediadata/images/1745482649phplli3uy_g.jpg",
+      "https://images.shiksha.com/mediadata/images/1745482690phpk5YSxi_g.jpg",
+      "https://images.shiksha.com/mediadata/images/1549619834php6liFe9_g.jpg",
     ],
     contact: {
       phone: "+91 422 257 2177",
@@ -678,8 +684,8 @@ export const colleges = [
         accent: "#f59e0b",
       },
       logo: "https://images.unsplash.com/photo-1562774053-701939374585?w=200&h=200&fit=crop",
-      heroImage: "https://images.unsplash.com/photo-1498243793694-111165e63a46?w=1600&h=900&fit=crop",
-      coverImage: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1600&h=600&fit=crop",
+      heroImage: "https://skasc.ac.in/wp-content/uploads/2024/10/Academic-Blocks.jpg",
+      coverImage: "https://skasc.ac.in/wp-content/uploads/2024/10/placement-banner.jpg",
     },
     location: {
       address: "Sugunapuram, Kuniamuthur, Coimbatore - 641008",
@@ -723,7 +729,10 @@ export const colleges = [
     placements: { highest: "₹22 LPA", average: "₹5.2 LPA", recruiters: ["Amazon", "TCS", "Accenture"], percentage: 90 },
     announcements: [{ id: 1, title: "Admission 2026 Open for BCA/BBA", date: "2026-02-28", category: "Admission", urgent: true }],
     events: [],
-    gallery: ["https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop"],
+    gallery: [
+      "https://skasc.ac.in/wp-content/uploads/2024/10/Academic-Blocks.jpg",
+      "https://skasc.ac.in/wp-content/uploads/2024/10/placement-banner.jpg",
+    ],
     contact: { phone: "+91 422 267 8400", email: "info@skasc.ac.in", admissions: "+91 422 267 8401", address: "Kuniamuthur, Coimbatore" },
     social: { website: "https://skasc.ac.in", linkedin: "#", instagram: "#", youtube: "#" },
     customSections: []
@@ -748,8 +757,8 @@ export const colleges = [
         accent: "#06b6d4",
       },
       logo: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=200&h=200&fit=crop",
-      heroImage: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1600&h=900&fit=crop",
-      coverImage: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=1600&h=600&fit=crop",
+      heroImage: "https://cmccbe.ac.in/wp-content/uploads/2025/06/Screenshot-2025-06-07-234807.png",
+      coverImage: "https://cmccbe.ac.in/wp-content/uploads/2025/06/Screenshot-2025-06-07-234807.png",
     },
     location: {
       address: "Avinashi Road, Peelamedu, Coimbatore - 641014",
@@ -794,7 +803,9 @@ export const colleges = [
     placements: { highest: "-", average: "-", recruiters: ["Govt Hospitals", "Private Hospitals"], percentage: 100 },
     announcements: [{ id: 1, title: "NEET PG Counselling 2026", date: "2026-03-12", category: "Admission" }],
     events: [],
-    gallery: ["https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&h=600&fit=crop"],
+    gallery: [
+      "https://cmccbe.ac.in/wp-content/uploads/2025/06/Screenshot-2025-06-07-234807.png",
+    ],
     contact: { phone: "+91 422 257 4375", email: "deancmc@tn.gov.in", admissions: "+91 422 257 4376", address: "Avinashi Road, Coimbatore" },
     social: { website: "https://cmc.co.in", linkedin: "#", instagram: "#", youtube: "#" },
     customSections: []

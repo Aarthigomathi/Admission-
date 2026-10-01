@@ -61,6 +61,31 @@ export default function StudentDashboard() {
     }).filter(Boolean)
   }, [saved, colleges])
 
+  const comparedColleges = useMemo(() => {
+    return compare.map(item => {
+      const id = typeof item === 'object' && item !== null ? item.id : item
+      return colleges.find(c => String(c.id) === String(id))
+    }).filter(Boolean)
+  }, [compare, colleges])
+
+  const enquiries = useMemo(() => {
+    try {
+      const records = JSON.parse(localStorage.getItem('tn_enquiries') || '[]')
+      return Array.isArray(records) ? records : []
+    } catch {
+      return []
+    }
+  }, [])
+
+  const enquiryCollege = useMemo(() => {
+    const latestEnquiry = enquiries[0]
+    if (!latestEnquiry) return null
+    const collegeId = latestEnquiry.college_id ?? latestEnquiry.collegeId
+    const collegeName = latestEnquiry.college_name ?? latestEnquiry.collegeName
+    return colleges.find(c => String(c.id) === String(collegeId))
+      || colleges.find(c => c.name === collegeName)
+  }, [enquiries, colleges])
+
   const docsCount = useMemo(() => {
     if (!student) return 0
     return student.documentsUploaded || Object.values(student.documentNames || {}).filter(Boolean).length || 0
@@ -155,14 +180,20 @@ export default function StudentDashboard() {
       <div className="mx-auto max-w-[1400px] px-6 lg:px-8 py-8">
         <div className="grid md:grid-cols-4 gap-4">
           {[
-            { label: t('recentlyViewed'), value: recentlyViewedIds.length, icon: Clock, sub: t('recentlyViewedDesc') },
-            { label: t('savedColleges'), value: saved.length, icon: Bookmark, sub: t('savedCollegesDesc') },
-            { label: t('compareList'), value: compare.length, icon: GitCompare, sub: t('compareListDesc') },
-            { label: t('myEnquiries'), value: JSON.parse(localStorage.getItem('tn_enquiries') || '[]').length, icon: MessageCircle, sub: t('myEnquiriesDesc') },
+            { label: t('recentlyViewed'), value: recentlyViewedIds.length, icon: Clock, sub: t('recentlyViewedDesc'), image: recentlyViewedColleges[0]?.branding?.heroImage || colleges[0]?.branding?.heroImage },
+            { label: t('savedColleges'), value: saved.length, icon: Bookmark, sub: t('savedCollegesDesc'), image: savedColleges[0]?.branding?.heroImage || colleges[1]?.branding?.heroImage },
+            { label: t('compareList'), value: compare.length, icon: GitCompare, sub: t('compareListDesc'), image: comparedColleges[0]?.branding?.heroImage || colleges[2]?.branding?.heroImage },
+            { label: t('myEnquiries'), value: enquiries.length, icon: MessageCircle, sub: t('myEnquiriesDesc'), image: enquiryCollege?.branding?.heroImage || colleges[3]?.branding?.heroImage },
           ].map((stat,i)=>(
-            <div key={i} className="rounded-[20px] bg-white border-2 border-[#E8E2DB] p-5 flex gap-4">
-              <div className="h-11 w-11 rounded-[12px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center text-[#1A3263]"><stat.icon size={20} /></div>
-              <div>
+            <div key={i} className="student-activity-card relative overflow-hidden rounded-[20px] bg-white border-2 border-[#E8E2DB] p-5 flex gap-4" role="group" aria-label={stat.label}>
+              {stat.image && (
+                <div className="pointer-events-none absolute inset-y-0 right-0 w-28 overflow-hidden rounded-r-[18px]">
+                  <img src={stat.image} className="h-full w-full object-cover opacity-40" alt="" aria-hidden="true" loading="lazy" onError={event => { event.currentTarget.style.visibility = 'hidden' }} />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 to-white/10" />
+                </div>
+              )}
+              <div className="relative z-10 h-11 w-11 shrink-0 rounded-[12px] bg-[#E8E2DB] border-2 border-[#FAB95B]/30 grid place-items-center text-[#1A3263]"><stat.icon size={20} /></div>
+              <div className="relative z-10 min-w-0">
                 <div className="font-display text-[24px] font-bold text-[#1A3263]">{stat.value}</div>
                 <div className="text-[11px] font-bold uppercase text-[#547792]">{stat.label}</div>
                 <div className="text-[11px] text-[#547792]/70">{stat.sub}</div>

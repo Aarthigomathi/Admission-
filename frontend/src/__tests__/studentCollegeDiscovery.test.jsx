@@ -100,5 +100,9 @@ describe('student college discovery', () => {
     expect(text).toContain('Kumaraguru College of Technology')
     expect(text).toContain('STARTER LISTING')
     expect(text).not.toContain('No Colleges Yet')
+
+    const activityCards = [...container.querySelectorAll('.student-activity-card')]
+    expect(activityCards).toHaveLength(4)
+    expect(activityCards.every(card => card.querySelector('img')?.getAttribute('src'))).toBe(true)
   })
 })
