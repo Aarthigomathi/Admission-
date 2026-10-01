@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles, Eye, Trash2, RefreshCw, Loader2, Image as ImageIcon, AlertTriangle } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Heart, Calendar, Users, FileText, Upload, BadgeCheck, IdCard, Calculator, Eye, Trash2, RefreshCw, Loader2, Image as ImageIcon, AlertTriangle } from 'lucide-react'
 import {
   ACCEPTED_MIME, STUDENT_DOCUMENTS, prepareDocument, formatFileSize,
   hasFile, isPdfDoc, saveStudentDocumentsWithFallback, syncStudentDocumentCounters
@@ -150,7 +150,8 @@ export default function StudentSignup() {
 
   useEffect(() => {
     const result = saveStudentSignupDraft({ step, formData })
-    setDraftStatus(result.ok ? 'saved' : 'error')
+    const nextStatus = result.ok ? 'saved' : 'error'
+    queueMicrotask(() => setDraftStatus(nextStatus))
   }, [formData, step])
 
   useEffect(() => {
