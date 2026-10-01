@@ -135,6 +135,15 @@ const clickButton = async text => {
   await act(async () => button.click())
 }
 
+const waitForDraftFile = async key => {
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const files = await loadStudentSignupDraftFiles()
+    if (files[key]) return
+    await new Promise(resolve => setTimeout(resolve, 10))
+  }
+  throw new Error(`Timed out waiting for saved draft document: ${key}`)
+}
+
 beforeEach(() => {
   localStorage.clear()
   container = document.createElement('div')
@@ -168,7 +177,7 @@ describe('student signup draft persistence', () => {
     Object.defineProperty(upload, 'files', { configurable: true, value: [pdf] })
     await act(async () => {
       upload.dispatchEvent(new Event('change', { bubbles: true }))
-      await new Promise(resolve => setTimeout(resolve, 0))
+      await waitForDraftFile('tenthMarksheet')
     })
 
     const draft = JSON.parse(localStorage.getItem('tn_student_signup_draft_v1'))
