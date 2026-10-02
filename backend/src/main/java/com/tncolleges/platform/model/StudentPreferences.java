@@ -30,6 +30,6 @@ public class StudentPreferences {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum CollegeType {
-        GOVERNMENT, PRIVATE, AUTONOMOUS, ANY
+        GOVERNMENT, GOVERNMENT_AIDED, PRIVATE, AUTONOMOUS, ANY
     }
 }

@@ -27,7 +27,10 @@ public class Event {
     private String registrationLink;
     private String contactInfo;
     private String category; // TECHNICAL, CULTURAL, SPORTS, WORKSHOP, SEMINAR, HACKATHON, CONFERENCE, ALUMNI, ADMISSION, WEBINAR
+    @Builder.Default
     private boolean featured = false;
+    @Builder.Default
     private boolean active = true;
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

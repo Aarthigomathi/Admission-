@@ -20,7 +20,8 @@ public class Notification {
     private String type; // ENQUIRY, VERIFICATION, SYSTEM
 
     @Builder.Default
-    private Boolean isRead = false;
+    @Column(name = "is_read", nullable = false)
+    private boolean read = false;
 
     @Column(name = "college_id")
     private Long collegeId; // Optional - related college

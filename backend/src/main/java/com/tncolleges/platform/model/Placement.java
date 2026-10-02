@@ -14,6 +14,7 @@ public class Placement {
     @Column(name = "college_id", nullable = false)
     private Long collegeId;
 
+    @Column(name = "placement_year")
     private Integer year;
     private String companyName;
     private Integer studentsPlaced;

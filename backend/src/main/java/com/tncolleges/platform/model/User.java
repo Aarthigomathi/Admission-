@@ -14,6 +14,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(unique = true)
+    private String username;
+
     @Column(nullable = false)
     private String password;
 
@@ -27,7 +30,9 @@ public class User {
     // Multi-tenant: college_id for COLLEGE_ADMIN, COLLEGE_EDITOR
     private Long collegeId;
 
+    @Builder.Default
     private boolean enabled = true;
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime lastLogin;
 

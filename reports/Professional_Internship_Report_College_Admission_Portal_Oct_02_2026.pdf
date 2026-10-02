@@ -1,0 +1,385 @@
+%PDF-1.4
+%����
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R] /Count 8 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 1259 >>
+stream
+q 0.055 0.170 0.290 rg 0 0 595 842 re f Q
+q 0.880 0.380 0.040 rg 0 0 595 12 re f Q
+q 0.880 0.380 0.040 rg 50 572 82 5 re f Q
+BT /F2 11 Tf 0.930 0.960 0.980 rg 1 0 0 1 50.00 735.00 Tm (PROFESSIONAL INTERNSHIP) Tj ET
+BT /F2 12 Tf 0.930 0.960 0.980 rg 1 0 0 1 50.00 682.00 Tm (PROJECT REPORT) Tj ET
+BT /F2 31 Tf 1.000 1.000 1.000 rg 1 0 0 1 50.00 620.00 Tm (College Admission) Tj ET
+BT /F2 31 Tf 1.000 1.000 1.000 rg 1 0 0 1 50.00 578.00 Tm (Portal) Tj ET
+BT /F1 13 Tf 0.840 0.890 0.930 rg 1 0 0 1 50.00 520.00 Tm (Backend implementation and progress to date) Tj ET
+q 0.350 0.480 0.590 RG 1 w 50 485 m 545 485 l S Q
+BT /F1 9 Tf 0.720 0.800 0.860 rg 1 0 0 1 50.00 443.00 Tm (Prepared by) Tj ET
+BT /F2 14 Tf 1.000 1.000 1.000 rg 1 0 0 1 50.00 422.00 Tm (Muniyasamy S) Tj ET
+BT /F1 9 Tf 0.720 0.800 0.860 rg 1 0 0 1 50.00 374.00 Tm (Report date) Tj ET
+BT /F2 14 Tf 1.000 1.000 1.000 rg 1 0 0 1 50.00 353.00 Tm (October 2, 2026) Tj ET
+BT /F1 9 Tf 0.770 0.840 0.890 rg 1 0 0 1 50.00 90.00 Tm (Progress report: completed backend work and remaining backend tasks) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 50.00 28.00 Tm (College Admission Portal | Professional Internship Progress Report) Tj ET
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 525.00 28.00 Tm (1) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 4279 >>
+stream
+q 1.000 1.000 1.000 rg 0 0 595 842 re f Q
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 813.00 Tm (COLLEGE ADMISSION PORTAL) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 398.00 813.00 Tm (INTERNSHIP PROGRESS REPORT) Tj ET
+q 0.910 0.940 0.960 RG 0.8 w 50 798 m 545 798 l S Q
+BT /F2 17 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 771.00 Tm (Report overview) Tj ET
+q 0.880 0.910 0.930 RG 0.7 w 50 761 m 545 761 l S Q
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 742.00 Tm (This report records the college admission portal work implemented to date, with emphasis on) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 729.00 Tm (backend services and college-managed content. It separates implemented scope from tasks that) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 716.00 Tm (remain pending and does not claim that unverified tests have passed.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 695.00 Tm (Executive summary) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 677.00 Tm (The project is a college discovery and admission-support platform with a Spring Boot REST) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 664.00 Tm (backend. Work completed so far includes college registration and verification controls, student) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 651.00 Tm (account and profile services, college discovery and recommendations, consent-based enquiries,) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 638.00 Tm (college content management, media uploads, and role-scoped analytics. College content pages are) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 625.00 Tm (stored per college, edited as drafts, and exposed publicly only after publication and college) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 612.00 Tm (verification where applicable.) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 591.00 Tm (Recent CMS work expanded structured pages for departments, AICTE IDEA Lab, Research, IQAC, and) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 578.00 Tm (the requested Campus Life pages: Campus Clubs, Professional Societies, Campus Celebrations,) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 565.00 Tm (Campus Events, and Gallery. The public frontend is outside this backend implementation scope and) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 552.00 Tm (is being handled separately.) Tj ET
+q 0.910 0.940 0.960 rg 50 465 495 74 re f Q
+q 0.880 0.380 0.040 rg 50 465 4 74 re f Q
+BT /F2 9.5 Tf 0.100 0.280 0.450 rg 1 0 0 1 64.00 517.00 Tm (Current implementation status) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 500.00 Tm (Backend capabilities and API contracts are in place in the repository. Maven compilation) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 488.00 Tm (and automated tests remain unverified because the Maven Wrapper could not download its) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 476.00 Tm (Maven distribution.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 447.00 Tm (Project objectives) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 429.00 Tm (- Provide a shared college discovery and admission-support API for students and participating) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 416.00 Tm (colleges.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 399.00 Tm (- Let each college maintain its own profile, courses, departments, media, and structured) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 386.00 Tm (public information.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 369.00 Tm (- Separate college draft content from published content and protect college data through) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 356.00 Tm (tenant-aware authorization.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 339.00 Tm (- Provide student recommendations and enquiry workflows while limiting access to sensitive) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 326.00 Tm (student activity.) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 50.00 28.00 Tm (College Admission Portal | Professional Internship Progress Report) Tj ET
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 525.00 28.00 Tm (2) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 10 0 R >>
+endobj
+10 0 obj
+<< /Length 4419 >>
+stream
+q 1.000 1.000 1.000 rg 0 0 595 842 re f Q
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 813.00 Tm (COLLEGE ADMISSION PORTAL) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 398.00 813.00 Tm (INTERNSHIP PROGRESS REPORT) Tj ET
+q 0.910 0.940 0.960 RG 0.8 w 50 798 m 545 798 l S Q
+BT /F2 17 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 771.00 Tm (1. Project scope and backend design) Tj ET
+q 0.880 0.910 0.930 RG 0.7 w 50 761 m 545 761 l S Q
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 742.00 Tm (The backend is implemented as a Java 17+ Spring Boot application. REST controllers expose) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 729.00 Tm (workflows to the independently developed client applications. Spring Data repositories persist) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 716.00 Tm (relational records, while the college_content store holds configurable college-specific page) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 703.00 Tm (data as structured JSON. Local development and integration tests are configured around H2; the) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 690.00 Tm (production database is intended to be externally configured.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 669.00 Tm (Core design principles) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 651.00 Tm (- College isolation: college administrators can manage only the college associated with their) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 638.00 Tm (authenticated account.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 621.00 Tm (- Verification before public listing: newly registered colleges begin pending and are not) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 608.00 Tm (exposed in public college discovery until verified and active.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 591.00 Tm (- Draft and publish workflow: editorial content can be saved privately and published) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 578.00 Tm (separately.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 561.00 Tm (- Public filtering: public retrieval excludes unpublished page content and inactive or) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 548.00 Tm (unverified colleges.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 531.00 Tm (- Image ownership: media is uploaded through the college-scoped media API; Campus Life pages) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 518.00 Tm (reject media references owned by another college.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 501.00 Tm (- Privacy by role: college-facing activity is aggregate-only; identifiable student-to-college) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 488.00 Tm (visit details are restricted to platform administrators.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 471.00 Tm (Main backend areas) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 453.00 Tm (- Authentication and authorization: account login, JWT-backed authenticated requests, college) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 440.00 Tm (access checks, and role-aware admin endpoints.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 423.00 Tm (- College management: signup, verification status, profiles, branding, courses, and public) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 410.00 Tm (college listing/search.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 393.00 Tm (- Student services: student profile and education data, preferences, saved/comparison) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 380.00 Tm (workflows, recommendations, and enquiries.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 363.00 Tm (- College CMS: About/Profile, departments, AICTE IDEA Lab, Research, IQAC, and Campus Life) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 350.00 Tm (content.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 333.00 Tm (- Media and reporting: image upload/serving, platform analytics, notifications, and generated) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 320.00 Tm (report snapshots.) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 50.00 28.00 Tm (College Admission Portal | Professional Internship Progress Report) Tj ET
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 525.00 28.00 Tm (3) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 12 0 R >>
+endobj
+12 0 obj
+<< /Length 4037 >>
+stream
+q 1.000 1.000 1.000 rg 0 0 595 842 re f Q
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 813.00 Tm (COLLEGE ADMISSION PORTAL) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 398.00 813.00 Tm (INTERNSHIP PROGRESS REPORT) Tj ET
+q 0.910 0.940 0.960 RG 0.8 w 50 798 m 545 798 l S Q
+BT /F2 17 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 771.00 Tm (2. Implemented college and student workflows) Tj ET
+q 0.880 0.910 0.930 RG 0.7 w 50 761 m 545 761 l S Q
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 742.00 Tm (College onboarding and discovery) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 724.00 Tm (- College signup creates a registered college account with a college-admin login. New) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 711.00 Tm (registrations begin in PENDING verification state and are withheld from public lists.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 694.00 Tm (- College login supports the configured email/login identifiers; passwords are stored as) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 681.00 Tm (BCrypt hashes and are not returned in API responses.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 664.00 Tm (- Platform administrators can review and update college verification status. Public lists and) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 651.00 Tm (slug-based pages are restricted to active, registered, verified colleges.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 634.00 Tm (- Public college discovery supports listing, search/filtering, profile retrieval, and course) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 621.00 Tm (retrieval from the college-specific records/content.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 604.00 Tm (Student services and admission support) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 586.00 Tm (- Student registration/profile services support education and marks records and saved) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 573.00 Tm (preference data.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 556.00 Tm (- Recommendation services match marks/percentage, course, district, and college type;) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 543.00 Tm (configured course minimum-percentage cutoffs are applied where present.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 526.00 Tm (- Students can manage saved colleges/comparisons and access their own relevant student) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 513.00 Tm (activity through authenticated endpoints.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 496.00 Tm (- Admission enquiries require authenticated student context and explicit consent. College) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 483.00 Tm (access to contact information is limited to consented enquiries for the owning college.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 466.00 Tm (- Enquiry status changes and other supported workflows can issue account-scoped) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 453.00 Tm (notifications.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 436.00 Tm (Analytics and privacy) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 418.00 Tm (Activity reporting is separated by audience. College-facing analytics are aggregate-only. A) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 405.00 Tm (paginated student-to-college visit register, including identifiable visit details, is restricted) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 392.00 Tm (to platform administrators. Student activity endpoints use the authenticated account rather than) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 379.00 Tm (trusting a client-supplied student identifier.) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 50.00 28.00 Tm (College Admission Portal | Professional Internship Progress Report) Tj ET
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 525.00 28.00 Tm (4) Tj ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 14 0 R >>
+endobj
+14 0 obj
+<< /Length 4803 >>
+stream
+q 1.000 1.000 1.000 rg 0 0 595 842 re f Q
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 813.00 Tm (COLLEGE ADMISSION PORTAL) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 398.00 813.00 Tm (INTERNSHIP PROGRESS REPORT) Tj ET
+q 0.910 0.940 0.960 RG 0.8 w 50 798 m 545 798 l S Q
+BT /F2 17 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 771.00 Tm (3. College CMS and image management) Tj ET
+q 0.880 0.910 0.930 RG 0.7 w 50 761 m 545 761 l S Q
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 742.00 Tm (The content-management APIs use college-scoped records and draft/publication status. Public) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 729.00 Tm (clients receive only published sections/pages according to the college verification and) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 716.00 Tm (activation state.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 695.00 Tm (CMS sections implemented) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 677.00 Tm (- About/Profile: college profile, vision and mission, management profile, organizational) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 664.00 Tm (structure, centers of excellence, accreditations, programmes, and placements as structured) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 651.00 Tm (editable blocks.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 634.00 Tm (- Departments: independent department directory and pages covering overview, vision/mission,) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 621.00 Tm (courses, curriculum/regulations, labs, PEO/PO/PSO outcomes, HOD/faculty information,) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 608.00 Tm (classrooms, and teaching resources. Department removal also removes its matching page data.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 591.00 Tm (- AICTE IDEA Lab: lab overview, vision, mission/objective cards, grouped team profiles, and) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 578.00 Tm (equipment details with images/links.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 561.00 Tm (- Research: policy links, overview/year-breakdown tables, committees, yearly publication) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 548.00 Tm (data, seed funding, research projects, facilities, and paginated public tables.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 531.00 Tm (- IQAC: illustrated About section, function cards, member rows with public pagination,) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 518.00 Tm (AQAR/minutes documents, and year-labelled reports/resources.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 501.00 Tm (- Campus Life: configurable menu and page slugs; feature sections, clubs, professional) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 488.00 Tm (societies, celebration schedules, event showcases with metric cards, and galleries.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 471.00 Tm (College-owned image handling) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 453.00 Tm (College admins can upload JPEG, PNG, or WebP files up to 8 MB through POST) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 440.00 Tm (/api/colleges/{id}/media using multipart field file. The response supplies a URL such as) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 427.00 Tm (/api/media/123. Campus Life content supports these uploaded URLs for hero, feature, society,) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 414.00 Tm (event, celebration, and gallery imagery; the CMS checks that referenced uploaded media belongs) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 401.00 Tm (to the same college. Media list/delete and media serving endpoints are also available, with) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 388.00 Tm (public serving gated by college verification.) Tj ET
+q 0.910 0.940 0.960 rg 50 288 495 87 re f Q
+q 0.880 0.380 0.040 rg 50 288 4 87 re f Q
+BT /F2 9.5 Tf 0.100 0.280 0.450 rg 1 0 0 1 64.00 353.00 Tm (Campus Life admin/public API) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 336.00 Tm (Admin: GET/PUT /api/colleges/{id}/campus-life and PATCH) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 324.00 Tm (/api/colleges/{id}/campus-life/publication. Public: GET) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 312.00 Tm (/api/public/colleges/{slug}/campus-life and GET) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 300.00 Tm (/api/public/colleges/{slug}/campus-life/pages/{pageSlug}.) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 50.00 28.00 Tm (College Admission Portal | Professional Internship Progress Report) Tj ET
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 525.00 28.00 Tm (5) Tj ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 16 0 R >>
+endobj
+16 0 obj
+<< /Length 4703 >>
+stream
+q 1.000 1.000 1.000 rg 0 0 595 842 re f Q
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 813.00 Tm (COLLEGE ADMISSION PORTAL) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 398.00 813.00 Tm (INTERNSHIP PROGRESS REPORT) Tj ET
+q 0.910 0.940 0.960 RG 0.8 w 50 798 m 545 798 l S Q
+BT /F2 17 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 771.00 Tm (4. API workflow and publication lifecycle) Tj ET
+q 0.880 0.910 0.930 RG 0.7 w 50 761 m 545 761 l S Q
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 742.00 Tm (A typical college content lifecycle begins after signup. A college admin authenticates, uploads) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 729.00 Tm (any required images, saves the structured page as a draft, reviews it, then publishes it. Public) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 716.00 Tm (consumers query the slug-based public endpoints; unverified, inactive, unpublished, or inactive) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 703.00 Tm (page entries are not presented as published Campus Life content.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 682.00 Tm (Selected endpoint groups) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 664.00 Tm (- College signup/login: POST /api/colleges/signup; POST /api/auth/login.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 647.00 Tm (- Public college discovery: GET /api/colleges; GET /api/colleges/{slug}; GET) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 634.00 Tm (/api/colleges/{slug}/courses.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 617.00 Tm (- College content: GET/PUT /api/colleges/{id}/content/{section}; dedicated CMS routes are) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 604.00 Tm (used for structured pages with validation/publication.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 587.00 Tm (- Departments: /api/colleges/{id}/departments and /api/public/colleges/{slug}/departments/...) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 574.00 Tm (routes.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 557.00 Tm (- Image media: POST /api/colleges/{id}/media; GET /api/colleges/{id}/media/manage; GET) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 544.00 Tm (/api/media/{mediaId}.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 527.00 Tm (- Dedicated CMS pages: /idea-lab, /research-page, /iqac-page, and /campus-life under college) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 514.00 Tm (admin/public route families.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 497.00 Tm (- Admission workflow: recommendation preview, student recommendations, enquiries,) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 484.00 Tm (notifications, and authenticated student portal endpoints.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 467.00 Tm (Campus Life page content shape) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 449.00 Tm (A single college-scoped Campus Life configuration stores an ordered navigation menu and multiple) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 436.00 Tm (page objects. Each page can include a title, intro paragraphs, optional hero/quote banner, and) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 423.00 Tm (ordered sections. Image-bearing sections accept the college media URL returned by the upload) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 410.00 Tm (endpoint. The public route returns the published menu/page payload for frontend rendering; no) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 397.00 Tm (frontend rendering is claimed in this report.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 376.00 Tm (Data and access handling) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 358.00 Tm (College-specific page data is persisted under the college content section key campusLifePage.) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 345.00 Tm (Management controllers call the college access service before allowing reads/writes. Generic) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 332.00 Tm (public content endpoints return the published Campus Life content rather than drafts. The) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 319.00 Tm (detailed page endpoint resolves a page slug only within the published Campus Life record for the) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 306.00 Tm (requested college.) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 50.00 28.00 Tm (College Admission Portal | Professional Internship Progress Report) Tj ET
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 525.00 28.00 Tm (6) Tj ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 18 0 R >>
+endobj
+18 0 obj
+<< /Length 4214 >>
+stream
+q 1.000 1.000 1.000 rg 0 0 595 842 re f Q
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 813.00 Tm (COLLEGE ADMISSION PORTAL) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 398.00 813.00 Tm (INTERNSHIP PROGRESS REPORT) Tj ET
+q 0.910 0.940 0.960 RG 0.8 w 50 798 m 545 798 l S Q
+BT /F2 17 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 771.00 Tm (5. Security, validation, and quality controls) Tj ET
+q 0.880 0.910 0.930 RG 0.7 w 50 761 m 545 761 l S Q
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 742.00 Tm (- Passwords are hashed; JWT configuration expects an environment-provided secret rather than) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 729.00 Tm (a known production fallback.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 712.00 Tm (- College content writes require an authenticated user authorized for that college. Media) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 699.00 Tm (list/upload/delete operations are also college-scoped.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 682.00 Tm (- College signup and public disclosure are separate states; pending registrations do not) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 669.00 Tm (appear as verified public colleges.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 652.00 Tm (- Structured CMS payloads reject unsupported keys, bound text/list sizes, validate page slugs) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 639.00 Tm (and display order, and restrict external links to HTTP\(S\) where applicable.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 622.00 Tm (- Campus Life publication requires navigation/pages and suitable page copy; visual sections) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 609.00 Tm (require uploaded/external images, and uploaded media references must belong to the same) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 596.00 Tm (college.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 579.00 Tm (- Generic public college/content responses substitute published content for CMS sections and) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 566.00 Tm (do not expose drafts.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 549.00 Tm (- Student-to-college visit details are platform-admin-only; college accounts receive) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 536.00 Tm (aggregate analytics.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 519.00 Tm (Testing and verification status) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 501.00 Tm (The repository includes Spring Boot integration tests using an isolated in-memory H2 database.) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 488.00 Tm (Coverage in the project includes signup/default content, public verification filtering,) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 475.00 Tm (recommendations, consent-based enquiries, college-scoped CMS workflows, draft/publication) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 462.00 Tm (filtering, media handling, analytics privacy, and Campus Life page types including club/society) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 449.00 Tm (lists, celebration schedules, event metrics, and galleries.) Tj ET
+q 0.910 0.940 0.960 rg 50 349 495 87 re f Q
+q 0.880 0.380 0.040 rg 50 349 4 87 re f Q
+BT /F2 9.5 Tf 0.100 0.280 0.450 rg 1 0 0 1 64.00 414.00 Tm (Important verification note) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 397.00 Tm (The Maven Wrapper was invoked, but it could not download Apache Maven 3.9.16 from) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 385.00 Tm (repo.maven.apache.org. Therefore compilation and automated test results are not verified) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 373.00 Tm (in this report. A successful git diff --check was observed; it is not a substitute for) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 361.00 Tm (compilation or tests.) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 50.00 28.00 Tm (College Admission Portal | Professional Internship Progress Report) Tj ET
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 525.00 28.00 Tm (7) Tj ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 20 0 R >>
+endobj
+20 0 obj
+<< /Length 4446 >>
+stream
+q 1.000 1.000 1.000 rg 0 0 595 842 re f Q
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 813.00 Tm (COLLEGE ADMISSION PORTAL) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 398.00 813.00 Tm (INTERNSHIP PROGRESS REPORT) Tj ET
+q 0.910 0.940 0.960 RG 0.8 w 50 798 m 545 798 l S Q
+BT /F2 17 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 771.00 Tm (6. Backend work pending) Tj ET
+q 0.880 0.910 0.930 RG 0.7 w 50 761 m 545 761 l S Q
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 742.00 Tm (The following items remain before the backend can be treated as fully verified and) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 729.00 Tm (production-ready:) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 708.00 Tm (- Restore Maven distribution access or provide an installed Maven runtime, then run the) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 695.00 Tm (complete backend test suite and resolve any compilation or integration failures.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 678.00 Tm (- Run API-level verification with the actual frontend client for college signup,) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 665.00 Tm (authentication, CMS draft editing/publication, image upload, and public page retrieval.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 648.00 Tm (- Confirm the final Campus Life payload contract with the frontend developer, including) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 635.00 Tm (navigation ordering, page layouts, event metrics, and image field usage.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 618.00 Tm (- Complete production database configuration, schema migration strategy, backups, and) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 605.00 Tm (data-retention review.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 588.00 Tm (- Configure deployment-grade JWT secrets, CORS origins, HTTPS, request limits/rate limiting,) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 575.00 Tm (upload storage/backup policy, and operational monitoring.) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 58.00 558.00 Tm (- Perform a final security/privacy review of tenant authorization, media access, public) Tj ET
+BT /F1 9.3 Tf 0.160 0.190 0.220 rg 1 0 0 1 70.00 545.00 Tm (verification rules, and platform-admin-only identifiable activity reporting.) Tj ET
+BT /F2 11.5 Tf 0.055 0.170 0.290 rg 1 0 0 1 50.00 528.00 Tm (Work outside current backend scope) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 510.00 Tm (Frontend page construction and visual rendering are not included in this backend report; a) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 497.00 Tm (separate developer is responsible for the frontend. The backend exposes published CMS content) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 484.00 Tm (through documented REST endpoints for that client to render.) Tj ET
+BT /F2 17 Tf 0.100 0.280 0.450 rg 1 0 0 1 50.00 459.00 Tm (Conclusion) Tj ET
+q 0.880 0.910 0.930 RG 0.7 w 50 449 m 545 449 l S Q
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 430.00 Tm (The project has established the core backend foundation for a multi-college admission and) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 417.00 Tm (discovery portal and has implemented a broad set of student, college-admin, CMS, media, and) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 404.00 Tm (platform-admin capabilities. The latest Campus Life CMS supports the specific requested) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 391.00 Tm (college-managed pages and uploaded images without prefilled institution-specific content. The) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 378.00 Tm (next priority is to regain Maven availability, run the full test suite, and verify the API) Tj ET
+BT /F1 9.5 Tf 0.160 0.190 0.220 rg 1 0 0 1 50.00 365.00 Tm (contracts with the separately developed frontend before production deployment.) Tj ET
+q 0.910 0.940 0.960 rg 50 304 495 48 re f Q
+q 0.880 0.380 0.040 rg 50 304 4 48 re f Q
+BT /F2 9.5 Tf 0.100 0.280 0.450 rg 1 0 0 1 64.00 330.00 Tm (Report date) Tj ET
+BT /F1 8.7 Tf 0.190 0.230 0.260 rg 1 0 0 1 64.00 313.00 Tm (October 2, 2026) Tj ET
+BT /F1 7.5 Tf 0.340 0.390 0.430 rg 1 0 0 1 50.00 28.00 Tm (College Admission Portal | Professional Internship Progress Report) Tj ET
+BT /F2 8 Tf 0.100 0.280 0.450 rg 1 0 0 1 525.00 28.00 Tm (8) Tj ET
+endstream
+endobj
+21 0 obj
+<< /Title (Professional Internship Progress Report - College Admission Portal) /Author (Muniyasamy S) /Subject (Backend work completed and pending as of October 2, 2026) /Creator (OpenAI Arena Agent) >>
+endobj
+xref
+0 22
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000168 00000 n 
+0000000238 00000 n 
+0000000313 00000 n 
+0000000449 00000 n 
+0000001760 00000 n 
+0000001896 00000 n 
+0000006227 00000 n 
+0000006364 00000 n 
+0000010836 00000 n 
+0000010974 00000 n 
+0000015064 00000 n 
+0000015202 00000 n 
+0000020058 00000 n 
+0000020196 00000 n 
+0000024952 00000 n 
+0000025090 00000 n 
+0000029357 00000 n 
+0000029495 00000 n 
+0000033994 00000 n 
+trailer
+<< /Size 22 /Root 1 0 R /Info 21 0 R >>
+startxref
+34213
+%%EOF

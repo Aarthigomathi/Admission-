@@ -22,6 +22,8 @@ public class Student {
     private String email;
 
     private String mobile;
+    @Column(columnDefinition = "TEXT")
+    private String address;
     private String district;
     private String city;
 
