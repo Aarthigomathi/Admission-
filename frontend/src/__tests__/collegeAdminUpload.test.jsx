@@ -13,6 +13,7 @@ import { createRoot } from 'react-dom/client'
 import { MemoryRouter } from 'react-router-dom'
 import AdminDashboard from '../pages/admin/AdminDashboard.jsx'
 import { LanguageProvider } from '../lib/languageContext.jsx'
+import { readAdminDraft } from '../lib/adminDraft.js'
 
 const COLLEGE_ID = 999001
 const college = {
@@ -132,18 +133,19 @@ describe('college admin - branding uploads', () => {
     expect(storedCustom().branding.heroImage).toBe('https://testcollege.edu/banner.jpg')
   })
 
-  it('wires the Save Draft header button instead of leaving it dead', async () => {
+  it('saves the active unsaved form with Save as Draft and keeps Publish wired', async () => {
     await render(<AdminDashboard />)
-    // make at least one section exist in custom data
     await type(sectionSwitcher(), 'branding')
     await type(inputByPlaceholder('logo url'), 'https://testcollege.edu/logo.png')
+
+    await click(buttonWithText('Save as Draft'))
+    expect(readAdminDraft(COLLEGE_ID, 'branding')?.data?.logo).toBe('https://testcollege.edu/logo.png')
+    expect(localStorage.getItem(`tn_college_data_${COLLEGE_ID}`)).toBeNull()
+    expect(container.textContent).toContain('Draft saved in this browser')
+
+    // Publish remains separate: save the section for real, then publish its saved content.
     await click(buttonWithText('Save Logo & Images'))
     await act(async () => { await new Promise(r => setTimeout(r, 0)) })
-
-    await click(buttonWithText('Save Draft'))
-    await act(async () => { await new Promise(r => setTimeout(r, 0)) })
-    expect(alerts.some(a => a.startsWith('Draft saved'))).toBe(true)
-
     await click(buttonWithText('Publish'))
     await act(async () => { await new Promise(r => setTimeout(r, 0)) })
     expect(alerts.some(a => a.startsWith('Published'))).toBe(true)

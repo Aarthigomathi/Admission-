@@ -150,7 +150,7 @@ function toStored(f) {
   }
 }
 
-export default function AboutPagesAdmin({ collegeId, customData, setCustomData, fullCollege }) {
+export default function AboutPagesAdmin({ collegeId, customData, setCustomData, fullCollege, registerDraftSaver }) {
   const [rawF, setRawF] = useState(blankForm())
   const [draftReady, setDraftReady] = useState(false)
   const [draftStatus, setDraftStatus] = useState('')
@@ -195,6 +195,24 @@ export default function AboutPagesAdmin({ collegeId, customData, setCustomData, 
       persistDraft(false)
     }
   }, [collegeId, draftReady])
+
+  useEffect(() => {
+    if (!collegeId || !registerDraftSaver) return undefined
+    const saveDraftNow = () => {
+      const data = rawFRef.current
+      const snapshotKey = `${collegeId}:aboutPages:${JSON.stringify(data)}`
+      const ok = saveAdminDraft(collegeId, 'aboutPages', data)
+      if (ok) {
+        lastDraftRef.current = snapshotKey
+        setDraftStatus('Draft saved in this browser')
+      } else {
+        setDraftStatus('Draft could not be saved — browser storage may be full')
+      }
+      return ok
+    }
+    registerDraftSaver('aboutpages', saveDraftNow)
+    return () => registerDraftSaver('aboutpages', null)
+  }, [collegeId, registerDraftSaver])
 
   // The mutators below use block bodies, so they return undefined.
   // The updater has to return the mutated clone itself - returning the result

@@ -134,6 +134,20 @@ describe('college admin auto-save', () => {
     expect(container.textContent).toContain('Recovered an auto-saved draft')
   })
 
+  it('Save as Draft immediately saves the active About or Department child form', async () => {
+    await mount()
+    await type(switcher(), 'aboutpages')
+    await type(fieldWithLabel('input', 'Page heading'), 'Draft immediately')
+    await click(buttonWithText('Save as Draft'))
+    expect(readAdminDraft(COLLEGE_ID, 'aboutPages')?.data?.profile?.heading).toBe('Draft immediately')
+
+    await type(switcher(), 'deptpages')
+    await click(buttonWithText('Add Department'))
+    await type(inputByPlaceholder('e.g. Information Technology'), 'Draft Department')
+    await click(buttonWithText('Save as Draft'))
+    expect(readAdminDraft(COLLEGE_ID, 'deptPages_new')?.data?.deptForm?.name).toBe('Draft Department')
+  })
+
   it('auto-saves and restores the Add Department child form after reload/re-login', async () => {
     await mount()
     await type(switcher(), 'deptpages')

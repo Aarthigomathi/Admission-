@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, saveCollegeDataSafe, getProfileCompletion, findCollegeByLoginId } from '../../lib/collegeStorage'
 import { normalizeQuickLinks, QUICK_LINK_MAX } from '../../lib/quickLinks'
@@ -87,6 +87,11 @@ export default function AdminDashboard() {
  const activeSectionRef = useRef(activeSection)
  useEffect(() => { activeSectionRef.current = activeSection }, [activeSection])
  const lastDraftRef = useRef('')
+ const childDraftSaversRef = useRef({})
+ const registerChildDraftSaver = useCallback((section, saver) => {
+  if (saver) childDraftSaversRef.current[section] = saver
+  else delete childDraftSaversRef.current[section]
+ }, [])
 
  useEffect(() => {
   if (!isLoggedIn || !selectedCollegeId) return undefined
@@ -678,7 +683,38 @@ export default function AdminDashboard() {
   alert(`Branding saved successfully${!brandingForm.heroImage && heroImage ? ' - first campus image hero-a use aaguthu' : ''}`)
  }
 
- const handleSaveAll = async (publish = false) => {
+ const handleSaveDraft = () => {
+  if (!isLoggedIn || !selectedCollegeId) {
+   setDraftStatus('Log in to save your draft')
+   return false
+  }
+
+  const form = formsRef.current[activeSection]
+  if (form) {
+   let snapshot
+   try { snapshot = JSON.stringify(form) } catch { snapshot = '' }
+   const ok = saveAdminDraft(selectedCollegeId, activeSection, form)
+   if (ok) {
+    lastDraftRef.current = `${selectedCollegeId}:${activeSection}:${snapshot}`
+    setDraftStatus('Draft saved in this browser')
+    return true
+   }
+   setDraftStatus('Draft could not be saved — browser storage may be full')
+   return false
+  }
+
+  const saveChildDraft = childDraftSaversRef.current[activeSection]
+  if (saveChildDraft) {
+   const ok = saveChildDraft()
+   setDraftStatus(ok ? 'Draft saved in this browser' : 'Draft could not be saved — browser storage may be full')
+   return Boolean(ok)
+  }
+
+  setDraftStatus('No editable draft in this section')
+  return false
+ }
+
+ const handleSaveAll = async () => {
   if (!selectedCollegeId) return alert('College login first - pakkathula Login / college account select pannunga')
   const sections = Object.keys(customData || {}).filter(k => k !== 'updatedAt')
   if (sections.length === 0) return alert('Innum edhuvum save panna illa - section open panni adhoda Save button click pannunga')
@@ -687,9 +723,7 @@ export default function AdminDashboard() {
     const ok = await saveSafe(section, customData[section])
     if (ok) saved += 1
   }
-  alert(publish
-    ? `Published - ${saved} sections saved. Website la udane theriyum: /college/${college?.slug || ''}`
-    : `Draft saved - ${saved} sections safe-a irukku`)
+  alert(`Published - ${saved} sections saved. Website la udane theriyum: /college/${college?.slug || ''}`)
  }
 
  const handleHeroImageUpload = (e) => {
@@ -932,8 +966,11 @@ export default function AdminDashboard() {
         <CloudCheck size={13} /> {draftStatus}
        </span>
       )}
-      <button onClick={()=>handleSaveAll(false)} className="h-10 px-5 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] text-[12px] font-bold">Save Draft</button>
-      <button onClick={()=>handleSaveAll(true)} className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold flex items-center gap-2"><Save size={14} /> Publish</button>
+      <span className="hidden sm:inline-flex max-w-[180px] items-center gap-1.5 truncate rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[10px] font-bold text-emerald-700" title={draftStatus || 'Drafts are saved in this browser'}>
+       <CloudCheck size={13} className="shrink-0" /> <span className="truncate">{draftStatus || 'Auto-save on'}</span>
+      </span>
+      <button onClick={handleSaveDraft} className="h-10 px-4 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] text-[11px] font-bold whitespace-nowrap">Save as Draft</button>
+      <button onClick={handleSaveAll} className="h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] border-2 border-[#1A3263] text-[12px] font-bold flex items-center gap-2"><Save size={14} /> Publish</button>
      </div>
     </div>
 
@@ -1627,7 +1664,7 @@ export default function AdminDashboard() {
      )}
 
      {activeSection==='deptpages' && (
-       <DeptPagesAdmin collegeId={selectedCollegeId} customData={customData} setCustomData={setCustomData} fullCollege={currentCollege} />
+       <DeptPagesAdmin collegeId={selectedCollegeId} customData={customData} setCustomData={setCustomData} fullCollege={currentCollege} registerDraftSaver={registerChildDraftSaver} />
      )}
 
      {activeSection==='addcollege' && (
@@ -1648,7 +1685,7 @@ export default function AdminDashboard() {
      )}
 
      {activeSection==='aboutpages' && (
-       <AboutPagesAdmin collegeId={selectedCollegeId} customData={customData} setCustomData={setCustomData} fullCollege={currentCollege} />
+       <AboutPagesAdmin collegeId={selectedCollegeId} customData={customData} setCustomData={setCustomData} fullCollege={currentCollege} registerDraftSaver={registerChildDraftSaver} />
      )}
 
      {activeSection==='homepage' && (

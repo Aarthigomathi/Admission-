@@ -150,7 +150,7 @@ function PageContentFields({ f, set, deptName, numberedFrom = 1 }) {
 
 const blankDeptForm = () => ({ name: '', hod: '', hodDesignation: 'Head of Department', hodQualification: '', hodExperience: '', hodEmail: '', hodPhone: '', hodImage: '', facultyCount: '' })
 
-export default function DeptPagesAdmin({ collegeId, customData, setCustomData, fullCollege }) {
+export default function DeptPagesAdmin({ collegeId, customData, setCustomData, fullCollege, registerDraftSaver }) {
   // Only the departments this college added itself - template/default ones are never shown
   const departments = Array.isArray(customData.departments) ? customData.departments : []
   const [selId, setSelId] = useState(null)
@@ -160,7 +160,12 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
   const [loadedFor, setLoadedFor] = useState('')
   const [draftStatus, setDraftStatus] = useState('')
   const lastDraftRef = useRef('')
+  const draftStateRef = useRef(null)
   const currentFormKey = showAdd ? `${collegeId}:new` : `${collegeId}:${selId || 'none'}`
+
+  useEffect(() => {
+    draftStateRef.current = { f, deptForm, showAdd, selId }
+  }, [f, deptForm, showAdd, selId])
 
   // if the selected department was deleted, fall back to the first one
   useEffect(() => {
@@ -233,6 +238,28 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
       persistDraft(false)
     }
   }, [collegeId, currentFormKey, loadedFor, showAdd, selId, deptForm, f])
+
+  useEffect(() => {
+    if (!collegeId || !registerDraftSaver) return undefined
+    const saveDraftNow = () => {
+      const state = draftStateRef.current
+      if (!state) return false
+      const section = state.showAdd ? 'deptPages_new' : state.selId ? `deptPages_${state.selId}` : ''
+      if (!section) return false
+      const data = state.showAdd ? { deptForm: state.deptForm, page: state.f } : state.f
+      const snapshotKey = `${collegeId}:${section}:${JSON.stringify(data)}`
+      const ok = saveAdminDraft(collegeId, section, data)
+      if (ok) {
+        lastDraftRef.current = snapshotKey
+        setDraftStatus('Draft saved in this browser')
+      } else {
+        setDraftStatus('Draft could not be saved — browser storage may be full')
+      }
+      return ok
+    }
+    registerDraftSaver('deptpages', saveDraftNow)
+    return () => registerDraftSaver('deptpages', null)
+  }, [collegeId, registerDraftSaver])
 
   const set = (k, v) => setF(prev => ({ ...prev, [k]: v }))
 
