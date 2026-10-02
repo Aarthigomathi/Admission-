@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Sparkles, GraduationCap, Users, Building2, ArrowUpRight, Star, SlidersHorizontal, Image as ImageIcon, Shield, FileText, BarChart3, Bookmark, GitCompare, MessageCircle } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { getPublicColleges } from '../../lib/collegeStorage'
+import { getPublicColleges, syncBackendColleges } from '../../lib/collegeStorage'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
 
@@ -14,8 +14,10 @@ export default function PlatformHome() {
   const { t, language, isStudent } = useLanguage()
 
   useEffect(() => {
-    // Automatic default college name kattama - only colleges that signed up and added details themselves
+    // Backend data (live Spring Boot API when running, cloned seed data otherwise)
+    // + colleges that signed up locally via CollegeSignup
     setColleges(getPublicColleges())
+    syncBackendColleges().then(ok => { if (ok) setColleges(getPublicColleges()) }).catch(() => {})
     const handleStorage = () => setColleges(getPublicColleges())
     window.addEventListener('storage', handleStorage)
     window.addEventListener('collegeRegistered', handleStorage)
@@ -66,7 +68,7 @@ export default function PlatformHome() {
 
           <div className="mt-14 grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-[900px]">
             {[
-              { label: "Colleges", value: colleges.length===0 ? "0" : String(colleges.length), sub: colleges.length===0 ? "No default - signup & add" : "Added by colleges themselves", color: "bg-white border-[#FAB95B]/30" },
+              { label: "Colleges", value: colleges.length===0 ? "0" : String(colleges.length), sub: colleges.length===0 ? "No data - signup & add" : "From backend data", color: "bg-white border-[#FAB95B]/30" },
               { label: "Students", value: "12.5k+", sub: "Secure tracking", color: "bg-white border-[#E8E2DB]" },
               { label: "Verified", value: String(colleges.filter(c=>c.verificationStatus==='VERIFIED'||c.verified).length), sub: "Verified badge", color: "bg-[#1A3263] text-white border-[#1A3263]" },
               { label: "PDF Reports", value: "Live", sub: "College-wise PDF", color: "bg-[#FAB95B] text-[#1A3263] border-[#FAB95B]" },

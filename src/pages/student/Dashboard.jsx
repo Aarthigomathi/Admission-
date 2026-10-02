@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { getPublicColleges } from '../../lib/collegeStorage'
 import { activityTracker } from '../../lib/activityTracker'
-import CollegeCard from '../../components/platform/CollegeCard'
-import { GraduationCap, Bookmark, GitCompare, Clock, MapPin, TrendingUp, MessageCircle, Search, BookOpen, Heart, User, Award, FileText, Edit3 } from 'lucide-react'
+import SmartRecommendations from '../../components/student/SmartRecommendations'
+import { GraduationCap, Bookmark, GitCompare, Clock, MapPin, TrendingUp, MessageCircle, Search, BookOpen, User, Award, FileText, Edit3 } from 'lucide-react'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
@@ -31,24 +31,6 @@ export default function StudentDashboard() {
       window.removeEventListener('storage', handle)
     }
   }, [])
-
-  const recommended = useMemo(() => {
-    if (!student) return []
-    const preferredDistrict = student.preferredDistrict || 'Coimbatore'
-    const interestedCourse = student.interestedCourse || ''
-    if (colleges.length===0) return []
-    let filtered = [...colleges]
-    filtered.sort((a, b) => {
-      const aPref = a.district.toLowerCase() === preferredDistrict.toLowerCase() ? 1 : 0
-      const bPref = b.district.toLowerCase() === preferredDistrict.toLowerCase() ? 1 : 0
-      if (bPref !== aPref) return bPref - aPref
-      const aCourse = interestedCourse ? ((a.courses||[]).some(c => c.name.toLowerCase().includes(interestedCourse.split(' ')[0].toLowerCase())) ? 1 : 0) : 0
-      const bCourse = interestedCourse ? ((b.courses||[]).some(c => c.name.toLowerCase().includes(interestedCourse.split(' ')[0].toLowerCase())) ? 1 : 0) : 0
-      if (bCourse !== aCourse) return bCourse - aCourse
-      return (b.established||0) - (a.established||0)
-    })
-    return filtered.slice(0,4)
-  }, [student, colleges])
 
   const recentlyViewedColleges = useMemo(() => {
     return recentlyViewedIds.map(id => colleges.find(c => String(c.id) === String(id))).filter(Boolean)
@@ -173,27 +155,7 @@ export default function StudentDashboard() {
 
         <div className="mt-10 grid lg:grid-cols-[1.6fr_1fr] gap-8">
           <div className="space-y-10">
-            <div>
-              <div className="flex items-center justify-between">
-                <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={20} className="text-[#FAB95B]" /> {t('recommendedForYou')} - {student.preferredDistrict} Colleges First</h2>
-                <Link to="/search" className="text-[12px] font-bold text-[#547792] hover:text-[#1A3263]">{t('viewAll')}</Link>
-              </div>
-              <p className="text-[12px] text-[#547792] mt-1">If you select Chennai, Chennai colleges matching your {student.percentage}% - {student.interestedCourse} will show first - {colleges.length} colleges added by colleges themselves</p>
-              
-              {colleges.length===0 ? (
-                <div className="mt-6 rounded-[20px] bg-white border-2 border-[#FAB95B]/30 p-10 text-center">
-                                    <div className="font-bold text-[#1A3263] mt-4">No Colleges Yet - Colleges Need to Signup & Add Themselves</div>
-                  <div className="text-[12px] text-[#547792] mt-2 max-w-[400px] mx-auto">Automatic default college name kattama - Platform la default college illa. College signup panni avanga details add pannina aprom thaan colleges varum. Be first to invite colleges!</div>
-                  <Link to="/college/signup" className="mt-4 inline-flex h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Invite College to Sign Up</Link>
-                </div>
-              ) : (
-                <div className="mt-6 grid md:grid-cols-2 gap-6">
-                  {recommended.map(c=>(
-                    <CollegeCard key={c.id} college={c} />
-                  ))}
-                </div>
-              )}
-            </div>
+            <SmartRecommendations student={student} colleges={colleges} onUpdateStudent={setStudent} />
 
             {recentlyViewedColleges.length>0 && (
               <div>

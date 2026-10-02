@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { Search, MapPin, Filter, GraduationCap, Bookmark, GitCompare, ArrowUpRight, Building2, Sparkles, Shield } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
-import { getPublicColleges } from '../../lib/collegeStorage'
+import { getPublicColleges, syncBackendColleges } from '../../lib/collegeStorage'
 import { districts } from '../../lib/colleges'
 import { activityTracker, ACTIVITY_TYPES } from '../../lib/activityTracker'
 import LanguageToggle from '../../components/student/LanguageToggle'
@@ -26,7 +26,9 @@ export default function SearchPage() {
     setSavedIds(saved.map(c=>c.id))
     const compare = JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]')
     setCompareIds(compare.map(c=>c.id))
+    // Backend data (live Spring Boot API when running, cloned seed data otherwise)
     setColleges(getPublicColleges())
+    syncBackendColleges().then(ok => { if (ok) setColleges(getPublicColleges()) }).catch(() => {})
     const handle = () => setColleges(getPublicColleges())
     window.addEventListener('collegeRegistered', handle)
     window.addEventListener('storage', handle)
@@ -49,7 +51,9 @@ export default function SearchPage() {
         (c.departments||[]).some(d => d.name.toLowerCase().includes(searchLower))
       const matchesDistrict = district==='All' || c.district===district
       const matchesLevel = level==='All' || (c.courses||[]).some(co=>co.level===level)
-      const matchesType = typeFilter==='All' || c.type.toLowerCase().includes(typeFilter.toLowerCase())
+      const matchesType = typeFilter==='All' || 
+        (c.collegeType||'').toLowerCase().includes(typeFilter.toLowerCase()) || 
+        (c.type||'').toLowerCase().includes(typeFilter.toLowerCase())
       const matchesCourse = courseFilter==='All' || (c.courses||[]).some(co=>co.name.toLowerCase().includes(courseFilter.toLowerCase()) || co.degree.toLowerCase().includes(courseFilter.toLowerCase()))
       return matchesSearch && matchesDistrict && matchesLevel && matchesType && matchesCourse
     })
@@ -117,7 +121,7 @@ export default function SearchPage() {
             <div className="flex-1 w-full xl:max-w-[900px] flex flex-wrap gap-2">
               <div className="flex-1 min-w-[280px] flex items-center gap-3 px-5 h-12 rounded-full bg-[#E8E2DB] border-2 border-[#E8E2DB] focus-within:border-[#FAB95B] focus-within:bg-white transition-all">
                 <Search size={18} className="text-[#1A3263]" />
-                <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search colleges added by colleges themselves..." className="flex-1 bg-transparent outline-none text-[14px] font-medium placeholder:text-[#547792]/60 text-[#1A3263]" />
+                <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search colleges, courses, districts from backend data..." className="flex-1 bg-transparent outline-none text-[14px] font-medium placeholder:text-[#547792]/60 text-[#1A3263]" />
               </div>
               <select value={district} onChange={e=>setDistrict(e.target.value)} className="h-12 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-medium text-[#1A3263] focus:border-[#FAB95B] outline-none">
                 <option value="All">All Districts - TN</option>
@@ -128,6 +132,9 @@ export default function SearchPage() {
                 <option value="Engineering">Engineering</option>
                 <option value="Arts">Arts & Science</option>
                 <option value="Management">Management</option>
+                <option value="Government">Government</option>
+                <option value="Private">Private</option>
+                <option value="Autonomous">Autonomous</option>
               </select>
               <select value={level} onChange={e=>setLevel(e.target.value)} className="h-12 px-4 rounded-full bg-white border-2 border-[#E8E2DB] text-[13px] font-medium text-[#1A3263]">
                 <option value="All">All Levels</option>
@@ -144,7 +151,7 @@ export default function SearchPage() {
             </div>
           </div>
           <div className="mt-3 flex items-center gap-2 text-[11px]">
-            <span className="px-2 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] font-bold flex items-center gap-1"><Filter size={10} /> No default colleges - only colleges that signed up & added themselves</span>
+            <span className="px-2 py-1 rounded-full bg-[#E8E2DB] text-[#1A3263] font-bold flex items-center gap-1"><Filter size={10} /> Backend data - cloned from Spring Boot API seed, live-syncs when backend runs</span>
             <span className="text-[#547792]">College signup → Add A-Z yourself → Publish → Students discover - Chennai filter: Chennai colleges first based on details</span>
           </div>
         </div>
@@ -154,7 +161,7 @@ export default function SearchPage() {
         <div className="grid lg:grid-cols-[1.7fr_1fr] gap-8">
           <div>
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><GraduationCap size={22} className="text-[#FAB95B]" /> {colleges.length===0 ? 'No Colleges Yet - Colleges Signup & Add Themselves' : `Colleges Added by Colleges - ${filtered.length} Found`} {q && `for "${q}"`}</h2>
+              <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><GraduationCap size={22} className="text-[#FAB95B]" /> {colleges.length===0 ? 'No Colleges Yet - Colleges Signup & Add Themselves' : `Colleges from Backend Data - ${filtered.length} Found`} {q && `for "${q}"`}</h2>
             </div>
 
             {colleges.length===0 ? (
@@ -185,7 +192,7 @@ export default function SearchPage() {
                   <div className="mt-6 py-12 text-center rounded-[20px] bg-white border-2 border-[#E8E2DB]">
                     <div className="text-2xl"></div>
                     <div className="font-bold text-[#1A3263] mt-3">No colleges match filters</div>
-                    <div className="text-[12px] text-[#547792] mt-1">Try All Districts / All Types - {colleges.length} colleges added by colleges themselves</div>
+                    <div className="text-[12px] text-[#547792] mt-1">Try All Districts / All Types - {colleges.length} colleges from backend data</div>
                   </div>
                 )}
               </>
@@ -201,13 +208,13 @@ export default function SearchPage() {
 
           <div>
             <div className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-6 sticky top-[160px]">
-              <h3 className="font-bold text-[16px] text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> Courses - Only from colleges that signed up</h3>
-              <p className="text-[11px] text-[#547792] mt-1">Search BCA → shows College, Course, District - Only colleges added by colleges themselves - No default PSG</p>
+              <h3 className="font-bold text-[16px] text-[#1A3263] flex items-center gap-2"><Building2 size={18} className="text-[#FAB95B]" /> Courses - from backend data</h3>
+              <p className="text-[11px] text-[#547792] mt-1">Search BCA → shows College, Course, District - courses seeded in the backend database</p>
               <div className="mt-6 space-y-3 max-h-[700px] overflow-auto pr-1">
                 {coursesSearch.length===0 ? (
                   <div className="py-12 text-center text-[#547792]">
                                         <div className="text-[13px] mt-3 font-medium text-[#1A3263]">{colleges.length===0 ? 'No colleges yet - colleges signup first' : 'Search for courses like BCA, B.E, MBA'}</div>
-                    <div className="text-[11px] mt-1">{colleges.length===0 ? 'College signup panni courses add pannina aprom thaan varum' : 'Only courses added by colleges themselves will show'}</div>
+                    <div className="text-[11px] mt-1">{colleges.length===0 ? 'College signup panni courses add pannina aprom thaan varum' : 'Shows courses added by the backend + colleges themselves'}</div>
                   </div>
                 ) : coursesSearch.map(({ college, course }, i)=>(
                   <div key={i} className="group rounded-[16px] border-2 border-[#E8E2DB] bg-[#E8E2DB]/30 p-4 hover:bg-white hover:border-[#FAB95B]/40 hover:shadow-md transition-all">
@@ -229,8 +236,8 @@ export default function SearchPage() {
                 ))}
               </div>
               <div className="mt-6 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-4">
-                <div className="text-[11px] font-bold text-[#1A3263] flex items-center gap-1"><Shield size={12} /> No Default Colleges</div>
-                <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.5]">Automatic default college name kattama - Only colleges that signup via /college/signup and add details A-Z themselves will appear here. College adds logo, campus images, environment, placement, facilities, exam details, departments with HOD, courses - Full A-Z. College content is fully managed by the college.</div>
+                <div className="text-[11px] font-bold text-[#1A3263] flex items-center gap-1"><Shield size={12} /> Backend Clone + Live Sync</div>
+                <div className="text-[11px] text-[#1A3263]/80 mt-2 leading-[1.5]">This page runs on a 1:1 clone of the backend seed data (DataInitializer). Run the Spring Boot backend on :8080 and it auto-syncs live data from /api/colleges - no frontend change needed. Colleges can still signup and add their own A-Z details on top.</div>
               </div>
             </div>
           </div>

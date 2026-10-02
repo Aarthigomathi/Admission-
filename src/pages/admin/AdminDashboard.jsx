@@ -56,6 +56,28 @@ export default function AdminDashboard() {
  const [homeForm, setHomeForm] = useState({ tneaCode: '', eventDate: '', eventTime: '', chiefGuestName: '', chiefGuestTitle: '', chiefGuestPhoto: '', coordinators: '', convenors: '', partnerLogos: '', statPlacements: '', statCompanies: '', statMaxLpa: '', aboutImage: '', accreditationLogos: '', industryLogos: '', ugDesc: '', pgDesc: '', placementText: '', footerAbout: '', bannerImages: '', campusTourUrl: '', quickLinks: '' })
  const [settingsForm, setSettingsForm] = useState({ name: '', shortName: '', tagline: '', type: '', collegeType: '', university: '', affiliation: '', established: '', accreditation: '', email: '', phone: '', website: '', verificationStatus: '', maintenanceMode: false, showAdmissions: true, showPlacements: true, showEvents: true, loginUsername: '', loginPassword: '' })
 
+ // Load CMS data: local edits (localStorage) first, falling back to the
+ // college's own data (backend clone / registered signup) so the dashboard
+ // always shows existing content instead of empty forms.
+ const loadCustomData = (collegeId) => {
+  const custom = getCollegeCustomData(collegeId)
+  const college = getCollegeById(collegeId) || {}
+  return {
+   ...custom,
+   branding: custom.branding || (college.branding ? { ...college.branding } : undefined),
+   about: custom.about || (college.about ? {
+    fullText: college.about.overview || college.about.fullText || '',
+    vision: college.about.vision || '',
+    mission: college.about.mission || [],
+   } : undefined),
+   courses: (custom.courses && custom.courses.length) ? custom.courses : (college.courses || []),
+   departments: (custom.departments && custom.departments.length) ? custom.departments : (college.departments || []),
+   customFacilities: (custom.customFacilities && custom.customFacilities.length) ? custom.customFacilities : (college.facilities || []),
+   placements: (custom.placements && custom.placements.length) ? custom.placements : (college.placements || []),
+   hostels: (custom.hostels && custom.hostels.length) ? custom.hostels : (college.hostels || []),
+  }
+ }
+
  useEffect(() => {
   const stored = localStorage.getItem('tn_current_college')
   if (stored) {
@@ -63,7 +85,7 @@ export default function AdminDashboard() {
    const fullCollege = getCollegeById(parsed.id) || parsed
    setCurrentCollege(fullCollege)
    setSelectedCollegeId(fullCollege.id)
-   const custom = getCollegeCustomData(fullCollege.id)
+   const custom = loadCustomData(fullCollege.id)
    setCustomData(custom)
    setBrandingForm({
     logo: custom.branding?.logo || fullCollege.branding?.logo || '',
@@ -200,7 +222,7 @@ export default function AdminDashboard() {
 
  const refreshData = () => {
   if (!selectedCollegeId) return
-  const custom = getCollegeCustomData(selectedCollegeId)
+  const custom = loadCustomData(selectedCollegeId)
   setCustomData(custom)
  }
 
@@ -647,7 +669,7 @@ export default function AdminDashboard() {
   localStorage.setItem('tn_current_college', JSON.stringify(college))
   setCurrentCollege(college)
   setSelectedCollegeId(college.id)
-  setCustomData(getCollegeCustomData(college.id))
+  setCustomData(loadCustomData(college.id))
   setIsLoggedIn(true)
  }
 
@@ -681,7 +703,17 @@ export default function AdminDashboard() {
      <div className="mt-8 space-y-4">
       <div>
        <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Username or College Email</label>
-       <input value={loginUser} onChange={e=>setLoginUser(e.target.value)} placeholder="Your login username (e.g. thiagarajar_admin)" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" />
+       <input value={loginUser} onChange={e=>setLoginUser(e.target.value)} placeholder="e.g. admin@tce.edu.in or thiagarajar_admin" className="mt-2 w-full h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#FAB95B] focus:bg-white outline-none text-[14px] font-medium" />
+       <div className="mt-2 flex flex-wrap gap-1.5">
+        {[
+          { label: 'TCE Madurai - admin@tce.edu.in / tce123', u: 'admin@tce.edu.in', p: 'tce123' },
+          { label: 'PSG Tech - admin@psgtech.ac.in / psg123', u: 'admin@psgtech.ac.in', p: 'psg123' },
+          { label: 'CIT - admin@cit.edu.in / cit123', u: 'admin@cit.edu.in', p: 'cit123' },
+          { label: 'KCT - admin@kct.ac.in / kct123', u: 'admin@kct.ac.in', p: 'kct123' },
+        ].map(acc => (
+          <button key={acc.u} onClick={()=>{setLoginUser(acc.u); setLoginPass(acc.p)}} className="px-2.5 py-1 rounded-full bg-[#E8E2DB] border border-[#E8E2DB] text-[10px] font-bold text-[#1A3263] hover:border-[#FAB95B] transition-colors">{acc.label}</button>
+        ))}
+       </div>
       </div>
       <div>
        <label className="text-[11px] font-bold uppercase tracking-wide text-[#1A3263]">Password</label>
@@ -707,11 +739,11 @@ export default function AdminDashboard() {
        if (!college) return alert("College not found")
        localStorage.setItem('tn_current_college', JSON.stringify(college))
        setCurrentCollege(college)
-       setCustomData(getCollegeCustomData(college.id))
+       setCustomData(loadCustomData(college.id))
        setIsLoggedIn(true)
       }} className="mt-3 w-full h-10 rounded-full bg-white border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px]">Quick Login Selected College</button>
       </div>
-      <div className="text-[11px] text-[#547792] text-center leading-[1.5]">Signup panna create patta username + password la login pannunga. Credentials change panna Settings → Login Credentials</div>
+      <div className="text-[11px] text-[#547792] text-center leading-[1.5]">Backend college accounts: admin@tce.edu.in / tce123, admin@psgtech.ac.in / psg123 - allavarai Quick Select use pannunga. New college signup panna <Link to="/college/signup" className="font-bold text-[#1A3263] underline">College Sign Up</Link></div>
      </div>
      )}
 

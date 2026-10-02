@@ -20,8 +20,8 @@ export default function Login() {
       const id = email.trim().toLowerCase()
       const college = findCollegeByLoginId(id)
       if (!college) {
-        alert('College with this username/email not found!\n\nIf you just signed up, use your college email or the username you created. If still not found, please sign up first.')
-        navigate('/college/signup')
+        alert('College with this username/email not found!\n\nOpening the college admin portal - use Quick Select there to pick your college (TCE Madurai, PSG Tech, CIT, KCT are available).')
+        navigate('/admin')
         return
       }
       if (college.loginPassword && college.loginPassword !== password) {
@@ -260,6 +260,33 @@ export default function Login() {
               <button type="submit" className="w-full h-11 sm:h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] sm:text-[14px] flex items-center justify-center gap-2 hover:bg-[#1A3263]/90 transition-colors shadow-lg">
                 Login as {role.replace('_', ' ')} <ArrowRight size={16} className="sm:hidden" /><ArrowRight size={18} className="hidden sm:block" />
               </button>
+
+              {/* Demo credentials quick-fill (college role) */}
+              {role === 'COLLEGE' && (
+                <div className="rounded-[12px] sm:rounded-[14px] bg-[#FAB95B]/15 border-2 border-[#FAB95B]/40 p-3.5">
+                  <div className="text-[10px] sm:text-[11px] font-bold text-[#1A3263] flex items-center gap-1.5">
+                    <Building2 size={12} className="text-[#FAB95B]" /> College demo accounts - one click fill:
+                  </div>
+                  <div className="mt-2.5 grid grid-cols-2 gap-2">
+                    {[
+                      { label: 'TCE Madurai', email: 'admin@tce.edu.in', pass: 'tce123' },
+                      { label: 'PSG Tech', email: 'admin@psgtech.ac.in', pass: 'psg123' },
+                      { label: 'CIT', email: 'admin@cit.edu.in', pass: 'cit123' },
+                      { label: 'KCT', email: 'admin@kct.ac.in', pass: 'kct123' },
+                    ].map(acc => (
+                      <button
+                        key={acc.email}
+                        type="button"
+                        onClick={() => { setEmail(acc.email); setPassword(acc.pass) }}
+                        className="h-9 rounded-full bg-white border-2 border-[#E8E2DB] text-[10px] sm:text-[11px] font-bold text-[#1A3263] hover:border-[#FAB95B] transition-colors"
+                      >
+                        {acc.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="text-[10px] text-[#547792] mt-2">Tip: thiagarajar_admin, psg, tce - also work as usernames</div>
+                </div>
+              )}
 
               {/* Sign Up Links - Responsive grid */}
               <div className="grid grid-cols-2 gap-2.5 sm:gap-3 text-[11px] sm:text-[12px]">

@@ -15,24 +15,24 @@ import StudentEnquiries from './pages/student/Enquiries'
 import StudentProfile from './pages/student/Profile'
 import PlatformAdminDashboard from './pages/platformAdmin/PlatformAdminDashboard'
 import { activityTracker, ACTIVITY_TYPES } from './lib/activityTracker'
+import { getCollegeBySlug } from './lib/collegeStorage'
 import { LanguageProvider } from './lib/languageContext'
+import ChatBot from './components/platform/ChatBot'
 
 function ActivityTrackerWrapper({ children }) {
   const location = useLocation()
   useEffect(() => {
     const match = location.pathname.match(/\/college\/([^/]+)/)
     if (match) {
-      const slug = match[1]
-      import('./lib/colleges').then(({ colleges }) => {
-        const college = colleges.find(c => c.slug === slug)
-        if (college) {
-          activityTracker.recordActivity({
-            collegeId: college.id,
-            activityType: ACTIVITY_TYPES.COLLEGE_VIEW,
-            metadata: { collegeName: college.name, slug, url: location.pathname }
-          })
-        }
-      })
+      const slug = decodeURIComponent(match[1])
+      const college = getCollegeBySlug(slug)
+      if (college) {
+        activityTracker.recordActivity({
+          collegeId: college.id,
+          activityType: ACTIVITY_TYPES.COLLEGE_VIEW,
+          metadata: { collegeName: college.name, slug, url: location.pathname }
+        })
+      }
     }
   }, [location.pathname])
   return children
@@ -77,6 +77,7 @@ export default function App() {
           
           <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <ChatBot />
         </ActivityTrackerWrapper>
       </LanguageProvider>
     </BrowserRouter>

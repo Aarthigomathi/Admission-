@@ -11,6 +11,17 @@ export default defineConfig({
     allowedHosts: true,
     headers: {
       'X-Frame-Options': 'ALLOWALL'
+    },
+    // Spring Boot backend - when it runs on :8080 (mvn spring-boot:run),
+    // /api/* requests are proxied to it and the frontend uses live data.
+    // When the backend is offline, the frontend falls back to the cloned
+    // seed data (src/lib/backendData.js).
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false
+      }
     }
   }
 })

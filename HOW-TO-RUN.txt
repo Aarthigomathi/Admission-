@@ -1,0 +1,73 @@
+=========================================
+  TAMIL NADU COLLEGES PLATFORM - HOW TO RUN
+=========================================
+
+This zip contains:
+  - Frontend  (React + Vite + Tailwind)  -> runs with Node.js
+  - Backend   (Spring Boot + Java)       -> OPTIONAL, runs with JDK 17 + Maven
+
+The frontend already contains a 1:1 CLONE of the backend seed data
+(src/lib/backendData.js), so the site works fully WITHOUT running the backend.
+When the backend runs on localhost:8080, the frontend auto-detects it and
+uses live API data.
+
+--------------------------------------------------
+OPTION A - RUN FRONTEND ONLY (easy, 2 commands)
+--------------------------------------------------
+Requires: Node.js LTS installed (https://nodejs.org)
+
+  1. Extract this zip
+  2. Open a terminal in the extracted folder
+  3. npm install        (one time, ~10 seconds)
+  4. npm run dev
+  5. Open http://localhost:5173
+
+--------------------------------------------------
+OPTION B - RUN BACKEND ALSO (full stack)
+--------------------------------------------------
+Requires: JDK 17+ and Maven (backend uses in-memory H2 DB, no MySQL needed)
+
+  1. Open a SECOND terminal in the same folder
+  2. cd backend
+  3. mvn spring-boot:run
+     (API starts on http://localhost:8080)
+  4. Keep the frontend running (Option A) - it will
+     automatically pull live data from the API
+
+--------------------------------------------------
+DEMO LOGIN ACCOUNTS (frontend)
+--------------------------------------------------
+  College Admin:
+    TCE Madurai   admin@tce.edu.in        / tce123   (or: thiagarajar_admin)
+    PSG Tech      admin@psgtech.ac.in     / psg123   (or: psg)
+    CIT           admin@cit.edu.in        / cit123   (or: cit)
+    KCT           admin@kct.ac.in         / kct123   (or: kct)
+  Student:        student@test.com        / student123
+  Platform Admin: any email + password
+
+--------------------------------------------------
+FEATURES IN THIS BUILD
+--------------------------------------------------
+  - College discovery (search, filters, district)
+  - College profiles (PSG, CIT, KCT, TCE Madurai)
+  - Smart Recommendations ("Why this college is shown")
+    -> Student dashboard, editable preferences
+  - AI Counsellor Chatbot (bottom-right button)
+    -> understands English + Tanglish + Tamil
+  - College CMS (admin dashboard)
+  - Save / Compare / Enquiries
+  - Multi-language toggle (Tamil / English)
+
+--------------------------------------------------
+PROJECT STRUCTURE
+--------------------------------------------------
+  src/                  frontend source code
+    lib/backendData.js  <- backend seed data clone (edit colleges here)
+    lib/counsellor.js   <- AI chatbot brain
+    lib/recommender.js  <- smart recommendation engine
+  backend/              Spring Boot backend source
+  index.html, vite.config.js, package.json
+
+Note: college edits made in the browser (admin CMS) are stored in the
+browser's localStorage. Data inside src/lib/backendData.js is permanent.
+With the real backend + MySQL running, everything persists in the database.

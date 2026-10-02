@@ -1,10 +1,81 @@
 import { colleges as staticColleges } from './colleges'
+import { backendColleges, backendUsers, backendBranding } from './backendData'
+import { fetchColleges } from './api'
 
-// Manage custom colleges registered via signup - their own data
-// Automatic default college name kattama - only colleges that signup themselves show in public
+// Data sources, in priority order:
+// 1. LIVE backend   - Spring Boot API on :8080 (synced by syncBackendColleges)
+// 2. CLONE fallback - backendData.js (1:1 clone of DataInitializer seed data)
+// 3. LOCAL colleges - colleges registered via CollegeSignup (localStorage)
 
 const REGISTERED_KEY = 'tn_registered_colleges'
 const COLLEGE_DATA_PREFIX = 'tn_college_data_'
+
+// Live colleges fetched from a running Spring Boot backend (null = not synced yet)
+let liveBackendColleges = null
+
+// Fields the backend College entity owns - backend always wins over showcase data
+const BACKEND_FIELDS = [
+  'id', 'slug', 'name', 'shortName', 'tagline', 'type', 'collegeType',
+  'district', 'city', 'address', 'pincode', 'phone', 'email', 'website',
+  'affiliation', 'university', 'accreditation', 'established',
+  'principalName', 'managementName', 'verified', 'verificationStatus', 'active',
+]
+
+/**
+ * Map a backend College JSON (live or cloned) to the frontend college shape.
+ * If the same college also exists in the static showcase data (same slug),
+ * its rich display content (branding, about, departments, gallery...) is
+ * reused - the backend stays the source of truth for identity fields.
+ */
+function normalizeBackendCollege(c) {
+  const staticMatch = staticColleges.find(s => s.slug === c.slug)
+  const backendFields = {}
+  BACKEND_FIELDS.forEach(f => {
+    if (c[f] !== undefined && c[f] !== null && c[f] !== '') backendFields[f] = c[f]
+  })
+  const branding = (c.branding && Object.keys(c.branding).length > 0)
+    ? c.branding
+    : (backendBranding[c.slug] || null)
+  const base = staticMatch
+    ? { ...staticMatch, ...backendFields, ...(branding ? { branding } : {}) }
+    : { ...c, ...(branding ? { branding } : {}) }
+  // Courses: backend is the source of truth WHEN it has seeded courses.
+  // When the backend has no courses for this college yet (e.g. CIT/KCT in the
+  // current seed), fall back to the known course catalog from the showcase data.
+  const backendCourses = Array.isArray(c.courses) ? c.courses : []
+  const courses = backendCourses.length > 0 ? backendCourses : (staticMatch?.courses || [])
+  return {
+    ...base,
+    source: 'backend',
+    courses,
+  }
+}
+
+/** Backend colleges: live API data when synced, otherwise the seed clone */
+export function getBackendColleges() {
+  const source = (Array.isArray(liveBackendColleges) && liveBackendColleges.length > 0)
+    ? liveBackendColleges
+    : backendColleges
+  return source.map(normalizeBackendCollege)
+}
+
+/**
+ * Try to fetch colleges from the running Spring Boot backend (/api/colleges).
+ * Returns true when live data was fetched and merged - call this once on
+ * page mount; it silently keeps the clone when the backend is offline.
+ */
+export async function syncBackendColleges() {
+  try {
+    const data = await fetchColleges()
+    if (Array.isArray(data) && data.length > 0) {
+      liveBackendColleges = data
+      return true
+    }
+  } catch {
+    // keep clone
+  }
+  return false
+}
 
 export function getRegisteredColleges() {
   try {
@@ -13,20 +84,25 @@ export function getRegisteredColleges() {
 }
 
 export function getPublicColleges() {
-  // ONLY colleges that signed up via CollegeSignup - no default PSG etc
+  // Backend colleges (live or cloned) + colleges that signed up locally
   const registered = getRegisteredColleges()
-  return registered.map(c => enrichCollege(c))
+  const registeredSlugs = new Set(registered.map(c => (c.slug || '').toLowerCase()).filter(Boolean))
+  const backendPublic = getBackendColleges()
+    .filter(c => !registeredSlugs.has((c.slug || '').toLowerCase()))
+    .map(c => enrichCollege(c))
+  return [...backendPublic, ...registered.map(c => enrichCollege(c))]
 }
 
 export function getAllCollegesMerged() {
-  // For admin & backwards compatibility - includes static + registered
-  const registered = getRegisteredColleges()
-  const map = new Map()
-  staticColleges.forEach(c => map.set(c.id, enrichCollege(c)))
-  registered.forEach(c => {
-    map.set(c.id, enrichCollege(c))
+  // Dedupe by slug - priority: locally registered > backend > static showcase
+  const bySlug = new Map()
+  getBackendColleges().forEach(c => bySlug.set((c.slug || '').toLowerCase(), c))
+  staticColleges.forEach(c => {
+    const key = (c.slug || '').toLowerCase()
+    if (!bySlug.has(key)) bySlug.set(key, c)
   })
-  return Array.from(map.values())
+  getRegisteredColleges().forEach(c => bySlug.set((c.slug || '').toLowerCase(), c))
+  return Array.from(bySlug.values()).map(c => enrichCollege(c))
 }
 
 export function getAllCollegesForAdmin() {
@@ -34,7 +110,7 @@ export function getAllCollegesForAdmin() {
 }
 
 export function getCollegeById(id) {
-  // First check public (registered), then all
+  // First check public (registered + backend), then all
   const pub = getPublicColleges().find(c => String(c.id) === String(id))
   if (pub) return pub
   const all = getAllCollegesMerged()
@@ -77,6 +153,7 @@ export function enrichCollege(base) {
     verificationStatus: base.verificationStatus || 'PENDING',
     verified: base.verified || false,
     active: true,
+    source: base.source || 'local',
     createdAt: base.createdAt || now,
     updatedAt: base.updatedAt || now,
     branding: {
@@ -89,7 +166,12 @@ export function enrichCollege(base) {
     },
     about: base.about || { fullText: '', vision: '', mission: [] },
     departments: base.departments || [],
-    courses: base.courses || [],
+    courses: (base.courses || []).map(co => ({
+      ...co,
+      // Backend Course entity uses degreeType; frontend components use degree
+      degree: co.degree || co.degreeType || '',
+      dept: co.dept || co.degreeType || '',
+    })),
     facilities: base.facilities || {},
     customFacilities: base.customFacilities || [],
     hostels: base.hostels || [],
@@ -170,6 +252,7 @@ export function createNewCollegeFromSignup(formData) {
     verificationStatus: 'PENDING',
     verified: false,
     role: 'COLLEGE_ADMIN',
+    source: 'local',
     branding: {
       logo: '',
       heroImage: '',
@@ -240,6 +323,24 @@ export function getProfileCompletion(college) {
   return Math.round((filled / checks.length) * 100)
 }
 
+// Login aliases - friendly usernames that map to backend-cloned colleges
+// (e.g. the username style created during earlier local signups)
+const LOGIN_ALIASES = {
+  'thiagarajar_admin': { slug: 'thiyagarajar-engineering', password: 'tce123' },
+  'thiyagarajar_admin': { slug: 'thiyagarajar-engineering', password: 'tce123' },
+  'thiyagarajar': { slug: 'thiyagarajar-engineering', password: 'tce123' },
+  'thiagarajar': { slug: 'thiyagarajar-engineering', password: 'tce123' },
+  'tce': { slug: 'thiyagarajar-engineering', password: 'tce123' },
+  'tce_admin': { slug: 'thiyagarajar-engineering', password: 'tce123' },
+  'tce madurai': { slug: 'thiyagarajar-engineering', password: 'tce123' },
+  'psg': { slug: 'psg-tech', password: 'psg123' },
+  'psg_admin': { slug: 'psg-tech', password: 'psg123' },
+  'cit': { slug: 'cit-coimbatore', password: 'cit123' },
+  'cit_admin': { slug: 'cit-coimbatore', password: 'cit123' },
+  'kct': { slug: 'kumaraguru-college', password: 'kct123' },
+  'kct_admin': { slug: 'kumaraguru-college', password: 'kct123' },
+}
+
 export function findCollegeByLoginId(id) {
   const target = (id || '').trim().toLowerCase()
   if (!target) return null
@@ -258,7 +359,21 @@ export function findCollegeByLoginId(id) {
     return ids
   }
   const all = [...getRegisteredColleges(), ...getPublicColleges().filter(pc => !getRegisteredColleges().some(r => String(r.id) === String(pc.id)))]
-  return all.find(c => idsFor(c).includes(target)) || null
+  const found = all.find(c => idsFor(c).includes(target))
+  if (found) return found
+  // Backend-cloned users (DataInitializer seed) - college admins created on the backend
+  const user = backendUsers.find(u => u.email.toLowerCase() === target)
+  if (user && (user.role === 'COLLEGE_ADMIN' || user.role === 'COLLEGE_EDITOR')) {
+    const college = getBackendColleges().find(c => String(c.id) === String(user.collegeId))
+    if (college) return { ...college, loginUsername: user.email, loginPassword: user.password }
+  }
+  // Friendly aliases (thiagarajar_admin, psg, tce, ...)
+  const alias = LOGIN_ALIASES[target]
+  if (alias) {
+    const college = getBackendColleges().find(c => c.slug === alias.slug)
+    if (college) return { ...college, loginUsername: target, loginPassword: alias.password }
+  }
+  return null
 }
 
 /* ---------- storage-safe saves: auto-compress images + compact on quota ---------- */
