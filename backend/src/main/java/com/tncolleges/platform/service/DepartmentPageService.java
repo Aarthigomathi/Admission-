@@ -290,6 +290,15 @@ public class DepartmentPageService {
         }
     }
 
+    private void requiredOrOptionalText(Object raw, String field, int maxLength) {
+        if (raw == null) return;
+        if (raw instanceof String text) {
+            if (text.length() > maxLength) throw new IllegalArgumentException(field + " is too long");
+            return;
+        }
+        textList(raw, field, 30, maxLength);
+    }
+
     private void validateTextOrParagraphs(Object raw, String field, int maxItems, int maxLength) {
         if (raw instanceof String text) {
             if (text.length() > maxLength * maxItems) throw new IllegalArgumentException(field + " is too long");
