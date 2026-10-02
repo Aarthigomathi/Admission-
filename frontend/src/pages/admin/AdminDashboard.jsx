@@ -33,7 +33,7 @@ export default function AdminDashboard() {
  const [selectedCollegeId, setSelectedCollegeId] = useState(null)
 
  // Forms
- const [courseForm, setCourseForm] = useState({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '' })
+ const [courseForm, setCourseForm] = useState({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '', minimumPercentage: '' })
  const [facilityForm, setFacilityForm] = useState({ name: '', description: '', icon: '', image: '' })
  const [placementForm, setPlacementForm] = useState({ year: '', company: '', package: '', students: '', department: '', logo: '', description: '' })
  const [eventForm, setEventForm] = useState({ title: '', date: '', category: 'Cultural / Arts Events', description: '', image: '' })
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
   const updated = [...list, newCourse]
   saveSafe('courses', updated)
   setCustomData({ ...customData, courses: updated })
-  setCourseForm({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '' })
+  setCourseForm({ degree: '', name: '', duration: '', fees: '', intake: '', eligibility: '', minimumPercentage: '' })
   alert(`Course ${newCourse.degree} - ${newCourse.name} added!`)
  }
 
@@ -1066,9 +1066,13 @@ export default function AdminDashboard() {
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Intake</label>
            <input value={courseForm.intake} onChange={e=>setCourseForm({...courseForm, intake: e.target.value})} placeholder="e.g. 120" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
-          <div className="md:col-span-3">
+          <div className="md:col-span-2">
            <label className="text-[11px] font-bold uppercase text-[#1A3263]">Eligibility</label>
-           <input value={courseForm.eligibility} onChange={e=>setCourseForm({...courseForm, eligibility: e.target.value})} placeholder="e.g. 10+2 with 50% PCM" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+           <input value={courseForm.eligibility} onChange={e=>setCourseForm({...courseForm, eligibility: e.target.value})} placeholder="e.g. 10+2 with Physics, Chemistry, Mathematics" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
+          </div>
+          <div>
+           <label className="text-[11px] font-bold uppercase text-[#1A3263]">Minimum marks (%) for matching</label>
+           <input type="number" min="0" max="100" step="0.01" value={courseForm.minimumPercentage} onChange={e=>setCourseForm({...courseForm, minimumPercentage: e.target.value})} placeholder="e.g. 50" className="mt-2 w-full h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
           </div>
          </div>
          <button onClick={handleAddCourse} className="mt-6 h-11 px-6 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] flex items-center gap-2"><Plus size={16} /> Add Course</button>
@@ -1090,6 +1094,7 @@ export default function AdminDashboard() {
                <div className="font-bold text-[13px] text-[#1A3263]">{course.degree} - {course.name}</div>
                <div className="text-[11px] text-[#547792] mt-1">{course.duration} • Fees {course.fees} • Intake {course.intake}</div>
                <div className="text-[11px] text-[#1A3263]/60 mt-1">Eligibility: {course.eligibility}</div>
+               {course.minimumPercentage !== '' && course.minimumPercentage != null && <div className="text-[11px] text-[#1A3263]/60 mt-1">Minimum marks for matching: {course.minimumPercentage}%</div>}
               </div>
               <button onClick={()=>handleDelete('courses', course.id)} className="h-8 w-8 rounded-full bg-white border-2 border-[#E8E2DB] grid place-items-center text-[#547792] hover:border-red-200 hover:text-red-600"><Trash2 size={12} /></button>
              </div>

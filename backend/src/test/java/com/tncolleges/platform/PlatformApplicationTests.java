@@ -13,6 +13,8 @@ import com.tncolleges.platform.service.CollegeService;
 import com.tncolleges.platform.service.EnquiryService;
 import com.tncolleges.platform.service.StudentActivityService;
 import com.tncolleges.platform.service.PlatformAnalyticsService;
+import com.tncolleges.platform.service.StudentPortalService;
+import com.tncolleges.platform.service.CollegeRecommendationService;
 import com.tncolleges.platform.repository.CollegeRepository;
 import com.tncolleges.platform.repository.NotificationRepository;
 import com.tncolleges.platform.repository.UserRepository;
@@ -65,6 +67,12 @@ class PlatformApplicationTests {
 
     @Autowired
     private PlatformAnalyticsService analyticsService;
+
+    @Autowired
+    private StudentPortalService studentPortalService;
+
+    @Autowired
+    private CollegeRecommendationService recommendationService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -196,6 +204,56 @@ class PlatformApplicationTests {
         enquiryPayload.put("consent", false);
         org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
                 () -> enquiryService.create("student@test.local", enquiryPayload));
+    }
+
+    @Test
+    void studentRecommendationsMatchMarksCourseAndPreferredDistrict() {
+        String suffix = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+        Map<String, Object> signup = new LinkedHashMap<>();
+        signup.put("name", "Recommendation College " + suffix);
+        signup.put("email", "recommendation-" + suffix + "@example.test");
+        signup.put("loginUsername", "recommendation-admin-" + suffix);
+        signup.put("loginPassword", "valid-password-123");
+        signup.put("district", "Coimbatore");
+        Map<String, Object> college = collegeService.signup(signup);
+        Long collegeId = ((Number) college.get("id")).longValue();
+        collegeService.verify(collegeId, "VERIFIED", "recommendation test");
+        contentService.saveSection(collegeId, "courses", List.of(
+                Map.of("id", "eligible-" + suffix, "name", "B.E. Computer Science and Engineering", "minimumPercentage", 80.0, "active", true),
+                Map.of("id", "below-cutoff-" + suffix, "name", "B.E. Computer Science and Engineering", "minimumPercentage", 95.0, "active", true)));
+
+        studentPortalService.updateProfile("student@test.local", Map.of(
+                "fullName", "Test Student", "mobile", "9876500000", "address", "12 Student Road",
+                "district", "Coimbatore", "city", "Coimbatore"));
+        assertEquals("12 Student Road", studentPortalService.profile("student@test.local").get("address"));
+        studentPortalService.saveEducation("student@test.local", null,
+                Map.of("level", "12th", "marks", "450/500", "interestedSubject", "Computer Science"));
+        studentPortalService.savePreferences("student@test.local",
+                Map.of("interestedCourse", "CSE", "preferredDistrict", "Coimbatore", "collegeType", "ANY"));
+
+        Map<String, Object> result = recommendationService.recommend("student@test.local", null, null, null);
+        List<?> recommendations = (List<?>) result.get("recommendations");
+        Map<?, ?> match = recommendations.stream().map(Map.class::cast)
+                .filter(item -> ((Map<?, ?>) item.get("college")).get("id").equals(collegeId))
+                .findFirst().orElseThrow();
+        assertEquals("ELIGIBLE", match.get("eligibilityStatus"));
+        assertEquals(1, ((List<?>) match.get("matchingCourses")).size());
+        assertEquals(1, result.get("excludedBelowMinimum"));
+        assertEquals(90.0, ((Map<?, ?>) result.get("criteria")).get("percentage"));
+
+        Map<String, Object> previewRequest = Map.of(
+                "marks", "450/500", "percentage", "90", "educationLevel", "12th",
+                "course", "CSE", "district", "Coimbatore", "type", "Any");
+        try {
+            mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/recommendations/preview")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(previewRequest)))
+                    .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                    .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.recommendations").isArray())
+                    .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.totalRecommendations").value(1));
+        } catch (Exception exception) {
+            throw new AssertionError("Public recommendation preview should match marks, course, and district", exception);
+        }
     }
 
     @Test

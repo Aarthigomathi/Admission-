@@ -1,5 +1,6 @@
 package com.tncolleges.platform.controller;
 
+import com.tncolleges.platform.service.CollegeRecommendationService;
 import com.tncolleges.platform.service.StudentPortalService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,12 @@ import java.util.Map;
 @PreAuthorize("hasRole('STUDENT')")
 public class StudentPortalController {
     private final StudentPortalService studentService;
+    private final CollegeRecommendationService recommendationService;
 
-    public StudentPortalController(StudentPortalService studentService) {
+    public StudentPortalController(StudentPortalService studentService,
+                                   CollegeRecommendationService recommendationService) {
         this.studentService = studentService;
+        this.recommendationService = recommendationService;
     }
 
     @GetMapping
@@ -29,6 +33,14 @@ public class StudentPortalController {
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal UserDetails user,
                                            @RequestBody Map<String, Object> updates) {
         return ResponseEntity.ok(studentService.updateProfile(user.getUsername(), updates));
+    }
+
+    @GetMapping("/recommendations")
+    public ResponseEntity<?> recommendations(@AuthenticationPrincipal UserDetails user,
+                                              @RequestParam(required = false) String course,
+                                              @RequestParam(required = false) String district,
+                                              @RequestParam(required = false) String type) {
+        return ResponseEntity.ok(recommendationService.recommend(user.getUsername(), course, district, type));
     }
 
     @GetMapping("/education")

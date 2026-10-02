@@ -15,6 +15,7 @@ export default function StudentProfile() {
   const [formData, setFormData] = useState({})
   const [allColleges, setAllColleges] = useState(staticColleges)
   const [savedMessage, setSavedMessage] = useState('')
+  const [saveError, setSaveError] = useState(false)
 
   useEffect(() => {
     const s = JSON.parse(localStorage.getItem('tn_current_student') || 'null')
@@ -29,36 +30,80 @@ export default function StudentProfile() {
 
   const updateField = (field, value) => setFormData(prev => ({ ...prev, [field]: value }))
 
-  const handleSave = (section) => {
+  const handleSave = async (section) => {
     const updated = { ...student, ...formData }
-    // Recalculate percentage if marks changed
     if (formData.marksObtained && formData.totalMarks) {
-      const obt = parseFloat(formData.marksObtained)
-      const tot = parseFloat(formData.totalMarks)
-      if (!isNaN(obt) && !isNaN(tot) && tot > 0) {
-        const perc = ((obt / tot) * 100).toFixed(2)
-        updated.percentage = perc
-        let grade = ''
-        if (perc >= 90) grade = 'Outstanding - A+'
-        else if (perc >= 80) grade = 'Excellent - A'
-        else if (perc >= 70) grade = 'Very Good - B+'
-        else if (perc >= 60) grade = 'Good - B'
-        else grade = 'Average'
-        updated.grade = grade
-        updated.marks = `${obt}/${tot}`
+      const obtained = parseFloat(formData.marksObtained)
+      const total = parseFloat(formData.totalMarks)
+      if (!Number.isNaN(obtained) && !Number.isNaN(total) && total > 0) {
+        const percentage = ((obtained / total) * 100).toFixed(2)
+        updated.percentage = percentage
+        updated.grade = percentage >= 90 ? 'Outstanding - A+' : percentage >= 80 ? 'Excellent - A' : percentage >= 70 ? 'Very Good - B+' : percentage >= 60 ? 'Good - B' : 'Average'
+        updated.marks = `${obtained}/${total}`
       }
     }
-    localStorage.setItem('tn_current_student', JSON.stringify(updated))
-    const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
-    const idx = students.findIndex(st => st.id === student.id)
-    if (idx >= 0) {
-      students[idx] = updated
-      localStorage.setItem('tn_students', JSON.stringify(students))
+
+    setSaveError(false)
+    try {
+      const token = localStorage.getItem('tn_auth_token')
+      if (token) {
+        const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+        const responses = await Promise.all([
+          fetch('/api/students/me', {
+            method: 'PUT', headers,
+            body: JSON.stringify({
+              fullName: updated.fullName, mobile: updated.mobile,
+              address: updated.permanentAddress || updated.address,
+              district: updated.district, city: updated.city
+            })
+          }),
+          fetch('/api/students/me/preferences', {
+            method: 'PUT', headers,
+            body: JSON.stringify({
+              interestedCourse: updated.interestedCourse,
+              preferredDistrict: updated.preferredDistrict,
+              collegeType: updated.collegeType || 'Any',
+              hostelRequired: updated.hostelRequired === true || updated.hostelRequired === 'Yes',
+              transportRequired: updated.transportRequired === true || updated.transportRequired === 'Yes'
+            })
+          })
+        ])
+        if (responses.some(response => !response.ok)) throw new Error('Profile or preferences could not be saved to the server.')
+
+        const educationResponse = await fetch('/api/students/me/education', { headers: { Authorization: `Bearer ${token}` } })
+        const educationRows = await educationResponse.json().catch(() => [])
+        if (!educationResponse.ok) throw new Error('Could not load saved education records.')
+        const level = updated.educationLevel || '12th'
+        const normalizedLevel = ({ '10TH': 'TENTH', '11TH': 'ELEVENTH', '12TH': 'TWELFTH', 'UNDERGRADUATE': 'UG', 'POSTGRADUATE': 'PG' })[level.toUpperCase()] || level.toUpperCase()
+        const existing = (Array.isArray(educationRows) ? educationRows : []).find(row => String(row.level).toUpperCase() === normalizedLevel)
+        const educationSave = await fetch(existing ? `/api/students/me/education/${existing.id}` : '/api/students/me/education', {
+          method: existing ? 'PUT' : 'POST', headers,
+          body: JSON.stringify({
+            level, schoolCollege: updated.schoolCollege,
+            marks: updated.marks || `${updated.marksObtained || ''}/${updated.totalMarks || ''}`,
+            percentage: updated.percentage, groupStream: updated.groupStream,
+            interestedSubject: updated.interestedSubject
+          })
+        })
+        if (!educationSave.ok) throw new Error('Marks and education details could not be saved.')
+      }
+
+      localStorage.setItem('tn_current_student', JSON.stringify(updated))
+      const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
+      const index = students.findIndex(item => item.id === student.id)
+      if (index >= 0) {
+        students[index] = updated
+        localStorage.setItem('tn_students', JSON.stringify(students))
+      }
+      setStudent(updated)
+      setEditMode(null)
+      setSaveError(false)
+      setSavedMessage(section)
+    } catch (error) {
+      setSaveError(true)
+      setSavedMessage(error.message || 'Could not save your profile.')
     }
-    setStudent(updated)
-    setEditMode(null)
-    setSavedMessage(section)
-    setTimeout(()=>setSavedMessage(''), 3000)
+    setTimeout(() => setSavedMessage(''), 3500)
   }
 
   // Chennai filtering logic: if student says Chennai, Chennai colleges matching details first
@@ -139,7 +184,7 @@ export default function StudentProfile() {
         </div>
 
         {savedMessage && (
-          <div className="mt-6 p-4 rounded-[12px] bg-emerald-50 border-2 border-emerald-200 text-emerald-800 text-[12px] font-bold flex items-center gap-2"><Check size={16} /> {language==='ta' ? `${savedMessage} வெற்றிகரமாக சேமிக்கப்பட்டது!` : `${savedMessage} saved successfully!`} - {language==='ta' ? 'விவரங்கள் புதுப்பிக்கப்பட்டன' : 'Details updated'}</div>
+          <div role={saveError ? 'alert' : 'status'} className={`mt-6 p-4 rounded-[12px] border-2 text-[12px] font-bold flex items-center gap-2 ${saveError ? 'bg-red-50 border-red-200 text-red-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'}`}><Check size={16} /> {saveError ? savedMessage : `${savedMessage} ${language==='ta' ? 'வெற்றிகரமாக சேமிக்கப்பட்டது! - விவரங்கள் புதுப்பிக்கப்பட்டன' : 'saved successfully! - Details updated'}`}</div>
         )}
 
         <div className="mt-8 grid lg:grid-cols-[1fr_380px] gap-8">

@@ -188,6 +188,7 @@ public class PlatformAnalyticsService {
             record.put("student_name", profile != null && profile.getFullName() != null ? profile.getFullName() : user.getFullName());
             record.put("student_email", profile != null && profile.getEmail() != null ? profile.getEmail() : user.getEmail());
             record.put("student_phone", profile != null && profile.getMobile() != null ? profile.getMobile() : user.getPhone());
+            record.put("student_address", profile == null ? null : profile.getAddress());
             record.put("student_district", profile == null ? null : profile.getDistrict());
             record.put("student_city", profile == null ? null : profile.getCity());
             record.put("student_profile_completion", profile == null ? null : profile.getProfileCompletion());

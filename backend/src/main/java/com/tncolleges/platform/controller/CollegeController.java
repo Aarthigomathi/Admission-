@@ -179,6 +179,7 @@ public class CollegeController {
         item.put("level", course.getLevel());
         item.put("duration", course.getDuration());
         item.put("eligibility", course.getEligibility());
+        item.put("minimumPercentage", course.getMinimumPercentage());
         item.put("admissionProcess", course.getAdmissionProcess());
         item.put("intake", course.getIntake());
         item.put("fees", course.getFees());

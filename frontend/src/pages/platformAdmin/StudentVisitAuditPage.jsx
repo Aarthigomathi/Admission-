@@ -96,7 +96,7 @@ export default function StudentVisitAuditPage() {
   }
 
   const exportCurrentPage = () => {
-    const headers = ['student_id', 'student_name', 'student_email', 'student_phone', 'student_district', 'student_city', 'education_level', 'college_id', 'college_name', 'college_district', 'college_views', 'course_views', 'total_views', 'last_visited_at']
+    const headers = ['student_id', 'student_name', 'student_email', 'student_phone', 'student_address', 'student_district', 'student_city', 'education_level', 'college_id', 'college_name', 'college_district', 'college_views', 'course_views', 'total_views', 'last_visited_at']
     const lines = [headers.join(','), ...rows.map(row => headers.map(key => escapeCsv(row[key])).join(','))]
     const blob = new Blob([lines.join('\r\n')], { type: 'text/csv;charset=utf-8' })
     const url = URL.createObjectURL(blob)
@@ -190,7 +190,7 @@ export default function StudentVisitAuditPage() {
                 ) : rows.length ? rows.map(row => (
                   <tr key={`${row.student_id}-${row.college_id}`} className="border-b border-[#E8E2DB] align-top last:border-0 hover:bg-[#E8E2DB]/30">
                     <td className="px-4 py-4"><div className="font-bold text-[#1A3263]">{row.student_name || 'Student'}</div><div className="mt-1 text-xs text-[#547792]">ID {row.student_id}</div></td>
-                    <td className="px-4 py-4 text-xs leading-5 text-[#1A3263]"><div>{row.student_email || '—'}</div><div>{row.student_phone || '—'}</div><div className="text-[#547792]">{[row.student_district, row.student_city].filter(Boolean).join(', ') || '—'}</div></td>
+                    <td className="px-4 py-4 text-xs leading-5 text-[#1A3263]"><div>{row.student_email || '—'}</div><div>{row.student_phone || '—'}</div><div className="text-[#547792]">{[row.student_address, row.student_city, row.student_district].filter(Boolean).join(', ') || '—'}</div></td>
                     <td className="px-4 py-4 text-xs leading-5 text-[#1A3263]"><div>{row.education_level || '—'}</div><div className="text-[#547792]">{row.education_group_stream || row.education_school_college || '—'}</div><div className="text-[#547792]">{row.education_percentage || row.education_marks || ''}</div></td>
                     <td className="px-4 py-4"><div className="font-semibold text-[#1A3263]">{row.college_name}</div><div className="mt-1 text-xs text-[#547792]">{[row.college_district, row.college_slug].filter(Boolean).join(' • ')}</div></td>
                     <td className="px-4 py-4 text-xs leading-5 text-[#1A3263]"><div><strong>{row.total_views}</strong> total</div><div className="text-[#547792]">College {row.college_views} • Courses {row.course_views}</div></td>

@@ -130,6 +130,9 @@ public class AdminController {
         if (course.getName() == null || course.getName().isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Course name is required"));
         }
+        if (course.getMinimumPercentage() != null && (course.getMinimumPercentage() < 0 || course.getMinimumPercentage() > 100)) {
+            return ResponseEntity.badRequest().body(Map.of("error", "minimumPercentage must be between 0 and 100"));
+        }
         Course saved = courseRepo.save(course);
         syncCourseContent(collegeId, saved);
         return ResponseEntity.status(201).body(CourseResponse.from(saved));
@@ -189,6 +192,9 @@ public class AdminController {
         setString(updates, "level", course::setLevel);
         setString(updates, "duration", course::setDuration);
         setString(updates, "eligibility", course::setEligibility);
+        if (updates.containsKey("minimumPercentage")) {
+            course.setMinimumPercentage(decimal(updates.get("minimumPercentage"), "minimumPercentage"));
+        }
         setString(updates, "admissionProcess", course::setAdmissionProcess);
         setString(updates, "fees", course::setFees);
         setString(updates, "description", course::setDescription);
@@ -205,6 +211,17 @@ public class AdminController {
 
     private void setString(Map<String, Object> updates, String key, java.util.function.Consumer<String> setter) {
         if (updates.containsKey(key)) setter.accept(updates.get(key) == null ? null : String.valueOf(updates.get(key)));
+    }
+
+    private Double decimal(Object value, String fieldName) {
+        if (value == null || String.valueOf(value).isBlank()) return null;
+        try {
+            double parsed = Double.parseDouble(String.valueOf(value).replace("%", "").trim());
+            if (parsed < 0 || parsed > 100) throw new NumberFormatException();
+            return parsed;
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(fieldName + " must be between 0 and 100");
+        }
     }
 
     private boolean isEmptyContent(Object value) {

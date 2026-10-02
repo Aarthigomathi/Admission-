@@ -29,6 +29,8 @@ public class Course {
     private String level; // UG, PG, PhD
     private String duration;
     private String eligibility;
+    /** Optional minimum aggregate percentage used for student-course matching. */
+    private Double minimumPercentage;
     private String admissionProcess;
     private Integer intake;
     private String fees;

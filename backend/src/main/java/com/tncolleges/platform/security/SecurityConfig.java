@@ -43,7 +43,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/colleges/**", "/api/courses/**", "/api/search/**", "/h2-console/**", "/api/public/**").permitAll()
+                .requestMatchers("/api/auth/**", "/api/colleges/**", "/api/courses/**", "/api/search/**", "/api/recommendations/preview", "/h2-console/**", "/api/public/**").permitAll()
                 .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN", "PLATFORM_ADMIN", "COLLEGE_ADMIN", "COLLEGE_EDITOR")
                 .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
                 .anyRequest().authenticated()

@@ -63,6 +63,7 @@ public class AuthController {
                     .fullName(user.getFullName())
                     .email(user.getEmail())
                     .mobile(req.getMobile())
+                    .address(req.getAddress())
                     .district(req.getDistrict())
                     .city(req.getCity())
                     .updatedAt(java.time.LocalDateTime.now())
@@ -108,6 +109,7 @@ public class AuthController {
         @NotBlank @Size(min = 8, max = 100) private String password;
         @NotBlank @Size(max = 120) private String fullName;
         private String mobile;
+        private String address;
         private String district;
         private String city;
     }

@@ -44,6 +44,7 @@ public class StudentPortalService {
         result.put("fullName", student.getFullName());
         result.put("email", student.getEmail());
         result.put("mobile", student.getMobile());
+        result.put("address", student.getAddress());
         result.put("district", student.getDistrict());
         result.put("city", student.getCity());
         result.put("profileCompletion", calculateCompletion(student));
@@ -57,6 +58,7 @@ public class StudentPortalService {
         Student student = getStudent(email);
         if (updates.containsKey("fullName")) student.setFullName(text(updates.get("fullName")));
         if (updates.containsKey("mobile")) student.setMobile(text(updates.get("mobile")));
+        if (updates.containsKey("address")) student.setAddress(text(updates.get("address")));
         if (updates.containsKey("district")) student.setDistrict(text(updates.get("district")));
         if (updates.containsKey("city")) student.setCity(text(updates.get("city")));
         if (student.getFullName() == null || student.getFullName().isBlank()) throw new IllegalArgumentException("Full name is required");
@@ -201,9 +203,10 @@ public class StudentPortalService {
         if (student.getFullName() != null && !student.getFullName().isBlank()) filled++;
         if (student.getEmail() != null && !student.getEmail().isBlank()) filled++;
         if (student.getMobile() != null && !student.getMobile().isBlank()) filled++;
+        if (student.getAddress() != null && !student.getAddress().isBlank()) filled++;
         if (student.getDistrict() != null && !student.getDistrict().isBlank()) filled++;
         if (student.getCity() != null && !student.getCity().isBlank()) filled++;
-        return filled * 20;
+        return (int) Math.round(filled * 100.0 / 6.0);
     }
 
     private Map<String, Object> educationMap(StudentEducation item) {
@@ -244,6 +247,7 @@ public class StudentPortalService {
     private StudentPreferences.CollegeType parseCollegeType(String value) {
         return switch (value.trim().toUpperCase(Locale.ROOT)) {
             case "GOVT", "GOVERNMENT" -> StudentPreferences.CollegeType.GOVERNMENT;
+            case "GOVERNMENT AIDED", "GOVERNMENT_AIDED" -> StudentPreferences.CollegeType.GOVERNMENT_AIDED;
             case "PRIVATE" -> StudentPreferences.CollegeType.PRIVATE;
             case "AUTONOMOUS" -> StudentPreferences.CollegeType.AUTONOMOUS;
             case "ANY" -> StudentPreferences.CollegeType.ANY;

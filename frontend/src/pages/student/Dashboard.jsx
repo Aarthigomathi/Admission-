@@ -13,6 +13,9 @@ export default function StudentDashboard() {
   const [saved, setSaved] = useState([])
   const [compare, setCompare] = useState([])
   const [colleges, setColleges] = useState([])
+  const [recommendationData, setRecommendationData] = useState(null)
+  const [recommendationLoading, setRecommendationLoading] = useState(false)
+  const [recommendationError, setRecommendationError] = useState('')
   const { t, language } = useLanguage()
   const [showFullDetails, setShowFullDetails] = useState(false)
 
@@ -34,23 +37,30 @@ export default function StudentDashboard() {
     }
   }, [])
 
-  const recommended = useMemo(() => {
-    if (!student) return []
-    const preferredDistrict = student.preferredDistrict || 'Coimbatore'
-    const interestedCourse = student.interestedCourse || ''
-    if (colleges.length===0) return []
-    let filtered = [...colleges]
-    filtered.sort((a, b) => {
-      const aPref = a.district.toLowerCase() === preferredDistrict.toLowerCase() ? 1 : 0
-      const bPref = b.district.toLowerCase() === preferredDistrict.toLowerCase() ? 1 : 0
-      if (bPref !== aPref) return bPref - aPref
-      const aCourse = interestedCourse ? ((a.courses||[]).some(c => c.name.toLowerCase().includes(interestedCourse.split(' ')[0].toLowerCase())) ? 1 : 0) : 0
-      const bCourse = interestedCourse ? ((b.courses||[]).some(c => c.name.toLowerCase().includes(interestedCourse.split(' ')[0].toLowerCase())) ? 1 : 0) : 0
-      if (bCourse !== aCourse) return bCourse - aCourse
-      return (b.established||0) - (a.established||0)
+  useEffect(() => {
+    const token = localStorage.getItem('tn_auth_token')
+    if (!token) return undefined
+    const controller = new AbortController()
+    setRecommendationLoading(true)
+    fetch('/api/students/me/recommendations', {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal
+    }).then(async response => {
+      const body = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(body.error || 'Could not load your college recommendations.')
+      setRecommendationData(body)
+    }).catch(error => {
+      if (error.name !== 'AbortError') setRecommendationError(error.message || 'Could not load recommendations.')
+    }).finally(() => {
+      if (!controller.signal.aborted) setRecommendationLoading(false)
     })
-    return filtered.slice(0,4)
-  }, [student, colleges])
+    return () => controller.abort()
+  }, [])
+
+  const recommended = useMemo(() => (recommendationData?.recommendations || []).map(item => ({
+    ...item.college,
+    recommendation: item
+  })), [recommendationData])
 
   const recentlyViewedColleges = useMemo(() => {
     return recentlyViewedIds.map(id => colleges.find(c => String(c.id) === String(id))).filter(Boolean)
@@ -177,21 +187,31 @@ export default function StudentDashboard() {
           <div className="space-y-10">
             <div>
               <div className="flex items-center justify-between">
-                <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={20} className="text-[#FAB95B]" /> {t('recommendedForYou')} - {student.preferredDistrict} Colleges First</h2>
+                <h2 className="font-display text-[22px] font-bold text-[#1A3263] flex items-center gap-2"><Heart size={20} className="text-[#FAB95B]" /> Colleges matched to your marks and preferences</h2>
                 <Link to="/search" className="text-[12px] font-bold text-[#547792] hover:text-[#1A3263]">{t('viewAll')}</Link>
               </div>
-              <p className="text-[12px] text-[#547792] mt-1">If you select Chennai, Chennai colleges matching your {student.percentage}% - {student.interestedCourse} will show first - {colleges.length} colleges added by colleges themselves</p>
-              
-              {colleges.length===0 ? (
+              <p className="text-[12px] text-[#547792] mt-1">Recommendations use your saved marks, course choice, college type, and preferred district.</p>
+              {recommendationLoading ? (
+                <div className="mt-6 rounded-[20px] bg-white border-2 border-[#E8E2DB] p-8 text-center text-sm text-[#547792]">Checking verified courses against your marks and preferences…</div>
+              ) : recommendationError ? (
+                <div role="alert" className="mt-6 rounded-[20px] border border-red-200 bg-red-50 p-5 text-sm text-red-800">{recommendationError}</div>
+              ) : recommended.length===0 ? (
                 <div className="mt-6 rounded-[20px] bg-white border-2 border-[#FAB95B]/30 p-10 text-center">
-                                    <div className="font-bold text-[#1A3263] mt-4">No Colleges Yet - Colleges Need to Signup & Add Themselves</div>
-                  <div className="text-[12px] text-[#547792] mt-2 max-w-[400px] mx-auto">Automatic default college name kattama - Platform la default college illa. College signup panni avanga details add pannina aprom thaan colleges varum. Be first to invite colleges!</div>
-                  <Link to="/college/signup" className="mt-4 inline-flex h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Invite College to Sign Up</Link>
+                  <div className="font-bold text-[#1A3263] mt-4">No eligible published course matches yet</div>
+                  <div className="text-[12px] text-[#547792] mt-2 max-w-[520px] mx-auto">Only signed-up, verified colleges with published matching programmes are recommended. Update your course or district preferences to try another match.</div>
+                  {recommendationData?.notice && <div className="text-[11px] text-[#547792] mt-2">{recommendationData.notice}</div>}
+                  <Link to="/search" className="mt-4 inline-flex h-10 px-5 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[12px]">Browse verified colleges</Link>
                 </div>
               ) : (
                 <div className="mt-6 grid md:grid-cols-2 gap-6">
                   {recommended.map(c=>(
-                    <CollegeCard key={c.id} college={c} />
+                    <div key={c.id}>
+                      <div className="mb-2 rounded-xl border border-[#FAB95B]/50 bg-white px-4 py-3 text-xs text-[#1A3263]">
+                        <strong>{c.recommendation.eligibilityStatus}</strong>
+                        <span className="ml-2 text-[#547792]">{c.recommendation.matchingCourses.map(course => course.name).filter(Boolean).join(', ')}</span>
+                      </div>
+                      <CollegeCard college={c} />
+                    </div>
                   ))}
                 </div>
               )}

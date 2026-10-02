@@ -1,7 +1,6 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, ArrowLeft, Check, GraduationCap, MapPin, BookOpen, Home, User, Mail, Phone, Lock, School, Award, Heart, Calendar, Users, FileText, Upload, Star, Trophy, TrendingUp, BadgeCheck, Building, Briefcase, IdCard, X, Calculator, Sparkles } from 'lucide-react'
-import { fetchPublicColleges } from '../../lib/collegeStorage'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 
@@ -10,14 +9,10 @@ export default function StudentSignup() {
   const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
-  const [publicColleges, setPublicColleges] = useState([])
+  const [previewRecommendations, setPreviewRecommendations] = useState([])
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState('')
   const { t, language } = useLanguage()
-
-  useEffect(() => {
-    let cancelled = false
-    fetchPublicColleges().then(items => { if (!cancelled) setPublicColleges(items) }).catch(() => { if (!cancelled) setPublicColleges([]) })
-    return () => { cancelled = true }
-  }, [])
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -91,6 +86,41 @@ export default function StudentSignup() {
     scholarshipNeeded: 'No'
   })
 
+  useEffect(() => {
+    if (step !== 4 || !formData.percentage || !formData.interestedCourse) return undefined
+    const controller = new AbortController()
+    setPreviewLoading(true)
+    setPreviewError('')
+    fetch('/api/recommendations/preview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        marks: `${formData.marksObtained}/${formData.totalMarks}`,
+        percentage: formData.percentage,
+        educationLevel: formData.educationLevel,
+        course: formData.interestedCourse,
+        district: formData.preferredDistrict,
+        type: formData.collegeType,
+        hostelRequired: formData.hostelRequired === 'Yes',
+        transportRequired: formData.transportRequired === 'Yes'
+      })
+    }).then(async response => {
+      const body = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(body.error || 'Could not load course-matched colleges.')
+      setPreviewRecommendations(Array.isArray(body.recommendations) ? body.recommendations : [])
+    }).catch(error => {
+      if (error.name !== 'AbortError') {
+        setPreviewRecommendations([])
+        setPreviewError(error.message || 'Could not load recommendations.')
+      }
+    }).finally(() => {
+      if (!controller.signal.aborted) setPreviewLoading(false)
+    })
+    return () => controller.abort()
+  }, [step, formData.percentage, formData.marksObtained, formData.totalMarks, formData.educationLevel,
+    formData.interestedCourse, formData.preferredDistrict, formData.collegeType, formData.hostelRequired, formData.transportRequired])
+
   const updateField = (field, value) => setFormData(prev => ({ ...prev, [field]: value }))
   const updateDocName = (docKey, fileName) => setFormData(prev => ({
     ...prev,
@@ -157,29 +187,22 @@ export default function StudentSignup() {
     setFormData(newData)
   }
 
-  const topCollegesByPercentage = useMemo(() => {
-    const perc = parseFloat(formData.percentage) || 0
-    let filtered = publicColleges
-    if (filtered.length===0) return []
-    filtered = [...filtered].sort((a, b) => {
-      const placeA = parseInt(a.placements?.percentage || 0)
-      const placeB = parseInt(b.placements?.percentage || 0)
-      if (placeB !== placeA) return placeB - placeA
-      return (b.established||0) - (a.established||0)
-    })
-    if (perc >= 90) {
-      return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Excellent Match - 90%+ Eligible for Top Colleges', matchPercent: 95, reason: `Your ${perc}% is outstanding - You are eligible for ${c.shortName} top rated college with ${c.placements.percentage} placement` }))
-    } else if (perc >= 80) {
-      return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Very Good Match - 80%+ Eligible', matchPercent: 85, reason: `Your ${perc}% is very good - ${c.shortName} recommends ${formData.interestedCourse} with ${c.placements.percentage} placement` }))
-    } else if (perc >= 70) {
-      return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Good Match - 70%+ Eligible', matchPercent: 75, reason: `Your ${perc}% is good - ${c.shortName} has courses for your percentage - ${c.placements.percentage} placement` }))
-    } else if (perc >= 60) {
-      return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Eligible - 60%+ Colleges', matchPercent: 65, reason: `Your ${perc}% - You can apply to ${c.shortName} - ${c.placements.percentage} placement, scholarship available` }))
-    } else if (perc > 0) {
-      return filtered.slice(0, 6).map(c => ({ ...c, eligibilityMatch: 'Eligible - Apply with counselling', matchPercent: 55, reason: `Your ${perc}% - Don't worry, ${c.shortName} has options - Contact admission` }))
+  const topCollegesByPercentage = previewRecommendations.map(item => {
+    const status = item.eligibilityStatus
+    const labels = {
+      ELIGIBLE: 'Eligible based on the published minimum percentage',
+      CHECK_WITH_COLLEGE: 'Course cutoff not published — confirm with college',
+      MARKS_REQUIRED: 'Marks needed to confirm eligibility'
     }
-    return filtered.slice(0, 4).map(c => ({ ...c, eligibilityMatch: 'Top Rated Colleges in Tamil Nadu', matchPercent: 80, reason: `${c.shortName} - ${c.placements.percentage} placement - ${c.accreditation}` }))
-  }, [formData.percentage, formData.interestedCourse, publicColleges])
+    return {
+      ...item.college,
+      eligibilityMatch: labels[status] || 'Potential course match',
+      matchPercent: item.matchScore,
+      reason: (item.matchReasons || []).join(' • ') || 'Matched to your search preferences',
+      matchedCourses: item.matchingCourses || [],
+      eligibilityStatus: status
+    }
+  })
 
   const handleSubmit = async () => {
     if (submitting) return
@@ -194,6 +217,7 @@ export default function StudentSignup() {
           email: formData.email,
           password: formData.password,
           mobile: formData.mobile,
+          address: formData.permanentAddress,
           district: formData.district,
           city: formData.city
         })
@@ -203,31 +227,43 @@ export default function StudentSignup() {
       localStorage.setItem('tn_auth_token', auth.token)
 
       const authHeaders = { Authorization: `Bearer ${auth.token}`, 'Content-Type': 'application/json' }
-      await Promise.allSettled([
-        fetch('/api/students/me/education', {
-          method: 'POST',
-          headers: authHeaders,
-          body: JSON.stringify({
-            level: formData.educationLevel,
-            schoolCollege: formData.schoolCollege,
-            marks: `${formData.marksObtained}/${formData.totalMarks}`,
-            percentage: formData.percentage,
-            groupStream: formData.groupStream,
-            interestedSubject: formData.interestedSubject
-          })
-        }),
-        fetch('/api/students/me/preferences', {
-          method: 'PUT',
-          headers: authHeaders,
-          body: JSON.stringify({
-            interestedCourse: formData.interestedCourse,
-            preferredDistrict: formData.preferredDistrict,
-            collegeType: formData.collegeType,
-            hostelRequired: formData.hostelRequired === 'Yes',
-            transportRequired: formData.transportRequired === 'Yes'
-          })
+      const profileResult = await fetch('/api/students/me', {
+        method: 'PUT',
+        headers: authHeaders,
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          mobile: formData.mobile,
+          address: formData.permanentAddress,
+          district: formData.district,
+          city: formData.city
         })
-      ])
+      })
+      const educationResult = await fetch('/api/students/me/education', {
+        method: 'POST',
+        headers: authHeaders,
+        body: JSON.stringify({
+          level: formData.educationLevel,
+          schoolCollege: formData.schoolCollege,
+          marks: `${formData.marksObtained}/${formData.totalMarks}`,
+          percentage: formData.percentage,
+          groupStream: formData.groupStream,
+          interestedSubject: formData.interestedSubject
+        })
+      })
+      const preferencesResult = await fetch('/api/students/me/preferences', {
+        method: 'PUT',
+        headers: authHeaders,
+        body: JSON.stringify({
+          interestedCourse: formData.interestedCourse,
+          preferredDistrict: formData.preferredDistrict,
+          collegeType: formData.collegeType,
+          hostelRequired: formData.hostelRequired === 'Yes',
+          transportRequired: formData.transportRequired === 'Yes'
+        })
+      })
+      if (!profileResult.ok || !educationResult.ok || !preferencesResult.ok) {
+        throw new Error('Your account was created, but some profile data did not save. Please log in and update your profile.')
+      }
 
       const student = {
       id: auth.userId,
@@ -724,22 +760,25 @@ export default function StudentSignup() {
                       <div className="flex items-center gap-2 font-bold text-[14px] text-[#1A3263]"><Star size={18} className="text-[#FAB95B]" /> {t('topRatedColleges')} {formData.percentage}% - {formData.interestedCourse}</div>
                       <div className="px-3 py-1 rounded-full bg-[#FAB95B] text-[#1A3263] text-[11px] font-bold">{formData.percentage}% - {topCollegesByPercentage.length} Matched</div>
                     </div>
-                    {topCollegesByPercentage.length===0 ? (
+                    {previewLoading ? (
+                      <div className="mt-4 rounded-[16px] bg-[#E8E2DB] p-6 text-center text-sm text-[#547792]">Checking verified colleges against your marks, course, and district…</div>
+                    ) : previewError ? (
+                      <div role="alert" className="mt-4 rounded-[16px] border border-red-200 bg-red-50 p-5 text-sm text-red-800">{previewError}</div>
+                    ) : topCollegesByPercentage.length===0 ? (
                       <div className="mt-4 rounded-[16px] bg-[#FAB95B]/20 border-2 border-[#FAB95B]/30 p-8 text-center">
-                                                <div className="font-bold text-[#1A3263] mt-3">No Colleges Registered Yet - No Default Colleges</div>
-                        <div className="text-[11px] text-[#1A3263]/80 mt-2">Automatic default college name kattama - Platform la ippa colleges illa. Colleges signup panni avunga details add panna apram ungalukku matched colleges kaattum. First college /college/signup la register pannanum.</div>
-                        <div className="text-[11px] text-[#547792] mt-2">Your {formData.percentage}% eligible - Once colleges register, top matches for {formData.interestedCourse} will appear here based on placement %.</div>
+                        <div className="font-bold text-[#1A3263] mt-3">No verified course matches found yet</div>
+                        <div className="text-[11px] text-[#1A3263]/80 mt-2">We only recommend colleges that have completed signup, verification, and published matching course details with eligibility information.</div>
                       </div>
                     ) : (
                     <div className="grid md:grid-cols-2 gap-3 mt-4">
                       {topCollegesByPercentage.map(college=>(
                         <div key={college.id} className="rounded-[16px] bg-[#E8E2DB]/50 border-2 border-[#E8E2DB] p-4 hover:border-[#FAB95B] transition-colors">
                           <div className="flex gap-3">
-                            <img src={college.branding?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(college.name)}&background=1A3263&color=FAB95B`} alt={college.shortName} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" />
+                            <img src={college.branding?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(college.name)}&background=1A3263&color=FAB95B`} alt={college.shortName || college.name} className="h-12 w-12 rounded-[10px] object-cover border-2 border-[#FAB95B] bg-white" />
                             <div className="flex-1">
                               <div className="font-bold text-[#1A3263] text-[13px]">{college.name}</div>
                               <div className="text-[10px] text-[#547792]">{college.district} • {college.type}</div>
-                              <div className="text-[10px] font-bold text-[#1A3263] mt-1">{college.placements?.percentage || '—'} {t('placement')}</div>
+                              <div className="text-[10px] font-bold text-[#1A3263] mt-1">{college.matchedCourses.map(course => course.name).filter(Boolean).join(', ')}</div>
                             </div>
                             <div className="px-2 py-1 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{college.matchPercent}% Match</div>
                           </div>
