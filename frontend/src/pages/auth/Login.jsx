@@ -17,10 +17,11 @@ export default function Login() {
   const [params] = useSearchParams()
   const roleParam = ROLE_FROM_PARAM[(params.get('role') || '').toLowerCase()] || 'STUDENT'
   const demoParam = params.get('demo') === '1'
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(() => (params.get('email') || '').trim())
   const [password, setPassword] = useState('')
   const [role, setRole] = useState(roleParam)
   const [demoNotice, setDemoNotice] = useState('')
+  const [loginError, setLoginError] = useState('')
 
   const demoCredentials = (r = role) => {
     if (r === 'STUDENT') return { email: 'demo.student@tncolleges.in', password: 'demo1234' }
@@ -50,27 +51,65 @@ export default function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault()
+    setLoginError('')
     if (role === 'STUDENT') {
-      const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
-      const student = students.find(s => s.email === email) || { id: 1, email, fullName: 'Demo Student', district: 'Coimbatore', educationLevel: '12th', interestedCourse: 'B.E Computer Science', role: 'STUDENT', percentage: '85', city: 'Coimbatore', preferredDistrict: 'Coimbatore', groupStream: 'Computer Science' }
+      const normalizedEmail = email.trim().toLowerCase()
+      let students = []
+      try {
+        const storedStudents = JSON.parse(localStorage.getItem('tn_students') || '[]')
+        students = Array.isArray(storedStudents) ? storedStudents : []
+      } catch { /* malformed local data should not create a false demo login */ }
+
+      const matchingStudents = students.filter(student => String(student.email || '').trim().toLowerCase() === normalizedEmail)
+      const student = matchingStudents.slice().reverse().find(account => String(account.password || account.loginPassword || '') === password)
+      const isDemoStudent = normalizedEmail === 'demo.student@tncolleges.in' && password === 'demo1234'
+
+      if (!student && isDemoStudent) {
+        const demoStudent = {
+          id: 'demo-student', email: normalizedEmail, fullName: 'Demo Student', mobile: '9876543210',
+          district: 'Coimbatore', city: 'Coimbatore', educationLevel: '12th',
+          schoolCollege: 'Demo Higher Secondary School', percentage: '85', groupStream: 'Computer Science',
+          interestedCourse: 'B.E Computer Science', preferredDistrict: 'Coimbatore', collegeType: 'Any',
+          hostelRequired: 'Yes', transportRequired: 'No', role: 'STUDENT', profileCompletion: 100, isDemo: true
+        }
+        localStorage.setItem('tn_current_student', JSON.stringify(demoStudent))
+        navigate('/student/dashboard')
+        return
+      }
+
+      if (!student) {
+        setLoginError(matchingStudents.length
+          ? 'The email or password is incorrect. Your saved details have not been changed.'
+          : 'No student account was found for this email. Please sign up once, then log in with the same email and password.')
+        return
+      }
+
       localStorage.setItem('tn_current_student', JSON.stringify(student))
       navigate('/student/dashboard')
     } else if (role === 'COLLEGE') {
       const id = email.trim().toLowerCase()
-      const college = findCollegeByLoginId(id)
+      const college = findCollegeByLoginId(id, password)
       if (!college) {
-        alert('College with this username/email not found!\n\nIf you just signed up, use your college email or the username you created. If still not found, please sign up first.')
-        navigate('/college/signup')
+        setLoginError('College account not found on this browser. Check the registered email or username, or sign up once if this is a new account.')
         return
       }
       if (college.loginPassword && college.loginPassword !== password) {
-        alert('Wrong password for ' + college.name + '! Please try again.')
+        setLoginError('The password is incorrect. Your saved college details have not been changed.')
         return
       }
       localStorage.setItem('tn_current_college', JSON.stringify(college))
       navigate('/admin')
     } else {
-      localStorage.setItem('tn_platform_admin', JSON.stringify({ email, role: 'PLATFORM_ADMIN' }))
+      const normalizedEmail = email.trim().toLowerCase()
+      let adminAccounts = {}
+      try {
+        const parsedAccounts = JSON.parse(localStorage.getItem('tn_platform_admin_accounts') || '{}')
+        if (parsedAccounts && typeof parsedAccounts === 'object' && !Array.isArray(parsedAccounts)) adminAccounts = parsedAccounts
+      } catch { /* recover from malformed account metadata without touching portal data */ }
+      const savedAccount = adminAccounts[normalizedEmail] || {}
+      adminAccounts[normalizedEmail] = { ...savedAccount, email: normalizedEmail, role: 'PLATFORM_ADMIN' }
+      localStorage.setItem('tn_platform_admin_accounts', JSON.stringify(adminAccounts))
+      localStorage.setItem('tn_platform_admin', JSON.stringify({ email: normalizedEmail, role: 'PLATFORM_ADMIN' }))
       navigate('/platform-admin')
     }
   }
@@ -292,7 +331,7 @@ export default function Login() {
                   required
                   type={role === 'COLLEGE' ? 'text' : 'email'}
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={e => { setEmail(e.target.value); setLoginError('') }}
                   placeholder={role === 'STUDENT' ? 'student@email.com' : role === 'COLLEGE' ? 'college username or email' : 'admin@platform.com'}
                   className="mt-2 w-full h-11 sm:h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[13px] sm:text-[14px] transition-colors"
                 />
@@ -305,11 +344,15 @@ export default function Login() {
                   required
                   type="password"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={e => { setPassword(e.target.value); setLoginError('') }}
                   placeholder="Enter password"
                   className="mt-2 w-full h-11 sm:h-12 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] focus:border-[#1A3263] focus:bg-white outline-none text-[13px] sm:text-[14px] transition-colors"
                 />
               </div>
+
+              {loginError && (
+                <div role="alert" className="rounded-[12px] border border-red-200 bg-red-50 px-3 py-2 text-[11px] leading-[1.5] text-red-700">{loginError}</div>
+              )}
 
               <button type="submit" className="w-full h-11 sm:h-12 rounded-full bg-[#1A3263] text-[#FAB95B] font-bold text-[13px] sm:text-[14px] flex items-center justify-center gap-2 hover:bg-[#1A3263]/90 transition-colors shadow-lg">
                 Login as {role.replace('_', ' ')} <ArrowRight size={16} className="sm:hidden" /><ArrowRight size={18} className="hidden sm:block" />

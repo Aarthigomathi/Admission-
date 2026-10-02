@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
-import { Upload, ImageIcon, Link as LinkIcon, Plus, Trash2, ChevronDown } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Upload, ImageIcon, Link as LinkIcon, Plus, Trash2 } from 'lucide-react'
 import { saveCollegeDataSafe } from '../../lib/collegeStorage'
+import { clearAdminDraft, readAdminDraft, saveAdminDraft } from '../../lib/adminDraft'
 
 const inputCls = 'w-full h-10 px-3 rounded-[10px] border border-[#E8E2DB] bg-white text-[13px] text-[#1A3263] focus:outline-none focus:border-[#FAB95B]'
 const taCls = 'w-full px-3 py-2.5 rounded-[10px] border border-[#E8E2DB] bg-white text-[13px] text-[#1A3263] leading-relaxed focus:outline-none focus:border-[#FAB95B]'
@@ -156,33 +157,98 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
   const [f, setF] = useState(blank())
   const [deptForm, setDeptForm] = useState(blankDeptForm())
   const [showAdd, setShowAdd] = useState(false)
+  const [loadedFor, setLoadedFor] = useState('')
+  const [draftStatus, setDraftStatus] = useState('')
+  const lastDraftRef = useRef('')
+  const currentFormKey = showAdd ? `${collegeId}:new` : `${collegeId}:${selId || 'none'}`
 
   // if the selected department was deleted, fall back to the first one
   useEffect(() => {
     if (departments.length === 0) { if (selId !== null) setSelId(null); return }
     if (!selId || !departments.some(d => String(d.id) === String(selId))) setSelId(String(departments[0].id))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [departments.length, selId])
+  }, [collegeId, departments.length, selId])
 
   useEffect(() => {
-    const all = customData.deptPages || (fullCollege && fullCollege.deptPages) || {}
-    setF(fromStored(all[selId] || all[String(selId)]))
+    setLoadedFor('')
+    if (!collegeId) return
+
+    if (showAdd) {
+      const section = 'deptPages_new'
+      const draft = readAdminDraft(collegeId, section)
+      const data = draft?.data
+        ? { deptForm: { ...blankDeptForm(), ...(draft.data.deptForm || {}) }, page: { ...blank(), ...(draft.data.page || {}) } }
+        : { deptForm: blankDeptForm(), page: blank() }
+      setDeptForm(data.deptForm)
+      setF(data.page)
+      lastDraftRef.current = `${collegeId}:${section}:${JSON.stringify(data)}`
+      setDraftStatus(draft?.data ? 'Recovered an auto-saved new department' : '')
+      setLoadedFor(`${collegeId}:new`)
+      return
+    }
+
+    if (!selId) {
+      const empty = blank()
+      setF(empty)
+      lastDraftRef.current = `${collegeId}:none:${JSON.stringify(empty)}`
+      setLoadedFor(`${collegeId}:none`)
+      return
+    }
+
+    const section = `deptPages_${selId}`
+    const draft = readAdminDraft(collegeId, section)
+    let nextForm
+    if (draft?.data) {
+      nextForm = { ...blank(), ...draft.data }
+      setDraftStatus('Recovered an auto-saved department page')
+    } else {
+      const all = customData.deptPages || (fullCollege && fullCollege.deptPages) || {}
+      nextForm = fromStored(all[selId] || all[String(selId)])
+      setDraftStatus('')
+    }
+    setF(nextForm)
+    lastDraftRef.current = `${collegeId}:${section}:${JSON.stringify(nextForm)}`
+    setLoadedFor(`${collegeId}:${selId}`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selId, collegeId])
+  }, [selId, collegeId, showAdd])
+
+  useEffect(() => {
+    if (!collegeId || loadedFor !== currentFormKey) return undefined
+    const persistDraft = (updateStatus = true) => {
+      const section = showAdd ? 'deptPages_new' : selId ? `deptPages_${selId}` : ''
+      if (!section) return
+      const data = showAdd ? { deptForm, page: f } : f
+      const snapshotKey = `${collegeId}:${section}:${JSON.stringify(data)}`
+      if (snapshotKey === lastDraftRef.current) return
+      const ok = saveAdminDraft(collegeId, section, data)
+      if (ok) lastDraftRef.current = snapshotKey
+      if (updateStatus) setDraftStatus(ok ? 'Auto-saved in this browser' : 'Auto-save failed — browser storage may be full')
+    }
+    const flushOnUnload = () => persistDraft(false)
+    const timer = window.setTimeout(persistDraft, 700)
+    window.addEventListener('beforeunload', flushOnUnload)
+    return () => {
+      window.clearTimeout(timer)
+      window.removeEventListener('beforeunload', flushOnUnload)
+      persistDraft(false)
+    }
+  }, [collegeId, currentFormKey, loadedFor, showAdd, selId, deptForm, f])
 
   const set = (k, v) => setF(prev => ({ ...prev, [k]: v }))
 
   const openAdd = () => {
-    setDeptForm(blankDeptForm())
-    setF(blank())
+    const draft = readAdminDraft(collegeId, 'deptPages_new')
+    setDeptForm(draft?.data?.deptForm ? { ...blankDeptForm(), ...draft.data.deptForm } : blankDeptForm())
+    setF(draft?.data?.page ? { ...blank(), ...draft.data.page } : blank())
     setShowAdd(true)
   }
 
   const persistDepartments = (list, extra = {}) => {
     const merged = { ...customData, departments: list, ...extra }
     setCustomData(merged)
-    saveCollegeDataSafe(collegeId, 'departments', list)
-    if (extra.deptPages) saveCollegeDataSafe(collegeId, 'deptPages', extra.deptPages)
+    const writes = [saveCollegeDataSafe(collegeId, 'departments', list)]
+    if (extra.deptPages) writes.push(saveCollegeDataSafe(collegeId, 'deptPages', extra.deptPages))
+    return Promise.all(writes)
   }
 
   // One form: department + HOD details AND the whole KCE page content are saved together
@@ -193,11 +259,15 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
     const id = Date.now()
     const dept = { id, createdAt: new Date().toISOString(), ...deptForm, name }
     const pages = { ...(customData.deptPages || {}), [id]: toStored(f) }
-    persistDepartments([...list, dept], { deptPages: pages })
+    const writes = persistDepartments([...list, dept], { deptPages: pages })
     setDeptForm(blankDeptForm())
     setF(blank())
     setShowAdd(false)
     setSelId(String(id))
+    writes.then(results => {
+      if (results.every(Boolean)) clearAdminDraft(collegeId, 'deptPages_new')
+      else setDraftStatus('Auto-saved draft kept — storage could not publish all department data')
+    })
     alert(`Department ${name} added + page content saved - Academics page-la live aagiduchu`)
   }
 
@@ -221,11 +291,20 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
     alert(`Department ${dept.name} deleted - website Academics la irundhu remove aagiduchu`)
   }
   const save = () => {
+    if (!selId) return
     const all = customData.deptPages || {}
     const next = { ...all, [selId]: toStored(f) }
     saveCollegeDataSafe(collegeId, 'deptPages', next).then(ok => {
-      if (ok) { setCustomData({ ...customData, deptPages: next }); alert('Department page saved! Website-la real-time update aagum.') }
-      else alert('Storage full - images-ku URL use pannunga')
+      if (ok) {
+        setCustomData({ ...customData, deptPages: next })
+        clearAdminDraft(collegeId, `deptPages_${selId}`)
+        lastDraftRef.current = `${collegeId}:deptPages_${selId}:${JSON.stringify(f)}`
+        setDraftStatus('Saved to College Admin')
+        alert('Department page saved! Website-la real-time update aagum.')
+      } else {
+        setDraftStatus('Draft kept — publishing failed')
+        alert('Storage full - images-ku URL use pannunga')
+      }
     })
   }
 
@@ -235,6 +314,7 @@ export default function DeptPagesAdmin({ collegeId, customData, setCustomData, f
         <div>
           <h2 className="text-[16px] font-extrabold text-white">Department Pages (KCE Layout)</h2>
           <p className="text-[12px] text-white/60 mt-1">Each department gets the KCE department page: hero + about card, vision/mission cards, regulations, courses, labs, PEO/PO/PSO, HOD profile, faculty, smart classrooms, curriculum. <b>Add Department</b> click pannuna ellam ore form-la kedaikum - department + HOD + page content ellam oru thadava save aagum. Nee add panna department maathrum website Academics page-la varum.</p>
+          <p className="text-[11px] text-white/75 mt-1">{draftStatus || 'Edits auto-save in this browser; use Save to publish a department page.'}</p>
         </div>
         <button onClick={openAdd} className="h-11 px-6 rounded-full bg-[#FAB95B] text-[#1A3263] text-[12px] font-extrabold uppercase tracking-wide hover:bg-[#FAB95B]/90 inline-flex items-center gap-2"><Plus size={15} /> Add Department</button>
         <div className="flex items-center gap-3">

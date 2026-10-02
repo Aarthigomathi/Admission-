@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Building2, Mail, Phone, Globe, MapPin, Calendar, User, Lock, Upload, CheckCircle2, AlertCircle, Sparkles, Image as ImageIcon, Award, Users, BookOpen } from 'lucide-react'
-import { createNewCollegeFromSignup } from '../../lib/collegeStorage'
+import { createNewCollegeFromSignup, findCollegeByLoginId } from '../../lib/collegeStorage'
 import { districts } from '../../lib/colleges'
 
 export default function CollegeSignup() {
@@ -27,7 +27,17 @@ export default function CollegeSignup() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const college = createNewCollegeFromSignup(formData)
+    const email = String(formData.email || '').trim().toLowerCase()
+    const username = String(formData.username || '').trim()
+    const existingCollege = (username && findCollegeByLoginId(username)) || findCollegeByLoginId(email)
+    if (existingCollege) {
+      const loginId = existingCollege.loginUsername || existingCollege.email || username || email
+      alert('This college account already exists. Log in with the same account to open and edit its saved details.')
+      navigate(`/login?role=college&email=${encodeURIComponent(loginId)}`)
+      return
+    }
+
+    const college = createNewCollegeFromSignup({ ...formData, email, username })
     window.dispatchEvent(new Event('collegeRegistered'))
     alert(`College registered! ${college.name} - ID: ${college.id} - Status: PENDING. You can now login and add your college details.`)
     navigate('/admin')

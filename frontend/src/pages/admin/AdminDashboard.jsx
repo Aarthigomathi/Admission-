@@ -63,7 +63,7 @@ export default function AdminDashboard() {
  const [principalForm, setPrincipalForm] = useState({ name: '', designation: 'Principal', qualification: '', experience: '', image: '', message: '', detailedBio: '', email: '', phone: '', bio: '', research: '', publications: '', awards: '' })
  const [aboutForm, setAboutForm] = useState({ fullText: '', vision: '', mission: '' })
  const [brandingForm, setBrandingForm] = useState({ logo: '', heroImage: '', tagline: '', collegeImages: [], primary: '#1A3263', secondary: '#547792', accent: '#FAB95B' })
- const [newCollegeImageUrl, setNewCollegeImageUrl] = useState('')
+
  const [admissionForm, setAdmissionForm] = useState({ status: 'Open', academicYear: '2026-27', title: '', description: '', eligibility: '', process: '', applicationStart: '', applicationEnd: '', counsellingDate: '', lastDate: '', entranceExam: '', cutoff: '', fees: '', totalSeats: '', documents: '', quota: '', scholarships: '', applicationLink: '', brochureImage: '', contactPhone: '', contactEmail: '' })
  const [contactForm, setContactForm] = useState({ address: '', city: '', district: '', pincode: '', phone: '', phone2: '', email: '', admissionsEmail: '', website: '', officeHours: '', mapLink: '', contactPerson: '', contactDesignation: '', contactPhone: '', enquiryPhone: '', enquiryEmail: '', supportHours: '', fax: '', tollFree: '' })
  const [homeForm, setHomeForm] = useState({ tneaCode: '', eventDate: '', eventTime: '', chiefGuestName: '', chiefGuestTitle: '', chiefGuestPhoto: '', coordinators: '', convenors: '', partnerLogos: '', statPlacements: '', statCompanies: '', statMaxLpa: '', aboutImage: '', accreditationLogos: '', industryLogos: '', ugDesc: '', pgDesc: '', placementText: '', footerAbout: '', bannerImages: '', campusTourUrl: '', quickLinks: '' })
@@ -96,13 +96,17 @@ export default function AdminDashboard() {
    if (!form) return
    let snapshot = ''
    try { snapshot = JSON.stringify(form) } catch { return }
-   if (!snapshot || snapshot === '{}' || snapshot === lastDraftRef.current) return
-   lastDraftRef.current = snapshot
+   if (!snapshot || snapshot === '{}') return
+   const snapshotKey = `${selectedCollegeId}:${section}:${snapshot}`
+   if (snapshotKey === lastDraftRef.current) return
    if (saveAdminDraft(selectedCollegeId, section, form)) {
+    lastDraftRef.current = snapshotKey
     setDraftStatus(`Auto-saved ${new Date().toLocaleTimeString()}`)
+   } else {
+    setDraftStatus('Auto-save could not write to this browser')
    }
   }
-  const timer = setInterval(flush, 2000)
+  const timer = setInterval(flush, 700)
   window.addEventListener('beforeunload', flush)
   window.addEventListener('pagehide', flush)
   return () => {
@@ -116,7 +120,10 @@ export default function AdminDashboard() {
  // when a section opens, bring back anything that was auto-saved but never saved
  const restoreKeyRef = useRef('')
  useEffect(() => {
-  if (!isLoggedIn || !selectedCollegeId) return
+  if (!isLoggedIn || !selectedCollegeId) {
+   restoreKeyRef.current = ''
+   return
+  }
   const key = `${selectedCollegeId}:${activeSection}`
   if (restoreKeyRef.current === key) return
   restoreKeyRef.current = key
@@ -124,7 +131,7 @@ export default function AdminDashboard() {
   const draft = readAdminDraft(selectedCollegeId, activeSection)
   if (!setter || !draft) return
   try { setter(draft.data) } catch { return }
-  lastDraftRef.current = JSON.stringify(draft.data)
+  lastDraftRef.current = `${selectedCollegeId}:${activeSection}:${JSON.stringify(draft.data)}`
   const when = new Date(draft.savedAt).toLocaleString()
   setDraftNotice(`Auto-save la irundhu thirumba kondu vandhutom (${when}) - kandippa Save button click pannunga`)
  }, [activeSection, isLoggedIn, selectedCollegeId])
@@ -653,13 +660,14 @@ export default function AdminDashboard() {
  }
 
  const handleSaveBranding = () => {
+  const collegeImages = (brandingForm.collegeImages || []).filter(image => image?.url?.trim())
   // no hero image chosen? fall back to the first campus image so the dashboard
   // preview and the website banner are never empty
-  const heroImage = brandingForm.heroImage || (brandingForm.collegeImages || [])[0]?.url || ''
+  const heroImage = brandingForm.heroImage || collegeImages[0]?.url || ''
   const branding = {
    logo: brandingForm.logo,
    heroImage,
-   collegeImages: brandingForm.collegeImages || [],
+   collegeImages,
    colors: { primary: brandingForm.primary, secondary: brandingForm.secondary, accent: brandingForm.accent },
    preset: 'custom'
   }
@@ -692,17 +700,24 @@ export default function AdminDashboard() {
   reader.readAsDataURL(file)
  }
 
- const handleAddCollegeImage = () => {
-  if (!newCollegeImageUrl) return alert("Enter image URL")
-  if ((brandingForm.collegeImages||[]).length >= 10) return alert("Maximum 10 college images allowed")
-  const updated = [...(brandingForm.collegeImages||[]), { id: Date.now(), url: newCollegeImageUrl, caption: `Campus Image ${(brandingForm.collegeImages||[]).length+1}` }]
-  setBrandingForm({ ...brandingForm, collegeImages: updated })
-  setNewCollegeImageUrl('')
+ const handleCollegeImageUrlChange = (index, url) => {
+  setBrandingForm(prev => {
+   const current = Array.isArray(prev.collegeImages) ? prev.collegeImages : []
+   const images = Array.from({ length: 10 }, (_, imageIndex) => current[imageIndex] || {
+    id: `campus-image-${imageIndex + 1}`,
+    url: '',
+    caption: `Campus Image ${imageIndex + 1}`
+   })
+   images[index] = { ...images[index], url }
+   return { ...prev, collegeImages: images }
+  })
  }
 
  const handleRemoveCollegeImage = (id) => {
-  const updated = (brandingForm.collegeImages||[]).filter(img => img.id !== id)
-  setBrandingForm({ ...brandingForm, collegeImages: updated })
+  setBrandingForm(prev => ({
+   ...prev,
+   collegeImages: (prev.collegeImages || []).map(image => image?.id === id ? { ...image, url: '' } : image)
+  }))
  }
 
  const handleLogoUpload = (e) => {
@@ -715,21 +730,6 @@ export default function AdminDashboard() {
   reader.readAsDataURL(file)
  }
 
- const handleCollegeImageUpload = (e) => {
-  const files = Array.from(e.target.files || [])
-  if ((brandingForm.collegeImages||[]).length + files.length > 10) return alert("Maximum 10 images allowed")
-  files.forEach(file => {
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      setBrandingForm(prev => {
-        if ((prev.collegeImages||[]).length >= 10) return prev
-        return { ...prev, collegeImages: [...(prev.collegeImages||[]), { id: Date.now()+Math.random(), url: ev.target.result, caption: `Campus Image ${(prev.collegeImages||[]).length+1}` }] }
-      })
-    }
-    reader.readAsDataURL(file)
-  })
- }
-
  const handleDelete = (section, id) => {
   const list = customData[section] || []
   const updated = list.filter(item => item.id !== id)
@@ -740,7 +740,7 @@ export default function AdminDashboard() {
  const handleAdminLogin = () => {
   const id = (loginUser || '').trim().toLowerCase()
   if (!id) return alert("Username / email enter pannunga")
-  const college = findCollegeByLoginId(id)
+  const college = findCollegeByLoginId(id, loginPass)
   if (!college) return alert("College with this username not found.\n\nJust signed up? Below Quick Select use pannunga.")
   if (college.loginPassword && college.loginPassword !== loginPass) return alert('Wrong password for ' + college.name + '. Please try again.')
   localStorage.setItem('tn_current_college', JSON.stringify(college))
@@ -1126,55 +1126,52 @@ export default function AdminDashboard() {
            <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Camera size={12} className="text-[#FAB95B]" /> College Campus Images</label>
            <div className="text-[11px] text-[#1A3263]/70 mt-1">Add campus images for your college website</div>
            
-           <div className="mt-4 flex gap-2">
-            <input value={newCollegeImageUrl} onChange={e=>setNewCollegeImageUrl(e.target.value)} placeholder="Paste image URL https://yourcollege.edu/campus1.jpg" className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-[#E8E2DB] focus:border-[#FAB95B] outline-none text-[13px]" />
-            <button onClick={handleAddCollegeImage} className="h-11 px-5 rounded-[12px] bg-[#1A3263] text-[#FAB95B] font-bold text-[12px] flex items-center gap-1.5"><Plus size={14} /> Add</button>
+           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {Array.from({ length: 10 }, (_, index) => {
+              const image = (brandingForm.collegeImages || [])[index]
+              return (
+                <label key={index} htmlFor={`college-campus-image-url-${index + 1}`} className="block">
+                  <span className="mb-1 block text-[10px] font-bold uppercase tracking-wide text-[#1A3263]">Campus image {index + 1} link</span>
+                  <input
+                    id={`college-campus-image-url-${index + 1}`}
+                    type="url"
+                    value={image?.url || ''}
+                    onChange={event => handleCollegeImageUrlChange(index, event.target.value)}
+                    placeholder={`https://college.edu/images/campus-${index + 1}.jpg`}
+                    className="h-10 w-full rounded-[10px] border-2 border-[#E8E2DB] bg-white px-3 text-[11px] outline-none focus:border-[#FAB95B]"
+                  />
+                </label>
+              )
+            })}
+           </div>
+           <div className="mt-3 text-right text-[11px] font-bold text-[#1A3263]">
+            {(brandingForm.collegeImages || []).filter(image => image?.url?.trim()).length}/10 links added
            </div>
 
-           <div className="mt-3 flex gap-2">
-            <label className="flex-1 h-11 px-4 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 text-[#1A3263] font-bold text-[12px] flex items-center justify-center gap-2 cursor-pointer hover:border-[#FAB95B]">
-              <Upload size={14} /> Upload Multiple (Up to 10)
-              <input type="file" accept="image/*" multiple className="hidden" onChange={handleCollegeImageUpload} />
-            </label>
-            <div className="h-11 px-4 rounded-[12px] bg-[#E8E2DB] border-2 border-[#E8E2DB] text-[#1A3263] font-bold text-[12px] flex items-center justify-center">
-              {(brandingForm.collegeImages||[]).length}/10
-            </div>
-           </div>
-
-           {(brandingForm.collegeImages||[]).length===0 ? (
-            <div className="mt-4 rounded-[12px] bg-white border-2 border-dashed border-[#1A3263]/20 p-8 text-center">
-                            <div className="font-bold text-[#1A3263] mt-3 text-[13px]">No campus images yet</div>
-              <div className="text-[11px] text-[#547792] mt-2">Add campus images for your college</div>
-              <div className="mt-3 grid grid-cols-3 gap-2 max-w-[300px] mx-auto">
-                {[
-                  "https://www.psgtech.edu/images/slider/foundationday_2026.jpg",
-                  "https://www.psgtech.edu/images/slider/Orientation_2026.jpg",
-                  "https://www.psgtech.edu/images/slider/TheConfluence-2026.jpg"
-                ].map((demo,i)=>(
-                  <img key={i} src={demo} className="h-16 w-full rounded-[8px] object-cover border border-[#E8E2DB]" alt="Demo" />
-                ))}
-              </div>
+           {(brandingForm.collegeImages || []).filter(image => image?.url?.trim()).length === 0 ? (
+            <div className="mt-4 rounded-[12px] border-2 border-dashed border-[#1A3263]/20 bg-white p-6 text-center">
+              <div className="text-[13px] font-bold text-[#1A3263]">No campus image links added yet</div>
+              <div className="mt-2 text-[11px] text-[#547792]">Paste image URLs above; no file upload needed.</div>
             </div>
            ) : (
             <div className="mt-4 space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                {(brandingForm.collegeImages||[]).map((img, idx)=>(
-                  <div key={img.id} className="relative rounded-[12px] overflow-hidden border-2 border-[#E8E2DB] bg-white group">
-                    <img src={img.url} className="h-[110px] w-full object-cover" alt={`Campus ${idx+1}`} />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#1A3263] text-[#FAB95B] text-[10px] font-bold">{idx+1}/{(brandingForm.collegeImages||[]).length}</div>
-                    <div className="absolute top-2 right-2 flex gap-1">
-                      <button onClick={()=>handleRemoveCollegeImage(img.id)} className="h-6 w-6 rounded-full bg-red-500 text-white grid place-items-center hover:bg-red-600"><Trash2 size={10} /></button>
+                {(brandingForm.collegeImages || []).filter(image => image?.url?.trim()).map((img, idx) => (
+                  <div key={img.id} className="group relative overflow-hidden rounded-[12px] border-2 border-[#E8E2DB] bg-white">
+                    <img src={img.url} className="h-[110px] w-full object-cover" alt={`Campus ${idx + 1}`} />
+                    <div className="absolute left-2 top-2 rounded-full bg-[#1A3263] px-2 py-0.5 text-[10px] font-bold text-[#FAB95B]">{idx + 1}/{(brandingForm.collegeImages || []).filter(image => image?.url?.trim()).length}</div>
+                    <div className="absolute right-2 top-2 flex gap-1">
+                      <button type="button" aria-label={`Remove campus image ${idx + 1}`} onClick={() => handleRemoveCollegeImage(img.id)} className="grid h-6 w-6 place-items-center rounded-full bg-red-500 text-white hover:bg-red-600"><Trash2 size={10} /></button>
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-                      <div className="text-[10px] font-bold text-white truncate">{img.caption || `Campus Image ${idx+1}`}</div>
-                      <div className="text-[9px] text-white/70"></div>
+                      <div className="truncate text-[10px] font-bold text-white">{img.caption || `Campus Image ${idx + 1}`}</div>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="rounded-[12px] bg-[#1A3263] text-white p-3">
-                <div className="text-[11px] font-bold text-[#FAB95B] flex items-center gap-1.5"><Camera size={12} /> Preview</div>
-                <div className="text-[10px] text-[#E8E2DB]/70 mt-1">Your website will display images in carousel</div>
+              <div className="rounded-[12px] bg-[#1A3263] p-3 text-white">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#FAB95B]"><Camera size={12} /> Preview</div>
+                <div className="mt-1 text-[10px] text-[#E8E2DB]/70">Your website will display these linked images in a carousel</div>
               </div>
             </div>
            )}

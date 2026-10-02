@@ -809,6 +809,57 @@ export const colleges = [
     contact: { phone: "+91 422 257 4375", email: "deancmc@tn.gov.in", admissions: "+91 422 257 4376", address: "Avinashi Road, Coimbatore" },
     social: { website: "https://cmc.co.in", linkedin: "#", instagram: "#", youtube: "#" },
     customSections: []
+  },
+  {
+    id: 107,
+    slug: "karpagam-college-of-engineering",
+    name: "Karpagam College of Engineering",
+    shortName: "KCE",
+    tagline: "Design Your Engineering Future With KCE",
+    type: "Private Autonomous Engineering College",
+    collegeType: "Engineering",
+    district: "Coimbatore",
+    affiliation: "Anna University, Chennai",
+    accreditation: "NAAC A+ • NBA • AICTE",
+    established: 2000,
+    verified: false,
+    branding: {
+      preset: "karpagam",
+      colors: { primary: "#101e35", secondary: "#0d55b1", accent: "#f36c17", bg: "#f8e9e2", surface: "#ffffff" },
+      logo: "https://kce.ac.in/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FKCE-logo-color.4bf34a82.png&w=384&q=75",
+      heroImage: "https://cdn.universitykart.com//Content/upload/admin/blovh4rw.v2z.jpg",
+      coverImage: "https://cdn.universitykart.com//Content/upload/admin/blovh4rw.v2z.jpg",
+    },
+    location: {
+      address: "Myleripalayam Village, Othakkal Mandapam Post, Coimbatore - 641032",
+      city: "Coimbatore",
+      lat: 10.9082,
+      lng: 76.9545,
+    },
+    quickInfo: { courses: 11, departments: 11, faculty: 426, students: 4500, placement: "92%", campus: "Coimbatore" },
+    about: {
+      overview: "The Karpagam College of Engineering, established in the Year 2000, is an Autonomous institution, Approved by AICTE, New Delhi and Affiliated to Anna University, Chennai. The college offers various Under Graduate and Post Graduate Engineering programmes.",
+      vision: "To provide quality technical education and create proficient engineers.",
+      mission: "Impart quality education and an excellent career start to all its students.",
+      history: "Established in 2000, Karpagam College of Engineering is an autonomous institution located in Coimbatore."
+    },
+    courses: [
+      { id: 1, name: "Civil Engineering", degree: "B.E.", dept: "Civil", duration: "4 Years", level: "UG" },
+      { id: 2, name: "Computer Science and Engineering", degree: "B.E.", dept: "CSE", duration: "4 Years", level: "UG" },
+      { id: 3, name: "Computer Science and Engineering (CyberSecurity)", degree: "B.E.", dept: "CSE", duration: "4 Years", level: "UG" },
+      { id: 4, name: "Electronics and Communication Engineering", degree: "B.E.", dept: "ECE", duration: "4 Years", level: "UG" },
+      { id: 5, name: "Electrical and Electronics Engineering", degree: "B.E.", dept: "EEE", duration: "4 Years", level: "UG" },
+      { id: 6, name: "Electronics Engineering (VLSI Design and Technology)", degree: "B.E.", dept: "VLSI", duration: "4 Years", level: "UG" },
+      { id: 7, name: "Mechanical Engineering", degree: "B.E.", dept: "Mechanical", duration: "4 Years", level: "UG" },
+      { id: 8, name: "Artificial Intelligence and Data Sciences", degree: "B.Tech.", dept: "AI&DS", duration: "4 Years", level: "UG" },
+      { id: 9, name: "Information Technology", degree: "B.Tech.", dept: "IT", duration: "4 Years", level: "UG" },
+      { id: 10, name: "Master of Business Administration", degree: "MBA", dept: "Management", duration: "2 Years", level: "PG" },
+      { id: 11, name: "Master of Computer Application", degree: "MCA", dept: "Computer Applications", duration: "2 Years", level: "PG" },
+    ],
+    placements: { highest: "43 LPA", recruiters: ["Accenture", "Titan", "Capgemini", "Hexaware", "Ashok Leyland", "Indoshell", "Neefamic", "Presidio"], total: 1544, companies: 232 },
+    contact: { phone: "+91 91500 99891", email: "info@kce.ac.in", admissions: "+91 91500 99891", address: "Myleripalayam Village, Othakkal Mandapam Post, Coimbatore - 641032" },
+    social: { website: "https://kce.ac.in", linkedin: "#", instagram: "#", youtube: "https://www.youtube.com/watch?v=Y6mFRh3nPG0" },
+    customSections: []
   }
 ]
 

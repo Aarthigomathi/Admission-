@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Upload, Trash2, Plus, ImageIcon, Link as LinkIcon } from 'lucide-react'
 import { saveCollegeDataSafe } from '../../lib/collegeStorage'
+import { clearAdminDraft, readAdminDraft, saveAdminDraft } from '../../lib/adminDraft'
 
 const inputCls = 'w-full h-10 px-3 rounded-[10px] border border-[#E8E2DB] bg-white text-[13px] text-[#1A3263] focus:outline-none focus:border-[#FAB95B]'
 const taCls = 'w-full px-3 py-2.5 rounded-[10px] border border-[#E8E2DB] bg-white text-[13px] text-[#1A3263] leading-relaxed focus:outline-none focus:border-[#FAB95B]'
@@ -151,14 +152,49 @@ function toStored(f) {
 
 export default function AboutPagesAdmin({ collegeId, customData, setCustomData, fullCollege }) {
   const [rawF, setRawF] = useState(blankForm())
+  const [draftReady, setDraftReady] = useState(false)
+  const [draftStatus, setDraftStatus] = useState('')
+  const rawFRef = useRef(rawF)
+  const lastDraftRef = useRef('')
+  rawFRef.current = rawF
+
   // Always render from a fully shaped form, even if state ever became undefined
   const f = normalizeForm(rawF)
 
   useEffect(() => {
+    setDraftReady(false)
+    const draft = readAdminDraft(collegeId, 'aboutPages')
     const src = (customData && customData.aboutPages) || (fullCollege && fullCollege.aboutPages) || null
-    setRawF(fromStored(src))
+    const restored = draft?.data ? normalizeForm(draft.data) : fromStored(src)
+    setRawF(restored)
+    lastDraftRef.current = `${collegeId}:aboutPages:${JSON.stringify(restored)}`
+    setDraftStatus(draft?.data ? 'Recovered an auto-saved draft' : '')
+    setDraftReady(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collegeId])
+
+  useEffect(() => {
+    if (!collegeId || !draftReady) return undefined
+    const persistDraft = (updateStatus = true) => {
+      const snapshot = JSON.stringify(rawFRef.current)
+      const snapshotKey = `${collegeId}:aboutPages:${snapshot}`
+      if (snapshotKey === lastDraftRef.current) return
+      if (saveAdminDraft(collegeId, 'aboutPages', rawFRef.current)) {
+        lastDraftRef.current = snapshotKey
+        if (updateStatus) setDraftStatus('Auto-saved in this browser')
+      } else if (updateStatus) {
+        setDraftStatus('Auto-save failed — browser storage may be full')
+      }
+    }
+    const flushOnUnload = () => persistDraft(false)
+    const timer = window.setInterval(persistDraft, 700)
+    window.addEventListener('beforeunload', flushOnUnload)
+    return () => {
+      window.clearInterval(timer)
+      window.removeEventListener('beforeunload', flushOnUnload)
+      persistDraft(false)
+    }
+  }, [collegeId, draftReady])
 
   // The mutators below use block bodies, so they return undefined.
   // The updater has to return the mutated clone itself - returning the result
@@ -173,8 +209,12 @@ export default function AboutPagesAdmin({ collegeId, customData, setCustomData, 
     saveCollegeDataSafe(collegeId, 'aboutPages', data).then(ok => {
       if (ok) {
         setCustomData({ ...customData, aboutPages: data })
+        clearAdminDraft(collegeId, 'aboutPages')
+        lastDraftRef.current = `${collegeId}:aboutPages:${JSON.stringify(rawFRef.current)}`
+        setDraftStatus('Saved to College Admin')
         alert('About pages saved! The college About section now shows this content in the KCE layout.')
       } else {
+        setDraftStatus('Draft kept — publishing failed')
         alert('Storage full - images-ku URL use pannunga')
       }
     })
@@ -186,6 +226,7 @@ export default function AboutPagesAdmin({ collegeId, customData, setCustomData, 
         <div>
           <h2 className="text-[16px] font-extrabold text-white">About Pages (KCE Layout)</h2>
           <p className="text-[12px] text-white/60 mt-1">Profile, Vision & Mission, Management, Org Structure, Center of Excellence, Accreditations - same layout as the home page, your content. Use **text** for bold highlights. Every image slot supports upload or URL.</p>
+          <p className="text-[11px] text-white/75 mt-1">{draftStatus || 'Edits auto-save in this browser; click Save to publish them.'}</p>
         </div>
         <button onClick={save} className="h-11 px-7 rounded-full bg-[#FAB95B] text-[#1A3263] text-[12px] font-extrabold uppercase tracking-wide hover:bg-[#FAB95B]/90">Save About Pages</button>
       </div>

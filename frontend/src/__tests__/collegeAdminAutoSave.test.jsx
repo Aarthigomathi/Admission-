@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // College admin - auto save & backup:
-//   - typing in a section is auto-saved as a draft (nothing is lost on reload / nav)
-//   - reopening the section restores the draft and tells the admin to press Save
+//   - parent and child-managed forms auto-save drafts and restore after remount/re-login
+//   - reopening a section restores the draft and reminds the admin to press Save to publish
 //   - a real Save clears the draft (no stale values come back)
 //   - backup export / restore round-trips the college data
 //
@@ -86,6 +86,8 @@ const buttonWithText = text =>
 const switcher = () => container.querySelector('select[aria-label="College admin section"]')
 const inputByPlaceholder = fragment =>
   [...container.querySelectorAll('input')].find(i => (i.placeholder || '').toLowerCase().includes(fragment.toLowerCase()))
+const fieldWithLabel = (tag, fragment) =>
+  [...container.querySelectorAll(tag)].find(el => (el.parentElement?.textContent || '').toLowerCase().includes(fragment.toLowerCase()))
 
 const wait = ms => act(async () => { await new Promise(r => setTimeout(r, ms)) })
 
@@ -114,6 +116,43 @@ describe('college admin auto-save', () => {
     await type(switcher(), 'branding')
     expect(inputByPlaceholder('logo url').value).toBe('https://autosave.edu/logo.png')
     expect(container.textContent).toContain('Auto-save la irundhu thirumba kondu vandhutom')
+  })
+
+  it('auto-saves and restores the About Pages child form after reload/re-login', async () => {
+    await mount()
+    await type(switcher(), 'aboutpages')
+    const heading = fieldWithLabel('input', 'Page heading')
+    await type(heading, 'Our college, our future')
+    await wait(900)
+
+    expect(readAdminDraft(COLLEGE_ID, 'aboutPages')?.data?.profile?.heading).toBe('Our college, our future')
+    unmount()
+
+    await mount()
+    await type(switcher(), 'aboutpages')
+    expect(fieldWithLabel('input', 'Page heading').value).toBe('Our college, our future')
+    expect(container.textContent).toContain('Recovered an auto-saved draft')
+  })
+
+  it('auto-saves and restores the Add Department child form after reload/re-login', async () => {
+    await mount()
+    await type(switcher(), 'deptpages')
+    await click(buttonWithText('Add Department'))
+    await type(inputByPlaceholder('e.g. Information Technology'), 'Computer Science')
+    await type(fieldWithLabel('textarea', 'About paragraphs'), 'Our department draft')
+    await wait(900)
+
+    const draft = readAdminDraft(COLLEGE_ID, 'deptPages_new')
+    expect(draft?.data?.deptForm?.name).toBe('Computer Science')
+    expect(draft?.data?.page?.aboutText).toBe('Our department draft')
+    unmount()
+
+    await mount()
+    await type(switcher(), 'deptpages')
+    await click(buttonWithText('Add Department'))
+    expect(inputByPlaceholder('e.g. Information Technology').value).toBe('Computer Science')
+    expect(fieldWithLabel('textarea', 'About paragraphs').value).toBe('Our department draft')
+    expect(container.textContent).toContain('Recovered an auto-saved new department')
   })
 
   it('clears the draft once the section is really saved', async () => {

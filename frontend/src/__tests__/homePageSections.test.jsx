@@ -83,7 +83,7 @@ describe('home page', () => {
     expect(text).not.toContain('College Flow - Verification')
     expect(text).not.toContain('Platform Admin Flow - Analytics')
     expect(text).not.toContain('Colleges - No Default')
-    expect(text).toContain('Tamil Nadu Colleges to Explore - 6 Listings')
+    expect(text).toContain('Tamil Nadu Colleges to Explore - 7 Listings')
     expect(text).toContain('PSG College of Technology')
     expect(text).not.toContain('Colleges Added by Colleges Themselves')
   })
@@ -102,7 +102,7 @@ describe('home page', () => {
       branding: {}
     }]))
     await render(<PlatformHome />)
-    expect(container.textContent).toContain('Tamil Nadu Colleges to Explore - 7 Listings')
+    expect(container.textContent).toContain('Tamil Nadu Colleges to Explore - 8 Listings')
     expect(container.textContent).toContain('Demo Check College')
   })
 })

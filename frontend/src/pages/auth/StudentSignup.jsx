@@ -321,14 +321,27 @@ export default function StudentSignup() {
     .replace('Government Higher Secondary School, ', 'GHSS ')
 
   const handleSubmit = async () => {
+    const normalizedEmail = String(formData.email || '').trim().toLowerCase()
+    let storedStudents = []
+    try {
+      const parsedStudents = JSON.parse(localStorage.getItem('tn_students') || '[]')
+      storedStudents = Array.isArray(parsedStudents) ? parsedStudents : []
+    } catch { /* recover gracefully from malformed local storage */ }
+    const existingStudent = storedStudents.find(student => String(student.email || '').trim().toLowerCase() === normalizedEmail)
+    if (existingStudent) {
+      alert('An account with this email already exists. Please log in to open your saved details; you can edit them from your student profile.')
+      navigate(`/login?role=student&email=${encodeURIComponent(normalizedEmail)}`)
+      return
+    }
+
     const student = {
       id: Date.now(),
       ...formData,
+      email: normalizedEmail,
       role: 'STUDENT',
       profileCompletion: 100,
       marks: `${formData.marksObtained}/${formData.totalMarks}`,
       fullName: formData.fullName,
-      email: formData.email,
       mobile: formData.mobile,
       parentMobile: formData.fatherMobile || formData.parentMobile || '',
       district: formData.district,
@@ -355,9 +368,8 @@ export default function StudentSignup() {
     }
 
     localStorage.setItem('tn_current_student', JSON.stringify(student))
-    const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
-    students.push(student)
-    localStorage.setItem('tn_students', JSON.stringify(students))
+    storedStudents.push(student)
+    localStorage.setItem('tn_students', JSON.stringify(storedStudents))
     syncStudentDocumentCounters(student.id, saved.docs)
     clearStudentSignupDraft()
     await clearStudentSignupDraftFiles()

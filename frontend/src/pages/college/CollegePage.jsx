@@ -6,6 +6,7 @@ import CollegeHeader from '../../components/college/CollegeHeader'
 import AboutPages from '../../components/college/AboutPages.jsx'
 import DeptPage from '../../components/college/DeptPage.jsx'
 import AcademicsPage from '../../components/college/AcademicsPage.jsx'
+import KarpagamCollegeHome from './KarpagamCollegeHome.jsx'
 import { MapPin, Phone, Mail, BadgeCheck, Building2, GraduationCap, Users, User, Image as ImageIcon, X, BookOpen, Landmark, ShieldCheck, PhoneCall, Trophy, FileText, Calendar, CheckCircle, ClipboardList, Gift, Clock, Palette, Leaf, ChevronLeft, ChevronRight, Link2, Briefcase, Globe } from 'lucide-react'
 
 
@@ -745,7 +746,7 @@ function CustomCollegePage({ college, customData }) {
 }
 
 export default function CollegePage() {
-  const { slug } = useParams()
+  const { slug, section } = useParams()
   const [college, setCollege] = useState(null)
   const [customData, setCustomData] = useState({})
 
@@ -774,6 +775,9 @@ export default function CollegePage() {
       </div>
     )
   }
+
+  const isKarpagamCollege = String(college.slug || '').toLowerCase().includes('karpagam') || String(college.name || '').toLowerCase().includes('karpagam college of engineering')
+  if (isKarpagamCollege) return <KarpagamCollegeHome section={section} />
 
   return <CustomCollegePage college={college} customData={customData} />
 }

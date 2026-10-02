@@ -2,8 +2,8 @@
 // College admin dashboard regression tests:
 //   - narrow screens / preview panes get their own section switcher (the sidebar is lg-only),
 //     so "College Logo & Branding" (uploads) is always reachable
-//   - logo + campus image + hero image upload fields exist and save to localStorage
-//   - the first campus image becomes the hero image when no hero is set (dashboard preview / banner)
+//   - logo and hero image upload fields coexist with ten campus image URL fields
+//   - the first non-empty campus image URL becomes the hero image when no hero is set
 //   - Save Draft / Publish header buttons are wired (they used to do nothing)
 //
 // Run:  npm test
@@ -99,15 +99,17 @@ describe('college admin - branding uploads', () => {
     await type(sectionSwitcher(), 'branding')
 
     const logoInput = inputByPlaceholder('logo url')
-    const campusInput = inputByPlaceholder('Paste image URL')
+    const campusInputs = [...container.querySelectorAll('input[type="url"]')].filter(input => input.placeholder.includes('campus-'))
+    const campusInput = inputByPlaceholder('campus-1.jpg')
     const heroInput = inputByPlaceholder('banner image url')
     expect(logoInput).toBeTruthy()
     expect(campusInput).toBeTruthy()
+    expect(campusInputs).toHaveLength(10)
+    expect(container.textContent).not.toContain('Upload Multiple (Up to 10)')
     expect(heroInput).toBeTruthy()
 
     await type(logoInput, 'https://testcollege.edu/logo.png')
     await type(campusInput, 'https://testcollege.edu/campus1.jpg')
-    await click(buttonWithText('Add'))
     await click(buttonWithText('Save Logo & Images'))
     await act(async () => { await new Promise(r => setTimeout(r, 0)) })
 
@@ -124,8 +126,7 @@ describe('college admin - branding uploads', () => {
     await render(<AdminDashboard />)
     await type(sectionSwitcher(), 'branding')
     await type(inputByPlaceholder('banner image url'), 'https://testcollege.edu/banner.jpg')
-    await type(inputByPlaceholder('Paste image URL'), 'https://testcollege.edu/campus1.jpg')
-    await click(buttonWithText('Add'))
+    await type(inputByPlaceholder('campus-1.jpg'), 'https://testcollege.edu/campus1.jpg')
     await click(buttonWithText('Save Logo & Images'))
     await act(async () => { await new Promise(r => setTimeout(r, 0)) })
     expect(storedCustom().branding.heroImage).toBe('https://testcollege.edu/banner.jpg')

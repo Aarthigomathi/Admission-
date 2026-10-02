@@ -266,7 +266,7 @@ export function getProfileCompletion(college) {
   return Math.round((filled / checks.length) * 100)
 }
 
-export function findCollegeByLoginId(id) {
+export function findCollegeByLoginId(id, password) {
   const target = (id || '').trim().toLowerCase()
   if (!target) return null
   const idsFor = c => {
@@ -283,8 +283,19 @@ export function findCollegeByLoginId(id) {
     if (c.contact) add(c.contact.email)
     return ids
   }
-  const all = [...getRegisteredColleges(), ...getPublicColleges().filter(pc => !getRegisteredColleges().some(r => String(r.id) === String(pc.id)))]
-  return all.find(c => idsFor(c).includes(target)) || null
+  const registered = getRegisteredColleges()
+  const matches = registered.filter(c => idsFor(c).includes(target))
+  if (matches.length) {
+    // Prefer a credential-matching record when old duplicate registrations exist;
+    // otherwise restore the newest profile saved for this login ID.
+    const newestFirst = matches.slice().reverse()
+    if (password !== undefined) {
+      const credentialMatch = newestFirst.find(c => String(c.loginPassword || '') === String(password))
+      if (credentialMatch) return credentialMatch
+    }
+    return newestFirst[0]
+  }
+  return null
 }
 
 /* ---------- storage-safe saves: auto-compress images + compact on quota ---------- */
