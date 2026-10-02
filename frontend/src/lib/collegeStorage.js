@@ -4,12 +4,55 @@ import { colleges as staticColleges } from './colleges'
 // Automatic default college name kattama - only colleges that signup themselves show in public
 
 const REGISTERED_KEY = 'tn_registered_colleges'
+const BACKEND_COLLEGES_KEY = 'tn_backend_colleges'
 const COLLEGE_DATA_PREFIX = 'tn_college_data_'
 
 export function getRegisteredColleges() {
   try {
     return JSON.parse(localStorage.getItem(REGISTERED_KEY) || '[]')
   } catch { return [] }
+}
+
+export function getBackendColleges() {
+  try {
+    const items = JSON.parse(localStorage.getItem(BACKEND_COLLEGES_KEY) || '[]')
+    return Array.isArray(items) ? items : []
+  } catch { return [] }
+}
+
+export function getApiCollegeId(collegeId) {
+  const backendCollege = getBackendColleges().find(college =>
+    String(college.id) === String(collegeId) || String(college.backendId) === String(collegeId)
+  )
+  if (backendCollege?.backendId != null) return backendCollege.backendId
+  try {
+    const current = JSON.parse(localStorage.getItem('tn_current_college') || 'null')
+    if (current && String(current.id) === String(collegeId) && current.backendId != null) return current.backendId
+  } catch { /* use the provided ID */ }
+  return collegeId
+}
+
+export function storeBackendColleges(records) {
+  if (!Array.isArray(records)) return []
+  const localRecords = [...staticColleges, ...getRegisteredColleges()]
+  const mapped = records.map(record => {
+    const base = localRecords.find(college => college.slug && college.slug === record.slug)
+    const apiId = record.id
+    return enrichCollege({
+      ...(base || {}),
+      ...record,
+      id: base?.id ?? apiId,
+      backendId: apiId,
+      verificationStatus: record.verificationStatus || base?.verificationStatus || 'PENDING',
+      verified: record.verified ?? base?.verified ?? false,
+      branding: record.branding || base?.branding || {},
+      courses: record.courses || base?.courses || [],
+      departments: record.departments || base?.departments || []
+    })
+  })
+  try { localStorage.setItem(BACKEND_COLLEGES_KEY, JSON.stringify(mapped)) } catch { /* cached data is optional */ }
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('backendCollegesLoaded'))
+  return mapped
 }
 
 export function getPublicColleges() {
@@ -19,9 +62,7 @@ export function getPublicColleges() {
 }
 
 export function getDiscoveryColleges() {
-  // Student-facing directory: include the six curated starter profiles already in the app,
-  // then overlay real college-submitted profiles. Keep starter entries distinct so they
-  // are not counted as registrations or shown as verified.
+  // Curated starter profiles remain available offline; API profiles overlay them when the backend is running.
   const byId = new Map()
   staticColleges.forEach(college => {
     const profile = enrichCollege(college)
@@ -35,22 +76,32 @@ export function getDiscoveryColleges() {
   })
   getRegisteredColleges().forEach(college => {
     const profile = enrichCollege(college)
+    byId.set(String(profile.id), { ...profile, isStarterListing: false, listingSource: 'college' })
+  })
+  getBackendColleges().forEach(serverCollege => {
+    const previous = Array.from(byId.values()).find(college => college.slug === serverCollege.slug)
+    if (previous) byId.delete(String(previous.id))
+    const profile = enrichCollege({ ...(previous || {}), ...serverCollege, id: previous?.id ?? serverCollege.id })
     byId.set(String(profile.id), {
       ...profile,
+      backendId: serverCollege.backendId ?? serverCollege.id,
       isStarterListing: false,
-      listingSource: 'college'
+      listingSource: 'backend'
     })
   })
   return Array.from(byId.values())
 }
 
 export function getAllCollegesMerged() {
-  // For admin & backwards compatibility - includes static + registered
-  const registered = getRegisteredColleges()
+  // Include curated, locally registered, and API-loaded profiles without duplicating matching slugs.
   const map = new Map()
-  staticColleges.forEach(c => map.set(c.id, enrichCollege(c)))
-  registered.forEach(c => {
-    map.set(c.id, enrichCollege(c))
+  staticColleges.forEach(college => map.set(String(college.id), enrichCollege(college)))
+  getRegisteredColleges().forEach(college => map.set(String(college.id), enrichCollege(college)))
+  getBackendColleges().forEach(serverCollege => {
+    const previous = Array.from(map.values()).find(college => college.slug === serverCollege.slug)
+    if (previous) map.delete(String(previous.id))
+    const merged = enrichCollege({ ...(previous || {}), ...serverCollege, id: previous?.id ?? serverCollege.id })
+    map.set(String(merged.id), { ...merged, backendId: serverCollege.backendId ?? serverCollege.id })
   })
   return Array.from(map.values())
 }
@@ -80,6 +131,7 @@ export function enrichCollege(base) {
   const baseBranding = base.branding || {}
   return {
     id: base.id,
+    backendId: base.backendId ?? base.id,
     slug: base.slug || base.name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0,50) || `college-${base.id}`,
     name: base.name || 'Unnamed College',
     shortName: base.shortName || base.name?.split(' ').slice(0,3).join(' ') || 'College',
@@ -138,6 +190,29 @@ export function enrichCollege(base) {
   }
 }
 
+function syncCollegeSection(collegeId, section, data) {
+  if (typeof window === 'undefined') return
+  let token = ''
+  let current = null
+  try {
+    token = localStorage.getItem('tn_auth_token') || ''
+    current = JSON.parse(localStorage.getItem('tn_current_college') || 'null')
+  } catch { return }
+  if (!token) return
+  const backendId = current && String(current.id) === String(collegeId)
+    ? (current.backendId ?? current.id)
+    : getApiCollegeId(collegeId)
+  const removeSecrets = value => {
+    if (Array.isArray(value)) return value.map(removeSecrets)
+    if (!value || typeof value !== 'object') return value
+    return Object.fromEntries(Object.entries(value)
+      .filter(([key]) => !/password|secret|token/i.test(key))
+      .map(([key, child]) => [key, removeSecrets(child)]))
+  }
+  import('./api').then(({ api }) => api.saveCollegeSection(backendId, section, removeSecrets(data)))
+    .catch(() => { /* Keep the local save usable when the API is offline. */ })
+}
+
 export function saveCollegeData(collegeId, section, data) {
   const key = `${COLLEGE_DATA_PREFIX}${collegeId}`
   let existing = {}
@@ -159,6 +234,7 @@ export function saveCollegeData(collegeId, section, data) {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event('collegeRegistered'))
   }
+  syncCollegeSection(collegeId, section, data)
   return existing
 }
 
@@ -170,10 +246,11 @@ export function getCollegeCustomData(collegeId) {
 }
 
 export function createNewCollegeFromSignup(formData) {
-  const id = Date.now()
-  const slug = formData.collegeName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0,50) + '-' + id.toString().slice(-4)
+  const id = formData.id ?? Date.now()
+  const slug = formData.slug || (formData.collegeName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0,50) + '-' + String(id).slice(-4))
   const college = {
     id,
+    backendId: formData.backendId ?? formData.id ?? id,
     slug,
     name: formData.collegeName,
     shortName: formData.collegeName.split(' ').slice(0,3).join(' '),

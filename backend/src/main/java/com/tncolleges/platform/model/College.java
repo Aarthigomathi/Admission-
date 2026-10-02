@@ -51,9 +51,11 @@ public class College {
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToOne(mappedBy = "college", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private CollegeProfile profile;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToOne(mappedBy = "college", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private CollegeBranding branding;
 

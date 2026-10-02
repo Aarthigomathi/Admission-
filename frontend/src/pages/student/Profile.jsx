@@ -7,6 +7,7 @@ import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
 import StudentHeader from '../../components/student/StudentHeader'
 import StudentDocuments from '../../components/student/StudentDocuments'
+import { api } from '../../lib/api'
 
 export default function StudentProfile() {
   const { t, language } = useLanguage()
@@ -33,6 +34,29 @@ export default function StudentProfile() {
     // Older records stored a single parentMobile - carry it into the father number field
     setFormData({ ...s, fatherMobile: s.fatherMobile || s.parentMobile || '', motherMobile: s.motherMobile || '' })
     setAllColleges(getAllCollegesMerged())
+
+    if (localStorage.getItem('tn_auth_token')) {
+      api.getStudentProfile().then(profile => {
+        const latest = JSON.parse(localStorage.getItem('tn_current_student') || 'null')
+        if (!latest || String(latest.id) !== String(s.id)) return
+        const serverProfile = {
+          ...profile,
+          fatherName: profile.parentName,
+          fatherMobile: profile.parentMobile,
+          permanentAddress: profile.permanentAddress || profile.address
+        }
+        const hydrated = { ...serverProfile, ...latest }
+        for (const [key, value] of Object.entries(serverProfile)) {
+          if (latest[key] === undefined || latest[key] === null) hydrated[key] = value
+        }
+        hydrated.fatherName = latest.fatherName || serverProfile.fatherName || ''
+        hydrated.fatherMobile = latest.fatherMobile || latest.parentMobile || serverProfile.fatherMobile || ''
+        hydrated.permanentAddress = latest.permanentAddress || serverProfile.permanentAddress || ''
+        localStorage.setItem('tn_current_student', JSON.stringify(hydrated))
+        setStudent(hydrated)
+        setFormData({ ...hydrated, fatherMobile: hydrated.fatherMobile, motherMobile: hydrated.motherMobile || '' })
+      }).catch(() => { /* Retain the browser profile when the API is offline. */ })
+    }
   }, [])
 
   const updateField = (field, value) => setFormData(prev => ({ ...prev, [field]: value }))
@@ -57,6 +81,32 @@ export default function StudentProfile() {
       }
     }
     localStorage.setItem('tn_current_student', JSON.stringify(updated))
+    if (localStorage.getItem('tn_auth_token')) {
+      api.updateStudentProfile({
+        fullName: updated.fullName,
+        mobile: updated.mobile,
+        parentName: updated.fatherName,
+        parentMobile: updated.fatherMobile || updated.parentMobile,
+        dob: updated.dob,
+        gender: updated.gender,
+        permanentAddress: updated.permanentAddress,
+        pincode: updated.pincode,
+        state: updated.state,
+        district: updated.district,
+        city: updated.city,
+        educationLevel: updated.educationLevel,
+        schoolCollege: updated.schoolCollege,
+        marks: updated.marks,
+        percentage: updated.percentage,
+        groupStream: updated.groupStream,
+        interestedSubject: updated.interestedSubject,
+        interestedCourse: updated.interestedCourse,
+        preferredDistrict: updated.preferredDistrict,
+        collegeType: updated.collegeType,
+        hostelRequired: updated.hostelRequired,
+        transportRequired: updated.transportRequired
+      }).catch(() => {})
+    }
     const students = JSON.parse(localStorage.getItem('tn_students') || '[]')
     const idx = students.findIndex(st => st.id === student.id)
     if (idx >= 0) {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Building2, Mail, Phone, Globe, MapPin, Calendar, User, Lock, Upload, Save, CheckCircle2, AlertCircle, Sparkles, Image as ImageIcon, Award, Users } from 'lucide-react'
 import { createNewCollegeFromSignup, findCollegeByLoginId } from '../../lib/collegeStorage'
+import { api, isBackendUnavailable, saveAuthSession } from '../../lib/api'
 import { districts } from '../../lib/colleges'
 
 const COLLEGE_SIGNUP_DRAFT_KEY = 'tn_college_signup_draft_v1'
@@ -87,7 +88,7 @@ export default function CollegeSignup() {
     else setDraftStatus('Draft could not be saved — browser storage may be full')
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const email = String(formData.email || '').trim().toLowerCase()
     const username = String(formData.username || '').trim()
@@ -99,7 +100,45 @@ export default function CollegeSignup() {
       return
     }
 
-    const college = createNewCollegeFromSignup({ ...formData, email, username })
+    let backendSession = null
+    try {
+      backendSession = await api.register({
+        email,
+        username,
+        password: formData.password,
+        fullName: formData.collegeName,
+        phone: formData.phone,
+        role: 'COLLEGE_ADMIN',
+        collegeProfile: {
+          collegeName: formData.collegeName,
+          phone: formData.phone,
+          website: formData.website,
+          address: formData.address,
+          district: formData.district,
+          city: formData.city,
+          pincode: formData.pincode,
+          collegeType: formData.collegeType,
+          university: formData.university,
+          establishedYear: formData.establishedYear,
+          principalName: formData.principalName
+        }
+      })
+      saveAuthSession(backendSession)
+    } catch (error) {
+      if (!isBackendUnavailable(error)) {
+        alert(error.message || 'College registration could not be completed.')
+        return
+      }
+    }
+
+    const college = createNewCollegeFromSignup({
+      ...formData,
+      email,
+      username,
+      id: backendSession?.collegeId,
+      slug: backendSession?.college?.slug,
+      backendId: backendSession?.collegeId
+    })
     localStorage.removeItem(COLLEGE_SIGNUP_DRAFT_KEY)
     window.dispatchEvent(new Event('collegeRegistered'))
     alert(`College registered! ${college.name} - ID: ${college.id} - Status: PENDING. You can now login and add your college details.`)

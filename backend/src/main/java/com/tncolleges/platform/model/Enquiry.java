@@ -11,10 +11,16 @@ public class Enquiry {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "college_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private College college;
 
+    private Long studentId;
+    private Long courseId;
+    private String contactMethod;
+    private boolean consentGiven;
+    private boolean personalInfoShared;
     private String name;
     private String email;
     private String phone;

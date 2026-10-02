@@ -1,126 +1,179 @@
 package com.tncolleges.platform.controller;
 
+import com.tncolleges.platform.model.College;
+import com.tncolleges.platform.model.Enquiry;
+import com.tncolleges.platform.model.StudentActivity;
+import com.tncolleges.platform.model.User;
+import com.tncolleges.platform.repository.CollegeRepository;
+import com.tncolleges.platform.repository.EnquiryRepository;
+import com.tncolleges.platform.repository.StudentActivityRepository;
+import com.tncolleges.platform.repository.StudentRepository;
+import com.tncolleges.platform.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * Enquiry System - Consent Based Only
- * 
- * Flow:
- * Student selects College, Course, Question, Preferred Contact Method, Submit
- * College receives via dashboard with status: New, Contacted, Follow-up, Interested, Closed
- * Only enquiry-related info shared with consent - Privacy protected
- * 
- * Privacy Rule:
- * If student simply views college page, DO NOT automatically send personal info to college
- * College should NOT get student name, phone, email, browsing history
- * Platform stores activity securely
- * Only when student explicitly clicks ENQUIRE NOW and agrees to share, relevant info sent to college
- */
 @RestController
 @RequestMapping("/api/enquiries")
-@CrossOrigin(origins = "*")
 public class EnquiryController {
+    private final EnquiryRepository enquiryRepo;
+    private final CollegeRepository collegeRepo;
+    private final StudentActivityRepository activityRepo;
+    private final StudentRepository studentRepo;
+    private final UserRepository userRepo;
+
+    public EnquiryController(EnquiryRepository enquiryRepo, CollegeRepository collegeRepo,
+                             StudentActivityRepository activityRepo, StudentRepository studentRepo,
+                             UserRepository userRepo) {
+        this.enquiryRepo = enquiryRepo;
+        this.collegeRepo = collegeRepo;
+        this.activityRepo = activityRepo;
+        this.studentRepo = studentRepo;
+        this.userRepo = userRepo;
+    }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<?> createEnquiry(@RequestBody Map<String, Object> payload) {
-        // Required: student_id, college_id, course_id (optional), question, contact_method, consent
-        Boolean consent = (Boolean) payload.getOrDefault("consent", false);
-        if (!Boolean.TRUE.equals(consent)) {
+        if (!Boolean.TRUE.equals(payload.get("consent"))) {
             return ResponseEntity.badRequest().body(Map.of(
-                "error", "Consent required to share info with college",
-                "privacy_rule", "Viewing does NOT auto-share personal info. Only ENQUIRE NOW with consent shares."
+                    "error", "Consent is required before sharing contact details with the college."
             ));
         }
+        Long collegeId = asLong(payload.get("college_id"));
+        if (collegeId == null) return ResponseEntity.badRequest().body(Map.of("error", "college_id is required"));
+        College college = collegeRepo.findById(collegeId).orElse(null);
+        if (college == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "College not found"));
 
-        Map<String, Object> enquiry = new HashMap<>();
-        enquiry.put("id", System.currentTimeMillis());
-        enquiry.put("student_id", payload.get("student_id"));
-        enquiry.put("college_id", payload.get("college_id"));
-        enquiry.put("college_name", payload.getOrDefault("college_name", "College"));
-        enquiry.put("course_id", payload.get("course_id"));
-        enquiry.put("question", payload.get("question"));
-        enquiry.put("contact_method", payload.getOrDefault("contact_method", "Email"));
-        enquiry.put("status", "New");
-        enquiry.put("consent_given", true);
-        enquiry.put("personal_info_shared", true); // Only true when consent given for ENQUIRY
-        enquiry.put("date", LocalDate.now().toString());
-        enquiry.put("time", LocalTime.now().toString());
-        enquiry.put("created_at", new Date().toString());
+        Long studentId = asLong(payload.get("student_id"));
+        String contactMethod = value(payload.get("contact_method"), "Email");
+        Enquiry enquiry = enquiryRepo.save(Enquiry.builder()
+                .college(college)
+                .studentId(studentId)
+                .courseId(asLong(payload.get("course_id")))
+                .contactMethod(contactMethod)
+                .consentGiven(true)
+                .personalInfoShared(true)
+                .name(value(payload.get("student_name"), "Student"))
+                .email(value(payload.get("student_email"), ""))
+                .phone(value(payload.get("student_phone"), ""))
+                .courseInterested(value(payload.get("course"), value(payload.get("course_name"), "")))
+                .message(value(payload.get("question"), ""))
+                .status("New")
+                .createdAt(LocalDateTime.now())
+                .build());
 
-        // In real app: enquiryRepository.save(), notification to college admin, track activity ENQUIRY
-
-        return ResponseEntity.ok(Map.of(
-            "message", "Enquiry sent successfully with consent - College will contact you",
-            "enquiry", enquiry,
-            "privacy", "Personal info shared only for this enquiry with consent. College cannot see your browsing history."
+        if (studentId != null) {
+            activityRepo.save(StudentActivity.builder()
+                    .studentId(studentId)
+                    .collegeId(collegeId)
+                    .courseId(enquiry.getCourseId())
+                    .date(LocalDate.now())
+                    .time(LocalTime.now())
+                    .activityType(StudentActivity.ActivityType.ENQUIRY)
+                    .personalInfoShared(true)
+                    .metadata("{\"consent\":true}")
+                    .build());
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                "message", "Enquiry sent with consent.",
+                "enquiry", enquiryPayload(enquiry),
+                "privacy_note", "Only this consented enquiry shares contact details; browsing activity stays aggregate-only."
         ));
     }
 
     @GetMapping("/student/{studentId}")
-    public ResponseEntity<?> getStudentEnquiries(@PathVariable Long studentId) {
-        List<Map<String, Object>> enquiries = List.of(
-            Map.of(
-                "id", 1,
-                "college_id", 101,
-                "college_name", "PSG College of Technology",
-                "course", "B.E Computer Science",
-                "question", "What is the cutoff for CSE? Hostel available?",
-                "status", "Contacted",
-                "date", "2026-09-20",
-                "contact_method", "Email"
-            )
-        );
-        return ResponseEntity.ok(enquiries);
+    @PreAuthorize("hasAnyRole('STUDENT','SUPER_ADMIN','PLATFORM_ADMIN')")
+    public ResponseEntity<?> getStudentEnquiries(@PathVariable Long studentId,
+                                                 @AuthenticationPrincipal UserDetails principal) {
+        User user = userRepo.findByEmailIgnoreCase(principal.getUsername()).orElse(null);
+        if (user != null && user.getRole() == User.Role.STUDENT) {
+            Long ownId = studentRepo.findByUserId(user.getId()).map(student -> student.getId()).orElse(null);
+            if (!studentId.equals(ownId)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Access denied"));
+        }
+        List<Map<String, Object>> result = enquiryRepo.findByStudentIdOrderByCreatedAtDesc(studentId)
+                .stream().map(this::enquiryPayload).toList();
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/college/{collegeId}")
+    @PreAuthorize("hasAnyRole('COLLEGE_ADMIN','COLLEGE_EDITOR','PLATFORM_ADMIN','SUPER_ADMIN')")
     public ResponseEntity<?> getCollegeEnquiries(@PathVariable Long collegeId,
-                                                 @RequestHeader(value = "X-College-Id", required = false) Long headerCollegeId,
-                                                 @RequestHeader(value = "X-User-Role", required = false) String role) {
-        // College admin can only see own college enquiries - college_id isolation
-        if (headerCollegeId != null && !Objects.equals(collegeId, headerCollegeId) && !"PLATFORM_ADMIN".equals(role) && !"SUPER_ADMIN".equals(role)) {
-            return ResponseEntity.status(403).body(Map.of("error", "Access denied - College ID isolation"));
-        }
-
-        List<Map<String, Object>> enquiries = List.of(
-            Map.of(
-                "id", 1,
-                "student_id", 1,
-                "student_name", "Rahul Kumar",
-                "student_email", "rahul@example.com",
-                "student_phone", "9876543210",
-                "student_education", "12th",
-                "student_district", "Coimbatore",
-                "student_course_interest", "B.E Computer Science",
-                "college_id", collegeId,
-                "question", "Admission process for CSE?",
-                "status", "New",
-                "consent_given", true,
-                "personal_info_shared", true,
-                "date", "2026-09-20"
-            )
-        );
-        return ResponseEntity.ok(Map.of(
-            "college_id", collegeId,
-            "total_enquiries", 82,
-            "by_status", Map.of("New", 12, "Contacted", 20, "Follow-up", 15, "Interested", 25, "Closed", 10),
-            "enquiries", enquiries,
-            "privacy_note", "Only enquiries with consent show personal info. Aggregated views do NOT expose individual browsing."
-        ));
+                                                 @AuthenticationPrincipal UserDetails principal) {
+        ResponseEntity<?> denied = authorizeCollege(collegeId, principal);
+        if (denied != null) return denied;
+        List<Map<String, Object>> enquiries = enquiryRepo.findByCollege_IdOrderByCreatedAtDesc(collegeId)
+                .stream().filter(Enquiry::isConsentGiven).map(this::enquiryPayload).toList();
+        return ResponseEntity.ok(Map.of("college_id", collegeId, "total_enquiries", enquiries.size(), "enquiries", enquiries,
+                "privacy_note", "Only enquiries submitted with explicit consent include contact details."));
     }
 
     @PutMapping("/{enquiryId}/status")
-    public ResponseEntity<?> updateEnquiryStatus(@PathVariable Long enquiryId, @RequestBody Map<String, String> body) {
-        String status = body.getOrDefault("status", "Contacted"); // New, Contacted, Follow-up, Interested, Closed
-        return ResponseEntity.ok(Map.of(
-            "message", "Enquiry " + enquiryId + " status updated to " + status,
-            "enquiry_id", enquiryId,
-            "status", status
-        ));
+    @PreAuthorize("hasAnyRole('COLLEGE_ADMIN','COLLEGE_EDITOR','PLATFORM_ADMIN','SUPER_ADMIN')")
+    @Transactional
+    public ResponseEntity<?> updateEnquiryStatus(@PathVariable Long enquiryId, @RequestBody Map<String, String> body,
+                                                  @AuthenticationPrincipal UserDetails principal) {
+        Enquiry enquiry = enquiryRepo.findById(enquiryId).orElse(null);
+        if (enquiry == null) return ResponseEntity.notFound().build();
+        ResponseEntity<?> denied = authorizeCollege(enquiry.getCollege().getId(), principal);
+        if (denied != null) return denied;
+        String status = body.getOrDefault("status", "Contacted");
+        if (!List.of("New", "Contacted", "Follow-up", "Interested", "Closed").contains(status)) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Unsupported enquiry status"));
+        }
+        enquiry.setStatus(status);
+        enquiryRepo.save(enquiry);
+        return ResponseEntity.ok(Map.of("message", "Enquiry status updated", "enquiry_id", enquiryId, "status", status));
+    }
+
+    private ResponseEntity<?> authorizeCollege(Long collegeId, UserDetails principal) {
+        User user = userRepo.findByEmailIgnoreCase(principal.getUsername()).orElse(null);
+        if (user != null && user.getRole() != User.Role.SUPER_ADMIN && user.getRole() != User.Role.PLATFORM_ADMIN
+                && !collegeId.equals(user.getCollegeId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Access denied for this college"));
+        }
+        return null;
+    }
+
+    private Map<String, Object> enquiryPayload(Enquiry enquiry) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("id", enquiry.getId());
+        item.put("student_id", enquiry.getStudentId());
+        item.put("college_id", enquiry.getCollege().getId());
+        item.put("college_name", enquiry.getCollege().getName());
+        item.put("course_id", enquiry.getCourseId());
+        item.put("course", enquiry.getCourseInterested());
+        item.put("question", enquiry.getMessage());
+        item.put("contact_method", enquiry.getContactMethod());
+        item.put("status", enquiry.getStatus());
+        item.put("consent_given", enquiry.isConsentGiven());
+        item.put("personal_info_shared", enquiry.isPersonalInfoShared());
+        item.put("student_name", enquiry.isConsentGiven() ? enquiry.getName() : "");
+        item.put("student_email", enquiry.isConsentGiven() ? enquiry.getEmail() : "");
+        item.put("student_phone", enquiry.isConsentGiven() ? enquiry.getPhone() : "");
+        item.put("date", enquiry.getCreatedAt().toLocalDate().toString());
+        item.put("time", enquiry.getCreatedAt().toLocalTime().toString());
+        return item;
+    }
+
+    private String value(Object raw, String fallback) {
+        String text = raw == null ? "" : String.valueOf(raw).trim();
+        return text.isBlank() ? fallback : text;
+    }
+
+    private Long asLong(Object raw) {
+        try { return raw == null ? null : Long.valueOf(String.valueOf(raw)); }
+        catch (NumberFormatException ex) { return null; }
     }
 }

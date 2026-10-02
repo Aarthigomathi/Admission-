@@ -1,38 +1,40 @@
-<<<<<<< HEAD
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# local design preview pages (not part of the build)
-design-preview
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-=======
-frontend/node_modules
-frontend/dist
-backend/target
-*.log
+# Local environment/secrets
 .env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Node frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.vite/
+coverage/
+
+# Java / Maven backend
+backend/target/
+target/
+.mvn/wrapper/maven-wrapper.jar
+*.class
+
+# Local database files and logs
+backend/data/*
+!backend/data/.gitkeep
+*.mv.db
+*.trace.db
+*.lock.db
+*.log
+
+# Generated packages and local archives
+*.zip
+!student-portal.zip
+*.7z
+
+# Editor / OS metadata
+.vscode/settings.json
+.idea/
 .DS_Store
-.idea
-*.iml
->>>>>>> 720df147e5ffac5ad32401c98e3d5f91323469cb
+Thumbs.db

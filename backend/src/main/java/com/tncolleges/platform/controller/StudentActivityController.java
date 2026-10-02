@@ -1,140 +1,168 @@
 package com.tncolleges.platform.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tncolleges.platform.model.StudentActivity;
+import com.tncolleges.platform.model.Student;
+import com.tncolleges.platform.model.User;
+import com.tncolleges.platform.repository.StudentActivityRepository;
+import com.tncolleges.platform.repository.StudentRepository;
 import com.tncolleges.platform.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Student Activity Tracking - Critical Feature
- * Records: student_id, college_id, course_id, date, time, activity_type
- * Activity Types: COLLEGE_VIEW, COURSE_VIEW, SAVE, COMPARE, ENQUIRY
- * 
- * Privacy Rule: Viewing college does NOT auto-send personal info to college
- * Only ENQUIRE NOW with consent shares personal info
- * personalInfoShared flag = true only when activity_type=ENQUIRY and consent given
- * 
- * College analytics shows aggregated only: total students viewed, total views, saves, compares, enquiries
- * By education level, district, course, date, activity type - NO individual browsing exposed
- */
 @RestController
 @RequestMapping("/api/activity")
-@CrossOrigin(origins = "*")
 public class StudentActivityController {
+    private final StudentActivityRepository activityRepo;
+    private final StudentRepository studentRepo;
+    private final UserRepository userRepo;
+    private final ObjectMapper objectMapper;
 
-    // In production, inject StudentActivityRepository
-    // For now, mock responses showing structure
+    public StudentActivityController(StudentActivityRepository activityRepo, StudentRepository studentRepo,
+                                     UserRepository userRepo, ObjectMapper objectMapper) {
+        this.activityRepo = activityRepo;
+        this.studentRepo = studentRepo;
+        this.userRepo = userRepo;
+        this.objectMapper = objectMapper;
+    }
 
     @PostMapping("/track")
-    public ResponseEntity<?> trackActivity(@RequestBody Map<String, Object> payload) {
-        // Expected payload: student_id, college_id, course_id (optional), activity_type, metadata, consent
-        Long studentId = Long.valueOf(payload.getOrDefault("student_id", 1).toString());
-        Long collegeId = Long.valueOf(payload.get("college_id").toString());
-        String activityType = payload.get("activity_type").toString();
-        Boolean consent = (Boolean) payload.getOrDefault("consent", false);
-        
-        // Privacy rule enforcement
-        boolean personalInfoShared = false;
-        if ("ENQUIRY".equals(activityType) && Boolean.TRUE.equals(consent)) {
-            personalInfoShared = true; // Only ENQUIRY with consent shares
+    public ResponseEntity<?> trackActivity(@RequestBody Map<String, Object> payload,
+                                           @AuthenticationPrincipal UserDetails principal) {
+        Long studentId = 1L; // anonymous visitor bucket; never trust a caller-supplied identity
+        if (principal != null) {
+            User user = userRepo.findByEmailIgnoreCase(principal.getUsername()).orElse(null);
+            if (user == null || user.getRole() != User.Role.STUDENT) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Only student accounts can record authenticated activity"));
+            }
+            Student student = studentRepo.findByUserId(user.getId()).orElse(null);
+            if (student == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Student profile not found"));
+            studentId = student.getId();
         }
-        // COLLEGE_VIEW, COURSE_VIEW, SAVE, COMPARE never share personal info
+        Long collegeId = asLong(payload.get("college_id"));
+        Long courseId = asLong(payload.get("course_id"));
+        if (collegeId == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "college_id is required"));
+        }
 
-        Map<String, Object> activity = new HashMap<>();
-        activity.put("id", System.currentTimeMillis());
-        activity.put("student_id", studentId);
-        activity.put("college_id", collegeId);
-        activity.put("course_id", payload.get("course_id"));
-        activity.put("date", LocalDate.now().toString());
-        activity.put("time", LocalTime.now().toString());
-        activity.put("activity_type", activityType);
-        activity.put("personal_info_shared", personalInfoShared);
-        activity.put("metadata", payload.get("metadata"));
-        activity.put("created_at", new Date().toString());
+        StudentActivity.ActivityType activityType;
+        try {
+            activityType = StudentActivity.ActivityType.valueOf(String.valueOf(payload.get("activity_type")).toUpperCase());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Unsupported activity_type"));
+        }
+        boolean consent = Boolean.TRUE.equals(payload.get("consent"));
+        boolean personalInfoShared = activityType == StudentActivity.ActivityType.ENQUIRY && consent;
+        Object metadata = payload.get("metadata");
+        String metadataJson;
+        try {
+            metadataJson = metadata == null ? null : objectMapper.writeValueAsString(metadata);
+        } catch (JsonProcessingException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", "metadata must be valid JSON"));
+        }
 
-        // In real app: studentActivityRepository.save(entity)
+        StudentActivity saved = activityRepo.save(StudentActivity.builder()
+                .studentId(studentId == null ? 1L : studentId)
+                .collegeId(collegeId)
+                .courseId(courseId)
+                .activityType(activityType)
+                .date(LocalDate.now())
+                .time(LocalTime.now())
+                .personalInfoShared(personalInfoShared)
+                .metadata(metadataJson)
+                .build());
 
-        return ResponseEntity.ok(Map.of(
-            "message", "Activity tracked securely",
-            "activity", activity,
-            "privacy_note", personalInfoShared ? 
-                "Personal info shared with consent for ENQUIRY" : 
-                "Viewing does NOT auto-send personal info - aggregated only for college"
+        Map<String, Object> result = new HashMap<>();
+        result.put("id", saved.getId());
+        result.put("student_id", saved.getStudentId());
+        result.put("college_id", saved.getCollegeId());
+        result.put("course_id", saved.getCourseId());
+        result.put("activity_type", saved.getActivityType().name());
+        result.put("date", saved.getDate().toString());
+        result.put("time", saved.getTime().toString());
+        result.put("personal_info_shared", saved.getPersonalInfoShared());
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                "message", "Activity recorded",
+                "activity", result,
+                "privacy_note", personalInfoShared
+                        ? "Personal information is shared only for this consented enquiry."
+                        : "Browsing activity is stored for aggregate analytics and does not share personal information with a college."
         ));
     }
 
     @GetMapping("/college/{collegeId}/aggregated")
-    public ResponseEntity<?> getAggregatedInterest(@PathVariable Long collegeId) {
-        // Platform Admin and College Admin (own college only) can see aggregated
-        // Returns: totalStudentsViewed, totalViews, courseViews, saved, compared, enquiries
-        // Plus breakdowns: byEducation, byDistrict, byCourse, byDate, byActivityType
-        // NO individual student data exposed to colleges
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','PLATFORM_ADMIN','COLLEGE_ADMIN','COLLEGE_EDITOR')")
+    public ResponseEntity<?> getAggregatedInterest(@PathVariable Long collegeId,
+                                                   @AuthenticationPrincipal UserDetails principal) {
+        User user = userRepo.findByEmailIgnoreCase(principal.getUsername()).orElse(null);
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Authentication required"));
+        boolean platformAdmin = user.getRole() == User.Role.PLATFORM_ADMIN || user.getRole() == User.Role.SUPER_ADMIN;
+        if (!platformAdmin && !collegeId.equals(user.getCollegeId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "You can only view aggregated activity for your college"));
+        }
+        EnumMap<StudentActivity.ActivityType, Long> counts = new EnumMap<>(StudentActivity.ActivityType.class);
+        for (StudentActivity.ActivityType type : StudentActivity.ActivityType.values()) {
+            counts.put(type, activityRepo.countByCollegeIdAndActivityType(collegeId, type));
+        }
+        Map<String, Long> byType = new HashMap<>();
+        counts.forEach((type, count) -> byType.put(type.name(), count));
+        long views = counts.get(StudentActivity.ActivityType.COLLEGE_VIEW);
+        long courseViews = counts.get(StudentActivity.ActivityType.COURSE_VIEW);
+        long saves = counts.get(StudentActivity.ActivityType.SAVE);
+        long compares = counts.get(StudentActivity.ActivityType.COMPARE);
+        long enquiries = counts.get(StudentActivity.ActivityType.ENQUIRY);
 
-        Map<String, Object> aggregated = new HashMap<>();
-        aggregated.put("college_id", collegeId);
-        aggregated.put("total_students_viewed", 1245);
-        aggregated.put("total_views", 3850);
-        aggregated.put("total_course_views", 1250);
-        aggregated.put("total_saved", 320);
-        aggregated.put("total_compared", 145);
-        aggregated.put("total_enquiries", 82);
-        aggregated.put("by_education", Map.of(
-            "12th", 600,
-            "Diploma", 200,
-            "UG", 300,
-            "PG", 80,
-            "11th", 65
-        ));
-        aggregated.put("by_district", Map.of(
-            "Coimbatore", 450,
-            "Chennai", 320,
-            "Madurai", 180,
-            "Tiruppur", 120,
-            "Salem", 90,
-            "Trichy", 85
-        ));
-        aggregated.put("by_course", Map.of(
-            "B.E Computer Science", 320,
-            "B.Tech AI & Data Science", 180,
-            "B.E Mechanical", 150,
-            "BCA", 120,
-            "MBA", 80,
-            "B.E ECE", 110
-        ));
-        aggregated.put("by_activity_type", Map.of(
-            "COLLEGE_VIEW", 3850,
-            "COURSE_VIEW", 1250,
-            "SAVE", 320,
-            "COMPARE", 145,
-            "ENQUIRY", 82
-        ));
-        aggregated.put("by_date", Map.of(
-            "2026-09-01", 120,
-            "2026-09-02", 150,
-            "2026-09-03", 180
-        ));
-        aggregated.put("privacy_note", "Aggregated only - No individual browsing exposed to colleges. Only ENQUIRY with consent shares personal info. Student data belongs to platform and is protected.");
-
-        return ResponseEntity.ok(aggregated);
+        Map<String, Object> result = new HashMap<>();
+        result.put("college_id", collegeId);
+        result.put("total_students_viewed", activityRepo.countDistinctStudentsByCollegeIdAndActivityType(collegeId, StudentActivity.ActivityType.COLLEGE_VIEW));
+        result.put("total_views", views);
+        result.put("total_course_views", courseViews);
+        result.put("total_saved", saves);
+        result.put("total_compared", compares);
+        result.put("total_enquiries", enquiries);
+        result.put("by_activity_type", byType);
+        result.put("privacy_note", "Aggregated activity only; individual browsing records are not exposed to colleges.");
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/student/{studentId}")
-    public ResponseEntity<?> getStudentActivities(@PathVariable Long studentId) {
-        // Only student themselves and platform admin can see their own activities
-        // Mock
-        return ResponseEntity.ok(Map.of(
-            "student_id", studentId,
-            "total_activities", 45,
-            "college_views", 20,
-            "course_views", 15,
-            "saves", 5,
-            "compares", 3,
-            "enquiries", 2,
-            "recently_viewed", List.of(101, 102, 103)
-        ));
+    @PreAuthorize("hasAnyRole('STUDENT','PLATFORM_ADMIN','SUPER_ADMIN')")
+    public ResponseEntity<?> getStudentActivity(@PathVariable Long studentId,
+                                                @AuthenticationPrincipal UserDetails principal) {
+        User user = userRepo.findByEmailIgnoreCase(principal.getUsername()).orElse(null);
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Authentication required"));
+        boolean platformAdmin = user.getRole() == User.Role.PLATFORM_ADMIN || user.getRole() == User.Role.SUPER_ADMIN;
+        Student student = studentRepo.findByUserId(user.getId()).orElse(null);
+        if (!platformAdmin && (student == null || !studentId.equals(student.getId()))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "You can only view your own activity"));
+        }
+        return ResponseEntity.ok(activityRepo.findByStudentIdOrderByCreatedAtDesc(studentId).stream().map(activity -> {
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", activity.getId());
+            item.put("college_id", activity.getCollegeId());
+            item.put("course_id", activity.getCourseId());
+            item.put("activity_type", activity.getActivityType().name());
+            item.put("date", activity.getDate().toString());
+            item.put("time", activity.getTime().toString());
+            item.put("personal_info_shared", activity.getPersonalInfoShared());
+            item.put("metadata", activity.getMetadata());
+            return item;
+        }).toList());
+    }
+
+    private Long asLong(Object value) {
+        try { return value == null ? null : Long.valueOf(String.valueOf(value)); }
+        catch (NumberFormatException ex) { return null; }
     }
 }

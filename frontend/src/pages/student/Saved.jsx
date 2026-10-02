@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { colleges } from '../../lib/colleges'
+import { getDiscoveryColleges } from '../../lib/collegeStorage'
+import { syncStudentWorkspace } from '../../lib/studentWorkspace'
 import { Bookmark, MapPin, Trash2, Eye, GitCompare, GraduationCap } from 'lucide-react'
 import { activityTracker } from '../../lib/activityTracker'
 import StudentHeader from '../../components/student/StudentHeader'
@@ -11,18 +12,31 @@ export default function Saved() {
   const { t, language } = useLanguage()
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('tn_saved_colleges') || '[]')
-    const enriched = data.map(s => {
-      const c = colleges.find(col => col.id === s.id)
-      return c ? { ...s, college: c } : null
-    }).filter(Boolean)
-    setSaved(enriched)
+    const reload = () => {
+      const data = JSON.parse(localStorage.getItem('tn_saved_colleges') || '[]')
+      const colleges = getDiscoveryColleges()
+      const enriched = data.map(s => {
+        const c = colleges.find(col => String(col.id) === String(s.id))
+        return c ? { ...s, college: c } : null
+      }).filter(Boolean)
+      setSaved(enriched)
+    }
+    reload()
+    window.addEventListener('backendCollegesLoaded', reload)
+    window.addEventListener('collegeRegistered', reload)
+    window.addEventListener('studentWorkspaceLoaded', reload)
+    return () => {
+      window.removeEventListener('backendCollegesLoaded', reload)
+      window.removeEventListener('collegeRegistered', reload)
+      window.removeEventListener('studentWorkspaceLoaded', reload)
+    }
   }, [])
 
   const remove = (id) => {
     const updated = saved.filter(s => s.id !== id)
     setSaved(updated)
     localStorage.setItem('tn_saved_colleges', JSON.stringify(updated.map(u=>({ id: u.id, name: u.name, slug: u.slug, savedAt: u.savedAt }))))
+    syncStudentWorkspace()
   }
 
   return (

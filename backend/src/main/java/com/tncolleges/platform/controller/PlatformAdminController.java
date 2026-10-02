@@ -23,7 +23,6 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/api/platform-admin")
-@CrossOrigin(origins = "*")
 public class PlatformAdminController {
 
     @GetMapping("/dashboard")

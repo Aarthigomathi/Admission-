@@ -1,6 +1,6 @@
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 
 const plugins = [react(), tailwindcss()]
 
@@ -22,15 +22,31 @@ if (process.env.KCE_PREVIEW_KARPAGAM === '1') {
   })
 }
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins,
-  server: {
-    host: '0.0.0.0',
-    port: 5173,
-    allowedHosts: true,
-    headers: {
-      'X-Frame-Options': 'ALLOWALL'
+// The browser calls relative /api URLs; Vite forwards them to Spring Boot in dev/preview.
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const apiTarget = (env.VITE_API_PROXY_TARGET || 'http://127.0.0.1:8080').replace(/\/+$/, '')
+  const apiProxy = {
+    '/api': {
+      target: apiTarget,
+      changeOrigin: true,
+      secure: false
+    }
+  }
+
+  return {
+    plugins,
+    server: {
+      host: '0.0.0.0',
+      port: 5173,
+      allowedHosts: true,
+      proxy: apiProxy,
+      headers: { 'X-Frame-Options': 'ALLOWALL' }
+    },
+    preview: {
+      host: '0.0.0.0',
+      proxy: apiProxy,
+      headers: { 'X-Frame-Options': 'ALLOWALL' }
     }
   }
 })

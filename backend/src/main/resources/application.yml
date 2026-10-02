@@ -1,39 +1,36 @@
-server:
-  port: 8080
-
 spring:
+  config:
+    import: optional:file:.env[.properties]
   datasource:
-    # For production: MySQL
-    # url: jdbc:mysql://localhost:3306/tn_colleges?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
-    # username: root
-    # password: root
-    # Development: H2 in-memory for easy startup
-    url: jdbc:h2:mem:tn_colleges
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: ${DB_URL:jdbc:h2:file:./data/tn_colleges;DB_CLOSE_ON_EXIT=FALSE}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false
+    show-sql: ${SHOW_SQL:false}
+    open-in-view: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
   h2:
     console:
-      enabled: true
+      enabled: ${H2_CONSOLE_ENABLED:true}
       path: /h2-console
-
   jackson:
     serialization:
       write-dates-as-timestamps: false
 
+server:
+  port: ${SERVER_PORT:8080}
+
 app:
   jwt:
-    secret: 5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437
-    expiration-ms: 86400000
+    # Development-only fallback. Replace APP_JWT_SECRET before deployment.
+    secret: ${APP_JWT_SECRET:5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
 
 logging:
   level:
-    com.tncolleges: DEBUG
+    com.tncolleges: ${APP_LOG_LEVEL:INFO}

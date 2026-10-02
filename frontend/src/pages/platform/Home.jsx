@@ -16,9 +16,11 @@ export default function PlatformHome() {
     const handleStorage = () => setColleges(getDiscoveryColleges())
     window.addEventListener('storage', handleStorage)
     window.addEventListener('collegeRegistered', handleStorage)
+    window.addEventListener('backendCollegesLoaded', handleStorage)
     return () => {
       window.removeEventListener('storage', handleStorage)
       window.removeEventListener('collegeRegistered', handleStorage)
+      window.removeEventListener('backendCollegesLoaded', handleStorage)
     }
   }, [])
 

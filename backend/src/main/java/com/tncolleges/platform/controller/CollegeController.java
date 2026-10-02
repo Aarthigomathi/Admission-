@@ -3,21 +3,25 @@ package com.tncolleges.platform.controller;
 import com.tncolleges.platform.model.*;
 import com.tncolleges.platform.repository.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/colleges")
-@CrossOrigin(origins = "*")
 public class CollegeController {
 
     private final CollegeRepository collegeRepo;
     private final CourseRepository courseRepo;
+    private final UserRepository userRepo;
 
-    public CollegeController(CollegeRepository collegeRepo, CourseRepository courseRepo) {
+    public CollegeController(CollegeRepository collegeRepo, CourseRepository courseRepo, UserRepository userRepo) {
         this.collegeRepo = collegeRepo;
         this.courseRepo = courseRepo;
+        this.userRepo = userRepo;
     }
 
     @GetMapping
@@ -59,13 +63,16 @@ public class CollegeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Multi-tenant security check: College Admin can only access own college
     @GetMapping("/admin/my-college")
-    public ResponseEntity<?> getMyCollege(@RequestHeader(value = "X-College-Id", required = false) Long collegeId) {
-        if (collegeId == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "X-College-Id header required for multi-tenant isolation"));
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','PLATFORM_ADMIN','COLLEGE_ADMIN','COLLEGE_EDITOR')")
+    public ResponseEntity<?> getMyCollege(@AuthenticationPrincipal UserDetails principal) {
+        User user = userRepo.findByEmailIgnoreCase(principal.getUsername()).orElse(null);
+        if (user == null) return ResponseEntity.status(401).body(Map.of("error", "Authentication required"));
+        if (user.getRole() == User.Role.PLATFORM_ADMIN || user.getRole() == User.Role.SUPER_ADMIN) {
+            return ResponseEntity.badRequest().body(Map.of("error", "A platform administrator must select a college."));
         }
-        return collegeRepo.findById(collegeId)
+        if (user.getCollegeId() == null) return ResponseEntity.notFound().build();
+        return collegeRepo.findById(user.getCollegeId())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

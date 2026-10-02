@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { getPublicColleges, getRegisteredColleges, getCollegeById, getCollegeCustomData, saveCollegeData, saveCollegeDataSafe, getProfileCompletion, findCollegeByLoginId } from '../../lib/collegeStorage'
+import { clearAuthSession } from '../../lib/api'
 import { normalizeQuickLinks, QUICK_LINK_MAX } from '../../lib/quickLinks'
 import {
   saveAdminDraft, readAdminDraft, clearAdminDraft,
@@ -948,7 +949,7 @@ export default function AdminDashboard() {
      <Link to={`/college/${college.slug}`} target="_blank" className="flex items-center justify-center gap-2 h-11 rounded-full bg-white text-[#1A3263] font-bold border-2 border-white text-[12px] hover:bg-[#E8E2DB]">
       <Eye size={14} /> Preview Your Website <ExternalLink size={12} />
      </Link>
-     <button onClick={()=>{localStorage.removeItem('tn_current_college'); setIsLoggedIn(false)}} className="w-full h-9 rounded-full bg-white/10 border border-white/20 text-[11px] font-medium">Logout - Secure</button>
+     <button onClick={()=>{localStorage.removeItem('tn_current_college'); clearAuthSession(); setIsLoggedIn(false)}} className="w-full h-9 rounded-full bg-white/10 border border-white/20 text-[11px] font-medium">Logout - Secure</button>
      <div className="text-[10px] text-white/40 text-center">College ID: {college.id}</div>
     </div>
    </aside>

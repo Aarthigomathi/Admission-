@@ -18,6 +18,8 @@ import {
 } from '../../lib/tnEducation'
 import { useLanguage } from '../../lib/languageContext'
 import { StudentLanguageToggleAlways } from '../../components/student/LanguageToggle'
+import { api, isBackendUnavailable, saveAuthSession } from '../../lib/api'
+import { hydrateStudentWorkspace } from '../../lib/studentWorkspace'
 
 // Course options offered in the Dream Course picker (single source of truth)
 const DREAM_COURSE_OPTIONS = [
@@ -334,9 +336,57 @@ export default function StudentSignup() {
       return
     }
 
+    let backendSession = null
+    try {
+      backendSession = await api.register({
+        email: normalizedEmail,
+        password: formData.password,
+        fullName: formData.fullName,
+        phone: formData.mobile,
+        role: 'STUDENT',
+        studentProfile: {
+          fullName: formData.fullName,
+          mobile: formData.mobile,
+          parentMobile: formData.fatherMobile || formData.parentMobile,
+          fatherName: formData.fatherName,
+          dob: formData.dob,
+          gender: formData.gender,
+          permanentAddress: formData.permanentAddress,
+          pincode: formData.pincode,
+          state: formData.state,
+          district: formData.district,
+          city: formData.city,
+          educationLevel: formData.educationLevel,
+          schoolCollege: formData.schoolCollege,
+          marks: `${formData.marksObtained}/${formData.totalMarks}`,
+          percentage: formData.percentage,
+          groupStream: formData.groupStream,
+          interestedSubject: formData.interestedSubject,
+          interestedCourse: formData.interestedCourse,
+          preferredDistrict: formData.preferredDistrict,
+          collegeType: formData.collegeType,
+          hostelRequired: formData.hostelRequired,
+          transportRequired: formData.transportRequired
+        }
+      })
+      saveAuthSession(backendSession)
+    } catch (error) {
+      if (!isBackendUnavailable(error)) {
+        if (error.status === 409) {
+          alert(error.message)
+          navigate(`/login?role=student&email=${encodeURIComponent(normalizedEmail)}`)
+        } else {
+          setDocError(error.message || 'Registration could not be completed. Please try again.')
+        }
+        return
+      }
+    }
+
+    const { password: signupPassword, ...safeFormData } = formData
     const student = {
-      id: Date.now(),
-      ...formData,
+      id: backendSession?.studentId ?? Date.now(),
+      ...safeFormData,
+      password: backendSession ? undefined : signupPassword,
       email: normalizedEmail,
       role: 'STUDENT',
       profileCompletion: 100,
@@ -370,6 +420,7 @@ export default function StudentSignup() {
     localStorage.setItem('tn_current_student', JSON.stringify(student))
     storedStudents.push(student)
     localStorage.setItem('tn_students', JSON.stringify(storedStudents))
+    if (backendSession) hydrateStudentWorkspace()
     syncStudentDocumentCounters(student.id, saved.docs)
     clearStudentSignupDraft()
     await clearStudentSignupDraftFiles()

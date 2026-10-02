@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { getCollegeBySlug, getCollegeCustomData, getPublicColleges } from '../../lib/collegeStorage'
+import { api } from '../../lib/api'
 import { normalizeQuickLinks } from '../../lib/quickLinks'
 import CollegeHeader from '../../components/college/CollegeHeader'
 import AboutPages from '../../components/college/AboutPages.jsx'
@@ -762,6 +763,9 @@ export default function CollegePage() {
       setCollege(pubFound || null)
       if (pubFound) setCustomData(getCollegeCustomData(pubFound.id))
     }
+    api.getPublicCollegeSections(slug)
+      .then(serverSections => setCustomData(current => ({ ...serverSections, ...current })))
+      .catch(() => { /* Use the browser cache or static profile when the API is offline. */ })
   }, [slug])
 
   if (!college) {

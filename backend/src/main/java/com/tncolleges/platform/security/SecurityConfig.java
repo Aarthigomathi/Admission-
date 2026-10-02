@@ -2,6 +2,7 @@ package com.tncolleges.platform.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -25,7 +26,6 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
 
@@ -40,27 +40,30 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/colleges/**", "/api/courses/**", "/api/search/**", "/h2-console/**", "/api/public/**").permitAll()
-                .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN", "COLLEGE_ADMIN", "COLLEGE_EDITOR")
-                .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/health", "/api/auth/**", "/api/colleges/**", "/api/search/**", "/h2-console/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/activity/track", "/api/enquiries").permitAll()
+                .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN", "PLATFORM_ADMIN", "COLLEGE_ADMIN", "COLLEGE_EDITOR")
+                .requestMatchers("/api/platform-admin/**").hasAnyRole("SUPER_ADMIN", "PLATFORM_ADMIN")
+                .requestMatchers("/api/activity/college/**").hasAnyRole("SUPER_ADMIN", "PLATFORM_ADMIN", "COLLEGE_ADMIN", "COLLEGE_EDITOR")
+                .requestMatchers("/api/enquiries/college/**", "/api/enquiries/*/status").hasAnyRole("SUPER_ADMIN", "PLATFORM_ADMIN", "COLLEGE_ADMIN", "COLLEGE_EDITOR")
+                .requestMatchers("/api/activity/student/**", "/api/enquiries/student/**").hasAnyRole("STUDENT", "SUPER_ADMIN", "PLATFORM_ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // For H2 console
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
-
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*"));
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
         config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

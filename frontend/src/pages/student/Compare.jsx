@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { colleges } from '../../lib/colleges'
+import { getDiscoveryColleges } from '../../lib/collegeStorage'
+import { syncStudentWorkspace } from '../../lib/studentWorkspace'
 import { GitCompare, X, MapPin, Award, Building2, Users, BookOpen } from 'lucide-react'
 import StudentHeader from '../../components/student/StudentHeader'
 import { useLanguage } from '../../lib/languageContext'
@@ -10,20 +11,34 @@ export default function Compare() {
   const { t, language } = useLanguage()
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]')
-    const enriched = data.map(s => colleges.find(c=>c.id===s.id)).filter(Boolean)
-    setCompareList(enriched)
+    const reload = () => {
+      const data = JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]')
+      const colleges = getDiscoveryColleges()
+      const enriched = data.map(s => colleges.find(c => String(c.id) === String(s.id))).filter(Boolean)
+      setCompareList(enriched)
+    }
+    reload()
+    window.addEventListener('backendCollegesLoaded', reload)
+    window.addEventListener('collegeRegistered', reload)
+    window.addEventListener('studentWorkspaceLoaded', reload)
+    return () => {
+      window.removeEventListener('backendCollegesLoaded', reload)
+      window.removeEventListener('collegeRegistered', reload)
+      window.removeEventListener('studentWorkspaceLoaded', reload)
+    }
   }, [])
 
   const remove = (id) => {
     const updated = compareList.filter(c=>c.id!==id)
     setCompareList(updated)
     localStorage.setItem('tn_compare_colleges', JSON.stringify(updated.map(u=>({ id: u.id, name: u.name, slug: u.slug }))))
+    syncStudentWorkspace()
   }
 
   const clearAll = () => {
     setCompareList([])
-    localStorage.removeItem('tn_compare_colleges')
+    localStorage.setItem('tn_compare_colleges', JSON.stringify([]))
+    syncStudentWorkspace()
   }
 
   return (

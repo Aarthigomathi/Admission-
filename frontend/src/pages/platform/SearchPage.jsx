@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom'
 import { Search, MapPin, Filter, GraduationCap, Bookmark, GitCompare, ArrowUpRight, Building2, Sparkles, Shield } from 'lucide-react'
 import CollegeCard from '../../components/platform/CollegeCard'
 import { getDiscoveryColleges } from '../../lib/collegeStorage'
+import { syncStudentWorkspace } from '../../lib/studentWorkspace'
 import { activityTracker, ACTIVITY_TYPES } from '../../lib/activityTracker'
 import LanguageToggle from '../../components/student/LanguageToggle'
 import { useLanguage } from '../../lib/languageContext'
@@ -28,12 +29,20 @@ export default function SearchPage() {
     const compare = JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]')
     setCompareIds(compare.map(c=>c.id))
     setColleges(getDiscoveryColleges())
-    const handle = () => setColleges(getDiscoveryColleges())
+    const handle = () => {
+      setColleges(getDiscoveryColleges())
+      setSavedIds(JSON.parse(localStorage.getItem('tn_saved_colleges') || '[]').map(c => c.id))
+      setCompareIds(JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]').map(c => c.id))
+    }
     window.addEventListener('collegeRegistered', handle)
     window.addEventListener('storage', handle)
+    window.addEventListener('backendCollegesLoaded', handle)
+    window.addEventListener('studentWorkspaceLoaded', handle)
     return () => {
       window.removeEventListener('collegeRegistered', handle)
       window.removeEventListener('storage', handle)
+      window.removeEventListener('backendCollegesLoaded', handle)
+      window.removeEventListener('studentWorkspaceLoaded', handle)
     }
   }, [])
 
@@ -85,6 +94,7 @@ export default function SearchPage() {
       activityTracker.recordActivity({ collegeId: college.id, activityType: ACTIVITY_TYPES.SAVE, metadata: { collegeName: college.name } })
     }
     localStorage.setItem('tn_saved_colleges', JSON.stringify(updated))
+    syncStudentWorkspace()
     setSavedIds(updated.map(c=>c.id))
   }
 
@@ -93,6 +103,7 @@ export default function SearchPage() {
     if (current.find(c=>c.id===college.id)) {
       const updated = current.filter(c=>c.id!==college.id)
       localStorage.setItem('tn_compare_colleges', JSON.stringify(updated))
+      syncStudentWorkspace()
       setCompareIds(updated.map(c=>c.id))
       return
     }
@@ -102,6 +113,7 @@ export default function SearchPage() {
     }
     const updated = [...current, { id: college.id, name: college.name, slug: college.slug }]
     localStorage.setItem('tn_compare_colleges', JSON.stringify(updated))
+    syncStudentWorkspace()
     setCompareIds(updated.map(c=>c.id))
     activityTracker.recordActivity({ collegeId: college.id, activityType: ACTIVITY_TYPES.COMPARE, metadata: { collegeName: college.name } })
   }

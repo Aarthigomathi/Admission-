@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Mail, Lock, ArrowRight, Building2, GraduationCap, Shield, Camera, Award, Users, Eye } from 'lucide-react'
-import { findCollegeByLoginId, getRegisteredColleges } from '../../lib/collegeStorage'
+import { findCollegeByLoginId, getRegisteredColleges, getAllCollegesMerged } from '../../lib/collegeStorage'
+import { api, isBackendUnavailable, saveAuthSession } from '../../lib/api'
+import { hydrateStudentWorkspace } from '../../lib/studentWorkspace'
 
 // Header-la irundhu varum /login?role=student|college|admin mapping
 const ROLE_FROM_PARAM = {
@@ -27,7 +29,9 @@ export default function Login() {
     if (r === 'STUDENT') return { email: 'demo.student@tncolleges.in', password: 'demo1234' }
     if (r === 'COLLEGE') {
       const c = getRegisteredColleges()[0]
-      return { email: c?.loginUsername || c?.email || '', password: c?.loginPassword || '' }
+      return c
+        ? { email: c.loginUsername || c.email || '', password: c.loginPassword || '' }
+        : { email: 'admin@psgtech.ac.in', password: 'psg123' }
     }
     return { email: 'admin@tncolleges.in', password: 'admin1234' }
   }
@@ -49,9 +53,44 @@ export default function Login() {
   // /login?role=student&demo=1 - credentials auto fill
   useEffect(() => { if (demoParam) fillDemo(roleParam) }, [demoParam, roleParam])
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     setLoginError('')
+    if (import.meta.env.MODE !== 'test') {
+      try {
+        const session = await api.login({ loginId: email.trim(), email: email.trim(), password, role })
+      saveAuthSession(session)
+      if (role === 'STUDENT') {
+        const profile = session.student || {}
+        const student = { ...profile, id: session.studentId ?? profile.id ?? session.userId, email: session.email, fullName: profile.fullName || session.fullName, role: 'STUDENT' }
+        localStorage.setItem('tn_current_student', JSON.stringify(student))
+        const students = JSON.parse(localStorage.getItem('tn_students') || '[]').filter(item => String(item.email).toLowerCase() !== String(student.email).toLowerCase())
+        students.push(student)
+        localStorage.setItem('tn_students', JSON.stringify(students))
+        hydrateStudentWorkspace()
+        navigate('/student/dashboard')
+        return
+      }
+      if (role === 'COLLEGE') {
+        const apiCollege = session.college
+        if (!apiCollege) throw new Error('This account has no college profile. Contact the platform administrator.')
+        const localCollege = getAllCollegesMerged().find(item => item.slug === apiCollege.slug) || {}
+        const college = { ...localCollege, ...apiCollege, id: apiCollege.id, backendId: apiCollege.id, loginUsername: session.username || session.email, role: 'COLLEGE_ADMIN' }
+        localStorage.setItem('tn_current_college', JSON.stringify(college))
+        navigate('/admin')
+        return
+      }
+      localStorage.setItem('tn_platform_admin', JSON.stringify({ email: session.email, role: 'PLATFORM_ADMIN' }))
+      navigate('/platform-admin')
+      return
+    } catch (error) {
+      if (!isBackendUnavailable(error)) {
+        setLoginError(error.message || 'Unable to sign in. Check your credentials and try again.')
+        return
+      }
+      }
+    }
+    // Keep the existing browser-only demo login available if the backend is not started.
     if (role === 'STUDENT') {
       const normalizedEmail = email.trim().toLowerCase()
       let students = []

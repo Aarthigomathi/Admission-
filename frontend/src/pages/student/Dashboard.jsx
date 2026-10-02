@@ -24,11 +24,19 @@ export default function StudentDashboard() {
     setSaved(JSON.parse(localStorage.getItem('tn_saved_colleges') || '[]'))
     setCompare(JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]'))
     setColleges(getDiscoveryColleges())
-    const handle = () => setColleges(getDiscoveryColleges())
+    const handle = () => {
+      setColleges(getDiscoveryColleges())
+      setSaved(JSON.parse(localStorage.getItem('tn_saved_colleges') || '[]'))
+      setCompare(JSON.parse(localStorage.getItem('tn_compare_colleges') || '[]'))
+    }
     window.addEventListener('collegeRegistered', handle)
+    window.addEventListener('backendCollegesLoaded', handle)
+    window.addEventListener('studentWorkspaceLoaded', handle)
     window.addEventListener('storage', handle)
     return () => {
       window.removeEventListener('collegeRegistered', handle)
+      window.removeEventListener('backendCollegesLoaded', handle)
+      window.removeEventListener('studentWorkspaceLoaded', handle)
       window.removeEventListener('storage', handle)
     }
   }, [])

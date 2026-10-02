@@ -22,6 +22,14 @@ public class Student {
     private String email;
 
     private String mobile;
+    private String parentName;
+    private String parentMobile;
+    private String dateOfBirth;
+    private String gender;
+    @Column(length = 1000)
+    private String address;
+    private String pincode;
+    private String state;
     private String district;
     private String city;
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { colleges } from '../../lib/colleges'
+import { getDiscoveryColleges, storeBackendColleges } from '../../lib/collegeStorage'
+import { api, isBackendUnavailable } from '../../lib/api'
 import { MessageCircle, Shield, Send, CheckCircle2, Clock, Building2 } from 'lucide-react'
 import { activityTracker, ACTIVITY_TYPES } from '../../lib/activityTracker'
 import StudentHeader from '../../components/student/StudentHeader'
@@ -7,34 +8,76 @@ import { useLanguage } from '../../lib/languageContext'
 
 export default function Enquiries() {
   const [enquiries, setEnquiries] = useState([])
-  const [form, setForm] = useState({ collegeId: colleges[0]?.id || 101, courseId: '', question: '', contactMethod: 'Email', consent: false })
+  const [colleges, setColleges] = useState(() => getDiscoveryColleges())
+  const [form, setForm] = useState({ collegeId: getDiscoveryColleges()[0]?.id || 101, courseId: '', question: '', contactMethod: 'Email', consent: false })
   const [success, setSuccess] = useState(false)
   const { t, language } = useLanguage()
 
   useEffect(() => {
-    setEnquiries(JSON.parse(localStorage.getItem('tn_enquiries') || '[]'))
+    let localEnquiries = []
+    try { localEnquiries = JSON.parse(localStorage.getItem('tn_enquiries') || '[]') } catch { localEnquiries = [] }
+    setEnquiries(localEnquiries)
+    const currentStudent = JSON.parse(localStorage.getItem('tn_current_student') || 'null')
+    if (currentStudent?.id && localStorage.getItem('tn_auth_token')) {
+      api.getStudentEnquiries(currentStudent.id).then(serverItems => {
+        const merged = [...(Array.isArray(serverItems) ? serverItems : []), ...localEnquiries]
+        const unique = Array.from(new Map(merged.map(item => [String(item.id), item])).values())
+        setEnquiries(unique)
+        localStorage.setItem('tn_enquiries', JSON.stringify(unique))
+      }).catch(() => {})
+    }
+    const refreshColleges = () => setColleges(getDiscoveryColleges())
+    api.getColleges().then(storeBackendColleges).catch(() => {})
+    window.addEventListener('backendCollegesLoaded', refreshColleges)
+    window.addEventListener('collegeRegistered', refreshColleges)
+    return () => {
+      window.removeEventListener('backendCollegesLoaded', refreshColleges)
+      window.removeEventListener('collegeRegistered', refreshColleges)
+    }
   }, [])
 
-  const selectedCollege = colleges.find(c=>c.id===Number(form.collegeId))
+  const selectedCollege = colleges.find(c=>String(c.id)===String(form.collegeId))
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.consent) {
       alert("Please give consent to share your info with college for enquiry - Privacy rule")
       return
     }
     const currentStudent = JSON.parse(localStorage.getItem('tn_current_student') || 'null')
+    let backendEnquiry = null
+    try {
+      const response = await api.createEnquiry({
+        student_id: currentStudent?.id || null,
+        student_name: currentStudent?.fullName || currentStudent?.name || 'Demo Student',
+        student_email: currentStudent?.email || 'student@demo.com',
+        student_phone: currentStudent?.mobile || currentStudent?.phone || '',
+        college_id: Number(selectedCollege?.backendId ?? form.collegeId),
+        college_name: selectedCollege?.name || 'College',
+        course_id: form.courseId ? Number(form.courseId) : null,
+        course: selectedCollege?.courses?.find(course => String(course.id) === String(form.courseId))?.name || '',
+        question: form.question,
+        contact_method: form.contactMethod,
+        consent: true
+      })
+      backendEnquiry = response.enquiry
+    } catch (error) {
+      if (!isBackendUnavailable(error) && error.status !== 404) {
+        alert(error.message || 'The enquiry could not be sent. Please try again.')
+        return
+      }
+    }
     const newEnquiry = {
-      id: Date.now(),
+      id: backendEnquiry?.id || Date.now(),
       student_id: currentStudent?.id || 1,
-      student_name: currentStudent?.fullName || "Demo Student",
-      student_email: currentStudent?.email || "student@demo.com",
+      student_name: currentStudent?.fullName || currentStudent?.name || 'Demo Student',
+      student_email: currentStudent?.email || 'student@demo.com',
       college_id: Number(form.collegeId),
-      college_name: selectedCollege?.name || "College",
+      college_name: selectedCollege?.name || 'College',
       course_id: form.courseId,
       question: form.question,
       contact_method: form.contactMethod,
-      status: "New",
+      status: backendEnquiry?.status || 'New',
       consent_given: true,
       personal_info_shared: true,
       created_at: new Date().toISOString(),
@@ -49,7 +92,7 @@ export default function Enquiries() {
       collegeId: Number(form.collegeId),
       courseId: form.courseId ? Number(form.courseId) : null,
       activityType: ACTIVITY_TYPES.ENQUIRY,
-      metadata: { collegeName: selectedCollege?.name, question: form.question, consent: true, personalInfoShared: true },
+      metadata: { collegeName: selectedCollege?.name, question: form.question, consent: true, personalInfoShared: true, backendTracked: Boolean(backendEnquiry) },
       personalInfoShared: true
     })
 

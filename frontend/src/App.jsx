@@ -15,7 +15,17 @@ import StudentEnquiries from './pages/student/Enquiries'
 import StudentProfile from './pages/student/Profile'
 import PlatformAdminDashboard from './pages/platformAdmin/PlatformAdminDashboard'
 import { activityTracker, ACTIVITY_TYPES } from './lib/activityTracker'
+import { api } from './lib/api'
+import { storeBackendColleges, getCollegeBySlug } from './lib/collegeStorage'
 import { LanguageProvider } from './lib/languageContext'
+
+function BackendDataBootstrap() {
+  useEffect(() => {
+    api.health().catch(() => {})
+    api.getColleges().then(storeBackendColleges).catch(() => {})
+  }, [])
+  return null
+}
 
 function ActivityTrackerWrapper({ children }) {
   const location = useLocation()
@@ -23,16 +33,14 @@ function ActivityTrackerWrapper({ children }) {
     const match = location.pathname.match(/\/college\/([^/]+)/)
     if (match) {
       const slug = match[1]
-      import('./lib/colleges').then(({ colleges }) => {
-        const college = colleges.find(c => c.slug === slug)
-        if (college) {
-          activityTracker.recordActivity({
-            collegeId: college.id,
-            activityType: ACTIVITY_TYPES.COLLEGE_VIEW,
-            metadata: { collegeName: college.name, slug, url: location.pathname }
-          })
-        }
-      })
+      const college = getCollegeBySlug(slug)
+      if (college) {
+        activityTracker.recordActivity({
+          collegeId: college.id,
+          activityType: ACTIVITY_TYPES.COLLEGE_VIEW,
+          metadata: { collegeName: college.name, slug, url: location.pathname }
+        })
+      }
     }
   }, [location.pathname])
   return children
@@ -48,6 +56,7 @@ function LegacySavedRedirect() {
 export default function App() {
   return (
     <BrowserRouter>
+      <BackendDataBootstrap />
       <LanguageProvider>
         <ActivityTrackerWrapper>
           <PlatformHeader />

@@ -6,6 +6,9 @@
  * College Admin: sees only own college visitors (college_id isolation)
  */
 
+import { api } from './api'
+import { getApiCollegeId } from './collegeStorage'
+
 const ACTIVITY_TYPES = {
   COLLEGE_VIEW: 'COLLEGE_VIEW',
   COURSE_VIEW: 'COURSE_VIEW',
@@ -37,6 +40,22 @@ class ActivityTracker {
     } catch {
       return []
     }
+  }
+
+  syncActivityWithBackend({ studentId, collegeId, courseId, activityType, metadata }) {
+    if (metadata?.backendTracked) return
+    const apiCollegeId = Number(getApiCollegeId(collegeId))
+    if (!Number.isFinite(apiCollegeId) || apiCollegeId <= 0) return
+    const numericStudentId = Number(studentId)
+    const consent = activityType === ACTIVITY_TYPES.ENQUIRY && metadata?.consent === true
+    api.trackActivity({
+      student_id: Number.isFinite(numericStudentId) && numericStudentId > 0 ? numericStudentId : 1,
+      college_id: apiCollegeId,
+      course_id: Number.isFinite(Number(courseId)) ? Number(courseId) : null,
+      activity_type: activityType,
+      consent,
+      metadata: { collegeName: metadata?.collegeName || '', courseName: metadata?.courseName || '', url: metadata?.url || '' }
+    }).catch(() => { /* Browser-local activity remains available while the API is offline. */ })
   }
 
   recordActivity({ collegeId, courseId, activityType, metadata = {}, personalInfoShared = false }) {
@@ -92,6 +111,7 @@ class ActivityTracker {
       if (activityType === ACTIVITY_TYPES.COLLEGE_VIEW && collegeId) {
         this.addToRecentlyViewed(collegeId)
       }
+      this.syncActivityWithBackend({ studentId: demoStudent.id, collegeId, courseId, activityType, metadata })
       return activity
     }
 
@@ -143,7 +163,7 @@ class ActivityTracker {
     }
 
     console.log(`[ActivityTracker] Recorded ${activityType} - Student: ${activity.student_name} (${activity.student_email}) - College ID ${collegeId} College Name ${activity.college_name} - Date ${activity.date} Time ${activity.time}`)
-    
+    this.syncActivityWithBackend({ studentId: student.id, collegeId, courseId, activityType, metadata })
     return activity
   }
 
