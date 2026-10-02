@@ -1,29 +1,91 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Building2, Mail, Phone, Globe, MapPin, Calendar, User, Lock, Upload, CheckCircle2, AlertCircle, Sparkles, Image as ImageIcon, Award, Users, BookOpen } from 'lucide-react'
+import { Building2, Mail, Phone, Globe, MapPin, Calendar, User, Lock, Upload, Save, CheckCircle2, AlertCircle, Sparkles, Image as ImageIcon, Award, Users } from 'lucide-react'
 import { createNewCollegeFromSignup, findCollegeByLoginId } from '../../lib/collegeStorage'
 import { districts } from '../../lib/colleges'
 
+const COLLEGE_SIGNUP_DRAFT_KEY = 'tn_college_signup_draft_v1'
+
+const emptyCollegeSignupForm = () => ({
+  collegeName: '',
+  email: '',
+  phone: '',
+  website: '',
+  address: '',
+  district: 'Coimbatore',
+  city: '',
+  pincode: '',
+  collegeType: 'Engineering',
+  university: 'Anna University',
+  establishedYear: '2000',
+  principalName: '',
+  username: '',
+  password: ''
+})
+
+function readCollegeSignupDraft() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(COLLEGE_SIGNUP_DRAFT_KEY) || 'null')
+    return saved?.version === 1 && saved.data && typeof saved.data === 'object' ? saved : null
+  } catch {
+    return null
+  }
+}
+
+function writeCollegeSignupDraft(formData) {
+  const { password: _password, ...safeData } = formData
+  const defaults = emptyCollegeSignupForm()
+  const hasChanges = Object.keys(defaults)
+    .filter(key => key !== 'password')
+    .some(key => String(safeData[key] ?? '').trim() !== String(defaults[key] ?? '').trim())
+  if (!hasChanges) return { ok: false, reason: 'empty' }
+
+  const savedAt = new Date().toISOString()
+  try {
+    localStorage.setItem(COLLEGE_SIGNUP_DRAFT_KEY, JSON.stringify({ version: 1, data: safeData, savedAt }))
+    return { ok: true, savedAt }
+  } catch {
+    return { ok: false, reason: 'storage' }
+  }
+}
+
 export default function CollegeSignup() {
   const navigate = useNavigate()
-  const [formData, setFormData] = useState({
-    collegeName: '',
-    email: '',
-    phone: '',
-    website: '',
-    address: '',
-    district: 'Coimbatore',
-    city: '',
-    pincode: '',
-    collegeType: 'Engineering',
-    university: 'Anna University',
-    establishedYear: '2000',
-    principalName: '',
-    username: '',
+  const [savedDraft] = useState(readCollegeSignupDraft)
+  const [formData, setFormData] = useState(() => ({
+    ...emptyCollegeSignupForm(),
+    ...(savedDraft?.data || {}),
     password: ''
-  })
+  }))
+  const [draftStatus, setDraftStatus] = useState(() => savedDraft
+    ? 'Draft restored — re-enter your password before registering.'
+    : '')
 
   const updateField = (f, v) => setFormData(p => ({ ...p, [f]: v }))
+
+  useEffect(() => {
+    const persistDraft = (showStatus = true) => {
+      const result = writeCollegeSignupDraft(formData)
+      if (!showStatus) return
+      if (result.ok) setDraftStatus('Auto-saved in this browser')
+      else if (result.reason === 'storage') setDraftStatus('Draft could not be saved — browser storage may be full')
+    }
+    const timer = window.setTimeout(() => persistDraft(true), 700)
+    const flushBeforeClose = () => persistDraft(false)
+    window.addEventListener('beforeunload', flushBeforeClose)
+    return () => {
+      window.clearTimeout(timer)
+      window.removeEventListener('beforeunload', flushBeforeClose)
+      persistDraft(false)
+    }
+  }, [formData])
+
+  const handleSaveDraft = () => {
+    const result = writeCollegeSignupDraft(formData)
+    if (result.ok) setDraftStatus('Draft saved in this browser — password is not stored.')
+    else if (result.reason === 'empty') setDraftStatus('Enter college details before saving a draft.')
+    else setDraftStatus('Draft could not be saved — browser storage may be full')
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -38,6 +100,7 @@ export default function CollegeSignup() {
     }
 
     const college = createNewCollegeFromSignup({ ...formData, email, username })
+    localStorage.removeItem(COLLEGE_SIGNUP_DRAFT_KEY)
     window.dispatchEvent(new Event('collegeRegistered'))
     alert(`College registered! ${college.name} - ID: ${college.id} - Status: PENDING. You can now login and add your college details.`)
     navigate('/admin')
@@ -105,7 +168,18 @@ export default function CollegeSignup() {
             </div>
 
             <form onSubmit={handleSubmit} className="rounded-[24px] bg-white border-2 border-[#E8E2DB] p-8 shadow-sm space-y-5">
-              <h2 className="font-display text-[22px] font-bold text-[#1A3263]">College Registration - Official Details</h2>
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <h2 className="font-display text-[22px] font-bold text-[#1A3263]">College Registration - Official Details</h2>
+                <div className="flex flex-col items-end gap-2">
+                  <button type="button" onClick={handleSaveDraft} className="h-10 px-4 rounded-full bg-[#1A3263] text-[#FAB95B] text-[11px] font-extrabold inline-flex items-center gap-2 hover:bg-[#1A3263]/90 whitespace-nowrap">
+                    <Save size={14} /> Save as Draft
+                  </button>
+                  {draftStatus && <span role="status" aria-live="polite" className="max-w-[260px] rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-right text-[10px] font-semibold text-emerald-700">{draftStatus}</span>}
+                </div>
+              </div>
+              <div className="rounded-[10px] bg-[#E8E2DB]/45 px-3 py-2 text-[10.5px] text-[#547792]">
+                Drafts stay in this browser. For security, the password is not stored; enter it again before registration.
+              </div>
 
               <div>
                 <label className="text-[11px] font-bold uppercase text-[#1A3263] flex items-center gap-1.5"><Building2 size={12} className="text-[#FAB95B]" /> College Name *</label>
