@@ -20,6 +20,7 @@ public class Research {
     private String centreName; // Advanced Centre name
     private String facultyName;
     private String fundingAgency;
+    @Column(name = "year_value") // "year" is a reserved keyword in H2/SQL
     private String year;
     private String imageUrl;
 

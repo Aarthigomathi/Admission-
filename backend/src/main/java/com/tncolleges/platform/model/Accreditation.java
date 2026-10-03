@@ -16,6 +16,7 @@ public class Accreditation {
 
     private String name; // NAAC A++, NBA, ISO 9001:2015
     private String grade; // A++, A
+    @Column(name = "year_value") // "year" is a reserved keyword in H2/SQL
     private String year;
     private String validTill;
     private String certificateUrl;

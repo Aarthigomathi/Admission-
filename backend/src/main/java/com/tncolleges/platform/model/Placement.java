@@ -14,6 +14,7 @@ public class Placement {
     @Column(name = "college_id", nullable = false)
     private Long collegeId;
 
+    @Column(name = "year_value") // "year" is a reserved keyword in H2/SQL
     private Integer year;
     private String companyName;
     private Integer studentsPlaced;
